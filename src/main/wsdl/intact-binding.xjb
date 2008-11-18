@@ -1,0 +1,35 @@
+<bindings
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://java.sun.com/xml/ns/jaxb"
+        xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+        version="2.1">
+
+    <!--<bindings schemaLocation="http://psidev.sourceforge.net/mi/rel25/src/MIF254.xsd" node="/xs:schema">-->
+        <!--<schemaBindings>-->
+            <!--<package name="psidev.psi.mi.xml.jaxb"/>-->
+        <!--</schemaBindings>-->
+    <!--</bindings>-->
+
+    <bindings schemaLocation="MIF254.xsd" node="/xs:schema">
+        <schemaBindings>
+            <package name="psidev.psi.mi.xml.jaxb"/>
+        </schemaBindings>
+    </bindings>
+
+    <!--<bindings schemaLocation="psicquic.xsd" node="/xs:schema">-->
+        <!--<schemaBindings>-->
+            <!--<package name="org.hupo.psi.mi.psicquic"/>-->
+        <!--</schemaBindings>-->
+    <!--</bindings>-->
+
+    <bindings schemaLocation="http://www.ebi.ac.uk/~intact/mi/psimitab-1.0.xsd" node="/xs:schema">
+        <schemaBindings>
+            <package name="uk.ac.ebi.intact.service.psicquic.commons.mitab"/>
+        </schemaBindings>
+    </bindings>
+
+    <globalBindings>
+        <xjc:simple/>
+    </globalBindings>
+
+</bindings>
