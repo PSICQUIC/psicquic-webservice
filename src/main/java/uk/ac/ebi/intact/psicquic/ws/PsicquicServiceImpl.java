@@ -94,8 +94,8 @@ public class PsicquicServiceImpl implements PsicquicService{
         row1.getCols().add("uniprotkb:Q00000");
 
         RowType row2 = new RowType();
-        row1.getCols().add("uniprotkb:P12345");
-        row1.getCols().add("uniprotkb:Q99999");
+        row2.getCols().add("uniprotkb:P12345");
+        row2.getCols().add("uniprotkb:Q99999");
 
         body.getRows().add(row1);
         body.getRows().add(row2);
