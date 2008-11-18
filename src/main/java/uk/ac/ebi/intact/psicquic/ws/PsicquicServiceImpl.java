@@ -22,6 +22,13 @@ import javax.jws.WebParam;
 
 import psidev.psi.mi.xml.jaxb.EntrySet;
 import psidev.psi.mi.xml.jaxb.Entry;
+import uk.ac.ebi.intact.service.psicquic.commons.mitab.Mitab;
+import uk.ac.ebi.intact.service.psicquic.commons.mitab.HeaderType;
+import uk.ac.ebi.intact.service.psicquic.commons.mitab.BodyType;
+import uk.ac.ebi.intact.service.psicquic.commons.mitab.RowType;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * TODO comment this
@@ -35,6 +42,9 @@ public class PsicquicServiceImpl implements PsicquicService{
 
     public QueryResponse getByInteractor(DbRefRequest dbRef) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
         QueryResponse response = new QueryResponse();
+
+        // TODO: this is all mockup logic. Here you would use the query and your data source to get whatever is needed
+        // and for instance, generate a PSI-MI XML like below (of course, more data in it - it is empty now)
 
         ResultInfo info = new ResultInfo();
         info.setFirstResult(dbRef.getFirstResult());
@@ -61,7 +71,45 @@ public class PsicquicServiceImpl implements PsicquicService{
     }
 
     public QueryResponse getByInteraction(DbRefRequest dbRef) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
-        return null;
+        QueryResponse response = new QueryResponse();
+
+        // TODO: mockup logic for a PSI-MI TAB response
+
+         ResultInfo info = new ResultInfo();
+        info.setFirstResult(dbRef.getFirstResult());
+        info.setBlockSize(dbRef.getBlockSize());
+        info.setTotalResults(12345);
+
+        response.setResultInfo(info);
+
+        HeaderType header = new HeaderType();
+        header.getCols().add("idA");
+        header.getCols().add("idB");
+
+
+        BodyType body = new BodyType();
+
+        RowType row1 = new RowType();
+        row1.getCols().add("uniprotkb:P12345");
+        row1.getCols().add("uniprotkb:Q00000");
+
+        RowType row2 = new RowType();
+        row1.getCols().add("uniprotkb:P12345");
+        row1.getCols().add("uniprotkb:Q99999");
+
+        body.getRows().add(row1);
+        body.getRows().add(row2);
+
+        Mitab mitab = new Mitab();
+        mitab.setDb("intact");
+        mitab.setHeader(header);
+        mitab.setBody(body);
+
+        ResultSet rs = new ResultSet();
+        rs.setMitab(mitab);
+        response.setResultSet(rs);
+
+        return response;
     }
 
     public QueryResponse getByInteractorList(DbRefListRequest dbRefListRequest, @WebParam(name = "operand", targetNamespace = "http://psi.hupo.org/mi/psicquic", partName = "operand") String operand) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
