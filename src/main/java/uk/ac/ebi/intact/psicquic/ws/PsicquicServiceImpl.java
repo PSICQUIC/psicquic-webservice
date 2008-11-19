@@ -20,15 +20,14 @@ import org.springframework.stereotype.Controller;
 
 import javax.jws.WebParam;
 
-import psidev.psi.mi.xml.jaxb.EntrySet;
-import psidev.psi.mi.xml.jaxb.Entry;
+import psidev.psi.mi.xml254.jaxb.EntrySet;
+import psidev.psi.mi.xml254.jaxb.Entry;
 import uk.ac.ebi.intact.service.psicquic.commons.mitab.Mitab;
 import uk.ac.ebi.intact.service.psicquic.commons.mitab.HeaderType;
 import uk.ac.ebi.intact.service.psicquic.commons.mitab.BodyType;
 import uk.ac.ebi.intact.service.psicquic.commons.mitab.RowType;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * TODO comment this
@@ -37,7 +36,7 @@ import java.util.LinkedList;
  * @version $Id$
  */
 @Controller
-public class PsicquicServiceImpl implements PsicquicService{
+public class PsicquicServiceImpl implements PsicquicService {
 
 
     public QueryResponse getByInteractor(DbRefRequest dbRef) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
@@ -112,11 +111,11 @@ public class PsicquicServiceImpl implements PsicquicService{
         return response;
     }
 
-    public QueryResponse getByInteractorList(DbRefListRequest dbRefListRequest, @WebParam(name = "operand", targetNamespace = "http://psi.hupo.org/mi/psicquic", partName = "operand") String operand) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
+    public QueryResponse getByInteractorList(DbRefListRequest dbRefListRequest, String operand) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
         return null;
     }
 
-    public QueryResponse getByInteractionList(DbRefListRequest dbRefList) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
+    public QueryResponse getByInteractionList(DbRefList dbRefList) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         return null;
     }
 
@@ -124,19 +123,15 @@ public class PsicquicServiceImpl implements PsicquicService{
         return null;
     }
 
-    public String getVersion() throws PsicquicServiceException {
+    public String getVersion() {
         return "1.0-SNAPSHOT";
     }
 
-    public SupportedTypes getSupportedReturnTypes() throws PsicquicServiceException {
+    public List<String> getSupportedReturnTypes()  {
         return null;
     }
 
-    public SupportedTypes getSupportedDbAcs() throws PsicquicServiceException {
-        return null;
-    }
-
-    public SupportedTypes getSupportedQueryTypes() throws PsicquicServiceException {
+    public List<String> getSupportedDbAcs() {
         return null;
     }
 }
