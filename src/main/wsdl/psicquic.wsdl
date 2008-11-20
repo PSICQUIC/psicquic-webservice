@@ -32,13 +32,8 @@
             <xs:element name="getByInteractorList" type="psq:getByInteractorList"/>
             <xs:element name="getByInteractorListReponse" type="psq:getByInteractorListResponse"/>
 
-            <xs:element name="queryRequest" type="psq:queryRequest"/>
-
-            <xs:element name="getByQueryStringRequest" nillable="true" type="psq:queryRequest"/>
-
-            <xs:element name="queryResponse" type="psq:queryResponse"/>
-
-            <xs:element name="supportedTypes" type="psq:supportedTypes"/>
+            <xs:element name="getByQuery" type="psq:getByQuery"/>
+            <xs:element name="getByQueryResponse" type="psq:getByQueryResponse"/>
 
             <xs:element name="getVersion" type="psq:getVersion"/>
             <xs:element name="getVersionResponse" type="psq:getVersionResponse"/>
@@ -49,96 +44,12 @@
             <xs:element name="getSupportedDbAcs" type="psq:getSupportedDbAcs"/>
             <xs:element name="getSupportedDbAcsResponse" type="psq:getSupportedDbAcsResponse"/>
 
-            <xs:element name="psicquicFault">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="code" type="xs:int"/>
-                        <xs:element name="message" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-
-
-            <xs:complexType name="dbRefRequest">
-                <xs:sequence>
-                    <xs:element name="dbRef" type="psq:dbRef"/>
-                    <xs:element name="resultType" type="xs:string"/>
-                    <xs:element default="0" name="firstResult" type="xs:int"/>
-                    <xs:element default="50" name="blockSize" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
-
-            <xs:complexType name="dbRef">
-                <xs:sequence>
-                    <xs:element default="" name="dbAc" type="xs:string"/>
-                    <xs:element name="id" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-
-            <xs:complexType name="queryResponse">
-                <xs:sequence>
-                    <xs:element name="resultSet" type="psq:resultSet"/>
-                    <xs:element name="resultInfo" type="psq:resultInfo"/>
-                </xs:sequence>
-            </xs:complexType>
-
-            <xs:complexType name="resultSet">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="entrySet" type="mif:entrySet"/>
-                    <xs:element minOccurs="0" name="mitab" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-
-            <xs:complexType name="resultInfo">
-                <xs:sequence>
-                    <xs:element name="firstResult" type="xs:int"/>
-                    <xs:element name="totalResults" type="xs:int"/>
-                    <xs:element name="resultType" type="xs:string"/>
-                    <xs:element name="blockSize" type="xs:int"/>
-                    <xs:element name="expirationDate" type="xs:dateTime"/>
-                </xs:sequence>
-
-            </xs:complexType>
-            <xs:complexType name="queryRequest">
-                <xs:sequence>
-                    <xs:element name="query" type="psq:query"/>
-                    <xs:element name="resultType" type="xs:string"/>
-                    <xs:element default="0" name="firstResult" type="xs:int"/>
-                    <xs:element default="50" name="blockSize" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
-
-            <xs:complexType name="query">
-                <xs:sequence>
-                    <xs:element name="queryFormat" type="xs:string"/>
-                    <xs:element name="queryString" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-
-            <xs:complexType name="supportedTypes">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="supportedType" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-
-            <xs:complexType name="dbRefListRequest">
-                <xs:sequence>
-                    <xs:element name="dbRefList" type="psq:dbRefList"/>
-                    <xs:element name="resultType" type="xs:string"/>
-                    <xs:element default="0" name="firstResult" type="xs:int"/>
-                    <xs:element default="50" name="blockSize" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
-
-            <xs:complexType name="dbRefList">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="dbRef" type="psq:dbRef"/>
-                </xs:sequence>
-            </xs:complexType>
+            <!-- in/out types -->
 
             <xs:complexType name="getByInteractor">
                 <xs:sequence>
-                    <xs:element name="dbRefRequest" type="psq:dbRefRequest"/>
+                    <xs:element name="dbRef" type="psq:dbRef"/>
+                    <xs:element name="infoRequest" type="psq:requestInfo"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -150,7 +61,8 @@
 
             <xs:complexType name="getByInteraction">
                 <xs:sequence>
-                    <xs:element name="dbRefRequest" type="psq:dbRefRequest"/>
+                    <xs:element name="dbRef" type="psq:dbRef"/>
+                    <xs:element name="infoRequest" type="psq:requestInfo"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -162,7 +74,8 @@
 
             <xs:complexType name="getByInteractionList">
                 <xs:sequence>
-                    <xs:element name="dbRefList" type="psq:dbRefList"/>
+                    <xs:element name="dbRef" type="psq:dbRef" maxOccurs="unbounded"/>
+                    <xs:element name="infoRequest" type="psq:requestInfo"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -174,8 +87,29 @@
 
             <xs:complexType name="getByInteractorList">
                 <xs:sequence>
-                    <xs:element name="dbRefList" type="psq:dbRefListRequest" minOccurs="0" maxOccurs="1"/>
-                    <xs:element name="operand" nillable="true" type="xs:string"/>
+                    <xs:element name="dbRef" type="psq:dbRef" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="infoRequest" type="psq:requestInfo"/>
+                    <xs:element name="operand">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="AND"/>
+                                <xs:enumeration value="OR"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="getByQuery">
+                <xs:sequence>
+                    <xs:element name="query" nillable="false" type="xs:string" maxOccurs="1"/>
+                    <xs:element name="infoRequest" type="psq:requestInfo"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="getByQueryResponse">
+                <xs:sequence>
+                    <xs:element name="queryResponse" type="psq:queryResponse"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -212,6 +146,77 @@
             <xs:complexType name="getSupportedDbAcsResponse">
                 <xs:sequence>
                     <xs:element name="return" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <!-- other types -->
+
+            <xs:element name="psicquicFault">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="code" type="xs:int"/>
+                        <xs:element name="message" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:complexType name="requestInfo">
+                <xs:sequence>
+                    <xs:element name="resultType" type="xs:string"/>
+                    <xs:element default="0" name="firstResult" type="xs:int"/>
+                    <xs:element default="50" name="blockSize" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="dbRef">
+                <xs:sequence>
+                    <xs:element nillable="true" name="dbAc" type="xs:string"/>
+                    <xs:element name="id" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="queryResponse">
+                <xs:sequence>
+                    <xs:element name="resultSet" type="psq:resultSet"/>
+                    <xs:element name="resultInfo" type="psq:resultInfo"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="resultSet">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="entrySet" type="mif:entrySet"/>
+                    <xs:element minOccurs="0" name="mitab" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="resultInfo">
+                <xs:sequence>
+                    <xs:element name="firstResult" type="xs:int"/>
+                    <xs:element name="totalResults" type="xs:int"/>
+                    <xs:element name="resultType" type="xs:string"/>
+                    <xs:element name="blockSize" type="xs:int"/>
+                </xs:sequence>
+
+            </xs:complexType>
+
+            <xs:complexType name="supportedTypes">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="supportedType" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="dbRefListRequest">
+                <xs:sequence>
+                    <xs:element name="dbRefList" type="psq:dbRefList"/>
+                    <xs:element name="resultType" type="xs:string"/>
+                    <xs:element default="0" name="firstResult" type="xs:int"/>
+                    <xs:element default="50" name="blockSize" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="dbRefList">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="dbRef" type="psq:dbRef"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -289,11 +294,11 @@
     </message>
 
     <message name="getByQuery">
-        <part element="psq:getByQueryStringRequest" name="query"/>
+        <part element="psq:getByQuery" name="query"/>
     </message>
 
     <message name="getByQueryResponse">
-        <part element="psq:queryResponse" name="QueryResponse"/>
+        <part element="psq:getByQueryResponse" name="queryResponse"/>
     </message>
 
     <!-- PORT TYPE -->
