@@ -19,8 +19,6 @@
             <!--schemaLocation="http://psidev.sourceforge.net/mi/rel25/src/MIF253.xsd"/>-->
             <xs:import namespace="http://psi.hupo.org/mi/mif"
                        schemaLocation="MIF254.xsd"/>
-            <xs:import namespace="http://psi.hupo.org/mi/mitab"
-                       schemaLocation="http://www.ebi.ac.uk/~intact/mi/psimitab-1.0.xsd"/>
 
             <!-- types -->
 
@@ -87,7 +85,7 @@
             <xs:complexType name="resultSet">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="entrySet" type="mif:entrySet"/>
-                    <xs:element minOccurs="0" name="mitab" type="mitab:mitabType"/>
+                    <xs:element minOccurs="0" name="mitab" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
 

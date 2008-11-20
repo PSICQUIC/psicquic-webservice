@@ -17,15 +17,8 @@ package uk.ac.ebi.intact.psicquic.ws;
 
 import org.hupo.psi.mi.psicquic.*;
 import org.springframework.stereotype.Controller;
-
-import javax.jws.WebParam;
-
-import psidev.psi.mi.xml254.jaxb.EntrySet;
 import psidev.psi.mi.xml254.jaxb.Entry;
-import uk.ac.ebi.intact.service.psicquic.commons.mitab.Mitab;
-import uk.ac.ebi.intact.service.psicquic.commons.mitab.HeaderType;
-import uk.ac.ebi.intact.service.psicquic.commons.mitab.BodyType;
-import uk.ac.ebi.intact.service.psicquic.commons.mitab.RowType;
+import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 import java.util.List;
 
@@ -80,32 +73,8 @@ public class PsicquicServiceImpl implements PsicquicService {
         info.setTotalResults(12345);
 
         response.setResultInfo(info);
-
-        HeaderType header = new HeaderType();
-        header.getCols().add("idA");
-        header.getCols().add("idB");
-
-
-        BodyType body = new BodyType();
-
-        RowType row1 = new RowType();
-        row1.getCols().add("uniprotkb:P12345");
-        row1.getCols().add("uniprotkb:Q00000");
-
-        RowType row2 = new RowType();
-        row2.getCols().add("uniprotkb:P12345");
-        row2.getCols().add("uniprotkb:Q99999");
-
-        body.getRows().add(row1);
-        body.getRows().add(row2);
-
-        Mitab mitab = new Mitab();
-        mitab.setDb("intact");
-        mitab.setHeader(header);
-        mitab.setBody(body);
-
         ResultSet rs = new ResultSet();
-        rs.setMitab(mitab);
+        //rs.setMitab(mitab);
         response.setResultSet(rs);
 
         return response;
