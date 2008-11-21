@@ -46,7 +46,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
     private final Logger logger = LoggerFactory.getLogger(IndexBasedPsicquicService.class);
 
     private static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
-    private static final String RETURN_TYPE_MITAB25 = "psi-mi/mitab25";
+    private static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
     private static final String RETURN_TYPE_COUNT = "count";
 
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -95,7 +95,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
 
     private String createQuery(String fieldName, Collection<DbRef> dbRefs, String operand) {
         StringBuilder sb = new StringBuilder(dbRefs.size() * 64);
-        sb.append(fieldName).append("(");
+        sb.append(fieldName).append(":(");
 
         for (Iterator<DbRef> dbRefIterator = dbRefs.iterator(); dbRefIterator.hasNext();) {
             DbRef dbRef = dbRefIterator.next();
