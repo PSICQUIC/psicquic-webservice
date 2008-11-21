@@ -16,6 +16,8 @@
 package uk.ac.ebi.intact.psicquic.ws;
 
 import org.hupo.psi.mi.psicquic.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import psidev.psi.mi.search.SearchResult;
@@ -25,10 +27,10 @@ import psidev.psi.mi.tab.converter.tab2xml.Tab2Xml;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
 import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
+import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 import uk.ac.ebi.intact.psicquic.ws.config.PsicquicConfig;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -40,6 +42,8 @@ import java.util.*;
  */
 @Controller
 public class IndexBasedPsicquicService implements PsicquicService {
+
+    private final Logger logger = LoggerFactory.getLogger(IndexBasedPsicquicService.class);
 
     private static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
     private static final String RETURN_TYPE_MITAB25 = "psi-mi/mitab25";
@@ -112,7 +116,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
         String db = dbRef.getDbAc();
         String id = dbRef.getId();
         
-        return "("+((db == null)? id : db+" AND "+id)+")";
+        return "("+((db == null || db.length() == 0)? "\""+id+"\"" : "\""+db+"\" AND \""+id+"\"")+")";
     }
 
     public QueryResponse getByQuery(String query, RequestInfo requestInfo) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
@@ -124,9 +128,11 @@ public class IndexBasedPsicquicService implements PsicquicService {
             throw new NotSupportedTypeException("Not supported return type: "+resultType+" - Supported types are: "+getSupportedReturnTypes());
         }
 
-        if (!new File(config.getIndexDirectory()).exists()) {
-            throw new PsicquicServiceException("Lucene directory does not exist: "+config.getIndexDirectory());
-        }
+//        if (!new File(config.getIndexDirectory()).exists()) {
+//            throw new PsicquicServiceException("Lucene directory does not exist: "+config.getIndexDirectory());
+//        }
+
+        logger.debug("Searching: {} ({}/{})", new Object[] {query, requestInfo.getFirstResult(), blockSize});
 
         SearchEngine searchEngine;
         
@@ -172,12 +178,17 @@ public class IndexBasedPsicquicService implements PsicquicService {
         String resultType = (requestInfo.getResultType() != null)? requestInfo.getResultType() : RETURN_TYPE_DEFAULT;
 
         if (RETURN_TYPE_MITAB25.equals(resultType)) {
+            if (logger.isDebugEnabled()) logger.debug("Creating PSI-MI TAB");
+
             String mitab = createMitabResults(searchResult);
             resultSet.setMitab(mitab);
         } else if (RETURN_TYPE_XML25.equals(resultType)) {
+            if (logger.isDebugEnabled()) logger.debug("Creating PSI-MI XML");
+
             EntrySet jEntrySet = createEntrySet(searchResult);
             resultSet.setEntrySet(jEntrySet);
         } else if (RETURN_TYPE_COUNT.equals(resultType)) {
+            if (logger.isDebugEnabled()) logger.debug("Count query");
             // nothing to be done here
         } else {
             throw new NotSupportedTypeException("Not supported return type: "+resultType+" - Supported types are: "+getSupportedReturnTypes());
@@ -207,6 +218,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
             psidev.psi.mi.xml.model.EntrySet mEntrySet = tab2Xml.convert(searchResult.getData());
 
             EntrySetConverter converter = new EntrySetConverter();
+            converter.setDAOFactory(new InMemoryDAOFactory());
 
             return converter.toJaxb(mEntrySet);
 

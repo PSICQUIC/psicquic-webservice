@@ -21,11 +21,11 @@
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
 	<!-- Enable message logging using the CXF logging feature -->
-	<cxf:bus>
-		<cxf:features>
-			<cxf:logging />
-		</cxf:features>
-	</cxf:bus>
+	<!--<cxf:bus>-->
+		<!--<cxf:features>-->
+			<!--<cxf:logging />-->
+		<!--</cxf:features>-->
+	<!--</cxf:bus>-->
 
 	<!-- Service endpoint -->
 	<!-- See http://incubator.apache.org/cxf/faq.html regarding CXF + Spring AOP -->
