@@ -81,7 +81,7 @@ public class IndexBasedPsicquicServiceTest {
     @Test
     public void testGetByQuery() throws Exception {
         RequestInfo info = new RequestInfo();
-        info.setResultType("psi-mi/mitab25");
+        info.setResultType("psi-mi/tab25");
         info.setBlockSize(50);
 
         final QueryResponse response = service.getByQuery("FANCD1", info);
