@@ -15,11 +15,10 @@
  */
 package uk.ac.ebi.intact.psicquic.wsclient;
 
-import org.junit.Test;
-import org.hupo.psi.mi.psicquic.PsicquicService;
-import org.hupo.psi.mi.psicquic.RequestInfo;
 import org.hupo.psi.mi.psicquic.DbRef;
+import org.hupo.psi.mi.psicquic.PsicquicService;
 import org.hupo.psi.mi.psicquic.QueryResponse;
+import org.hupo.psi.mi.psicquic.RequestInfo;
 
 /**
  * Example on how to use the PsicquicClient.
