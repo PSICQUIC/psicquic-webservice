@@ -27,6 +27,7 @@ public class PsicquicClientExample {
 
     public static void main(String[] args) throws Exception {
 
+        // change the enpoint address as needed
         PsicquicClient client = new PsicquicClient("http://localhost:8080/psicquic-ws/webservices/psicquic");
 
         PsicquicService service = client.getService();
