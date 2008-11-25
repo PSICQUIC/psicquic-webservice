@@ -64,7 +64,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
     }
 
     public QueryResponse getByInteractor(DbRef dbRef, RequestInfo requestInfo) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
-        String query = createQuery("identifier", dbRef);
+        String query = createQuery("identifiers", dbRef);
 
         return getByQuery(query, requestInfo);
     }
@@ -78,7 +78,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
     }
 
     public QueryResponse getByInteractorList(List<DbRef> dbRefs, RequestInfo requestInfo, String operand) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
-        String query = createQuery("identifier", dbRefs, operand);
+        String query = createQuery("identifiers", dbRefs, operand);
 
         return getByQuery(query, requestInfo);
     }
