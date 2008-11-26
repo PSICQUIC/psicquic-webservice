@@ -15,10 +15,8 @@
                    xmlns:mitab="http://psi.hupo.org/mi/mitab"
                    targetNamespace="http://psi.hupo.org/mi/psicquic">
 
-            <!--<xs:import namespace="http://psi.hupo.org/mi/mif"-->
-            <!--schemaLocation="http://psidev.sourceforge.net/mi/rel25/src/MIF253.xsd"/>-->
             <xs:import namespace="http://psi.hupo.org/mi/mif"
-                       schemaLocation="MIF254.xsd"/>
+                       schemaLocation="http://psidev.sourceforge.net/mi/rel25/src/MIF254.xsd"/>
 
             <!-- types -->
 
