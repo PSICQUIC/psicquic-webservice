@@ -18,10 +18,11 @@ package uk.ac.ebi.intact.psicquic.ws;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.RequestInfo;
 import org.hupo.psi.mi.psicquic.DbRef;
+import org.hupo.psi.mi.psicquic.ws.IndexBasedPsicquicService;
 import org.junit.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import psidev.psi.mi.search.Searcher;
-import uk.ac.ebi.intact.psicquic.ws.config.PsicquicConfig;
+import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 
 import java.io.File;
 import java.io.InputStream;
