@@ -9,7 +9,7 @@
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-    <context:component-scan base-package="uk.ac.ebi.intact.psicquic.ws"/>
+    <context:component-scan base-package="org.hupo.psi.mi"/>
 
     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 
