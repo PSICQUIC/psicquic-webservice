@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.psicquic.wsclient;
+package org.hupo.psi.mi.psicquic.wsclient;
 
 import org.hupo.psi.mi.psicquic.PsicquicService;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;

@@ -42,7 +42,7 @@
                                     <wsdl>${basedir}/src/main/wsdl/psicquic.wsdl</wsdl>
                                     <extraargs>
                                             <extraarg>-b</extraarg>
-                                            <extraarg>${basedir}/src/main/wsdl/intact-binding.xjb</extraarg>
+                                            <extraarg>${basedir}/src/main/wsdl/binding.xjb</extraarg>
                                           </extraargs>
                                 </wsdlOption>
                             </wsdlOptions>

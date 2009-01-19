@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.psicquic.wsclient;
+package org.hupo.psi.mi.psicquic.example;
 
 import org.hupo.psi.mi.psicquic.DbRef;
 import org.hupo.psi.mi.psicquic.PsicquicService;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.RequestInfo;
+import org.hupo.psi.mi.psicquic.wsclient.PsicquicClient;
 
 /**
  * Example on how to use the PsicquicClient.
