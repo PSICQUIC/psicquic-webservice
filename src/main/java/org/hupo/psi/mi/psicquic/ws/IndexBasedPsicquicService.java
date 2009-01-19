@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.psicquic.ws;
+package org.hupo.psi.mi.psicquic.ws;
 
 import org.hupo.psi.mi.psicquic.*;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
 import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
 import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
-import uk.ac.ebi.intact.psicquic.ws.config.PsicquicConfig;
+import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 
 import java.io.IOException;
 import java.util.*;

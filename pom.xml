@@ -64,7 +64,7 @@
                                     <wsdl>${basedir}/src/main/wsdl/psicquic.wsdl</wsdl>
                                     <extraargs>
                                             <extraarg>-b</extraarg>
-                                            <extraarg>${basedir}/src/main/wsdl/intact-binding.xjb</extraarg>
+                                            <extraarg>${basedir}/src/main/wsdl/binding.xjb</extraarg>
                                           </extraargs>
                                 </wsdlOption>
                             </wsdlOptions>
@@ -82,23 +82,6 @@
                		</dependency>
             	</dependencies>
             </plugin>
-
-             <!--<plugin>-->
-                <!--<groupId>org.jvnet.jaxb2.maven2</groupId>-->
-	            <!--<artifactId>maven-jaxb2-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<schemaDirectory>${project.basedir}/src/main/wsdl</schemaDirectory>-->
-                    <!--<bindingDirectory>${project.basedir}/src/main/wsdl</bindingDirectory>-->
-                    <!--<extension>true</extension>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>generate</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
@@ -141,7 +124,7 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <classpath/>
-                                <argument>uk.ac.ebi.intact.psicquic.ws.utils.MitabIndexer</argument>
+                                <argument>org.hupo.psi.mi.psicquic.ws.utils.MitabIndexer</argument>
                                 <argument>${psicquic.index}</argument>
                                 <argument>${mitabFile}</argument>
                                 <argument>${hasHeader}</argument>
@@ -158,14 +141,8 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.7.0-SNAPSHOT</version>
+            <version>1.7.3</version>
         </dependency>
-
-        <!--<dependency>-->
-        <!--<groupId>uk.ac.ebi.intact.dataexchange.psimi</groupId>-->
-        <!--<artifactId>intact-psixml-exchange</artifactId>-->
-        <!--<version>2.0.2-SNAPSHOT</version>-->
-        <!--</dependency>-->
 
         <!-- Logging -->
         <dependency>
