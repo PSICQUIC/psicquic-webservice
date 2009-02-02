@@ -29,7 +29,7 @@
 
 	<!-- Service endpoint -->
 	<!-- See http://incubator.apache.org/cxf/faq.html regarding CXF + Spring AOP -->
-    <jaxws:endpoint xmlns:s="http://org.hupo.psi/mi/psicquic"
+    <jaxws:endpoint xmlns:s="http://psi.hupo.org/mi/psicquic"
                     id="psicquicService" serviceName="s:PsicquicService"
 		            implementorClass="org.hupo.psi.mi.psicquic.ws.IndexBasedPsicquicService"
 		            implementor="#indexBasedPsicquicService" address="/psicquic">
