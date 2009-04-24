@@ -23,10 +23,10 @@
 
 <!-- RESULTS TABLE -->
 
-<tr:table id="interactionResults" value="#{searchBean.results}" var="binaryInteraction" varStatus="status"
+<tr:table id="interactionResults" value="#{results}" var="binaryInteraction" varStatus="status"
           summary="Binary Interactions"
           emptyText="No interactions found matching the query."
-          rows="#{userQuery.pageSize}" rowBandingInterval="1" rangeChangeListener="#{searchBean.rangeChanged}"
+          rows="#{userQuery.pageSize}" rowBandingInterval="1"
           partialTriggers=":interactionResults:btnToogleProps :interactionResults:selPageRangeChoice">
 
 <f:facet name="actions">
@@ -34,12 +34,6 @@
         <f:facet name="separator">
             <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
         </f:facet>
-
-        <tr:selectRangeChoiceBar var="range" id="selPageRangeChoice"
-                                 value="#{searchBean.results}" first="#{searchBean.firstResultIndex}"
-                                 rows="30" rangeChangeListener="#{searchBean.rangeChanged}"
-                                 rendered="#{searchBean.results.rowCount gt userQuery.pageSize}"/>
-
 
         <tr:panelGroupLayout layout="horizontal">
 
@@ -186,10 +180,8 @@
 </tr:column>
 
 <tr:column headerText="#{messages['interaction.ac']}" styleClass="cellTextInteraction">
-    <!--<iav:xrefDataList value="#{binaryInteraction.interactionAcs}" itemPerLine="true" disableLinks="true"/>-->
-    <tr:commandLink action="details" text="#{interactionAc}">
-        <f:setPropertyActionListener value="#{interactionAc}" target="#{detailsBean.interactionAc}"/>
-    </tr:commandLink>
+    <iav:xrefDataList value="#{binaryInteraction.interactionAcs}" itemPerLine="true" disableLinks="true"/>
+    <!--<tr:inputText value="#{interactionAc}"/>-->
 </tr:column>
 
 <tr:column headerText="#{messages['interaction.confidencevalue']}"

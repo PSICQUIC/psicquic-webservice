@@ -170,7 +170,7 @@ public class UserQuery extends BaseController {
     }
 
     private boolean isWildcardQuery(String query) {
-        return (query.trim().length() == 0 || "*".equals(query) || "*:*".equals(query));
+        return (query == null || query.trim().length() == 0 || "*".equals(query) || "*:*".equals(query));
     }
 
     private String surroundByBracesIfNecessary(String query) {
@@ -203,8 +203,8 @@ public class UserQuery extends BaseController {
     }
 
     public String getSearchQuery() {
-        if ("*:*".equals(searchQuery)) {
-            searchQuery = "";
+        if ("".equals(searchQuery) || "*:*".equals(searchQuery)) {
+            searchQuery = "*";
         }
         return searchQuery;
     }

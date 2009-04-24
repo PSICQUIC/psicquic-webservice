@@ -4,16 +4,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
 import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
-import org.apache.myfaces.trinidad.component.UIXTable;
-import org.apache.myfaces.trinidad.event.RangeChangeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
+import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
 
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
 /**
@@ -30,33 +28,31 @@ public class SearchController extends BaseController {
 
     private static final Log log = LogFactory.getLog(SearchController.class);
 
-    public static final String QUERY_PARAM = "query";
-    public static final String ONTOLOGY_QUERY_PARAM = "ontologyQuery";
-    public static final String TERMID_QUERY_PARAM = "termId";
-
-    // table IDs
-    public static final String INTERACTIONS_TABLE_ID = "interactionResults";
-    public static final String PROTEINS_TABLE_ID = "proteinListResults";
-    public static final String COMPOUNDS_TABLE_ID = "compoundListResults";
-    public static final String NUCLEIC_ACID_TABLE_ID = "nucleicAcidListResults";
+    private static final String INTACT_ENDPOINT = "http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic";
+    private static final String MINT_ENDPOINT = "http://mint.bio.uniroma2.it/mint/psicquic/webservices/psicquic";
+    private static final String IREFINDEX_ENDPOINT = "http://biotin.uio.no:8080/psicquic-ws-1/webservices/psicquic";
+    private static final String BIOGRID_ENDPOINT = "http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/psicquic";
+    private static final String MPIDB_ENDPOINT = "http://www.jcvi.org/mpidb/servlet/webservices/psicquic";
 
     @Autowired
     private UserQuery userQuery;
 
     private int totalResults;
 
-    // results
-    private PsicquicResultDataModel results;
+    private int intactCount;
+    private int mintCount;
+    private int irefindexCount;
+    private int biogridCount;
+    private int mpidbCount;
 
+    // results
+    private PsicquicResultDataModel intactResults;
+    private PsicquicResultDataModel biogridResults;
+    private PsicquicResultDataModel mintResults;
+    private PsicquicResultDataModel irefindexResults;
+    private PsicquicResultDataModel mpidbResults;
 
     private boolean showAlternativeIds;
-
-    // io
-    private String exportFormat;
-
-    //sorting
-    private static final String DEFAULT_SORT_COLUMN = "rigid";
-    private static final boolean DEFAULT_SORT_ORDER = true;
 
     public SearchController() {
     }
@@ -87,12 +83,9 @@ public class SearchController extends BaseController {
         try {
             if ( log.isDebugEnabled() ) {log.debug( "\tquery:  "+ searchQuery );}
 
-            results = new PsicquicResultDataModel(new UniversalPsicquicClient("http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic"),
-                    searchQuery);
+            searchAndCreateResultModels();
 
-            totalResults = results.getRowCount();
-
-            if ( log.isDebugEnabled() ) log.debug( "\tResults: " + results.getRowCount() );
+            totalResults = intactCount + mintCount + biogridCount + mpidbCount + irefindexCount;
 
             if ( totalResults == 0 ) {
                 addErrorMessage( "Your query didn't return any results", "Use a different query" );
@@ -112,26 +105,50 @@ public class SearchController extends BaseController {
         }
     }
 
-    public void rangeChanged(RangeChangeEvent evt) {
-        results.setRowIndex(evt.getNewStart());
+    private void searchAndCreateResultModels() {
+        try {
+            intactResults = psicquicResults(INTACT_ENDPOINT);
+            intactCount = intactResults.getRowCount();
+        } catch (PsicquicClientException e) {
+            e.printStackTrace();
+        }
 
-        UIXTable table = (UIXTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(INTERACTIONS_TABLE_ID);
-        table.setFirst(evt.getNewStart());
+        try {
+            biogridResults = psicquicResults(BIOGRID_ENDPOINT);
+            biogridCount = biogridResults.getRowCount();
+        } catch (PsicquicClientException e) {
+            e.printStackTrace();
+        }
 
-        refreshTable(INTERACTIONS_TABLE_ID, results);
+        try {
+            mintResults = psicquicResults(MINT_ENDPOINT);
+            mintCount = mintResults.getRowCount();
+        } catch (PsicquicClientException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            irefindexResults = psicquicResults(IREFINDEX_ENDPOINT);
+            irefindexCount = irefindexResults.getRowCount();
+        } catch (PsicquicClientException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            mpidbResults = psicquicResults(MPIDB_ENDPOINT);
+            mpidbCount = mpidbResults.getRowCount();
+        } catch (PsicquicClientException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private PsicquicResultDataModel psicquicResults(String endpoint) throws PsicquicClientException {
+        return new PsicquicResultDataModel(new UniversalPsicquicClient(endpoint),
+                    userQuery.getSearchQuery());
     }
 
     // Getters & Setters
     /////////////////////
-
-
-    public String getExportFormat() {
-        return exportFormat;
-    }
-
-    public void setExportFormat( String exportFormat ) {
-        this.exportFormat = exportFormat;
-    }
 
     public int getTotalResults() {
         return totalResults;
@@ -141,20 +158,67 @@ public class SearchController extends BaseController {
         this.totalResults = totalResults;
     }
 
-    public String getFirstResultIndex() {
-        UIXTable table = (UIXTable) FacesContext.getCurrentInstance().getViewRoot().findComponent(INTERACTIONS_TABLE_ID);
-        return String.valueOf(table.getFirst());
-    }
-
-    public PsicquicResultDataModel getResults() {
-        return results;
-    }
-
-    public void setResults(PsicquicResultDataModel results) {
-        this.results = results;
-    }
-
     public boolean isShowAlternativeIds() {
         return showAlternativeIds;
+    }
+
+    public int getIntactCount() {
+        return intactCount;
+    }
+
+    public int getMintCount() {
+        return mintCount;
+    }
+
+    public int getIrefindexCount() {
+        return irefindexCount;
+    }
+
+    public int getBiogridCount() {
+        return biogridCount;
+    }
+
+    public int getMpidbCount() {
+        return mpidbCount;
+    }
+
+    public PsicquicResultDataModel getIntactResults() {
+        return intactResults;
+    }
+
+    public void setIntactResults(PsicquicResultDataModel intactResults) {
+        this.intactResults = intactResults;
+    }
+
+    public PsicquicResultDataModel getBiogridResults() {
+        return biogridResults;
+    }
+
+    public void setBiogridResults(PsicquicResultDataModel biogridResults) {
+        this.biogridResults = biogridResults;
+    }
+
+    public PsicquicResultDataModel getMintResults() {
+        return mintResults;
+    }
+
+    public void setMintResults(PsicquicResultDataModel mintResults) {
+        this.mintResults = mintResults;
+    }
+
+    public PsicquicResultDataModel getIrefindexResults() {
+        return irefindexResults;
+    }
+
+    public void setIrefindexResults(PsicquicResultDataModel irefindexResults) {
+        this.irefindexResults = irefindexResults;
+    }
+
+    public PsicquicResultDataModel getMpidbResults() {
+        return mpidbResults;
+    }
+
+    public void setMpidbResults(PsicquicResultDataModel mpidbResults) {
+        this.mpidbResults = mpidbResults;
     }
 }

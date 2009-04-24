@@ -27,7 +27,9 @@
                 });
             </trh:script>
 
-            <tr:inputText label="Search: " id="queryTxt"
+            <tr:outputText value="PSICQUIC Search: " inlineStyle="font-weight:bold"/>
+
+            <tr:inputText id="queryTxt"
                           columns="60" value="#{userQuery.searchQuery}"
                           rows="#{(fn:length(userQuery.searchQuery) / 60) + 1}"
                           onkeypress="return submitEnter('quickSearchBtn',event)"
@@ -70,7 +72,7 @@
                     <tr:selectBooleanCheckbox text="NOT" value="#{userQuery.newQueryToken.notQuery}"/>
 
                     <tr:selectOneChoice id="newQueryField" label="Field: " value="#{userQuery.newQueryToken.field}"
-                                        autoSubmit="true" immediate="true">
+                                        immediate="true">
                         <f:selectItems value="#{userQuery.searchFieldSelectItems}"/>
                     </tr:selectOneChoice>
 

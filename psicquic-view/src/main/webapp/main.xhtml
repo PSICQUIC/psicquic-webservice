@@ -36,10 +36,52 @@
 
         </trh:head>
        <tr:form>
-           
+
+           <!-- To avoid expired sessions, poll every 15 mins -->
+           <tr:poll interval="#{15*60*1000}"/>
+
+           <tr:statusIndicator id="status">
+               <f:facet name="busy">
+                   <tr:panelGroupLayout layout="horizontal">
+                       <tr:image source="/skins/ebi/images/status_busy_redback.gif"
+                                 inlineStyle="vertical-align:middle"/>
+                       <tr:outputFormatted value="&#160;"/>
+                       <tr:outputText value="Loading..."/>
+                   </tr:panelGroupLayout>
+               </f:facet>
+           </tr:statusIndicator>
+
+          <br/>
+
            <ui:include src="pages/search/search_panel.xhtml"  />
-           
-           <ui:include src="pages/interactions/interactions_tab.xhtml"/>
+
+           <tr:panelTabbed position="above" rendered="#{searchBean.intactResults != null}">
+               <tr:showDetailItem text="IntAct (#{searchBean.intactCount})" disabled="#{searchBean.intactCount == 0}">
+                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
+                        <ui:param name="results" value="#{searchBean.intactResults}"/>
+                    </ui:decorate>
+               </tr:showDetailItem>
+               <tr:showDetailItem text="MINT (#{searchBean.mintCount})" disabled="#{searchBean.mintCount == 0}">
+                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
+                        <ui:param name="results" value="#{searchBean.mintResults}"/>
+                    </ui:decorate>
+               </tr:showDetailItem>
+                <tr:showDetailItem text="BioGrid (#{searchBean.biogridCount})" disabled="#{searchBean.biogridCount == 0}">
+                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
+                        <ui:param name="results" value="#{searchBean.biogridResults}"/>
+                    </ui:decorate>
+               </tr:showDetailItem>
+               <tr:showDetailItem text="iRefIndex (#{searchBean.irefindexCount})" disabled="#{searchBean.irefindexCount == 0}">
+                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
+                        <ui:param name="results" value="#{searchBean.irefindexResults}"/>
+                    </ui:decorate>
+               </tr:showDetailItem>
+               <tr:showDetailItem text="MPIDB (#{searchBean.mpidbCount})" disabled="#{searchBean.mpidbCount == 0}">
+                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
+                        <ui:param name="results" value="#{searchBean.mpidbResults}"/>
+                    </ui:decorate>
+               </tr:showDetailItem>
+           </tr:panelTabbed>
 
        </tr:form>
    </tr:document>
