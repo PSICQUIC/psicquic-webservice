@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:sf="http://www.ebi.ac.uk/faces/site"
+                xmlns:ebi="http://ebi.ac.uk/faces/components"
+                xmlns:iav="http://intact.ebi.ac.uk/view"
+                xmlns:iam="http://intact.ebi.ac.uk/miscel"
+                xmlns:iax="http://intact.ebi.ac.uk/extlinks"
+                xmlns:iamf="http://intact.ebi.ac.uk/mitabfunctions"
+
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://intact.ebi.ac.uk/miscel /WEB-INF/intact-miscel.tld">
+
+<!-- RESULT SUMMARY -->
+
+<br/>
+
+<!-- RESULTS TABLE -->
+
+<tr:table id="interactionResults" value="#{searchBean.results}" var="binaryInteraction" varStatus="status"
+          summary="Binary Interactions"
+          emptyText="No interactions found matching the query."
+          rows="#{userQuery.pageSize}" rowBandingInterval="1" rangeChangeListener="#{searchBean.rangeChanged}"
+          partialTriggers=":interactionResults:btnToogleProps :interactionResults:selPageRangeChoice">
+
+<f:facet name="actions">
+    <tr:panelHorizontalLayout>
+        <f:facet name="separator">
+            <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
+        </f:facet>
+
+        <tr:selectRangeChoiceBar var="range" id="selPageRangeChoice"
+                                 value="#{searchBean.results}" first="#{searchBean.firstResultIndex}"
+                                 rows="30" rangeChangeListener="#{searchBean.rangeChanged}"
+                                 rendered="#{searchBean.results.rowCount gt userQuery.pageSize}"/>
+
+
+        <tr:panelGroupLayout layout="horizontal">
+
+        </tr:panelGroupLayout>
+
+    </tr:panelHorizontalLayout>
+
+</f:facet>
+
+<tr:column>
+    <tr:outputText value="#{status.index + 1}"/>
+
+</tr:column>
+
+<tr:column headerText="#{messages['moleculeA.name']}" styleClass="cellTextCompound">
+   <h:outputText value="#{iamf:getInteractorDisplayName(binaryInteraction.interactorA)}"/>
+ </tr:column>
+
+<tr:column headerText="#{messages['moleculeA.links']}" styleClass="cellTextCompound">
+    <tr:iterator var="xref" value="#{binaryInteraction.interactorA.identifiers}" varStatus="rowStatus"
+                 rows="0">
+        <tr:switcher facetName="#{xref.database}">
+            <f:facet name="uniprotkb">
+                <h:panelGroup>
+                    <iax:goUniprot query="#{xref.identifier}" onlyLogo="true"/>
+                    <br/>
+                </h:panelGroup>
+            </f:facet>
+            <f:facet name="chebi">
+                <h:panelGroup>
+                    <iax:goChebi query="#{xref.identifier}" onlyLogo="true"/>
+                    <br/>
+                </h:panelGroup>
+            </f:facet>
+            <f:facet name="drugbank">
+                <h:panelGroup>
+                    <iax:goDrugbank query="#{xref.identifier}" onlyLogo="true"/>
+                    <br/>
+                </h:panelGroup>
+            </f:facet>
+        </tr:switcher>
+    </tr:iterator>
+</tr:column>
+
+<tr:column headerText="#{messages['moleculeB.name']}" styleClass="cellTextTarget">
+    <h:outputText value="#{iamf:getInteractorDisplayName(binaryInteraction.interactorB)}"/>
+</tr:column>
+
+<tr:column headerText="#{messages['moleculeB.links']}" styleClass="cellTextTarget">
+    <tr:iterator var="xref" value="#{binaryInteraction.interactorB.identifiers}"
+                 varStatus="rowStatus" rows="0">
+        <tr:switcher facetName="#{xref.database}">
+            <f:facet name="uniprotkb">
+                <h:panelGroup>
+                    <iax:goUniprot query="#{xref.identifier}" onlyLogo="true"/>
+                    <br/>
+                </h:panelGroup>
+            </f:facet>
+            <f:facet name="chebi">
+                <h:panelGroup>
+                    <iax:goChebi query="#{xref.identifier}" onlyLogo="true"/>
+                    <br/>
+                </h:panelGroup>
+            </f:facet>
+           <f:facet name="drugbank">
+                <h:panelGroup>
+                    <iax:goDrugbank query="#{xref.identifier}" onlyLogo="true"/>
+                    <br/>
+                </h:panelGroup>
+            </f:facet>
+        </tr:switcher>
+    </tr:iterator>
+
+</tr:column>
+
+<tr:column headerText="#{messages['moleculeA.aliases']}" styleClass="cellTextCompound">
+    <iam:collapsibleIterator id="csd_altIdA_#{status.index}"
+                             disclosed="#{searchBean.showAlternativeIds}"
+                             value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorA.alternativeIdentifiers,null,'rogid')}"
+                             maxShown="3">
+
+        <tr:outputText value="#{item.identifier}"/>
+
+    </iam:collapsibleIterator>
+</tr:column>
+
+<tr:column headerText="#{messages['moleculeB.aliases']}" styleClass="cellTextTarget">
+    <iam:collapsibleIterator id="csd_altIdB_#{status.index}"
+                             disclosed="#{searchBean.showAlternativeIds}"
+                             value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorB.alternativeIdentifiers,null,'rogid')}"
+                             maxShown="3">
+
+        <tr:outputText value="#{item.identifier}"/>
+
+    </iam:collapsibleIterator>
+</tr:column>
+
+<tr:column headerText="#{messages['moleculeA.species']}" styleClass="cellTextCompound">
+            <tr:iterator var="organism" value="#{binaryInteraction.interactorA.organism}" rows="0">
+                <tr:iterator var="xref" value="#{organism.identifiers}"
+                             varStatus="rowStatus" rows="0">
+                    <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
+                </tr:iterator>
+                <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(organism.identifiers)}"/>
+            </tr:iterator>
+</tr:column>
+
+<tr:column headerText="#{messages['moleculeB.species']}" sortProperty="taxidB_s" styleClass="cellTextTarget">
+            <tr:iterator var="organism" value="#{binaryInteraction.interactorB.organism}"
+                         varStatus="rowStatus" rows="0">
+                <tr:iterator var="xref" value="#{organism.identifiers}" rows="0">
+                    <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
+                </tr:iterator>
+                <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(organism.identifiers)}"/>
+            </tr:iterator>  
+</tr:column>
+
+<tr:column headerText="#{messages['interaction.firstauthor']}"  sortProperty="pubauth_s" styleClass="cellTextInteraction" >
+    <tr:iterator var="author" value="#{binaryInteraction.authors}" rows="0">
+            <span style="display:block">
+                <nobr>
+                    <tr:outputText value="#{author.name}"/>
+                </nobr>
+            </span>
+
+    </tr:iterator>
+</tr:column>
+
+<tr:column headerText="#{messages['interaction.pubmedid']}" sortProperty="pubid_s" styleClass="cellTextInteraction">
+    <iav:xrefDataList value="#{binaryInteraction.publications}" itemPerLine="true"/>
+</tr:column>
+
+<tr:column headerText="#{messages['interaction.interactiontype']}" sortProperty="type_s" styleClass="cellTextInteraction">
+    <iav:xrefDataList value="#{binaryInteraction.interactionTypes}" onlyText="true" itemPerLine="true"/>
+</tr:column>
+
+<tr:column headerText="#{messages['interaction.detectionmethod']}"
+           styleClass="cellTextInteraction">
+    <iav:xrefDataList value="#{binaryInteraction.detectionMethods}" onlyText="true" itemPerLine="true"/>
+</tr:column>
+
+<tr:column headerText="#{messages['interaction.sourcedb']}" styleClass="cellTextInteraction">
+    <iav:xrefDataList value="#{binaryInteraction.sourceDatabases}" itemPerLine="true" onlyText="true"/>
+</tr:column>
+
+<tr:column headerText="#{messages['interaction.ac']}" styleClass="cellTextInteraction">
+    <!--<iav:xrefDataList value="#{binaryInteraction.interactionAcs}" itemPerLine="true" disableLinks="true"/>-->
+    <tr:commandLink action="details" text="#{interactionAc}">
+        <f:setPropertyActionListener value="#{interactionAc}" target="#{detailsBean.interactionAc}"/>
+    </tr:commandLink>
+</tr:column>
+
+<tr:column headerText="#{messages['interaction.confidencevalue']}"
+           styleClass="cellTextInteraction">
+    <tr:iterator var="confidence" value="#{binaryInteraction.confidenceValues}" rows="0">
+            <span style="display:block">
+                <nobr>
+                    <tr:outputText value="#{confidence.type}:#{confidence.value}"/>
+                </nobr>
+            </span>
+    </tr:iterator>
+</tr:column>
+
+
+</tr:table>
+
+</ui:composition>

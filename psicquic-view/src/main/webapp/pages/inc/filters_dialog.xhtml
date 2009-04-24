@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:jsp="http://java.sun.com/JSP/Page"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:iav="http://intact.ebi.ac.uk/view">
+
+    <tr:document>
+        <tr:form>
+
+         <tr:panelGroupLayout>
+
+           <ui:decorate template="/pages/search/filters.xhtml">
+               <ui:define name="filters_top">
+                   <tr:selectBooleanCheckbox label="Ontology Term" text="#{userQuery.ontologySearchQuery}"
+                                             value="true"
+                                             valueChangeListener="#{userQuery.onOntologySearchCheckboxChanged}"
+                                             rendered="#{not empty userQuery.ontologySearchQuery}"/>
+
+                   <tr:separator rendered="#{not empty userQuery.ontologySearchQuery}"/>
+
+                   <tr:selectManyCheckbox label="GO Terms" value="#{userQuery.goTerms}"
+                           rendered="#{not empty userQuery.goTerms}">
+                       <f:selectItems value="#{userQuery.goTermsSelectItems}"/>
+                   </tr:selectManyCheckbox>
+
+                   <tr:separator rendered="#{not empty userQuery.goTerms}"/>
+
+                   <tr:selectManyCheckbox label="ChEBI Terms" value="#{userQuery.chebiTerms}"
+                           rendered="#{not empty userQuery.chebiTerms}">
+                       <f:selectItems value="#{userQuery.chebiTermsSelectItems}"/>
+                   </tr:selectManyCheckbox>
+
+                   <tr:separator rendered="#{not empty userQuery.chebiTerms}"/>
+               </ui:define>
+           </ui:decorate>
+
+             <br/>
+
+             <tr:commandButton text="Modify filters" 
+                               actionListener="#{searchBean.doBinarySearchAndCloseDialog}"/>
+
+        </tr:panelGroupLayout>
+
+        </tr:form>
+    </tr:document>
+</ui:composition>
