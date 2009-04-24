@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 The European Bioinformatics Institute, and others.
+ * Copyright 2009 The European Bioinformatics Institute, and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,18 @@ package org.hupo.psi.mi.psicquic.wsclient;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public interface PsicquicClient<T> {
+public enum QueryOperand {
 
-    T getByQuery(String query, int firstResult, int maxResults) throws PsicquicClientException;
+    AND("AND"),
+    OR("OR");
 
-    T getByInteractor(String identifier, int firstResult, int maxResults) throws PsicquicClientException;
+    private String strOperand;
 
-    T getByInteraction(String identifier, int firstResult, int maxResults) throws PsicquicClientException;
+    private QueryOperand(String strOperand) {
+        this.strOperand = strOperand;
+    }
 
-    T getByInteractionList(String[] identifiers, int firstResult, int maxResults) throws PsicquicClientException;
-
-    T getByInteractorList(String[] identifiers, QueryOperand operand, int firstResult, int maxResults) throws PsicquicClientException;
+    public String toString() {
+        return strOperand;
+    }
 }
