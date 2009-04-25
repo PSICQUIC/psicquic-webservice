@@ -221,7 +221,7 @@ public class UserQuery extends BaseController {
     public String getUserSortColumn() {
         return userSortColumn;
     }
-
+            
     public void setUserSortColumn( String userSortColumn ) {
         this.userSortColumn = userSortColumn;
     }

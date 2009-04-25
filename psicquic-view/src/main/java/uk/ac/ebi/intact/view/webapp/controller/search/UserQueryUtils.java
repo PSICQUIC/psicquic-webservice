@@ -39,11 +39,4 @@ public class UserQueryUtils {
         return query;
     }
 
-    public static String getCurrentQueryTermParam( UserQuery userQuery ) {
-        if ( userQuery == null ) {
-            throw new NullPointerException( "You must give a non null userQuery" );
-        }
-        return SearchController.TERMID_QUERY_PARAM;
-    }
-
 }
