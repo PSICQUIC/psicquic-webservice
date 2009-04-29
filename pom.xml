@@ -20,7 +20,7 @@
     <name>PSI :: PSICQUIC WS</name>
 
     <properties>
-        <cxf.version>2.2</cxf.version>
+        <cxf.version>2.2.1</cxf.version>
         <spring.version>2.5.5</spring.version>
         <abdera.version>0.4.0-incubating</abdera.version>
 
