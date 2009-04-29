@@ -1,5 +1,7 @@
 <html>
 <body>
-<h2>Cxf webservices sanity test page for webapp</h2>
+<h2>PSICQUIC Reference Implementation</h2>
+
+<a href="webservices">List services</a>
 </body>
 </html>

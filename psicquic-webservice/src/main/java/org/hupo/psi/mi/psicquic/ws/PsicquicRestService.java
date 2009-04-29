@@ -35,7 +35,7 @@ Current/Interactions/query/species:human.xml?firstResult=50&maxResults=100
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id: IntactPsicquicService.java 12873 2009-03-18 02:51:31Z baranda $
  */
-@Path("/interactions")
+@Path("/search")
 public interface PsicquicRestService {
 
     @GET
@@ -56,7 +56,6 @@ public interface PsicquicRestService {
 
     @GET
     @Path("/query/{query}")
-    @Produces("text/plain")
     Object getByQuery(@PathParam("query") String query,
                                @DefaultValue("tab25") @QueryParam("format") String format,
                                @DefaultValue("0") @QueryParam("firstResult") String firstResult,
