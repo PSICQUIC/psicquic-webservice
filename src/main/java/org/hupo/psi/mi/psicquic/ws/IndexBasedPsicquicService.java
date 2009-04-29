@@ -139,6 +139,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
         try {
             searchEngine = new BinaryInteractionSearchEngine(config.getIndexDirectory());
         } catch (IOException e) {
+            e.printStackTrace();
             throw new PsicquicServiceException("Problem creating SearchEngine using directory: "+config.getIndexDirectory(), e);
         }
 
