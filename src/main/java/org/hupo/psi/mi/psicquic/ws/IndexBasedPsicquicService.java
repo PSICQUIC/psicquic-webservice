@@ -29,7 +29,11 @@ import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
 import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
 import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
+import psidev.psi.mi.xml254.jaxb.Entry;
+import psidev.psi.mi.xml254.jaxb.Attribute;
+import psidev.psi.mi.xml254.jaxb.AttributeList;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
+import org.apache.lucene.search.BooleanQuery;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,7 +64,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
     private PsicquicConfig config;
 
     public IndexBasedPsicquicService() {
-
+        BooleanQuery.setMaxClauseCount(200*1000);
     }
 
     public QueryResponse getByInteractor(DbRef dbRef, RequestInfo requestInfo) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
@@ -154,7 +158,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
 
         queryResponse.setResultInfo(resultInfo);
 
-        ResultSet resultSet = createResultSet(searchResult, requestInfo);
+        ResultSet resultSet = createResultSet(query, searchResult, requestInfo);
         queryResponse.setResultSet(resultSet);
 
         return queryResponse;
@@ -172,7 +176,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
         return Collections.EMPTY_LIST;
     }
 
-    protected ResultSet createResultSet(SearchResult searchResult, RequestInfo requestInfo) throws PsicquicServiceException,
+    protected ResultSet createResultSet(String query, SearchResult searchResult, RequestInfo requestInfo) throws PsicquicServiceException,
                                                                                                    NotSupportedTypeException {
         ResultSet resultSet = new ResultSet();
 
@@ -188,6 +192,33 @@ public class IndexBasedPsicquicService implements PsicquicService {
 
             EntrySet jEntrySet = createEntrySet(searchResult);
             resultSet.setEntrySet(jEntrySet);
+
+            // add some annotations
+            if (!jEntrySet.getEntries().isEmpty()) {
+                AttributeList attrList = new AttributeList();
+
+                Entry entry = jEntrySet.getEntries().iterator().next();
+
+                Attribute attr = new Attribute();
+                attr.setValue("Data retrieved using the PSICQUIC service. Query: "+query);
+                attrList.getAttributes().add(attr);
+
+                Attribute attr2 = new Attribute();
+                attr2.setValue("Total results found: "+searchResult.getTotalCount());
+                attrList.getAttributes().add(attr2);
+
+                // add warning if the batch size requested is higher than the maximum allowed
+                if (requestInfo.getBlockSize() > BLOCKSIZE_MAX && BLOCKSIZE_MAX < searchResult.getTotalCount()) {
+                    Attribute attrWarning = new Attribute();
+                    attrWarning.setValue("Warning: The requested block size (" + requestInfo.getBlockSize() + ") was higher than the maximum allowed (" + BLOCKSIZE_MAX + ") by PSICQUIC the service. " +
+                            BLOCKSIZE_MAX + " results were returned from a total found of "+searchResult.getTotalCount());
+                    attrList.getAttributes().add(attrWarning);
+
+                }
+
+                entry.setAttributeList(attrList);
+            }
+
         } else if (RETURN_TYPE_COUNT.equals(resultType)) {
             if (logger.isDebugEnabled()) logger.debug("Count query");
             // nothing to be done here
@@ -214,6 +245,10 @@ public class IndexBasedPsicquicService implements PsicquicService {
     }
 
     private EntrySet createEntrySet(SearchResult searchResult) throws PsicquicServiceException {
+        if (searchResult.getData().isEmpty()) {
+            return new EntrySet();
+        }
+
         Tab2Xml tab2Xml = new Tab2Xml();
         try {
             psidev.psi.mi.xml.model.EntrySet mEntrySet = tab2Xml.convert(searchResult.getData());

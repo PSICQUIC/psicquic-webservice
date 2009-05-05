@@ -40,26 +40,30 @@ public interface PsicquicRestService {
 
     @GET
     @Path("/interactor/{interactorAc}")
-    @Produces("text/plain")
     Object getByInteractor(@PathParam("interactorAc") String interactorAc,
-                                    @DefaultValue("") @QueryParam("db") String db) throws PsicquicServiceException,
+                           @DefaultValue("") @QueryParam("db") String db,
+                           @DefaultValue("tab25") @QueryParam("format") String format,
+                           @DefaultValue("0") @QueryParam("firstResult") String firstResult,
+                           @DefaultValue("2147483647") @QueryParam("maxResults") String maxResults) throws PsicquicServiceException,
             NotSupportedMethodException,
             NotSupportedTypeException;
 
     @GET
     @Path("/interaction/{interactionAc}")
-    @Produces("text/plain")
     Object getByInteraction(@PathParam("interactionAc") String interactionAc,
-                                    @DefaultValue("") @QueryParam("db") String db) throws PsicquicServiceException,
+                            @DefaultValue("") @QueryParam("db") String db,
+                            @DefaultValue("tab25") @QueryParam("format") String format,
+                            @DefaultValue("0") @QueryParam("firstResult") String firstResult,
+                            @DefaultValue("2147483647") @QueryParam("maxResults") String maxResults) throws PsicquicServiceException,
             NotSupportedMethodException,
             NotSupportedTypeException;
 
     @GET
     @Path("/query/{query}")
     Object getByQuery(@PathParam("query") String query,
-                               @DefaultValue("tab25") @QueryParam("format") String format,
-                               @DefaultValue("0") @QueryParam("firstResult") String firstResult,
-                               @DefaultValue("2147483647") @QueryParam("maxResults") String maxResults) throws PsicquicServiceException,
+                      @DefaultValue("tab25") @QueryParam("format") String format,
+                      @DefaultValue("0") @QueryParam("firstResult") String firstResult,
+                      @DefaultValue("2147483647") @QueryParam("maxResults") String maxResults) throws PsicquicServiceException,
             NotSupportedMethodException,
             NotSupportedTypeException;
 
