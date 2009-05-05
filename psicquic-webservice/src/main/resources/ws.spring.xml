@@ -45,4 +45,10 @@
         </jaxrs:serviceBeans>
     </jaxrs:server>
 
+    <jaxrs:server id="psicquicRestServiceCurrent" address="/current">
+        <jaxrs:serviceBeans>
+            <ref bean="restService10"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
 </beans>

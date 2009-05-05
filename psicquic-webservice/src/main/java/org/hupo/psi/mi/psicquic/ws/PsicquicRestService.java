@@ -15,22 +15,18 @@
  */
 package org.hupo.psi.mi.psicquic.ws;
 
-import org.hupo.psi.mi.psicquic.PsicquicServiceException;
 import org.hupo.psi.mi.psicquic.NotSupportedMethodException;
 import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
+import org.hupo.psi.mi.psicquic.PsicquicServiceException;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
-
-import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 /**
  * RESTful web service.
  *
- * v.1.0/Interactions/query/brca2.tsv .tab  .txt
-Current/Interactions/query/species:human.xml?firstResult=50&maxResults=100
-
+ * v.1.0/search/query/brca2
+ * current/search/query/species:human?format=xml25&firstResult=50&maxResults=100
+ *
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id: IntactPsicquicService.java 12873 2009-03-18 02:51:31Z baranda $
