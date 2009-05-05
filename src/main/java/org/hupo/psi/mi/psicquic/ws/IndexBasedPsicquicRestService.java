@@ -15,22 +15,11 @@
  */
 package org.hupo.psi.mi.psicquic.ws;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
-
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 
 /**
@@ -80,11 +69,12 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
         if ("xml25".equals(format)) {
             return getByQueryXml(query, firstResult, maxResults);
+        } else if ("count".equals(format)) {
+            return count(query);
         }
 
         return new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
     }
-
     public String getVersion() {
         return config.getVersion();
     }
@@ -110,6 +100,13 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
         QueryResponse response = psicquicService.getByQuery(query, reqInfo);
 
         return response.getResultSet().getEntrySet();
+    }
+
+    private int count(String query) throws NotSupportedTypeException, NotSupportedMethodException, PsicquicServiceException {
+        RequestInfo reqInfo = new RequestInfo();
+        reqInfo.setResultType("count");
+        QueryResponse response = psicquicService.getByQuery(query, reqInfo);
+        return response.getResultInfo().getTotalResults();
     }
 
     private String createQueryValue(String interactorAc, String db) {
