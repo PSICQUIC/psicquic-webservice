@@ -15,14 +15,14 @@
  */
 package org.hupo.psi.mi.psicquic.ws.utils;
 
-import org.hupo.psi.mi.psicquic.RequestInfo;
-import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.PsicquicService;
+import org.hupo.psi.mi.psicquic.QueryResponse;
+import org.hupo.psi.mi.psicquic.RequestInfo;
 
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.WebApplicationException;
-import java.io.OutputStream;
+import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 /**
@@ -68,7 +68,7 @@ public class PsicquicStreamingOutput implements StreamingOutput {
 
             firstResult = firstResult + maxResults;
 
-        } while (response.getResultSet().getMitab().length() > 0);
+        } while (firstResult < response.getResultInfo().getTotalResults());
 
         out.close();
     }
