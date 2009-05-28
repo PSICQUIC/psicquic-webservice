@@ -21,6 +21,8 @@ import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 
+import javax.ws.rs.core.Response;
+
 
 /**
  * This web service is based on a PSIMITAB SOLR index to search and return the results.
@@ -73,7 +75,9 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
             return count(query);
         }
 
-        return new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
+        PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
+        return Response.status(200).type("text/plain").entity(result).build();
+
     }
     public String getVersion() {
         return config.getVersion();
