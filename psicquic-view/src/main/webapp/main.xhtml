@@ -81,6 +81,11 @@
                         <ui:param name="results" value="#{searchBean.mpidbResults}"/>
                     </ui:decorate>
                </tr:showDetailItem>
+                <tr:showDetailItem text="MatrixDB (#{searchBean.matrixdbCount})" disabled="#{searchBean.matrixdbCount == 0}">
+                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
+                        <ui:param name="results" value="#{searchBean.matrixDbResults}"/>
+                    </ui:decorate>
+               </tr:showDetailItem>
            </tr:panelTabbed>
 
        </tr:form>

@@ -33,6 +33,7 @@ public class SearchController extends BaseController {
     private static final String IREFINDEX_ENDPOINT = "http://biotin.uio.no:8080/psicquic-ws-1/webservices/psicquic";
     private static final String BIOGRID_ENDPOINT = "http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/psicquic";
     private static final String MPIDB_ENDPOINT = "http://www.jcvi.org/mpidb/servlet/webservices/psicquic";
+    private static final String MATRIXDB_ENDPOINT = "http://matrixdb.ibcp.fr:8080/webservices/psicquic";
 
     @Autowired
     private UserQuery userQuery;
@@ -44,6 +45,7 @@ public class SearchController extends BaseController {
     private int irefindexCount;
     private int biogridCount;
     private int mpidbCount;
+    private int matrixdbCount;
 
     // results
     private PsicquicResultDataModel intactResults;
@@ -51,6 +53,7 @@ public class SearchController extends BaseController {
     private PsicquicResultDataModel mintResults;
     private PsicquicResultDataModel irefindexResults;
     private PsicquicResultDataModel mpidbResults;
+    private PsicquicResultDataModel matrixDbResults;
 
     private boolean showAlternativeIds;
 
@@ -140,6 +143,13 @@ public class SearchController extends BaseController {
         } catch (PsicquicClientException e) {
             e.printStackTrace();
         }
+
+        try {
+            matrixDbResults = psicquicResults(MATRIXDB_ENDPOINT);
+            matrixdbCount = matrixDbResults.getRowCount();
+        } catch (PsicquicClientException e) {
+            e.printStackTrace();
+        }
     }
 
     private PsicquicResultDataModel psicquicResults(String endpoint) throws PsicquicClientException {
@@ -182,6 +192,10 @@ public class SearchController extends BaseController {
         return mpidbCount;
     }
 
+    public int getMatrixdbCount() {
+        return matrixdbCount;
+    }
+
     public PsicquicResultDataModel getIntactResults() {
         return intactResults;
     }
@@ -220,5 +234,13 @@ public class SearchController extends BaseController {
 
     public void setMpidbResults(PsicquicResultDataModel mpidbResults) {
         this.mpidbResults = mpidbResults;
+    }
+
+    public PsicquicResultDataModel getMatrixDbResults() {
+        return matrixDbResults;
+    }
+
+    public void setMatrixDbResults(PsicquicResultDataModel matrixDbResults) {
+        this.matrixDbResults = matrixDbResults;
     }
 }

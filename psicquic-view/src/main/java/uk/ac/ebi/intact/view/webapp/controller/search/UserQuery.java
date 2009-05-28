@@ -40,9 +40,6 @@ public class UserQuery extends BaseController {
     public static final String STAR_QUERY = "*:*";
 
     private String searchQuery = STAR_QUERY;
-    private String ontologySearchQuery;
-
-    private List<QueryToken> queryTokenList;
 
     private Map<String, String> termMap = new HashMap<String,String>();
 
@@ -65,13 +62,11 @@ public class UserQuery extends BaseController {
     private Map<String,SearchField> searchFieldsMap;
 
     public UserQuery() {
-        this.queryTokenList = new ArrayList<QueryToken>();
     }
 
     @PostConstruct
     public void reset() {
         this.searchQuery = null;
-        this.ontologySearchQuery = null;
         this.userSortColumn = DEFAULT_SORT_COLUMN;
         this.userSortOrder = DEFAULT_SORT_ORDER;
 
@@ -84,7 +79,6 @@ public class UserQuery extends BaseController {
 
     public void clearFilters() {
         termMap.clear();
-        queryTokenList.clear();
     }
 
     private void initSearchFields() {
@@ -117,30 +111,6 @@ public class UserQuery extends BaseController {
         clearFilters();
     }
 
-    public String getDisplayQuery() {
-        String query = ontologySearchQuery != null ? JsfUtils.surroundByQuotesIfMissing(ontologySearchQuery) : searchQuery;
-
-        if ( STAR_QUERY.equals(query)) {
-            query = "*";
-        }
-
-        if ( termMap.containsKey( query ) ) {
-            query = query + " (" + termMap.get( query ) + ")";
-        }
-        return query;
-    }
-
-    private String quoteIfCommonIdWithColon(String q) {
-        if ( q.matches( "CHEBI:\\w+" ) || q.matches( "GO:\\w+" ) || q.matches( "MI:\\w+" ) ) {
-            q = "\"" + q + "\"";
-        }
-        return q;
-    }
-
-    private String buildSolrOntologyQuery( String q ) {
-        q = JsfUtils.surroundByQuotesIfMissing(q);
-        return "+(detmethod:" + q + " type:" + q + " properties:" + q + ")";
-    }
 
     public void doShowAddFieldPanel(ActionEvent evt) {
         showAddFieldsPanel();
@@ -194,14 +164,6 @@ public class UserQuery extends BaseController {
         showNewFieldPanel = false;
     }
 
-    private void addToTokenList(String fieldName, String value) {
-        QueryToken token = new QueryToken(value, fieldName);
-
-        if (!queryTokenList.contains(token)) {
-            queryTokenList.add(token);
-        }
-    }
-
     public String getSearchQuery() {
         if ("".equals(searchQuery) || "*:*".equals(searchQuery)) {
             searchQuery = "*";
@@ -211,7 +173,6 @@ public class UserQuery extends BaseController {
 
     public void setSearchQuery(String searchQuery) {
         this.searchQuery = searchQuery;
-        this.ontologySearchQuery = null;
     }
 
     public void resetSearchQuery(){
@@ -242,20 +203,6 @@ public class UserQuery extends BaseController {
         this.pageSize = pageSize;
     }
 
-    private List<SelectItem> createSelectItems(String[] values) {
-        List<SelectItem> selectItems = new ArrayList<SelectItem>(values.length);
-
-        for ( String term : values ) {
-            if ( termMap.containsKey( term ) ) {
-                selectItems.add( new SelectItem( term, term + " (" + termMap.get( term ) + ")" ) );
-            } else {
-                selectItems.add( new SelectItem( term ) );
-            }
-        }
-
-        return selectItems;
-    }
-
     public Map<String, String> getTermMap() {
         return termMap;
     }
@@ -266,14 +213,6 @@ public class UserQuery extends BaseController {
 
        public List<SelectItem> getSearchFieldSelectItems() {
         return searchFieldSelectItems;
-    }
-
-    public List<QueryToken> getQueryTokenList() {
-        return queryTokenList;
-    }
-
-    public void setQueryTokenList(List<QueryToken> queryTokenList) {
-        this.queryTokenList = queryTokenList;
     }
 
     public boolean isShowNewFieldPanel() {
