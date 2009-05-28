@@ -15,11 +15,10 @@
  */
 package org.hupo.psi.mi.psicquic.example;
 
-import org.hupo.psi.mi.psicquic.DbRef;
-import org.hupo.psi.mi.psicquic.PsicquicService;
-import org.hupo.psi.mi.psicquic.QueryResponse;
-import org.hupo.psi.mi.psicquic.RequestInfo;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClient;
+import org.hupo.psi.mi.psicquic.wsclient.QueryOperand;
+import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
+import psidev.psi.mi.search.SearchResult;
+import psidev.psi.mi.tab.model.BinaryInteraction;
 
 /**
  * Example on how to use the PsicquicClient.
@@ -29,24 +28,11 @@ public class PsicquicClientExample {
     public static void main(String[] args) throws Exception {
 
         // change the enpoint address as needed
-        PsicquicClient client = new PsicquicClient("http://localhost:8080/psicquic-ws/webservices/psicquic");
+        UniversalPsicquicClient client = new UniversalPsicquicClient("http://localhost:8080/psicquic-ws/webservices/psicquic");
 
-        PsicquicService service = client.getService();
+        SearchResult<BinaryInteraction> searchResult = client.getByInteractorList(new String[] {"Q9BXW9", "P51587"}, QueryOperand.AND, 0, 50);
 
-        // preparing a query: searching for brca2 and returning MITAB
-        RequestInfo info = new RequestInfo();
-        info.setResultType("psi-mi/tab25");
-        info.setBlockSize(50);
-
-        DbRef dbRef = new DbRef();
-        dbRef.setId("brca2");
-
-        final QueryResponse queryResponse = service.getByInteractor(dbRef, info);
-
-        // printing the results
-        String mitab = queryResponse.getResultSet().getMitab();
-
-        System.out.println(mitab);
+        System.out.println("Interactions: "+searchResult.getTotalCount());
 
     }
 }
