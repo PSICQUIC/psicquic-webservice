@@ -22,7 +22,6 @@
     <properties>
         <cxf.version>2.2.1</cxf.version>
         <spring.version>2.5.6</spring.version>
-        <abdera.version>1.0-SNAPSHOT</abdera.version>
 
         <!-- configurable bits -->
 
@@ -222,7 +221,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.7.5-SNAPSHOT</version>
+            <version>1.7.4</version>
         </dependency>
 
         <!-- Logging -->
@@ -333,54 +332,6 @@
             <version>${cxf.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.abdera</groupId>
-            <artifactId>abdera-core</artifactId>
-            <version>${abdera.version}</version>
-            <!--<exclusions>-->
-                <!--<exclusion>-->
-                    <!--<groupId>org.apache.geronimo.specs</groupId>-->
-                    <!--<artifactId>geronimo-activation_1.0.2_spec</artifactId>-->
-                <!--</exclusion>-->
-            <!--</exclusions>-->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.abdera</groupId>
-            <artifactId>abdera-parser</artifactId>
-            <version>${abdera.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.abdera</groupId>
-            <artifactId>abdera-extensions-json</artifactId>
-            <version>${abdera.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.abdera</groupId>
-                    <artifactId>abdera-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.abdera</groupId>
-                    <artifactId>abdera-server</artifactId>
-                </exclusion>
-                <exclusion>
-
-                    <groupId>org.apache.abdera</groupId>
-                    <artifactId>abdera-extensions-html</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-activation_1.0.2_spec</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>stax</groupId>
-                    <artifactId>stax-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
         <!-- JAX-RS -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -440,14 +391,19 @@
         </repository>
 
         <repository>
+            <id>apache-incubating</id>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+        </repository>
+
+        <repository>
             <id>apache-maven-snapshots</id>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
         </repository>
     </repositories>
 
