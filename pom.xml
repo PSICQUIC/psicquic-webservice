@@ -20,7 +20,7 @@
     <name>PSI :: PSICQUIC WS Reference Implementation</name>
 
     <scm>
-        <connection>scm:svn:http://psicquic.googlecode.com/svn/trunk/psicquic-webservice</connection>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-webservice</connection>
         <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-webservice</developerConnection>
         <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-webservice</url>
     </scm>
