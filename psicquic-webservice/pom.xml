@@ -26,7 +26,7 @@
     </scm>
 
     <properties>
-        <cxf.version>2.2.1</cxf.version>
+        <cxf.version>2.2.3-SNAPSHOT</cxf.version>
         <spring.version>2.5.6</spring.version>
 
         <!-- configurable bits -->
@@ -402,8 +402,9 @@
         </repository>
 
         <repository>
-            <id>apache-maven-snapshots</id>
-            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>http://repository.apache.org/snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -419,6 +420,11 @@
             <name>Java.net Repository for Maven</name>
 	        <url>http://download.java.net/maven/2/</url>
         </pluginRepository>
-    </pluginRepositories>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>http://repository.apache.org/snapshots</url>
+        </pluginRepository>
+   </pluginRepositories>
 
 </project>
