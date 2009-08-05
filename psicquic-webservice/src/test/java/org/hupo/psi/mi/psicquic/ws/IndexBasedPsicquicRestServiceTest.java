@@ -79,4 +79,16 @@ public class IndexBasedPsicquicRestServiceTest {
 
         Assert.assertEquals(3, baos.toString().split("\n").length);
     }
+
+    @Test
+    public void testGetByQuery_maxResults_nolimit() throws Exception {
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "psi-mi/tab25", "0", String.valueOf(Integer.MAX_VALUE));
+
+        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        pso.write(baos);
+
+        Assert.assertEquals(12, baos.toString().split("\n").length);
+    }
 }
