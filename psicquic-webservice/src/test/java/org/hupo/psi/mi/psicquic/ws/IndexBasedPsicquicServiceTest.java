@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.ac.ebi.intact.psicquic.ws;
+package org.hupo.psi.mi.psicquic.ws;
 
+import org.hupo.psi.mi.psicquic.DbRef;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.RequestInfo;
-import org.hupo.psi.mi.psicquic.DbRef;
-import org.hupo.psi.mi.psicquic.ws.IndexBasedPsicquicService;
+import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.junit.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import psidev.psi.mi.search.Searcher;
-import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 
 import java.io.File;
 import java.io.InputStream;

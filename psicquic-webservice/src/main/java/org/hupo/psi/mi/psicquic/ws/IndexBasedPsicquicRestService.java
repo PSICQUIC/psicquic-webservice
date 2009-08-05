@@ -19,6 +19,7 @@ import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 import javax.ws.rs.core.Response;
@@ -30,7 +31,7 @@ import javax.ws.rs.core.Response;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id: IntactPsicquicService.java 12873 2009-03-18 02:51:31Z baranda $
  */
-
+@Controller
 public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
     @Autowired
