@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <context:component-scan base-package="org.hupo.psi.mi.psicquic.registry"/>
+
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+
+    <context:property-placeholder location="classpath:/META-INF/psicquic.properties"/> 
+    
+    <bean name="psicquicConfig" class="org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig">
+        <property name="version" value="${psicquic.version}"/>
+        <property name="registeredServices">
+            <list>
+                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+                    <property name="name" value="BioGrid"/>
+                    <property name="url" value="http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/psicquic"/>
+                    <property name="organizationUrl" value="http://www.thebiogrid.org/"/>
+                </bean>
+                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+                    <property name="name" value="IntAct"/>
+                    <property name="url" value="http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic"/>
+                    <property name="organizationUrl" value="http://www.ebi.ac.uk/intact"/>
+                </bean>
+                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+                    <property name="name" value="iRefIndex"/>
+                    <property name="url" value="http://biotin.uio.no:8080/psicquic-ws-1/webservices/psicquic"/>
+                    <property name="organizationUrl" value="http://irefindex.uio.no/wiki/iRefIndex/"/>
+                </bean>
+                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+                    <property name="name" value="MatrixDB"/>
+                    <property name="url" value="http://matrixdb.ibcp.fr:8080/webservices/psicquic"/>
+                    <property name="organizationUrl" value="http://matrixdb.ibcp.fr/"/>
+                </bean>
+                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+                    <property name="name" value="MINT"/>
+                    <property name="url" value="http://mint.bio.uniroma2.it/mint/psicquic/webservices/psicquic"/>
+                    <property name="organizationUrl" value="http://mint.bio.uniroma2.it/"/>
+                </bean>
+                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+                    <property name="name" value="MPIDB"/>
+                    <property name="url" value="http://www.jcvi.org/mpidb/servlet/webservices/psicquic"/>
+                    <property name="organizationUrl" value="http://www.jcvi.org/mpidb/"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- freemarker config -->
+<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+  <property name="templateLoaderPath" value="classpath:/META-INF/freemarker/"/>
+</bean>
+   
+</beans>
