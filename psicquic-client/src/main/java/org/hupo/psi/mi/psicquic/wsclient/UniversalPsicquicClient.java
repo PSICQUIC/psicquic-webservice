@@ -30,6 +30,10 @@ public class UniversalPsicquicClient extends AbstractMitabPsicquicClient<BinaryI
         super(serviceAddress);
     }
 
+    public UniversalPsicquicClient(String serviceAddress, long timeout) {
+        super(serviceAddress, timeout);
+    }
+
     public PsimiTabReader newPsimiTabReader() {
         return new PsimiTabReader(false);
     }

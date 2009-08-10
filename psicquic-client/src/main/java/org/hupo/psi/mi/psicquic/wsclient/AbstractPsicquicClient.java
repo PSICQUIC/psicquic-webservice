@@ -16,7 +16,13 @@
 package org.hupo.psi.mi.psicquic.wsclient;
 
 import org.apache.cxf.frontend.ClientProxyFactoryBean;
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.endpoint.Client;
 import org.hupo.psi.mi.psicquic.DbRef;
 import org.hupo.psi.mi.psicquic.PsicquicService;
 import org.hupo.psi.mi.psicquic.RequestInfo;
@@ -35,6 +41,10 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
     private PsicquicService service;
 
     public AbstractPsicquicClient(String serviceAddress) {
+        this(serviceAddress, 20000L);
+    }
+
+    public AbstractPsicquicClient(String serviceAddress, long timeout) {
         if (serviceAddress == null) return;
 
         ClientProxyFactoryBean factory = new JaxWsProxyFactoryBean();
@@ -42,6 +52,21 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
         factory.setAddress(serviceAddress);
 
         this.service = (PsicquicService) factory.create();
+
+        final Client client = ClientProxy.getClient(service);
+
+        final HTTPConduit http = (HTTPConduit) client.getConduit();
+        client.getInInterceptors().add(new LoggingInInterceptor());
+        client.getOutInterceptors().add(new LoggingOutInterceptor());
+
+        final HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+
+        httpClientPolicy.setReceiveTimeout(timeout);
+        httpClientPolicy.setAllowChunking(false);
+        httpClientPolicy.setConnectionTimeout(timeout);
+
+        http.setClient(httpClientPolicy);
+
     }
 
     public PsicquicService getService() {

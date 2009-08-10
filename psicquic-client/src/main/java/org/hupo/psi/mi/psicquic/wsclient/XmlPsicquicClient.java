@@ -40,6 +40,10 @@ public class XmlPsicquicClient extends AbstractPsicquicClient<XmlSearchResult> {
         super(serviceAddress);
     }
 
+    public XmlPsicquicClient(String serviceAddress, long timeout) {
+        super(serviceAddress, timeout);
+    }
+
     public XmlSearchResult getByQuery(String query, int firstResult, int maxResults) throws PsicquicClientException {
         RequestInfo requestInfo = createRequestInfo(RETURN_TYPE, firstResult, maxResults);
 

@@ -41,6 +41,10 @@ public abstract class AbstractMitabPsicquicClient<T extends BinaryInteraction> e
         super(serviceAddress);
     }
 
+    protected AbstractMitabPsicquicClient(String serviceAddress, long timeout) {
+        super(serviceAddress, timeout);
+    }
+
     public SearchResult<T> getByQuery(String query, int firstResult, int maxResults) throws PsicquicClientException {
         RequestInfo requestInfo = createRequestInfo(RETURN_TYPE, firstResult, maxResults);
 
