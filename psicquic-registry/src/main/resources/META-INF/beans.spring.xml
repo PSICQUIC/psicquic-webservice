@@ -13,49 +13,72 @@
 
     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 
-    <context:property-placeholder location="classpath:/META-INF/psicquic.properties"/> 
-    
+    <context:property-placeholder location="classpath:/META-INF/psicquic.properties"/>
+
+    <!-- PSICQUIC Services -->
+    <bean id="biogridService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+        <property name="name" value="BioGrid"/>
+        <property name="url" value="http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/psicquic"/>
+        <property name="organizationUrl" value="http://www.thebiogrid.org/"/>
+    </bean>
+    <bean id="intactService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+        <property name="name" value="IntAct"/>
+        <property name="url" value="http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic"/>
+        <property name="organizationUrl" value="http://www.ebi.ac.uk/intact"/>
+    </bean>
+    <bean id="irefindexService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+        <property name="name" value="iRefIndex"/>
+        <property name="url" value="http://biotin.uio.no:8080/psicquic-ws/webservices/psicquic"/>
+        <property name="organizationUrl" value="http://irefindex.uio.no/wiki/iRefIndex/"/>
+    </bean>
+    <bean id="matrixdbService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+        <property name="name" value="MatrixDB"/>
+        <property name="url" value="http://matrixdb.ibcp.fr:8080/webservices/psicquic"/>
+        <property name="organizationUrl" value="http://matrixdb.ibcp.fr/"/>
+    </bean>
+    <bean id="mintService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+        <property name="name" value="MINT"/>
+        <property name="url" value="http://mint.bio.uniroma2.it/mint/psicquic/webservices/psicquic"/>
+        <property name="organizationUrl" value="http://mint.bio.uniroma2.it/"/>
+    </bean>
+    <bean id="mpidbService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+        <property name="name" value="MPIDB"/>
+        <property name="url" value="http://www.jcvi.org/mpidb/servlet/webservices/psicquic"/>
+        <property name="organizationUrl" value="http://www.jcvi.org/mpidb/"/>
+    </bean>
+
+    <!-- Configuration -->
     <bean name="psicquicConfig" class="org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig">
         <property name="version" value="${psicquic.version}"/>
         <property name="registeredServices">
             <list>
-                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
-                    <property name="name" value="BioGrid"/>
-                    <property name="url" value="http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/psicquic"/>
-                    <property name="organizationUrl" value="http://www.thebiogrid.org/"/>
-                </bean>
-                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
-                    <property name="name" value="IntAct"/>
-                    <property name="url" value="http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic"/>
-                    <property name="organizationUrl" value="http://www.ebi.ac.uk/intact"/>
-                </bean>
-                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
-                    <property name="name" value="iRefIndex"/>
-                    <property name="url" value="http://biotin.uio.no:8080/psicquic-ws-1/webservices/psicquic"/>
-                    <property name="organizationUrl" value="http://irefindex.uio.no/wiki/iRefIndex/"/>
-                </bean>
-                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
-                    <property name="name" value="MatrixDB"/>
-                    <property name="url" value="http://matrixdb.ibcp.fr:8080/webservices/psicquic"/>
-                    <property name="organizationUrl" value="http://matrixdb.ibcp.fr/"/>
-                </bean>
-                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
-                    <property name="name" value="MINT"/>
-                    <property name="url" value="http://mint.bio.uniroma2.it/mint/psicquic/webservices/psicquic"/>
-                    <property name="organizationUrl" value="http://mint.bio.uniroma2.it/"/>
-                </bean>
-                <bean class="org.hupo.psi.mi.psicquic.registry.ServiceType">
-                    <property name="name" value="MPIDB"/>
-                    <property name="url" value="http://www.jcvi.org/mpidb/servlet/webservices/psicquic"/>
-                    <property name="organizationUrl" value="http://www.jcvi.org/mpidb/"/>
-                </bean>
+                <ref bean="biogridService"/>
+                <ref bean="intactService"/>
+                <ref bean="irefindexService"/>
+                <ref bean="matrixdbService"/>
+                <ref bean="mintService"/>
+                <ref bean="mpidbService"/>
             </list>
         </property>
     </bean>
 
     <!-- freemarker config -->
-<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-  <property name="templateLoaderPath" value="classpath:/META-INF/freemarker/"/>
-</bean>
-   
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="classpath:/META-INF/freemarker/"/>
+    </bean>
+
+    <!-- this bean must not be lazily initialized if the exporting is to happen -->
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+        <property name="beans">
+            <map>
+                <entry key="psicquic_registry:name=biogrid" value-ref="biogridService"/>
+                <entry key="psicquic_registry:name=intact" value-ref="intactService"/>
+                <entry key="psicquic_registry:name=irefindex" value-ref="irefindexService"/>
+                <entry key="psicquic_registry:name=matrixdb" value-ref="matrixdbService"/>
+                <entry key="psicquic_registry:name=mint" value-ref="mintService"/>
+                <entry key="psicquic_registry:name=mpidb" value-ref="mpidbService"/>
+            </map>
+        </property>
+    </bean>
+
 </beans>
