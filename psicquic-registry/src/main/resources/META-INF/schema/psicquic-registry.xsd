@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://hupo.psi.org/psicquic/registry" 
+           attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://hupo.psi.org/psicquic/registry">
+
+  <xs:element name="registry" type="registryType"/>
+  <xs:complexType name="registryType">
+    <xs:sequence>
+      <xs:element type="serviceType" name="service" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="serviceType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="xs:string" name="url"/>
+      <xs:element type="xs:boolean" name="active"/>
+      <xs:element type="xs:long" name="count"/>
+      <xs:element type="xs:string" name="version"/>
+      <xs:element type="xs:string" name="organizationUrl"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
