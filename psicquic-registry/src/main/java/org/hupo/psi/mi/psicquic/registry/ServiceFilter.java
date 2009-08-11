@@ -5,4 +5,6 @@ package org.hupo.psi.mi.psicquic.registry;
  * @version $Id$
  */
 public interface ServiceFilter {
+
+    boolean accept(ServiceType service);
 }
