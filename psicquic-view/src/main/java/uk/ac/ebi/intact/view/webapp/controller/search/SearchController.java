@@ -40,20 +40,12 @@ public class SearchController extends BaseController {
     @Autowired
     private UserQuery userQuery;
 
-    private int totalResults;
+    private int totalResults = -1;
 
     private Map<String,String> activeServices;
     private Map<String,String> inactiveServices;
     private Map<String,PsicquicResultDataModel> resultDataModelMap;
     private Map<String,Integer> resultCountMap;
-
-    // results
-    private PsicquicResultDataModel intactResults;
-    private PsicquicResultDataModel biogridResults;
-    private PsicquicResultDataModel mintResults;
-    private PsicquicResultDataModel irefindexResults;
-    private PsicquicResultDataModel mpidbResults;
-    private PsicquicResultDataModel matrixDbResults;
 
     private boolean showAlternativeIds;
 
