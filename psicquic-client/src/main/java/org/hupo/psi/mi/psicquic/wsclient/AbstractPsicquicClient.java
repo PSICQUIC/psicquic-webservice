@@ -56,8 +56,8 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
         final Client client = ClientProxy.getClient(service);
 
         final HTTPConduit http = (HTTPConduit) client.getConduit();
-        client.getInInterceptors().add(new LoggingInInterceptor());
-        client.getOutInterceptors().add(new LoggingOutInterceptor());
+//        client.getInInterceptors().add(new LoggingInInterceptor());
+//        client.getOutInterceptors().add(new LoggingOutInterceptor());
 
         final HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
 
