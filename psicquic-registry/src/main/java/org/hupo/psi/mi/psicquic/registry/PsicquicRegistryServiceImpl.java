@@ -19,19 +19,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig;
-import org.hupo.psi.mi.psicquic.registry.util.RegistryStreamingOutput;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClient;
+import org.hupo.psi.mi.psicquic.registry.util.FreemarkerStreamingOutput;
+import org.hupo.psi.mi.psicquic.registry.util.RawTextStreamingOutput;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
-import java.util.ArrayList;
 
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.search.SearchResult;
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -40,49 +37,74 @@ import freemarker.template.Template;
 @Component
 public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
+    private static final String ACTION_STATUS = "STATUS";
+    private static final String ACTION_ACTIVE = "ACTIVE";
+    private static final String ACTION_INACTIVE = "INACTIVE";
+
     @Autowired
     private PsicquicRegistryConfig config;
-
     @Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;
 
     public Object executeAction(String action, String name, String url, String format) throws IllegalActionException {
-        if ("STATUS".equalsIgnoreCase(action)) {
+        Registry registry;
 
-            Registry registry = new Registry();
-
-            if (name != null) {
-                for (ServiceType service : config.getRegisteredServices()) {
-                    if (name.equalsIgnoreCase(service.getName())) {
-                        registry.getServices().add(service);
-                    }
-                }
-            } else {
-                registry.getServices().addAll(config.getRegisteredServices());
-            }
+        if (ACTION_STATUS.equalsIgnoreCase(action)) {
+            registry = createRegistry(new NameFilter(name));
 
             for (ServiceType serviceStatus : registry.getServices()) {
                 checkStatus(serviceStatus);
             }
-
-            if ("xml".equals(format)) {
-                return Response.ok(registry).build();
-            }
-
-            final Configuration freemarkerCfg = freeMarkerConfigurer.getConfiguration();
-
-            return Response.ok(new RegistryStreamingOutput(registry, freemarkerCfg)).build();
-
+        } else if (ACTION_ACTIVE.equalsIgnoreCase(action)) {
+            registry = createRegistry(new NameFilter(name), new ActiveFilter());
+        } else if (ACTION_INACTIVE.equalsIgnoreCase(action)) {
+            registry = createRegistry(new NameFilter(name), new InactiveFilter());
         } else {
             throw new IllegalActionException("Action not defined: "+action);
         }
+
+        if ("xml".equals(format)) {
+            return Response.ok(registry, MediaType.APPLICATION_XML_TYPE).build();
+        }
+
+        if ("txt".equals(format)) {
+            return Response.ok(new RawTextStreamingOutput(registry), MediaType.TEXT_PLAIN_TYPE).build();
+        }
+
+        if ("count".equals(format)) {
+            return Response.ok(registry.getServices().size(), MediaType.TEXT_PLAIN_TYPE).build();
+        }
+
+        final Configuration freemarkerCfg = freeMarkerConfigurer.getConfiguration();
+
+        return Response.ok(new FreemarkerStreamingOutput(registry, freemarkerCfg), MediaType.TEXT_HTML_TYPE).build();
+    }
+
+    private Registry createRegistry(ServiceFilter ... filters) {
+       Registry registry = new Registry();
+
+       for (ServiceType service : config.getRegisteredServices()) {
+            boolean accept = true;
+
+            for (ServiceFilter filter : filters) {
+                if (!filter.accept(service)) {
+                    accept = false;
+                }
+            }
+
+            if (accept) {
+                registry.getServices().add(service);
+            }
+        }
+
+        return registry;
     }
 
     private void checkStatus(ServiceType serviceStatus) {
         final String version;
 
         try {
-            final UniversalPsicquicClient client = new UniversalPsicquicClient(serviceStatus.getUrl());
+            final UniversalPsicquicClient client = new UniversalPsicquicClient(serviceStatus.getUrl(), 500L);
             version = client.getService().getVersion();
 
             final SearchResult<BinaryInteraction> result = client.getByQuery("*:*", 0, 0);
@@ -98,5 +120,34 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
     public String getVersion() {
         return config.getVersion();
+    }
+
+    private class NameFilter implements ServiceFilter {
+
+        private String name;
+
+        private NameFilter(String name) {
+            this.name = name;
+        }
+
+        public boolean accept(ServiceType service) {
+            return name == null || name.equalsIgnoreCase(service.getName());
+        }
+    }
+
+    private class ActiveFilter implements ServiceFilter {
+
+        public boolean accept(ServiceType service) {
+            checkStatus(service);
+            return service.isActive();
+        }
+    }
+
+    private class InactiveFilter implements ServiceFilter {
+
+        public boolean accept(ServiceType service) {
+            checkStatus(service);
+            return !(service.isActive());
+        }
     }
 }
