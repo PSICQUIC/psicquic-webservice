@@ -64,6 +64,12 @@ public interface PsicquicRestService {
             NotSupportedTypeException;
 
     @GET
+    @Path("/formats")
+    Object getSupportedFormats() throws PsicquicServiceException,
+            NotSupportedMethodException,
+            NotSupportedTypeException;
+
+    @GET
     @Path("/version")
     String getVersion();
 

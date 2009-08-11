@@ -24,6 +24,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * TODO write description of the class.
@@ -38,19 +39,33 @@ public class PsicquicStreamingOutput implements StreamingOutput {
     private QueryResponse response;
     private int firstResult;
     private int maxResults;
+    private boolean gzip;
 
     public PsicquicStreamingOutput(PsicquicService psicquicService, String query, int firstResult, int maxResults) {
+        this(psicquicService, query, firstResult, maxResults, false);
+    }
+
+    public PsicquicStreamingOutput(PsicquicService psicquicService, String query, int firstResult, int maxResults, boolean gzip) {
         this.psicquicService = psicquicService;
         this.query = query;
         this.firstResult = firstResult;
         this.maxResults = maxResults;
+        this.gzip = gzip;
     }
 
     public void write(OutputStream outputStream) throws IOException, WebApplicationException {
         RequestInfo reqInfo = new RequestInfo();
         reqInfo.setResultType("psi-mi/tab25");
 
-        PrintWriter out = new PrintWriter(outputStream);
+        OutputStream os;
+
+        if (isGzip()) {
+            os = new GZIPOutputStream(outputStream);
+        } else {
+            os = outputStream;
+        }
+
+        PrintWriter out = new PrintWriter(os);
 
         int max = firstResult+maxResults;
 
@@ -78,5 +93,13 @@ public class PsicquicStreamingOutput implements StreamingOutput {
 
     public QueryResponse getQueryResponse() {
         return response;
+    }
+
+    public boolean isGzip() {
+        return gzip;
+    }
+
+    public void setGzip(boolean gzip) {
+        this.gzip = gzip;
     }
 }
