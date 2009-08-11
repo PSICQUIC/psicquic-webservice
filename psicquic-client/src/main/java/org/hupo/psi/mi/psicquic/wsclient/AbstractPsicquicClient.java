@@ -41,7 +41,7 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
     private PsicquicService service;
 
     public AbstractPsicquicClient(String serviceAddress) {
-        this(serviceAddress, 20000L);
+        this(serviceAddress, 5000L);
     }
 
     public AbstractPsicquicClient(String serviceAddress, long timeout) {
