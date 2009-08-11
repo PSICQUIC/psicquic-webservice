@@ -53,39 +53,38 @@
 
           <br/>
 
-           <ui:include src="pages/search/search_panel.xhtml"  />
+           <ui:include src="/pages/search/search_panel.xhtml"  />
 
-           <tr:panelTabbed position="above" rendered="#{searchBean.intactResults != null}">
-               <tr:showDetailItem text="IntAct (#{searchBean.intactCount})" disabled="#{searchBean.intactCount == 0}">
-                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
-                        <ui:param name="results" value="#{searchBean.intactResults}"/>
-                    </ui:decorate>
-               </tr:showDetailItem>
-               <tr:showDetailItem text="MINT (#{searchBean.mintCount})" disabled="#{searchBean.mintCount == 0}">
-                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
-                        <ui:param name="results" value="#{searchBean.mintResults}"/>
-                    </ui:decorate>
-               </tr:showDetailItem>
-                <tr:showDetailItem text="BioGrid (#{searchBean.biogridCount})" disabled="#{searchBean.biogridCount == 0}">
-                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
-                        <ui:param name="results" value="#{searchBean.biogridResults}"/>
-                    </ui:decorate>
-               </tr:showDetailItem>
-               <tr:showDetailItem text="iRefIndex (#{searchBean.irefindexCount})" disabled="#{searchBean.irefindexCount == 0}">
-                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
-                        <ui:param name="results" value="#{searchBean.irefindexResults}"/>
-                    </ui:decorate>
-               </tr:showDetailItem>
-               <tr:showDetailItem text="MPIDB (#{searchBean.mpidbCount})" disabled="#{searchBean.mpidbCount == 0}">
-                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
-                        <ui:param name="results" value="#{searchBean.mpidbResults}"/>
-                    </ui:decorate>
-               </tr:showDetailItem>
-                <tr:showDetailItem text="MatrixDB (#{searchBean.matrixdbCount})" disabled="#{searchBean.matrixdbCount == 0}">
-                    <ui:decorate template="pages/interactions/interactions_tab.xhtml">
-                        <ui:param name="results" value="#{searchBean.matrixDbResults}"/>
-                    </ui:decorate>
-               </tr:showDetailItem>
+           <tr:panelGroupLayout rendered="#{fn:length(searchBean.inactiveServices) gt 0}">
+               Searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
+
+               There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
+               <tr:goLink text="check status" destination="http://www.ebi.ac.uk/intact/psicquic-registry/registry?action=STATUS"
+                       targetFrame="_blank"/> | <tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
+
+               <tr:separator/>
+           </tr:panelGroupLayout>
+
+           <tr:panelTabbed position="above" rendered="#{searchBean.totalResults gt 0}">
+               <ui:include src="/pages/search/result_tab.xhtml">
+                   <ui:param name="name" value="IntAct"/>
+               </ui:include>
+               <ui:include src="/pages/search/result_tab.xhtml">
+                   <ui:param name="name" value="MINT"/>
+               </ui:include>
+               <ui:include src="/pages/search/result_tab.xhtml">
+                   <ui:param name="name" value="BioGrid"/>
+               </ui:include>
+               <ui:include src="/pages/search/result_tab.xhtml">
+                   <ui:param name="name" value="iRefIndex"/>
+               </ui:include>
+               <ui:include src="/pages/search/result_tab.xhtml">
+                   <ui:param name="name" value="MPIDB"/>
+               </ui:include>
+               <ui:include src="/pages/search/result_tab.xhtml">
+                   <ui:param name="name" value="MatrixDB"/>
+               </ui:include>
+
            </tr:panelTabbed>
 
        </tr:form>

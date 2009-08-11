@@ -1,0 +1,18 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                xmlns:trh="http://myfaces.apache.org/trinidad/html"
+                xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+    <tr:showDetailItem text="#{name} (#{searchBean.resultCountMap[name]})"
+                       disabled="#{searchBean.resultCountMap[name] == 0}"
+                       rendered="#{searchBean.resultDataModelMap[name] != null}">
+        <ui:decorate template="/pages/interactions/interactions_tab.xhtml">
+            <ui:param name="results" value="#{searchBean.resultDataModelMap[name]}"/>
+        </ui:decorate>
+    </tr:showDetailItem>
+
+</ui:composition>

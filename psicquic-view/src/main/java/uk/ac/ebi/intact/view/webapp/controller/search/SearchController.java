@@ -2,6 +2,7 @@ package uk.ac.ebi.intact.view.webapp.controller.search;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.IOUtils;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
 import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,12 @@ import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
 
 import javax.faces.event.ActionEvent;
+import java.util.*;
+import java.net.URL;
+import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
 
 /**
  * Search controller.
@@ -28,24 +35,15 @@ public class SearchController extends BaseController {
 
     private static final Log log = LogFactory.getLog(SearchController.class);
 
-    private static final String INTACT_ENDPOINT = "http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic";
-    private static final String MINT_ENDPOINT = "http://mint.bio.uniroma2.it/mint/psicquic/webservices/psicquic";
-    private static final String IREFINDEX_ENDPOINT = "http://biotin.uio.no:8080/psicquic-ws-1/webservices/psicquic";
-    private static final String BIOGRID_ENDPOINT = "http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/psicquic";
-    private static final String MPIDB_ENDPOINT = "http://www.jcvi.org/mpidb/servlet/webservices/psicquic";
-    private static final String MATRIXDB_ENDPOINT = "http://matrixdb.ibcp.fr:8080/webservices/psicquic";
-
     @Autowired
     private UserQuery userQuery;
 
     private int totalResults;
 
-    private int intactCount;
-    private int mintCount;
-    private int irefindexCount;
-    private int biogridCount;
-    private int mpidbCount;
-    private int matrixdbCount;
+    private Map<String,String> activeServices;
+    private Map<String,String> inactiveServices;
+    private Map<String,PsicquicResultDataModel> resultDataModelMap;
+    private Map<String,Integer> resultCountMap;
 
     // results
     private PsicquicResultDataModel intactResults;
@@ -58,6 +56,17 @@ public class SearchController extends BaseController {
     private boolean showAlternativeIds;
 
     public SearchController() {
+        refresh(null);
+    }
+
+    public void refresh(ActionEvent evt) {
+        this.resultDataModelMap = new HashMap<String,PsicquicResultDataModel>();
+        this.resultCountMap = new HashMap<String,Integer>();
+        this.activeServices = new HashMap<String,String>();
+        this.inactiveServices = new HashMap<String,String>();
+
+        populateActiveServicesMap();
+        populateInactiveServicesMap();
     }
 
     public String doBinarySearchAction() {
@@ -88,7 +97,11 @@ public class SearchController extends BaseController {
 
             searchAndCreateResultModels();
 
-            totalResults = intactCount + mintCount + biogridCount + mpidbCount + irefindexCount;
+            totalResults = 0;
+
+            for (int count : resultCountMap.values()) {
+                totalResults += count;
+            }
 
             if ( totalResults == 0 ) {
                 addErrorMessage( "Your query didn't return any results", "Use a different query" );
@@ -109,52 +122,61 @@ public class SearchController extends BaseController {
     }
 
     private void searchAndCreateResultModels() {
-        try {
-            intactResults = psicquicResults(INTACT_ENDPOINT);
-            intactCount = intactResults.getRowCount();
-        } catch (PsicquicClientException e) {
-            e.printStackTrace();
-        }
 
-        try {
-            biogridResults = psicquicResults(BIOGRID_ENDPOINT);
-            biogridCount = biogridResults.getRowCount();
-        } catch (PsicquicClientException e) {
-            e.printStackTrace();
-        }
+        for (Map.Entry<String,String> serviceUrl : activeServices.entrySet()) {
+            try {
+                PsicquicResultDataModel results = psicquicResults(serviceUrl.getValue());
 
-        try {
-            mintResults = psicquicResults(MINT_ENDPOINT);
-            mintCount = mintResults.getRowCount();
-        } catch (PsicquicClientException e) {
-            e.printStackTrace();
-        }
+                resultDataModelMap.put(serviceUrl.getKey(), results);
+                resultCountMap.put(serviceUrl.getKey(), results.getRowCount());
 
-        try {
-            irefindexResults = psicquicResults(IREFINDEX_ENDPOINT);
-            irefindexCount = irefindexResults.getRowCount();
-        } catch (PsicquicClientException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            mpidbResults = psicquicResults(MPIDB_ENDPOINT);
-            mpidbCount = mpidbResults.getRowCount();
-        } catch (PsicquicClientException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            matrixDbResults = psicquicResults(MATRIXDB_ENDPOINT);
-            matrixdbCount = matrixDbResults.getRowCount();
-        } catch (PsicquicClientException e) {
-            e.printStackTrace();
+            } catch (PsicquicClientException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private PsicquicResultDataModel psicquicResults(String endpoint) throws PsicquicClientException {
         return new PsicquicResultDataModel(new UniversalPsicquicClient(endpoint),
                     userQuery.getSearchQuery());
+    }
+
+    private void populateActiveServicesMap() {
+        List<String[]> serviceUrls = getServices("http://www.ebi.ac.uk/intact/psicquic-registry/registry?action=ACTIVE&format=txt");
+
+        for (String[] serviceUrl : serviceUrls) {
+            activeServices.put(serviceUrl[0], serviceUrl[1]);
+        }
+    }
+
+    private void populateInactiveServicesMap() {
+        List<String[]> serviceUrls = getServices("http://www.ebi.ac.uk/intact/psicquic-registry/registry?action=INACTIVE&format=txt");
+
+        for (String[] serviceUrl : serviceUrls) {
+            inactiveServices.put(serviceUrl[0], serviceUrl[1]);
+        }
+    }
+
+    private List<String[]> getServices(String urlStr) {
+        List<String[]> serviceUrls = new ArrayList<String[]>();
+        try {
+            URL url = new URL(urlStr);
+
+            final InputStream inputStream = url.openStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] nameAndUrl = line.split("=");
+                serviceUrls.add(nameAndUrl);
+            }
+
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return serviceUrls;
     }
 
     // Getters & Setters
@@ -164,83 +186,27 @@ public class SearchController extends BaseController {
         return totalResults;
     }
 
-    public void setTotalResults( int totalResults ) {
-        this.totalResults = totalResults;
+    public Map<String, Integer> getResultCountMap() {
+        return resultCountMap;
     }
 
-    public boolean isShowAlternativeIds() {
-        return showAlternativeIds;
+    public Map<String, PsicquicResultDataModel> getResultDataModelMap() {
+        return resultDataModelMap;
     }
 
-    public int getIntactCount() {
-        return intactCount;
+    public Map<String, String> getActiveServices() {
+        return activeServices;
     }
 
-    public int getMintCount() {
-        return mintCount;
+    public Map<String, String> getInactiveServices() {
+        return inactiveServices;
     }
 
-    public int getIrefindexCount() {
-        return irefindexCount;
+    public String[] getActiveServiceNames() {
+        return activeServices.keySet().toArray(new String[activeServices.size()]);
     }
 
-    public int getBiogridCount() {
-        return biogridCount;
-    }
-
-    public int getMpidbCount() {
-        return mpidbCount;
-    }
-
-    public int getMatrixdbCount() {
-        return matrixdbCount;
-    }
-
-    public PsicquicResultDataModel getIntactResults() {
-        return intactResults;
-    }
-
-    public void setIntactResults(PsicquicResultDataModel intactResults) {
-        this.intactResults = intactResults;
-    }
-
-    public PsicquicResultDataModel getBiogridResults() {
-        return biogridResults;
-    }
-
-    public void setBiogridResults(PsicquicResultDataModel biogridResults) {
-        this.biogridResults = biogridResults;
-    }
-
-    public PsicquicResultDataModel getMintResults() {
-        return mintResults;
-    }
-
-    public void setMintResults(PsicquicResultDataModel mintResults) {
-        this.mintResults = mintResults;
-    }
-
-    public PsicquicResultDataModel getIrefindexResults() {
-        return irefindexResults;
-    }
-
-    public void setIrefindexResults(PsicquicResultDataModel irefindexResults) {
-        this.irefindexResults = irefindexResults;
-    }
-
-    public PsicquicResultDataModel getMpidbResults() {
-        return mpidbResults;
-    }
-
-    public void setMpidbResults(PsicquicResultDataModel mpidbResults) {
-        this.mpidbResults = mpidbResults;
-    }
-
-    public PsicquicResultDataModel getMatrixDbResults() {
-        return matrixDbResults;
-    }
-
-    public void setMatrixDbResults(PsicquicResultDataModel matrixDbResults) {
-        this.matrixDbResults = matrixDbResults;
+    public String[] getInactiveServiceNames() {
+        return inactiveServices.keySet().toArray(new String[inactiveServices.size()]);
     }
 }

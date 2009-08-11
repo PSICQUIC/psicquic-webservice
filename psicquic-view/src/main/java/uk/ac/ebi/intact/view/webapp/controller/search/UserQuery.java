@@ -39,7 +39,7 @@ public class UserQuery extends BaseController {
 
     public static final String STAR_QUERY = "*:*";
 
-    private String searchQuery = STAR_QUERY;
+    private String searchQuery = "*";
 
     private Map<String, String> termMap = new HashMap<String,String>();
 
