@@ -67,6 +67,12 @@
                <tr:separator/>
            </tr:panelGroupLayout>
 
+           <tr:panelGroupLayout rendered="#{searchBean.totalResults eq 0}">
+               <div style="padding-left:10px">
+                <b>No results were found for this query.</b>
+               </div>
+           </tr:panelGroupLayout>
+
            <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0}">
 
                <div style="float:right; padding-right: 5px">

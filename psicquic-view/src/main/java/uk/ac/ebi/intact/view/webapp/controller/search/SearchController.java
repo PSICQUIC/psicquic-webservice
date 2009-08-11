@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
 import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
+import org.apache.myfaces.orchestra.viewController.annotations.PreRenderView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
 
 import javax.faces.event.ActionEvent;
+import javax.faces.context.FacesContext;
 import java.util.*;
 import java.net.URL;
 import java.io.InputStream;
@@ -57,6 +59,20 @@ public class SearchController extends BaseController {
 
     public SearchController() {
         refresh(null);
+    }
+
+    @PreRenderView
+    public void preRender() {
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        String queryParam = context.getExternalContext().getRequestParameterMap().get("query");
+
+        if (queryParam != null && queryParam.length()>0) {
+            userQuery.reset();
+            userQuery.setSearchQuery( queryParam );
+
+            doBinarySearchAction();
+        }
     }
 
     public void refresh(ActionEvent evt) {
