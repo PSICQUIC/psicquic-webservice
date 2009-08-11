@@ -66,7 +66,7 @@ public class UserQuery extends BaseController {
 
     @PostConstruct
     public void reset() {
-        this.searchQuery = null;
+        this.searchQuery = "*";
         this.userSortColumn = DEFAULT_SORT_COLUMN;
         this.userSortOrder = DEFAULT_SORT_ORDER;
 

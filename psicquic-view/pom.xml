@@ -37,7 +37,7 @@
     </properties>
 
     <build>
-        <!--<finalName>intact-view</finalName>-->
+        <finalName>psicquic-view-${pom.version}-${buildNumber}</finalName>
 
         <resources>
             <resource>

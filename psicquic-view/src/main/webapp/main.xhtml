@@ -56,36 +56,36 @@
            <ui:include src="/pages/search/search_panel.xhtml"  />
 
            <tr:panelGroupLayout rendered="#{fn:length(searchBean.inactiveServices) gt 0}">
-               Searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
+                   <div style="padding-left:10px">
+                   It searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
 
-               There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
-               <tr:goLink text="check status" destination="http://www.ebi.ac.uk/intact/psicquic-registry/registry?action=STATUS"
-                       targetFrame="_blank"/> | <tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
+                   There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
+                   <tr:goLink text="check status" destination="http://www.ebi.ac.uk/intact/psicquic-registry/registry?action=STATUS"
+                           targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
 
+                   </div>
                <tr:separator/>
            </tr:panelGroupLayout>
 
-           <tr:panelTabbed position="above" rendered="#{searchBean.totalResults gt 0}">
-               <ui:include src="/pages/search/result_tab.xhtml">
-                   <ui:param name="name" value="IntAct"/>
-               </ui:include>
-               <ui:include src="/pages/search/result_tab.xhtml">
-                   <ui:param name="name" value="MINT"/>
-               </ui:include>
-               <ui:include src="/pages/search/result_tab.xhtml">
-                   <ui:param name="name" value="BioGrid"/>
-               </ui:include>
-               <ui:include src="/pages/search/result_tab.xhtml">
-                   <ui:param name="name" value="iRefIndex"/>
-               </ui:include>
-               <ui:include src="/pages/search/result_tab.xhtml">
-                   <ui:param name="name" value="MPIDB"/>
-               </ui:include>
-               <ui:include src="/pages/search/result_tab.xhtml">
-                   <ui:param name="name" value="MatrixDB"/>
-               </ui:include>
+           <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0}">
 
-           </tr:panelTabbed>
+               <div style="float:right; padding-right: 5px">
+                   Total: <b>
+                   <h:outputText value="#{searchBean.totalResults}">
+                       <f:convertNumber pattern="#,###"/>
+                   </h:outputText></b>
+                   binary interactions
+               </div>
+
+               <tr:panelTabbed position="above">
+                   <c:forEach var="name" items="#{searchBean.activeServiceNames}">
+                       <ui:include src="/pages/search/result_tab.xhtml">
+                           <ui:param name="name" value="#{name}"/>
+                       </ui:include>
+                   </c:forEach>
+               </tr:panelTabbed>
+
+           </tr:panelGroupLayout>
 
        </tr:form>
    </tr:document>

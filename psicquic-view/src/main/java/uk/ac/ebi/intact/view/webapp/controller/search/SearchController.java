@@ -203,10 +203,14 @@ public class SearchController extends BaseController {
     }
 
     public String[] getActiveServiceNames() {
-        return activeServices.keySet().toArray(new String[activeServices.size()]);
+        final String[] services = activeServices.keySet().toArray(new String[activeServices.size()]);
+        Arrays.sort(services);
+        return services;
     }
 
     public String[] getInactiveServiceNames() {
-        return inactiveServices.keySet().toArray(new String[inactiveServices.size()]);
+        final String[] services = inactiveServices.keySet().toArray(new String[inactiveServices.size()]);
+        Arrays.sort(services);
+        return services;
     }
 }
