@@ -15,7 +15,9 @@
  */
 package org.hupo.psi.mi.psicquic.ws;
 
+import org.apache.lucene.search.BooleanQuery;
 import org.hupo.psi.mi.psicquic.*;
+import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +30,10 @@ import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
 import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
 import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
-import psidev.psi.mi.xml254.jaxb.EntrySet;
-import psidev.psi.mi.xml254.jaxb.Entry;
 import psidev.psi.mi.xml254.jaxb.Attribute;
 import psidev.psi.mi.xml254.jaxb.AttributeList;
-import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
-import org.apache.lucene.search.BooleanQuery;
+import psidev.psi.mi.xml254.jaxb.Entry;
+import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 import java.io.IOException;
 import java.util.*;
@@ -49,16 +49,17 @@ public class IndexBasedPsicquicService implements PsicquicService {
 
     private final Logger logger = LoggerFactory.getLogger(IndexBasedPsicquicService.class);
 
-    private static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
-    private static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
-    private static final String RETURN_TYPE_COUNT = "count";
+    public static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
+    public static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
+    public static final String RETURN_TYPE_MITAB25_BIN = "psi-mi/tab25-bin";
+    public static final String RETURN_TYPE_COUNT = "count";
 
     private static final String NEW_LINE = System.getProperty("line.separator");
 
     private static final int BLOCKSIZE_MAX = 200;
     private static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
 
-    private static final List<String> SUPPORTED_RETURN_TYPES = Arrays.asList(RETURN_TYPE_XML25, RETURN_TYPE_MITAB25, RETURN_TYPE_COUNT);
+    public static final List<String> SUPPORTED_RETURN_TYPES = Arrays.asList(RETURN_TYPE_XML25, RETURN_TYPE_MITAB25, RETURN_TYPE_COUNT);
 
     @Autowired
     private PsicquicConfig config;
