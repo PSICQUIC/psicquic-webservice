@@ -25,9 +25,11 @@ import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import psidev.psi.mi.search.Searcher;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -44,11 +46,11 @@ public class IndexBasedPsicquicRestServiceTest {
 
         Searcher.buildIndex(indexDir, mitabStream, true, true);
 
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"/META-INF/beans.spring.test.xml"});
-        PsicquicConfig config = (PsicquicConfig)context.getBean("psicquicConfig");
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"/META-INF/beans.spring.test.xml"});
+        PsicquicConfig config = (PsicquicConfig) context.getBean("psicquicConfig");
         config.setIndexDirectory(indexDir.toString());
 
-	    service = (IndexBasedPsicquicRestService)context.getBean("indexBasedPsicquicRestService");
+        service = (IndexBasedPsicquicRestService) context.getBean("indexBasedPsicquicRestService");
     }
 
     @AfterClass
@@ -58,19 +60,20 @@ public class IndexBasedPsicquicRestServiceTest {
 
     @Test
     public void testGetByQuery() throws Exception {
-        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "psi-mi/tab25", "0", "200");
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", "200");
 
+        System.out.println(response.getEntity());
         PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
-        
+
         Assert.assertEquals(12, baos.toString().split("\n").length);
     }
 
     @Test
     public void testGetByQuery_maxResults() throws Exception {
-        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "psi-mi/tab25", "0", "3");
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", "3");
 
         PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
 
@@ -82,7 +85,7 @@ public class IndexBasedPsicquicRestServiceTest {
 
     @Test
     public void testGetByQuery_maxResults_nolimit() throws Exception {
-        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "psi-mi/tab25", "0", String.valueOf(Integer.MAX_VALUE));
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", String.valueOf(Integer.MAX_VALUE));
 
         PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
 
@@ -90,5 +93,31 @@ public class IndexBasedPsicquicRestServiceTest {
         pso.write(baos);
 
         Assert.assertEquals(12, baos.toString().split("\n").length);
+    }
+
+    @Test
+    public void testGetByQuery_bin() throws Exception {
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25-bin", "0", String.valueOf(Integer.MAX_VALUE));
+
+        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        pso.write(baos);
+
+        // gunzip the output
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        GZIPInputStream gzipInputStream = new GZIPInputStream(bais);
+
+        ByteArrayOutputStream mitabOut = new ByteArrayOutputStream();
+
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = gzipInputStream.read(buf)) > 0)
+            mitabOut.write(buf, 0, len);
+
+        gzipInputStream.close();
+        mitabOut.close();
+
+        Assert.assertEquals(12, mitabOut.toString().split("\n").length);
     }
 }
