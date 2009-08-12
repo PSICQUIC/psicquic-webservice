@@ -22,6 +22,8 @@ import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transport.http.gzip.GZIPInInterceptor;
+import org.apache.cxf.transport.http.gzip.GZIPOutInterceptor;
 import org.apache.cxf.endpoint.Client;
 import org.hupo.psi.mi.psicquic.DbRef;
 import org.hupo.psi.mi.psicquic.PsicquicService;
@@ -56,14 +58,15 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
         final Client client = ClientProxy.getClient(service);
 
         final HTTPConduit http = (HTTPConduit) client.getConduit();
-//        client.getInInterceptors().add(new LoggingInInterceptor());
-//        client.getOutInterceptors().add(new LoggingOutInterceptor());
+        client.getInInterceptors().add(new GZIPInInterceptor());
+        client.getOutInterceptors().add(new GZIPOutInterceptor());
 
         final HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
 
         httpClientPolicy.setReceiveTimeout(timeout);
         httpClientPolicy.setAllowChunking(false);
-        httpClientPolicy.setConnectionTimeout(timeout);
+        httpClientPolicy.setConnectionTimeout(1000L);
+        httpClientPolicy.setAcceptEncoding("UTF-8");
 
         http.setClient(httpClientPolicy);
 
