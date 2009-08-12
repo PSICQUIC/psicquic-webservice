@@ -215,11 +215,11 @@
     <!-- Project dependencies -->
     <dependencies>
 
-        <!-- Intact -->
+        <!-- PSICQUIC -->
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-client</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
         </dependency>
 
        <!-- other -->
