@@ -13,7 +13,7 @@
     <artifactId>psicquic-ws</artifactId>
     <packaging>war</packaging>
 
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>PSI :: PSICQUIC WS Reference Implementation</name>
 
