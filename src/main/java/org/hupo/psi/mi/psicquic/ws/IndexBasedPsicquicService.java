@@ -15,6 +15,7 @@
  */
 package org.hupo.psi.mi.psicquic.ws;
 
+import org.apache.cxf.feature.Features;
 import org.apache.lucene.search.BooleanQuery;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
@@ -45,6 +46,7 @@ import java.util.*;
  * @version $Id$
  */
 @Controller
+@Features(features = { "org.apache.cxf.transport.http.gzip.GZIPFeature" })
 public class IndexBasedPsicquicService implements PsicquicService {
 
     private final Logger logger = LoggerFactory.getLogger(IndexBasedPsicquicService.class);
