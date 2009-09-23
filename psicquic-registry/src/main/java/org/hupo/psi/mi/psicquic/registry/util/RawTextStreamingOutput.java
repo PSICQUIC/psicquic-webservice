@@ -44,7 +44,7 @@ public class RawTextStreamingOutput implements StreamingOutput {
         Writer writer = new OutputStreamWriter(outputStream);
 
         for (ServiceType service : registry.getServices()) {
-            writer.write(service.getName()+"="+service.getUrl()+"\n");
+            writer.write(service.getName()+"="+service.getSoapUrl()+"\n");
         }
 
         writer.close();

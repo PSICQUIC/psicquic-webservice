@@ -18,33 +18,44 @@
     <!-- PSICQUIC Services -->
     <bean id="biogridService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="BioGrid"/>
-        <property name="url" value="http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/psicquic"/>
+        <property name="soapUrl" value="http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/psicquic"/>
         <property name="organizationUrl" value="http://www.thebiogrid.org/"/>
+        <property name="restUrl" value="http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/current/search/interactor/brca2"/>
     </bean>
     <bean id="intactService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="IntAct"/>
-        <property name="url" value="http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic"/>
+        <property name="soapUrl" value="http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic"/>
         <property name="organizationUrl" value="http://www.ebi.ac.uk/intact"/>
+        <property name="restUrl" value="http://www.ebi.ac.uk/intact/psicquic/webservices/current/search/query/species:human?firstResult=0&amp;maxResults=100"/>
     </bean>
     <bean id="irefindexService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="iRefIndex"/>
-        <property name="url" value="http://biotin.uio.no:8080/psicquic-ws/webservices/psicquic"/>
+        <property name="soapUrl" value="http://biotin.uio.no:8080/psicquic-ws/webservices/psicquic"/>
         <property name="organizationUrl" value="http://irefindex.uio.no/wiki/iRefIndex/"/>
+        <property name="restUrl" value="http://biotin.uio.no:8080/psicquic-ws/webservices/current/search/query/A8K4B6"/>
     </bean>
     <bean id="matrixdbService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="MatrixDB"/>
-        <property name="url" value="http://matrixdb.ibcp.fr:8080/webservices/psicquic"/>
+        <property name="soapUrl" value="http://matrixdb.ibcp.fr:8080/webservices/psicquic"/>
         <property name="organizationUrl" value="http://matrixdb.ibcp.fr/"/>
+        <property name="restUrl" value="http://matrixdb.ibcp.fr:8080/webservices/current/search/query/*"/>
     </bean>
     <bean id="mintService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="MINT"/>
-        <property name="url" value="http://mint.bio.uniroma2.it/mint/psicquic/webservices/psicquic"/>
+        <property name="soapUrl" value="http://mint.bio.uniroma2.it/mint/psicquic/webservices/psicquic"/>
         <property name="organizationUrl" value="http://mint.bio.uniroma2.it/"/>
     </bean>
     <bean id="mpidbService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="MPIDB"/>
-        <property name="url" value="http://www.jcvi.org/mpidb/servlet/webservices/psicquic"/>
+        <property name="soapUrl" value="http://www.jcvi.org/mpidb/servlet/webservices/psicquic"/>
         <property name="organizationUrl" value="http://www.jcvi.org/mpidb/"/>
+    </bean>
+    <bean id="stringService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+        <property name="name" value="STRING"/>
+        <property name="soapUrl" value="http://string-db.org/psicquic/ws"/>
+        <property name="organizationUrl" value="http://string-db.org/"/>
+        <property name="restricted" value="true"/>
+        <property name="comments" value="Only the method getByInteractor is implemented. Contact STRING for licensing info."/>
     </bean>
 
     <!-- Configuration -->
@@ -58,6 +69,7 @@
                 <ref bean="matrixdbService"/>
                 <ref bean="mintService"/>
                 <ref bean="mpidbService"/>
+                <ref bean="stringService"/>
             </list>
         </property>
     </bean>
@@ -77,6 +89,7 @@
                 <entry key="psicquic_registry:name=matrixdb" value-ref="matrixdbService"/>
                 <entry key="psicquic_registry:name=mint" value-ref="mintService"/>
                 <entry key="psicquic_registry:name=mpidb" value-ref="mpidbService"/>
+                <entry key="psicquic_registry:name=string" value-ref="stringService"/>
             </map>
         </property>
     </bean>

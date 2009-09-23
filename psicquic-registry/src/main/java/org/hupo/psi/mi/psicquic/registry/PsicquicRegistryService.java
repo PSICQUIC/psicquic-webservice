@@ -36,7 +36,8 @@ public interface PsicquicRegistryService {
     Object executeAction(@QueryParam("action") String action,
                            @QueryParam("name") String name,
                            @DefaultValue("0") @QueryParam("url") String url,
-                           @DefaultValue("html") @QueryParam("format") String format) throws IllegalActionException;
+                           @DefaultValue("html") @QueryParam("format") String format,
+                           @DefaultValue("y") @QueryParam("restricted") String showRestricted) throws IllegalActionException;
 
     @GET
     @Path("/version")

@@ -41,24 +41,32 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     private static final String ACTION_ACTIVE = "ACTIVE";
     private static final String ACTION_INACTIVE = "INACTIVE";
 
+    private static final String YES = "y";
+    private static final String NO = "n";
+
     @Autowired
     private PsicquicRegistryConfig config;
     @Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;
 
-    public Object executeAction(String action, String name, String url, String format) throws IllegalActionException {
+    public Object executeAction(String action, String name, String url, String format, String showRestricted) throws IllegalActionException {
         Registry registry;
 
         if (ACTION_STATUS.equalsIgnoreCase(action)) {
-            registry = createRegistry(new NameFilter(name));
+            registry = createRegistry(new NameFilter(name),
+                                      new RestrictedFilter(stringToBoolean(showRestricted)));
 
             for (ServiceType serviceStatus : registry.getServices()) {
                 checkStatus(serviceStatus);
             }
         } else if (ACTION_ACTIVE.equalsIgnoreCase(action)) {
-            registry = createRegistry(new NameFilter(name), new ActiveFilter());
+            registry = createRegistry(new NameFilter(name),
+                                      new ActiveFilter(),
+                                      new RestrictedFilter(stringToBoolean(showRestricted)));
         } else if (ACTION_INACTIVE.equalsIgnoreCase(action)) {
-            registry = createRegistry(new NameFilter(name), new InactiveFilter());
+            registry = createRegistry(new NameFilter(name),
+                                      new InactiveFilter(),
+                                      new RestrictedFilter(stringToBoolean(showRestricted)));
         } else {
             throw new IllegalActionException("Action not defined: "+action);
         }
@@ -101,10 +109,10 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     }
 
     private void checkStatus(ServiceType serviceStatus) {
-        final String version;
+        String version = null;
 
         try {
-            final UniversalPsicquicClient client = new UniversalPsicquicClient(serviceStatus.getUrl(), 500L);
+            final UniversalPsicquicClient client = new UniversalPsicquicClient(serviceStatus.getSoapUrl(), 500L);
             version = client.getService().getVersion();
 
             final SearchResult<BinaryInteraction> result = client.getByQuery("*:*", 0, 0);
@@ -112,10 +120,20 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
         } catch (Throwable e) {
             serviceStatus.setActive(false);
             return;
+        } finally {
+            serviceStatus.setVersion(version);
         }
 
         serviceStatus.setActive(true);
-        serviceStatus.setVersion(version);
+
+    }
+
+    private boolean stringToBoolean(String str) {
+        if (YES.equalsIgnoreCase(str)) {
+            return true;
+        }
+
+        return false;
     }
 
     public String getVersion() {
@@ -149,5 +167,22 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
             checkStatus(service);
             return !(service.isActive());
         }
+    }
+
+    private class RestrictedFilter implements ServiceFilter {
+
+        private boolean restricted = false;
+
+        public RestrictedFilter(boolean restricted) {
+            this.restricted = restricted;
+        }
+
+        public boolean accept(ServiceType service) {
+            if (service.isRestricted() && !restricted) {
+                return false;
+            }
+            return true;
+        }
+
     }
 }

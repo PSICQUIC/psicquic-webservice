@@ -33,17 +33,29 @@
       <tr>
           <th>Name</th>
           <th>Active</th>
-          <th># Interactions</th>
+          <th>Interactions</th>
           <th>Version</th>
-          <th>SOAP URL</th>
+          <th><nobr>SOAP URL</nobr></th>
+          <th><nobr>REST Access</nobr></th>
+          <th>Restricted</th>
+          <th>Comments</th>
       </tr>
     <#list services as service>
     <tr class="${service.active?string("active", "inactive")}">
         <td><a href="${service.organizationUrl}" target="_blank">${service.name}</a></td>
         <td>${service.active?string("YES", "NO")}</td>
         <td>${service.count}</td>
-        <td>${service.version!'-'}</td>
-        <td>${service.url}</td>
+        <td><nobr>${service.version!'-'}</nobr></td>
+        <td><nobr>${service.soapUrl}</nobr></td>
+        <td>
+            <#if service.restUrl??>
+                <a href="${service.restUrl}" target="_blank">Example</a>
+                <#else>
+                NO
+            </#if>
+        </td>
+        <td>${service.restricted?string("YES", "NO")}</td>
+        <td>${service.comments!''}</td>
   </#list>
   </table>
 
