@@ -55,7 +55,7 @@
         <property name="soapUrl" value="http://string-db.org/psicquic/ws"/>
         <property name="organizationUrl" value="http://string-db.org/"/>
         <property name="restricted" value="true"/>
-        <property name="comments" value="Methods not implemented: getByInteraction (STRING does not use IDs) and getByQuery (in the works). Contact STRING for licensing info."/>
+        <property name="comments" value="&quote;getByInteraction&quote; is not implemented  - we don't have interaction IDs <br/>&quote;getByQuery&quote; - coming soon.<br/>Contact STRING for licensing info."/>
     </bean>
 
     <!-- Configuration -->
