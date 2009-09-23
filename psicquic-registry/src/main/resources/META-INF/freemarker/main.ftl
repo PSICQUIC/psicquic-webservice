@@ -41,7 +41,7 @@
           <th>Comments</th>
       </tr>
     <#list services as service>
-    <tr class="${service.active?string("active", "inactive")}">
+    <tr class="${service.active?string("active", "inactive")}" style="vertical-align:top">
         <td><a href="${service.organizationUrl}" target="_blank">${service.name}</a></td>
         <td>${service.active?string("YES", "NO")}</td>
         <td>${service.count}</td>
