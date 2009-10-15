@@ -22,11 +22,17 @@
         <property name="organizationUrl" value="http://www.thebiogrid.org/"/>
         <property name="restUrl" value="http://tyerslab.bio.ed.ac.uk:8080/psicquic-ws/webservices/current/search/interactor/brca2"/>
     </bean>
+    <bean id="chemblService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+        <property name="name" value="ChEMBL"/>
+        <property name="soapUrl" value="http://www.ebi.ac.uk/Tools/webservices/psicquic/chembl/webservices/psicquic"/>
+        <property name="organizationUrl" value="http://www.ebi.ac.uk/chembl"/>
+        <property name="restUrl" value="http://www.ebi.ac.uk/Tools/webservices/psicquic/chembl/webservices/current/search/interactor/imatinib"/>
+    </bean>
     <bean id="intactService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="IntAct"/>
-        <property name="soapUrl" value="http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic"/>
+        <property name="soapUrl" value="http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic"/>
         <property name="organizationUrl" value="http://www.ebi.ac.uk/intact"/>
-        <property name="restUrl" value="http://www.ebi.ac.uk/intact/psicquic/webservices/current/search/query/species:human?firstResult=0&amp;maxResults=100"/>
+        <property name="restUrl" value="http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/query/species:human?firstResult=0&amp;maxResults=100"/>
     </bean>
     <bean id="irefindexService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="iRefIndex"/>
@@ -64,6 +70,7 @@
         <property name="registeredServices">
             <list>
                 <ref bean="biogridService"/>
+                <ref bean="chemblService"/>
                 <ref bean="intactService"/>
                 <ref bean="irefindexService"/>
                 <ref bean="matrixdbService"/>
@@ -84,6 +91,7 @@
         <property name="beans">
             <map>
                 <entry key="psicquic_registry:name=biogrid" value-ref="biogridService"/>
+                <entry key="psicquic_registry:name=chembl" value-ref="chemblService"/>
                 <entry key="psicquic_registry:name=intact" value-ref="intactService"/>
                 <entry key="psicquic_registry:name=irefindex" value-ref="irefindexService"/>
                 <entry key="psicquic_registry:name=matrixdb" value-ref="matrixdbService"/>
