@@ -60,7 +60,7 @@
                    It searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
 
                    There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
-                   <tr:goLink text="check status" destination="http://www.ebi.ac.uk/intact/psicquic-registry/registry?action=STATUS"
+                   <tr:goLink text="check status" destination="http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS"
                            targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
 
                    </div>

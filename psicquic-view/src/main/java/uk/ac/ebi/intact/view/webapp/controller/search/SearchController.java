@@ -150,7 +150,7 @@ public class SearchController extends BaseController {
     }
 
     private void populateActiveServicesMap() {
-        List<String[]> serviceUrls = getServices("http://www.ebi.ac.uk/intact/psicquic-registry/registry?action=ACTIVE&format=txt");
+        List<String[]> serviceUrls = getServices("http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=ACTIVE&format=txt");
 
         for (String[] serviceUrl : serviceUrls) {
             activeServices.put(serviceUrl[0], serviceUrl[1]);
@@ -158,7 +158,7 @@ public class SearchController extends BaseController {
     }
 
     private void populateInactiveServicesMap() {
-        List<String[]> serviceUrls = getServices("http://www.ebi.ac.uk/intact/psicquic-registry/registry?action=INACTIVE&format=txt");
+        List<String[]> serviceUrls = getServices("http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=INACTIVE&format=txt");
 
         for (String[] serviceUrl : serviceUrls) {
             inactiveServices.put(serviceUrl[0], serviceUrl[1]);
