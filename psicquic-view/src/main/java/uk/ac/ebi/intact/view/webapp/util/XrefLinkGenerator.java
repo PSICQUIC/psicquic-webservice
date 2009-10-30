@@ -62,7 +62,6 @@ public class XrefLinkGenerator {
     }
 
     private static String replacePlaceholderWithId(String url, String identifier) {
-        System.out.println( "XrefLinkGenerator.replacePlaceholderWithId( \""+ url +"\", \""+ identifier +"\" )" );
         return url.replaceAll("\\{0\\}", identifier);
     }
 }

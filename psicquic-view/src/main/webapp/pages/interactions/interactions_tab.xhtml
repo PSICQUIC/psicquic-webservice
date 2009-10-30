@@ -45,13 +45,10 @@
 
 <tr:column>
     <tr:outputText value="#{status.index + 1}"/>
-
 </tr:column>
 
 <tr:column headerText="#{messages['moleculeA.name']}" styleClass="cellTextCompound">
-
     <iav:xrefDataList value="#{binaryInteraction.interactorA.identifiers}" onlyText="false" linkType="molecule"/>
-
  </tr:column>
 
 <tr:column headerText="#{messages['moleculeA.links']}" styleClass="cellTextCompound">
@@ -82,7 +79,6 @@
 
 <tr:column headerText="#{messages['moleculeB.name']}" styleClass="cellTextTarget">
     <iav:xrefDataList value="#{binaryInteraction.interactorB.identifiers}" onlyText="false" linkType="molecule"/>
-    <!--<h:outputText value="#{iamf:getInteractorDisplayName(binaryInteraction.interactorB)}"/>-->
 </tr:column>
 
 <tr:column headerText="#{messages['moleculeB.links']}" styleClass="cellTextTarget">
@@ -113,26 +109,10 @@
 </tr:column>
 
 <tr:column headerText="Alt. identifiers molecule A" styleClass="cellTextCompound">
-    <!--<iam:collapsibleIterator id="csd_altIdA_#{status.index}"-->
-                             <!--disclosed="#{searchBean.showAlternativeIds}"-->
-                             <!--value="#{binaryInteraction.interactorA.alternativeIdentifiers}"-->
-                             <!--maxShown="3">-->
-
-        <!--<tr:outputText value="#{item.identifier}"/>-->
-
-    <!--</iam:collapsibleIterator>-->
     <iav:xrefDataList value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorA.alternativeIdentifiers,null,'rogid')}" itemPerLine="false"/>
 </tr:column>
 
 <tr:column headerText="Alt. identifiers molecule B" styleClass="cellTextTarget">
-    <!--<iam:collapsibleIterator id="csd_altIdB_#{status.index}"-->
-                             <!--disclosed="#{searchBean.showAlternativeIds}"-->
-                             <!--value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorB.alternativeIdentifiers,null,'rogid')}"-->
-                             <!--maxShown="3">-->
-
-        <!--<tr:outputText value="#{item.identifier}"/>-->
-
-    <!--</iam:collapsibleIterator>-->
     <iav:xrefDataList value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorB.alternativeIdentifiers,null,'rogid')}" itemPerLine="false"/>
 </tr:column>
 
@@ -203,7 +183,6 @@
 
 <tr:column headerText="#{messages['interaction.ac']}" styleClass="cellTextInteraction">
     <iav:xrefDataList value="#{binaryInteraction.interactionAcs}" itemPerLine="true" linkType="interaction"/>
-    <!--<tr:inputText value="#{interactionAc}"/>-->
 </tr:column>
 
 <tr:column headerText="#{messages['interaction.confidencevalue']}"
@@ -216,7 +195,6 @@
             </span>
     </tr:iterator>
 </tr:column>
-
 
 </tr:table>
 
