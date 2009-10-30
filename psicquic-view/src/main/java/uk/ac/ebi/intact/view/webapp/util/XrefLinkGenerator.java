@@ -19,22 +19,25 @@ import psidev.psi.mi.tab.model.CrossReference;
 import uk.ac.ebi.intact.view.webapp.controller.application.XrefLinkContext;
 
 /**
- * TODO comment this!
+ * Xref Link Generator.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class XrefLinkGenerator
-{
+public class XrefLinkGenerator {
 
     public static String generateUrl(XrefLinkContext linkContext, CrossReference xref) {
+        return generateUrl(linkContext, xref, null);
+    }
+
+    public static String generateUrl(XrefLinkContext linkContext, CrossReference xref, String linkType) {
         if (linkContext == null) return null;
         if (xref == null) return null;
 
-        return generateUrl(linkContext, xref.getDatabase(), xref.getIdentifier());
+        return generateUrl(linkContext, xref.getDatabase(), xref.getIdentifier(), linkType);
     }
 
-    public static String generateUrl(XrefLinkContext linkContext, String database, String identifier) {
+    public static String generateUrl(XrefLinkContext linkContext, String database, String identifier, String linkType) {
         if (database.equals("taxid")) {
             return replacePlaceholderWithId(linkContext.getOlsUrl(), identifier);
         } else if (database.equals("MI")) {
@@ -43,15 +46,23 @@ public class XrefLinkGenerator
             return replacePlaceholderWithId(linkContext.getCitexploreUrl(), identifier);
         } else if (database.equals("hierarchView")) {
             return replacePlaceholderWithId(linkContext.getHierarchViewUrl(), identifier);
-        } else if (linkContext.containsKey(database)) {
+        } else if ( linkContext.containsKey(database) || linkContext.containsKey(database + "." + linkType) ) {
             // here, the database is the same as the key in the props file (e.g. uniprotkb, intact...)
-            return replacePlaceholderWithId(linkContext.getUrl(database), identifier);
+            String url = null;
+            if( linkContext.containsKey( database + "." + linkType ) ){
+                url = linkContext.getUrl( database + "." + linkType );
+            }
+            if( url == null && linkContext.containsKey( database )) {
+               url = linkContext.getUrl( database );
+            }
+            return ( url == null ? null : replacePlaceholderWithId( url, identifier ) );
         }
 
         return null;
     }
 
     private static String replacePlaceholderWithId(String url, String identifier) {
+        System.out.println( "XrefLinkGenerator.replacePlaceholderWithId( \""+ url +"\", \""+ identifier +"\" )" );
         return url.replaceAll("\\{0\\}", identifier);
     }
 }

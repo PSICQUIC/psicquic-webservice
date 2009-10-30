@@ -77,6 +77,9 @@
         <attribute>
             <name>maxShownItems</name>
         </attribute>
+        <attribute>
+            <name>linkType</name>
+        </attribute>
     </tag>
 
     <tag>

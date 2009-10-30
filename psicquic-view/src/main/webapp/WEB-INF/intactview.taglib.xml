@@ -43,12 +43,12 @@
     <function>
         <function-name>xrefUrl</function-name>
         <function-class>uk.ac.ebi.intact.view.webapp.util.XrefLinkGenerator</function-class>
-        <function-signature>java.lang.String generateUrl(uk.ac.ebi.intact.view.webapp.controller.application.XrefLinkContext,psidev.psi.mi.tab.model.CrossReference)</function-signature>
+        <function-signature>java.lang.String generateUrl(uk.ac.ebi.intact.view.webapp.controller.application.XrefLinkContext,psidev.psi.mi.tab.model.CrossReference,java.lang.String)</function-signature>
     </function>
     <function>
         <function-name>xrefUrlForDb</function-name>
         <function-class>uk.ac.ebi.intact.view.webapp.util.XrefLinkGenerator</function-class>
-        <function-signature>java.lang.String generateUrl(uk.ac.ebi.intact.view.webapp.controller.application.XrefLinkContext,java.lang.String,java.lang.String)</function-signature>
+        <function-signature>java.lang.String generateUrl(uk.ac.ebi.intact.view.webapp.controller.application.XrefLinkContext,java.lang.String,java.lang.String,java.lang.String)</function-signature>
     </function>
     <function>
         <function-name>xrefToString</function-name>

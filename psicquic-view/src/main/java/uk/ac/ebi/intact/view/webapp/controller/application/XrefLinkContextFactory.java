@@ -22,7 +22,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 /**
- * TODO comment this!
+ * Xref Link Context Factory.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
@@ -59,7 +59,7 @@ public class XrefLinkContextFactory
     public static String xrefToString(CrossReference xref, boolean showDb, boolean showId, boolean showText) {
         if (xref == null) return "";
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder( 32 );
         if (showDb) {
             sb.append(xref.getDatabase()).append(":");
         }
