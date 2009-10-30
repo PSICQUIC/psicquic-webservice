@@ -28,9 +28,11 @@ import java.util.List;
 public class PsicquicRegistryConfig {
 
     private String version;
+    private long serviceCheckTimeout;
     private List<ServiceType> registeredServices;
 
     public PsicquicRegistryConfig() {
+        this.serviceCheckTimeout = 1000L;
     }
 
     public String getVersion() {
@@ -47,5 +49,13 @@ public class PsicquicRegistryConfig {
 
     public void setRegisteredServices(List<ServiceType> registeredServices) {
         this.registeredServices = registeredServices;
+    }
+
+    public long getServiceCheckTimeout() {
+        return serviceCheckTimeout;
+    }
+
+    public void setServiceCheckTimeout(long serviceCheckTimeout) {
+        this.serviceCheckTimeout = serviceCheckTimeout;
     }
 }

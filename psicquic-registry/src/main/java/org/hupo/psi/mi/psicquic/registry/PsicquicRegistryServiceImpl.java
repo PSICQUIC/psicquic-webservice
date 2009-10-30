@@ -15,20 +15,19 @@
  */
 package org.hupo.psi.mi.psicquic.registry;
 
-import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import freemarker.template.Configuration;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig;
 import org.hupo.psi.mi.psicquic.registry.util.FreemarkerStreamingOutput;
 import org.hupo.psi.mi.psicquic.registry.util.RawTextStreamingOutput;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
-
-import psidev.psi.mi.tab.model.BinaryInteraction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import psidev.psi.mi.search.SearchResult;
-import freemarker.template.Configuration;
+import psidev.psi.mi.tab.model.BinaryInteraction;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -112,7 +111,7 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
         String version = null;
 
         try {
-            final UniversalPsicquicClient client = new UniversalPsicquicClient(serviceStatus.getSoapUrl(), 500L);
+            final UniversalPsicquicClient client = new UniversalPsicquicClient(serviceStatus.getSoapUrl(), config.getServiceCheckTimeout());
             version = client.getService().getVersion();
 
             final SearchResult<BinaryInteraction> result = client.getByQuery("*:*", 0, 0);

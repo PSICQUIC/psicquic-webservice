@@ -90,6 +90,7 @@
     <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
+                <entry key="psicquic_registry:name=configuration" value-ref="psicquicConfig"/>
                 <entry key="psicquic_registry:name=biogrid" value-ref="biogridService"/>
                 <entry key="psicquic_registry:name=chembl" value-ref="chemblService"/>
                 <entry key="psicquic_registry:name=intact" value-ref="intactService"/>
