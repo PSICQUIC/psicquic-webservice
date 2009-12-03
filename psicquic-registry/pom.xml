@@ -481,8 +481,13 @@
         <!-- for jaxb-impl -->
         <repository>
             <id>java.net</id>
-            <url>http://download.java.net/maven/1/</url>
-            <layout>legacy</layout>
+            <url>http://repo1.maven.org/maven2/</url>
+            <releases>
+               <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                 <enabled>false</enabled>
+            </snapshots>
         </repository>
 
         <repository>
