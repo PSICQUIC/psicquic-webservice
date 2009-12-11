@@ -28,7 +28,7 @@ public class PsicquicClientExample {
     public static void main(String[] args) throws Exception {
 
         // change the enpoint address as needed
-        UniversalPsicquicClient client = new UniversalPsicquicClient("http://localhost:8999/intact-psicquic-ws/webservices/psicquic");
+        UniversalPsicquicClient client = new UniversalPsicquicClient("http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic");
 
         SearchResult<BinaryInteraction> searchResult = client.getByQuery("brca2", 0, 200);
 
