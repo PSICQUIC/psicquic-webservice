@@ -70,7 +70,7 @@
         <property name="soapUrl" value="http://brie8.cshl.edu:8090/psicquic-ws-reactome/webservices/psicquic"/>
         <property name="restUrl" value="http://brie8.cshl.edu:8090/psicquic-ws-reactome/webservices/current/search/query/Q5VT97"/>
     </bean>
-    <bean id="guanmingFisService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
+    <bean id="reactomeFiService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="Reactome Functional Interactions"/>
         <property name="organizationUrl" value="http://www.reactome.org/"/>
         <property name="soapUrl" value="http://brie8.cshl.edu:8090/psicquic-ws-reactome-fi/webservices/psicquic"/>
@@ -89,9 +89,9 @@
                 <ref bean="matrixdbService"/>
                 <ref bean="mintService"/>
                 <ref bean="mpidbService"/>
-                <ref bean="stringService"/>
                 <ref bean="reactomeService"/>
-                <ref bean="guanmingFisService"/>
+                <ref bean="reactomeFiService"/>
+                <ref bean="stringService"/>
             </list>
         </property>
     </bean>
@@ -113,9 +113,9 @@
                 <entry key="psicquic_registry:name=matrixdb" value-ref="matrixdbService"/>
                 <entry key="psicquic_registry:name=mint" value-ref="mintService"/>
                 <entry key="psicquic_registry:name=mpidb" value-ref="mpidbService"/>
+                <entry key="psicquic_registry:name=reactome" value-ref="reactomeService"/>
+                <entry key="psicquic_registry:name=reactomefi" value-ref="reactomeFiService"/>
                 <entry key="psicquic_registry:name=string" value-ref="stringService"/>
-                <entry key="psicquic_registry:name=string" value-ref="reactomeService"/>
-                <entry key="psicquic_registry:name=string" value-ref="guanmingFisService"/>
             </map>
         </property>
     </bean>
