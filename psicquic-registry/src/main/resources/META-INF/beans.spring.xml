@@ -71,7 +71,7 @@
         <property name="restUrl" value="http://brie8.cshl.edu:8080/psicquic-ws-reactome/webservices/current/search/query/Q5VT97"/>
     </bean>
     <bean id="reactomeFiService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
-        <property name="name" value="Reactome Functional Interactions"/>
+        <property name="name" value="Reactome-Functional-Interactions"/>
         <property name="organizationUrl" value="http://www.reactome.org/"/>
         <property name="soapUrl" value="http://brie8.cshl.edu:8090/psicquic-ws-reactome-fi/webservices/psicquic"/>
         <property name="restUrl" value="http://brie8.cshl.edu:8090/psicquic-ws-reactome-fi/webservices/current/search/interactor/P00533"/>
