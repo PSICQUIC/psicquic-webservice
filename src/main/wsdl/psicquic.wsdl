@@ -42,6 +42,13 @@
             <xs:element name="getSupportedDbAcs" type="psq:getSupportedDbAcs"/>
             <xs:element name="getSupportedDbAcsResponse" type="psq:getSupportedDbAcsResponse"/>
 
+            <!-- getPropery methods, added for 1.2 -->
+            <xs:element name="getProperty" type="psq:getProperty"/>
+            <xs:element name="getPropertyResponse" type="psq:getPropertyResponse"/>
+
+            <xs:element name="getPropertyNames" type="psq:getPropertyNames"/>
+            <xs:element name="getPropertyNamesResponse" type="psq:getPropertyNamesResponse"/>
+
             <!-- in/out types -->
 
             <xs:complexType name="getByInteractor">
@@ -142,6 +149,28 @@
             </xs:complexType>
 
             <xs:complexType name="getSupportedDbAcsResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="getProperty">
+                <xs:sequence>
+                    <xs:element name="property" nillable="false" type="xs:string" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="getPropertyResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="getPropertyNames">
+                <xs:sequence/>
+            </xs:complexType>
+
+            <xs:complexType name="getPropertyNamesResponse">
                 <xs:sequence>
                     <xs:element name="return" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
                 </xs:sequence>
@@ -299,6 +328,22 @@
         <part element="psq:getByQueryResponse" name="queryResponse"/>
     </message>
 
+    <message name="getProperty">
+        <part element="psq:getProperty" name="propertyName"/>
+    </message>
+
+    <message name="getPropertyResponse">
+        <part element="psq:getPropertyResponse" name="propertyResponse"/>
+    </message>
+
+    <message name="getPropertyNames">
+        <part element="psq:getPropertyNames" name="propertyNames"/>
+    </message>
+
+    <message name="getPropertyNamesResponse">
+        <part element="psq:getPropertyNamesResponse" name="propertyNamesResponse"/>
+    </message>
+
     <!-- PORT TYPE -->
 
     <portType name="psicquicService">
@@ -360,6 +405,16 @@
             <fault message="psq:notSupportedMethodException" name="notSupportedMethodException"/>
             <fault message="psq:notSupportedTypeException" name="notSupportedTypeException"/>
             <fault message="psq:PsicquicServiceException" name="PsicquicServiceException"/>
+        </operation>
+
+        <operation name="getProperty">
+            <input message="psq:getProperty" name="getProperty"/>
+            <output message="psq:getPropertyResponse" name="getPropertyResponse"/>
+        </operation>
+
+        <operation name="getPropertyNames">
+            <input message="psq:getPropertyNames" name="getPropertyNames"/>
+            <output message="psq:getPropertyNamesResponse" name="getPropertyNamesResponse"/>
         </operation>
     </portType>
 
@@ -492,6 +547,26 @@
             <fault name="PsicquicServiceException">
                 <soap:fault name="PsicquicServiceException" use="literal"/>
             </fault>
+        </operation>
+
+        <operation name="getProperty">
+            <soap:operation soapAction=""/>
+            <input name="getProperty">
+                <soap:body use="literal"/>
+            </input>
+            <output name="getPropertyResponse">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="getPropertyNames">
+            <soap:operation soapAction=""/>
+            <input name="getPropertyNames">
+                <soap:body use="literal"/>
+            </input>
+            <output name="getPropertyNamesResponse">
+                <soap:body use="literal"/>
+            </output>
         </operation>
     </binding>
 

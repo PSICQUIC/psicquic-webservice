@@ -30,7 +30,7 @@
         <!-- configurable bits -->
 
         <psicquic.index>${basedir}/target/psicquic-index</psicquic.index>
-
+        <psicquic.properties/>
     </properties>
 
     <build>

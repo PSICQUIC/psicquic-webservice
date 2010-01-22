@@ -179,6 +179,14 @@ public class IndexBasedPsicquicService implements PsicquicService {
         return Collections.EMPTY_LIST;
     }
 
+    public String getProperty(String propertyName) {
+        return config.getProperties().get(propertyName);
+    }
+
+    public List<String> getPropertyNames() {
+        return new ArrayList<String>(config.getProperties().keySet());
+    }
+
     protected ResultSet createResultSet(String query, SearchResult searchResult, RequestInfo requestInfo) throws PsicquicServiceException,
                                                                                                    NotSupportedTypeException {
         ResultSet resultSet = new ResultSet();

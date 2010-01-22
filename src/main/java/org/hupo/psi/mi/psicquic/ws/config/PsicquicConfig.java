@@ -15,6 +15,10 @@
  */
 package org.hupo.psi.mi.psicquic.ws.config;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Place-holder for the configuration. Initialized by Spring.
  *
@@ -27,6 +31,7 @@ public class PsicquicConfig {
     private String artifactId;
     private String version;
     private String indexDirectory;
+    private String propertiesAsStrings;
 
     public PsicquicConfig() {
     }
@@ -61,5 +66,31 @@ public class PsicquicConfig {
 
     public void setIndexDirectory(String indexDirectory) {
         this.indexDirectory = indexDirectory;
+    }
+
+    public Map<String,String> getProperties() {
+        String propsAsString = getPropertiesAsStrings();
+
+        if (propsAsString == null) return Collections.EMPTY_MAP;
+
+        Map<String,String> propMap = new HashMap<String, String>();
+
+        String[] props = propsAsString.split(",");
+
+        for (String prop : props) {
+            String[] propTokens = prop.trim().split("=");
+
+            propMap.put(propTokens[0], propTokens[1]);
+        }
+
+        return propMap;
+    }
+
+    public String getPropertiesAsStrings() {
+        return propertiesAsStrings;
+    }
+
+    public void setPropertiesAsStrings(String propertiesAsStrings) {
+        this.propertiesAsStrings = propertiesAsStrings;
     }
 }
