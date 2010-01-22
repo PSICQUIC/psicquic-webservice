@@ -27,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -106,6 +107,32 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
         return Response.status(200)
                 .type(MediaType.TEXT_PLAIN)
                 .entity(StringUtils.join(formats, "\n")).build();
+    }
+
+    public Object getProperty(String propertyName) {
+        final String val = config.getProperties().get(propertyName);
+
+        if (val == null) {
+            return Response.status(500)
+                .type(MediaType.TEXT_PLAIN)
+                .entity("Property not found: "+propertyName).build();
+        }
+
+         return Response.status(200)
+                .type(MediaType.TEXT_PLAIN)
+                .entity(val).build();
+    }
+
+    public Object getProperties() {
+        StringBuilder sb = new StringBuilder(256);
+
+        for (Map.Entry entry : config.getProperties().entrySet()) {
+            sb.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+        }
+
+        return Response.status(200)
+                .type(MediaType.TEXT_PLAIN)
+                .entity(sb.toString()).build();
     }
 
     public String getVersion() {

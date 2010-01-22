@@ -70,6 +70,14 @@ public interface PsicquicRestService {
             NotSupportedTypeException;
 
     @GET
+    @Path("/property/{propertyName}")
+    Object getProperty(@PathParam("propertyName") String propertyName);
+
+    @GET
+    @Path("/properties")
+    Object getProperties();
+
+    @GET
     @Path("/version")
     String getVersion();
 

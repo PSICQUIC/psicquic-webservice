@@ -12,14 +12,13 @@
     <context:component-scan base-package="org.hupo.psi.mi.psicquic.ws"/>
 
     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
-
-    <context:property-placeholder location="classpath:/META-INF/psicquic.properties"/> 
     
     <bean name="psicquicConfig" class="org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig">
-        <property name="groupId" value="${psicquic.groupId}"/>
-        <property name="artifactId" value="${psicquic.artifactId}"/>
-        <property name="version" value="${psicquic.version}"/>
+        <property name="groupId" value="${pom.groupId}"/>
+        <property name="artifactId" value="${pom.artifactId}"/>
+        <property name="version" value="${pom.version}"/>
         <property name="indexDirectory" value="${psicquic.index}"/>
+        <property name="propertiesAsStrings" value="${psicquic.properties}"/>
     </bean>
    
 </beans>
