@@ -46,8 +46,8 @@
             <xs:element name="getProperty" type="psq:getProperty"/>
             <xs:element name="getPropertyResponse" type="psq:getPropertyResponse"/>
 
-            <xs:element name="getPropertyNames" type="psq:getPropertyNames"/>
-            <xs:element name="getPropertyNamesResponse" type="psq:getPropertyNamesResponse"/>
+            <xs:element name="getProperties" type="psq:getProperties"/>
+            <xs:element name="getPropertiesResponse" type="psq:getPropertiesResponse"/>
 
             <!-- in/out types -->
 
@@ -166,13 +166,13 @@
                 </xs:sequence>
             </xs:complexType>
 
-            <xs:complexType name="getPropertyNames">
+            <xs:complexType name="getProperties">
                 <xs:sequence/>
             </xs:complexType>
 
-            <xs:complexType name="getPropertyNamesResponse">
+            <xs:complexType name="getPropertiesResponse">
                 <xs:sequence>
-                    <xs:element name="return" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+                    <xs:element name="return" type="psq:property" minOccurs="0" maxOccurs="unbounded"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -244,6 +244,13 @@
             <xs:complexType name="dbRefList">
                 <xs:sequence>
                     <xs:element maxOccurs="unbounded" name="dbRef" type="psq:dbRef"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="property">
+                <xs:sequence>
+                    <xs:element name="key" type="xs:string"/>
+                    <xs:element name="value" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
 
@@ -336,12 +343,12 @@
         <part element="psq:getPropertyResponse" name="propertyResponse"/>
     </message>
 
-    <message name="getPropertyNames">
-        <part element="psq:getPropertyNames" name="propertyNames"/>
+    <message name="getProperties">
+        <part element="psq:getProperties" name="propertyNames"/>
     </message>
 
-    <message name="getPropertyNamesResponse">
-        <part element="psq:getPropertyNamesResponse" name="propertyNamesResponse"/>
+    <message name="getPropertiesResponse">
+        <part element="psq:getPropertiesResponse" name="propertyNamesResponse"/>
     </message>
 
     <!-- PORT TYPE -->
@@ -412,9 +419,9 @@
             <output message="psq:getPropertyResponse" name="getPropertyResponse"/>
         </operation>
 
-        <operation name="getPropertyNames">
-            <input message="psq:getPropertyNames" name="getPropertyNames"/>
-            <output message="psq:getPropertyNamesResponse" name="getPropertyNamesResponse"/>
+        <operation name="getProperties">
+            <input message="psq:getProperties" name="getProperties"/>
+            <output message="psq:getPropertiesResponse" name="getPropertiesResponse"/>
         </operation>
     </portType>
 
@@ -559,12 +566,12 @@
             </output>
         </operation>
 
-        <operation name="getPropertyNames">
+        <operation name="getProperties">
             <soap:operation soapAction=""/>
-            <input name="getPropertyNames">
+            <input name="getProperties">
                 <soap:body use="literal"/>
             </input>
-            <output name="getPropertyNamesResponse">
+            <output name="getPropertiesResponse">
                 <soap:body use="literal"/>
             </output>
         </operation>

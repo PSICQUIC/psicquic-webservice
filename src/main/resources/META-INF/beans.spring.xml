@@ -17,6 +17,7 @@
         <property name="groupId" value="${pom.groupId}"/>
         <property name="artifactId" value="${pom.artifactId}"/>
         <property name="version" value="${pom.version}"/>
+        <property name="specVersion" value="1.1"/>
         <property name="indexDirectory" value="${psicquic.index}"/>
         <property name="propertiesAsStrings" value="${psicquic.properties}"/>
     </bean>

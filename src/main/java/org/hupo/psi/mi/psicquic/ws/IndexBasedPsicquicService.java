@@ -183,8 +183,17 @@ public class IndexBasedPsicquicService implements PsicquicService {
         return config.getProperties().get(propertyName);
     }
 
-    public List<String> getPropertyNames() {
-        return new ArrayList<String>(config.getProperties().keySet());
+    public List<Property> getProperties() {
+        List<Property> properties = new ArrayList<Property>();
+
+        for (Map.Entry<String,String> entry : config.getProperties().entrySet()) {
+            Property prop = new Property();
+            prop.setKey(entry.getKey());
+            prop.setValue(entry.getValue());
+            properties.add(prop);
+        }
+
+        return properties;
     }
 
     protected ResultSet createResultSet(String query, SearchResult searchResult, RequestInfo requestInfo) throws PsicquicServiceException,
