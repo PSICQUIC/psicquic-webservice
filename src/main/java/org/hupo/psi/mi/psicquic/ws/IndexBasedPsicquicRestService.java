@@ -90,7 +90,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
             PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
             return Response.status(200).type(MediaType.TEXT_PLAIN).entity(result).build();
         } else {
-            return Response.status(801).type(MediaType.TEXT_PLAIN).entity("Format not supported").build();
+            return Response.status(406).type(MediaType.TEXT_PLAIN).entity("Format not supported").build();
         }
 
 
@@ -113,7 +113,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
         final String val = config.getProperties().get(propertyName);
 
         if (val == null) {
-            return Response.status(500)
+            return Response.status(404)
                 .type(MediaType.TEXT_PLAIN)
                 .entity("Property not found: "+propertyName).build();
         }
