@@ -65,7 +65,7 @@
                             <sourceRoot>${basedir}/target/generated/java</sourceRoot>
                             <wsdlOptions>
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/wsdl/psicquic.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/wsdl/psicquic11.wsdl</wsdl>
                                     <extraargs>
                                             <extraarg>-b</extraarg>
                                             <extraarg>${basedir}/src/main/wsdl/binding.xjb</extraarg>
