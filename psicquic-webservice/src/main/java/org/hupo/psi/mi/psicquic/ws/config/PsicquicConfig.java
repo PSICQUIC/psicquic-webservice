@@ -30,6 +30,7 @@ public class PsicquicConfig {
     private String groupId;
     private String artifactId;
     private String version;
+    private String specVersion;
     private String indexDirectory;
     private String propertiesAsStrings;
 
@@ -83,6 +84,10 @@ public class PsicquicConfig {
             propMap.put(propTokens[0], propTokens[1]);
         }
 
+        propMap.put("psicquic.spec.version", getSpecVersion());
+        propMap.put("psicquic.implementation.name", "Reference Implementation");
+        propMap.put("psicquic.implementation.version", getVersion());
+
         return propMap;
     }
 
@@ -92,5 +97,13 @@ public class PsicquicConfig {
 
     public void setPropertiesAsStrings(String propertiesAsStrings) {
         this.propertiesAsStrings = propertiesAsStrings;
+    }
+
+    public String getSpecVersion() {
+        return specVersion;
+    }
+
+    public void setSpecVersion(String specVersion) {
+        this.specVersion = specVersion;
     }
 }
