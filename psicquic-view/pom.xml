@@ -33,6 +33,9 @@
 
         <appRoot>/psicquic</appRoot>
 
+        <!-- configurable -->
+        <config.file>/tmp/psicquic-view.config.properties</config.file>
+        <openid.admin>http://intact.myopenid.com/</openid.admin>
 
     </properties>
 
@@ -350,6 +353,39 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>2.1</version>
+        </dependency>
+
+        <!-- Spring -->
+         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-openid</artifactId>
+            <version>2.0.5.RELEASE</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.springframework</groupId>
+            		<artifactId>spring-context</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		<groupId>org.springframework</groupId>
+            		<artifactId>spring-support</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		<groupId>org.springframework</groupId>
+            		<artifactId>spring-core</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		<groupId>org.springframework</groupId>
+            		<artifactId>spring-beans</artifactId>
+            	</exclusion>
+            	<exclusion>
+            		<groupId>org.springframework</groupId>
+            		<artifactId>spring-aop</artifactId>
+            	</exclusion>
+                <exclusion>
+            		<groupId>org.springframework</groupId>
+            		<artifactId>spring-web</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

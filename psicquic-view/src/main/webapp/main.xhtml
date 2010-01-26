@@ -10,14 +10,12 @@
                 xmlns:ebi="http://ebi.ac.uk/faces/components"
                 xmlns:ebisf="http://www.ebi.ac.uk/faces/site">
 
-  <tr:document title="PSICQUIC View">
+  <tr:document title="${config.title}">
 
          <trh:head>
 
             <meta http-equiv="Content-Type"
                   content="text/html; charset=UTF-8"/>
-
-            <meta name="description" content="#{intactView['webapp.name']}"/>
 
 
             <!-- IntAct dynamic application should not be indexed by search engines -->
@@ -35,7 +33,20 @@
              <trh:script source="/js/intact.js"/>
 
         </trh:head>
+      <trh:body>
+          <div style="padding-left:10px; padding-right: 10px">
        <tr:form>
+
+           <trh:tableLayout width="100%">
+               <trh:rowLayout>
+                   <trh:cellFormat inlineStyle="vertical-align: bottom">
+                       <h1>#{config.title}</h1>
+                   </trh:cellFormat>
+                   <trh:cellFormat inlineStyle="text-align:right">
+                       <tr:image source="${config.logoUrl}"/>
+                   </trh:cellFormat>
+               </trh:rowLayout>
+           </trh:tableLayout>
 
            <!-- To avoid expired sessions, poll every 15 mins -->
            <tr:poll interval="#{15*60*1000}"/>
@@ -94,6 +105,8 @@
            </tr:panelGroupLayout>
 
        </tr:form>
+          </div>
+      </trh:body>
    </tr:document>
 
 </ui:composition>

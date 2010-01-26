@@ -2,26 +2,26 @@ package uk.ac.ebi.intact.view.webapp.controller.search;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.io.IOUtils;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
-import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
 import org.apache.myfaces.orchestra.viewController.annotations.PreRenderView;
+import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
+import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
+import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
+import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
 
-import javax.faces.event.ActionEvent;
 import javax.faces.context.FacesContext;
-import java.util.*;
-import java.net.URL;
-import java.io.InputStream;
+import javax.faces.event.ActionEvent;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Search controller.
@@ -39,6 +39,9 @@ public class SearchController extends BaseController {
 
     @Autowired
     private UserQuery userQuery;
+
+    @Autowired
+    private PsicquicViewConfig config;
 
     private int totalResults = -1;
 
@@ -146,7 +149,7 @@ public class SearchController extends BaseController {
 
     private PsicquicResultDataModel psicquicResults(String endpoint) throws PsicquicClientException {
         return new PsicquicResultDataModel(new UniversalPsicquicClient(endpoint),
-                    userQuery.getSearchQuery());
+                    userQuery.getSearchQuery(), config.getMiqlFilterQuery());
     }
 
     private void populateActiveServicesMap() {

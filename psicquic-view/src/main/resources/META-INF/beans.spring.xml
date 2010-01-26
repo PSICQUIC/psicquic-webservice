@@ -14,4 +14,9 @@
 
     <context:property-placeholder location="classpath:/uk/ac/ebi/intact/binarysearch/BuildInfo.properties"/>
 
+    <bean id="config" class="uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig">
+        <property name="configFile" value="${config.file}"/>
+        <property name="title" value="PSICQUIC View"/>
+    </bean>
+    
 </beans>

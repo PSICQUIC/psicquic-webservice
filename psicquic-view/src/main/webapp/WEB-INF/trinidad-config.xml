@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <trinidad-config xmlns="http://myfaces.apache.org/trinidad/config">
-  <debug-output>false</debug-output>
   
   <!--client-validation-disabled>true</client-validation-disabled-->
 

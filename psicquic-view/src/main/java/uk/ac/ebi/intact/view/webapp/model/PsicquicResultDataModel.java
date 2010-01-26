@@ -19,8 +19,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.trinidad.model.SortCriterion;
 import org.apache.myfaces.trinidad.model.SortableModel;
-import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
+import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
+import psidev.psi.mi.search.SearchResult;
+import psidev.psi.mi.tab.model.BinaryInteraction;
 
 import javax.faces.model.DataModelEvent;
 import javax.faces.model.DataModelListener;
@@ -28,9 +30,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.search.SearchResult;
 
 /**
  * TODO comment that class header
@@ -58,7 +57,7 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
     private Map<String,Boolean> columnSorts;
 
 
-    public PsicquicResultDataModel(UniversalPsicquicClient psicquicClient, String query) throws PsicquicClientException {
+    public PsicquicResultDataModel(UniversalPsicquicClient psicquicClient, String query, String miqlFilterQuery) throws PsicquicClientException {
         if (psicquicClient == null) {
             throw new IllegalArgumentException("Trying to create data model with a null Psicquic client");
         }
@@ -67,7 +66,16 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
         }
 
         this.psicquicClient = psicquicClient;
-        this.query = query;
+
+        if (miqlFilterQuery == null || miqlFilterQuery.length() == 0) {
+            this.query = query;
+        } else {
+            if (query.equals("*") || query.length() == 0) {
+                this.query = miqlFilterQuery;
+            } else {
+                this.query = "("+query+") AND ("+miqlFilterQuery+")";
+            }
+        }
 
         columnSorts = new HashMap<String, Boolean>(16);
 

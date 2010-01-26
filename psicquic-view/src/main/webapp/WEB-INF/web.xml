@@ -155,7 +155,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            classpath*:*.spring.xml
+            classpath*:/META-INF/*.spring.xml
         </param-value>
     </context-param>
 
@@ -205,7 +205,7 @@
             is deployed
         </description>
         <param-name>org.apache.myfaces.trinidad.CHECK_FILE_MODIFICATION</param-name>
-        <param-value>false</param-value>
+        <param-value>${debug}</param-value>
     </context-param>
 
     <context-param>
@@ -260,7 +260,6 @@
         <filter-name>orchestraFilter</filter-name>
         <filter-class>org.apache.myfaces.orchestra.conversation.jsf.filter.OrchestraServletFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>orchestraFilter</filter-name>
         <servlet-name>faces</servlet-name>
@@ -270,10 +269,19 @@
         <filter-name>trinidad</filter-name>
         <filter-class>org.apache.myfaces.trinidad.webapp.TrinidadFilter</filter-class>
     </filter>
-
     <filter-mapping>
         <filter-name>trinidad</filter-name>
         <servlet-name>faces</servlet-name>
+    </filter-mapping>
+
+    <!-- spring security -->
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <!-- Intact view listener -->
@@ -281,14 +289,6 @@
         <description>Listener to startup the application</description>
         <listener-class>uk.ac.ebi.intact.view.webapp.StartupListener</listener-class>
     </listener>
-
-    <!--
-    Listener to force a garbage collection if too many files are open - Only works in UNIX
-    This can be removed if using Facelets >= 1.15
-    -->
-    <!--<listener>-->
-    <!--<listener-class>uk.ac.ebi.faces.webapp.EvilOpenFilesListener</listener-class>-->
-    <!--</listener>-->
 
     <!-- Spring Framework 2.0 -->
     <listener>
