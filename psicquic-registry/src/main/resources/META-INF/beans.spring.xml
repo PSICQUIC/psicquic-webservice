@@ -34,7 +34,8 @@
         <property name="name" value="IntAct"/>
         <property name="soapUrl" value="http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic"/>
         <property name="organizationUrl" value="http://www.ebi.ac.uk/intact"/>
-        <property name="restUrl" value="http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/query/species:human?firstResult=0&amp;maxResults=100"/>
+        <property name="restUrl" value="http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/"/>
+        <property name="restExample" value="http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/query/species:human?firstResult=0&amp;maxResults=100"/>
     </bean>
     <bean id="irefindexService" class="org.hupo.psi.mi.psicquic.registry.ServiceType">
         <property name="name" value="iRefIndex"/>
