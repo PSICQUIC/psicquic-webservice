@@ -16,6 +16,7 @@
       <xs:element type="xs:string" name="name"/>
       <xs:element type="xs:string" name="soapUrl"/>
       <xs:element type="xs:string" name="restUrl"/>
+      <xs:element type="xs:string" name="restExample"/>
       <xs:element type="xs:boolean" name="active"/>
       <xs:element type="xs:long" name="count"/>
       <xs:element type="xs:string" name="version"/>

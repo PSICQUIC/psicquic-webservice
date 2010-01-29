@@ -48,8 +48,8 @@
         <td><nobr>${service.version!'-'}</nobr></td>
         <td><nobr>${service.soapUrl}</nobr></td>
         <td>
-            <#if service.restUrl??>
-                <a href="${service.restUrl}" target="_blank">Example</a>
+            <#if service.restExample??>
+                <a href="${service.restExample}" target="_blank">Example</a>
                 <#else>
                 NO
             </#if>
