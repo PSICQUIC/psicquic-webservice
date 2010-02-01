@@ -81,7 +81,11 @@ public class PsicquicConfig {
         for (String prop : props) {
             String[] propTokens = prop.trim().split("=");
 
-            propMap.put(propTokens[0], propTokens[1]);
+            if (propTokens.length > 0) {
+                propMap.put(propTokens[0], propTokens[1]);
+            } else {
+                propMap.put(prop, "");
+            }
         }
 
         propMap.put("psicquic.spec.version", getSpecVersion());
