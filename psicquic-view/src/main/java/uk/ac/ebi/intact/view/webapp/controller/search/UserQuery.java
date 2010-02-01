@@ -16,9 +16,11 @@
 package uk.ac.ebi.intact.view.webapp.controller.search;
 
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
+import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
 
 import javax.annotation.PostConstruct;
 import javax.faces.event.ActionEvent;
@@ -40,6 +42,9 @@ import java.util.Map;
 public class UserQuery extends BaseController {
 
     public static final String STAR_QUERY = "*:*";
+
+    @Autowired
+    private PsicquicViewConfig config;
 
     private String searchQuery = "*";
 
@@ -171,6 +176,24 @@ public class UserQuery extends BaseController {
             searchQuery = "*";
         }
         return searchQuery;
+    }
+
+    public String getFilteredSearchQuery() {
+        String query = getSearchQuery();
+        String miqlFilterQuery = config.getMiqlFilterQuery();
+
+         if (miqlFilterQuery == null || miqlFilterQuery.length() == 0) {
+            return query;
+        } else {
+            if (query.equals("*") || query.length() == 0) {
+                query = miqlFilterQuery;
+            } else {
+                query = "("+query+") AND ("+miqlFilterQuery+")";
+            }
+        }
+
+        return query;
+
     }
 
     public void setSearchQuery(String searchQuery) {

@@ -17,7 +17,8 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://intact.ebi.ac.uk/miscel /WEB-INF/intact-miscel.tld">
 
-<!-- RESULT SUMMARY -->
+
+
 
 <br/>
 
@@ -36,7 +37,13 @@
         </f:facet>
 
         <tr:panelGroupLayout layout="horizontal">
-
+            <tr:panelButtonBar rendered="#{service.restUrl != null}">
+                <h:outputText value="Export: "/>
+                <tr:goLink text="MITAB 2.5" targetFrame="_blank" inlineStyle="white-space: pre;"
+                           destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}"/>
+                <tr:goLink text="PSI-XML 2.5.4" targetFrame="_blank" inlineStyle="white-space: pre;"
+                           destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}"/>
+            </tr:panelButtonBar>
         </tr:panelGroupLayout>
 
     </tr:panelHorizontalLayout>

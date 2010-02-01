@@ -5,6 +5,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
 import org.apache.myfaces.orchestra.viewController.annotations.PreRenderView;
 import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
+import org.hupo.psi.mi.psicquic.registry.ServiceType;
+import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
+import org.hupo.psi.mi.psicquic.registry.client.registry.DefaultPsicquicRegistryClient;
+import org.hupo.psi.mi.psicquic.registry.client.registry.PsicquicRegistryClient;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +47,9 @@ public class SearchController extends BaseController {
     @Autowired
     private PsicquicViewConfig config;
 
+    private List<ServiceType> services;
+    private Map<String,ServiceType> servicesMap;
+
     private int totalResults = -1;
 
     private Map<String,String> activeServices;
@@ -76,8 +83,22 @@ public class SearchController extends BaseController {
         this.activeServices = new HashMap<String,String>();
         this.inactiveServices = new HashMap<String,String>();
 
-        populateActiveServicesMap();
-        populateInactiveServicesMap();
+        try {
+            PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
+            services = registryClient.listServices();
+
+            populateActiveServicesMap();
+            populateInactiveServicesMap();
+
+            servicesMap = new HashMap<String, ServiceType>(services.size());
+
+            for (ServiceType service : services) {
+                servicesMap.put(service.getName(), service);
+            }
+
+        } catch (PsicquicRegistryClientException e) {
+            throw new RuntimeException("Problem loading services from registry", e);
+        }
     }
 
     public String doBinarySearchAction() {
@@ -133,7 +154,6 @@ public class SearchController extends BaseController {
     }
 
     private void searchAndCreateResultModels() {
-
         for (Map.Entry<String,String> serviceUrl : activeServices.entrySet()) {
             try {
                 PsicquicResultDataModel results = psicquicResults(serviceUrl.getValue());
@@ -148,23 +168,21 @@ public class SearchController extends BaseController {
     }
 
     private PsicquicResultDataModel psicquicResults(String endpoint) throws PsicquicClientException {
-        return new PsicquicResultDataModel(new UniversalPsicquicClient(endpoint),
-                    userQuery.getSearchQuery(), config.getMiqlFilterQuery());
+        return new PsicquicResultDataModel(new UniversalPsicquicClient(endpoint), userQuery.getFilteredSearchQuery());
     }
-
     private void populateActiveServicesMap() {
-        List<String[]> serviceUrls = getServices("http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=ACTIVE&format=txt");
-
-        for (String[] serviceUrl : serviceUrls) {
-            activeServices.put(serviceUrl[0], serviceUrl[1]);
+        for (ServiceType service : services) {
+            if (service.isActive()) {
+                activeServices.put(service.getName(), service.getSoapUrl());
+            }
         }
     }
 
     private void populateInactiveServicesMap() {
-        List<String[]> serviceUrls = getServices("http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=INACTIVE&format=txt");
-
-        for (String[] serviceUrl : serviceUrls) {
-            inactiveServices.put(serviceUrl[0], serviceUrl[1]);
+        for (ServiceType service : services) {
+            if (!service.isActive()) {
+                inactiveServices.put(service.getName(), service.getSoapUrl());
+            }
         }
     }
 
@@ -223,5 +241,13 @@ public class SearchController extends BaseController {
         final String[] services = inactiveServices.keySet().toArray(new String[inactiveServices.size()]);
         Arrays.sort(services);
         return services;
+    }
+
+    public List<ServiceType> getServices() {
+        return services;
+    }
+
+    public Map<String, ServiceType> getServicesMap() {
+        return servicesMap;
     }
 }

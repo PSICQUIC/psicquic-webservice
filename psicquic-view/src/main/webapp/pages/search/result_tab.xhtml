@@ -11,6 +11,7 @@
                        disabled="#{searchBean.resultCountMap[name] == 0}"
                        rendered="#{searchBean.resultDataModelMap[name] != null}">
         <ui:decorate template="/pages/interactions/interactions_tab.xhtml">
+            <ui:param name="service" value="#{searchBean.servicesMap[name]}"/>
             <ui:param name="results" value="#{searchBean.resultDataModelMap[name]}"/>
         </ui:decorate>
     </tr:showDetailItem>

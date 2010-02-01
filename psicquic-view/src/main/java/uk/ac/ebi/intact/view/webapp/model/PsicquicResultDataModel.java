@@ -56,8 +56,9 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
 
     private Map<String,Boolean> columnSorts;
 
+    // TODO get the services
 
-    public PsicquicResultDataModel(UniversalPsicquicClient psicquicClient, String query, String miqlFilterQuery) throws PsicquicClientException {
+    public PsicquicResultDataModel(UniversalPsicquicClient psicquicClient, String query) throws PsicquicClientException {
         if (psicquicClient == null) {
             throw new IllegalArgumentException("Trying to create data model with a null Psicquic client");
         }
@@ -66,16 +67,7 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
         }
 
         this.psicquicClient = psicquicClient;
-
-        if (miqlFilterQuery == null || miqlFilterQuery.length() == 0) {
-            this.query = query;
-        } else {
-            if (query.equals("*") || query.length() == 0) {
-                this.query = miqlFilterQuery;
-            } else {
-                this.query = "("+query+") AND ("+miqlFilterQuery+")";
-            }
-        }
+        this.query = query;
 
         columnSorts = new HashMap<String, Boolean>(16);
 
