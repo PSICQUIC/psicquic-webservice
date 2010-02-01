@@ -52,23 +52,21 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
         ClientProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.setServiceClass(PsicquicService.class);
         factory.setAddress(serviceAddress);
+        factory.getInInterceptors().add(new GZIPInInterceptor());
+        factory.getOutInterceptors().add(new GZIPOutInterceptor());
 
         this.service = (PsicquicService) factory.create();
 
         final Client client = ClientProxy.getClient(service);
 
         final HTTPConduit http = (HTTPConduit) client.getConduit();
-        client.getInInterceptors().add(new GZIPInInterceptor());
-        client.getOutInterceptors().add(new GZIPOutInterceptor());
-
-        final HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+        final HTTPClientPolicy httpClientPolicy = http.getClient();
 
         httpClientPolicy.setReceiveTimeout(timeout);
         httpClientPolicy.setAllowChunking(false);
         httpClientPolicy.setConnectionTimeout(1000L);
         httpClientPolicy.setAcceptEncoding("UTF-8");
 
-        http.setClient(httpClientPolicy);
 
     }
 
