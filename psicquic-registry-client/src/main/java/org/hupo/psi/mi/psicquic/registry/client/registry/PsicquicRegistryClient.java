@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hupo.psi.mi.registry.client.registry;
+package org.hupo.psi.mi.psicquic.registry.client.registry;
 
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
-import org.hupo.psi.mi.registry.client.PsicquicRegistryClientException;
+import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
 
 import java.util.List;
 

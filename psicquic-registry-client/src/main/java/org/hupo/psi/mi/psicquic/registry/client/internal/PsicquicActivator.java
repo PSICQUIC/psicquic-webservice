@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hupo.psi.mi.registry.client.internal;
+package org.hupo.psi.mi.psicquic.registry.client.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

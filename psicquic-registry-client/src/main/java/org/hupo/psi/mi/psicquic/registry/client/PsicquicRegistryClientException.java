@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hupo.psi.mi.registry.client;
+package org.hupo.psi.mi.psicquic.registry.client;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
