@@ -41,8 +41,9 @@
                 <h:outputText value="Export: "/>
                 <tr:goLink text="MITAB 2.5" targetFrame="_blank" inlineStyle="white-space: pre;"
                            destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}"/>
-                <tr:goLink text="PSI-XML 2.5.4" targetFrame="_blank" inlineStyle="white-space: pre;"
-                           destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}"/>
+                <tr:goLink text="PSI-XML 2.5.4" targetFrame="_blank" inlineStyle="white-space: pre;" disabled="#{searchBean.resultCountMap[service.name] gt 200}"
+                           shortDesc="Exports data to PSI-MI XML 2.5.4 if less that 200 interactions are present"
+                           destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}?format=xml25"/>
             </tr:panelButtonBar>
         </tr:panelGroupLayout>
 
