@@ -65,7 +65,7 @@ public class DefaultPsicquicRegistryClient implements PsicquicRegistryClient {
         return listServices("ACTIVE");
     }
 
-    public List<ServiceType> listAllServices() throws PsicquicRegistryClientException {
+    public List<ServiceType> listServices() throws PsicquicRegistryClientException {
         return listServices("STATUS");
     }
 
@@ -120,7 +120,7 @@ public class DefaultPsicquicRegistryClient implements PsicquicRegistryClient {
     public static void main(String[] args) throws Exception {
         PsicquicRegistryClient client = new DefaultPsicquicRegistryClient();
 
-        List<ServiceType> services = client.listAllServices();
+        List<ServiceType> services = client.listServices();
         
         for (ServiceType service : services) {
             System.out.println(service.getName()+" - "+service.getRestUrl());

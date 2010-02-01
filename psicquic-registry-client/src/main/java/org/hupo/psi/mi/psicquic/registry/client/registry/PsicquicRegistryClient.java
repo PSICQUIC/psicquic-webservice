@@ -32,7 +32,7 @@ public interface PsicquicRegistryClient {
 
     List<ServiceType> listInactiveServices() throws PsicquicRegistryClientException ;
 
-    List<ServiceType> listAllServices() throws PsicquicRegistryClientException ;
+    List<ServiceType> listServices() throws PsicquicRegistryClientException ;
 
     List<ServiceType> listServices(String action, boolean restricted) throws PsicquicRegistryClientException ;
 
