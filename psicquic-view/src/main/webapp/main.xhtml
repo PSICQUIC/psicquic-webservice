@@ -43,7 +43,7 @@
                        <h1>#{config.title}</h1>
                    </trh:cellFormat>
                    <trh:cellFormat inlineStyle="text-align:right">
-                       <tr:image source="${config.logoUrl}"/>
+                       <tr:image source="${config.logoUrl}" rendered="#{config.logoUrl != null}"/>
                    </trh:cellFormat>
                </trh:rowLayout>
            </trh:tableLayout>
@@ -66,19 +66,25 @@
 
            <ui:include src="/pages/search/search_panel.xhtml"  />
 
-           <tr:panelGroupLayout rendered="#{fn:length(searchBean.inactiveServices) gt 0}">
-                   <div style="padding-left:10px">
-                   It searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
+           <div style="text-align:right; width:100%; margin-top: -20px; position:absolute;">
+               <trh:tableLayout width="98%">
+                   <trh:rowLayout>
+                       <trh:cellFormat inlineStyle="width:99%">
+                           &#160;
+                       </trh:cellFormat>
+                       <trh:cellFormat inlineStyle="background-color: white; text-align:right; white-space:nowrap; "
+                               rendered="#{searchBean.totalResults gt 0}">
+                           Total: <b>
+                   <h:outputText value="#{searchBean.totalResults}" style="background-color:white;">
+                       <f:convertNumber pattern="#,###"/>
+                   </h:outputText></b>
+                   binary interactions
+                       </trh:cellFormat>
+                   </trh:rowLayout>
+               </trh:tableLayout>
+           </div>
 
-                   There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
-                   <tr:goLink text="check status" destination="http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS"
-                           targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
-
-                   </div>
-               <tr:separator/>
-           </tr:panelGroupLayout>
-
-           <tr:panelGroupLayout rendered="#{searchBean.totalResults le 0}">
+           <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
                <div style="padding-left:10px">
                 <b>No results were found for this query.</b>
                </div>
@@ -86,13 +92,7 @@
 
            <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0}">
 
-               <div style="float:right; padding-right: 5px; margin-top: 30px;">
-                   Total: <b>
-                   <h:outputText value="#{searchBean.totalResults}">
-                       <f:convertNumber pattern="#,###"/>
-                   </h:outputText></b>
-                   binary interactions
-               </div>
+
 
                <tr:panelTabbed position="above">
                    <c:forEach var="name" items="#{searchBean.activeServiceNames}">
@@ -102,6 +102,21 @@
                    </c:forEach>
                </tr:panelTabbed>
 
+           </tr:panelGroupLayout>
+
+            <tr:panelGroupLayout rendered="#{fn:length(searchBean.inactiveServices) gt 0}">
+                <tr:separator/>
+
+                   <div style="padding-left:10px">
+                   It searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
+
+                   There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
+                   <tr:goLink text="check status" destination="http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS"
+                           targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
+
+                   </div>
+
+                <tr:separator/>
            </tr:panelGroupLayout>
 
        </tr:form>

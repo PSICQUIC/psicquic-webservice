@@ -48,6 +48,7 @@ public class SearchController extends BaseController {
     private PsicquicViewConfig config;
 
     private List<ServiceType> services;
+    private List<ServiceType> allServices;
     private Map<String,ServiceType> servicesMap;
 
     private int totalResults = -1;
@@ -56,6 +57,9 @@ public class SearchController extends BaseController {
     private Map<String,String> inactiveServices;
     private Map<String,PsicquicResultDataModel> resultDataModelMap;
     private Map<String,Integer> resultCountMap;
+
+    private String[] includedServices;
+    private String[] excludedServices;
 
     private boolean showAlternativeIds;
 
@@ -72,7 +76,59 @@ public class SearchController extends BaseController {
         if (queryParam != null && queryParam.length()>0) {
             userQuery.reset();
             userQuery.setSearchQuery( queryParam );
+        }
 
+        services = new ArrayList<ServiceType>(allServices);
+
+        // included/excluded services
+        String includedServicesParam = context.getExternalContext().getRequestParameterMap().get("included");
+
+        if (includedServicesParam != null && includedServicesParam.length()>0) {
+            includedServices = includedServicesParam.split(",");
+
+            List<ServiceType> includedServicesList = new ArrayList<ServiceType>(includedServices.length);
+
+            for (ServiceType service : services) {
+                for (String serviceName : includedServices) {
+                    if (serviceName.equalsIgnoreCase(service.getName())) {
+                        includedServicesList.add(service);
+                    }
+                }
+            }
+
+            services = includedServicesList;
+
+            populateActiveServicesMap();
+            populateInactiveServicesMap();
+        }
+
+        String excludedServicesParam = context.getExternalContext().getRequestParameterMap().get("excluded");
+
+        if (excludedServicesParam != null && excludedServicesParam.length()>0) {
+            excludedServices = excludedServicesParam.split(",");
+
+            List<ServiceType> includedServicesList = new ArrayList<ServiceType>(excludedServices.length);
+
+            for (ServiceType service : services) {
+                boolean excluded = false;
+                for (String serviceName : excludedServices) {
+                    if (serviceName.equalsIgnoreCase(service.getName())) {
+                        excluded = true;
+                        break;
+                    }
+                }
+
+                if (!excluded) includedServicesList.add(service);
+            }
+
+            services = includedServicesList;
+
+            populateActiveServicesMap();
+            populateInactiveServicesMap();
+        }
+
+        // search
+        if (queryParam != null || includedServicesParam != null || excludedServices != null) {
             doBinarySearchAction();
         }
     }
@@ -85,7 +141,8 @@ public class SearchController extends BaseController {
 
         try {
             PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
-            services = registryClient.listServices();
+            allServices = registryClient.listServices();
+            services = new ArrayList<ServiceType>(allServices);
 
             populateActiveServicesMap();
             populateInactiveServicesMap();
@@ -110,6 +167,11 @@ public class SearchController extends BaseController {
     }
 
     public String doNewBinarySearch() {
+        services = new ArrayList<ServiceType>(allServices);
+
+        populateActiveServicesMap();
+        populateInactiveServicesMap();
+
         return doBinarySearchAction();
     }
 
@@ -154,6 +216,9 @@ public class SearchController extends BaseController {
     }
 
     private void searchAndCreateResultModels() {
+        resultCountMap.clear();
+        resultDataModelMap.clear();
+        
         for (Map.Entry<String,String> serviceUrl : activeServices.entrySet()) {
             try {
                 PsicquicResultDataModel results = psicquicResults(serviceUrl.getValue());
@@ -171,6 +236,7 @@ public class SearchController extends BaseController {
         return new PsicquicResultDataModel(new UniversalPsicquicClient(endpoint), userQuery.getFilteredSearchQuery());
     }
     private void populateActiveServicesMap() {
+        activeServices.clear();
         for (ServiceType service : services) {
             if (service.isActive()) {
                 activeServices.put(service.getName(), service.getSoapUrl());
@@ -179,6 +245,7 @@ public class SearchController extends BaseController {
     }
 
     private void populateInactiveServicesMap() {
+        inactiveServices.clear();
         for (ServiceType service : services) {
             if (!service.isActive()) {
                 inactiveServices.put(service.getName(), service.getSoapUrl());

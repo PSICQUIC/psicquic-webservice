@@ -24,7 +24,7 @@
             <ui:param name="itemDisabled" value="#{itemDisabled? itemDisabled : fn:startsWith(xref.identifier, '-')}"/>
 
             <h:panelGroup rendered="#{!itemPerLine}">
-                <nobr>
+                <div style="display:inline-block;">
                     <ox:separateConversationContext>
                         <tr:goLink
                                 text="#{xrefUrl == null? iav:xrefToString(xref, !onlyText, !onlyText, onlyText) : text}"
@@ -34,12 +34,11 @@
                                 disabled="#{xrefUrl == null or xrefUrl == '#' or itemDisabled}"/>
                         <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(value)}"/>
                     </ox:separateConversationContext>
-                </nobr>
+                </div>
             </h:panelGroup>
 
             <h:panelGroup rendered="#{itemPerLine}">
                     <span style="display:block">
-                        <nobr>
                             <ox:separateConversationContext>
                                 <tr:goLink
                                         text="#{xrefUrl == null? iav:xrefToString(xref, !onlyText, !onlyText, onlyText) : text}"
@@ -48,7 +47,6 @@
                                         destination="#{iav:xrefUrl(appConfigBean.linkContext, xref, linkType)}"
                                         disabled="#{xrefUrl == null or xrefUrl == '#' or itemDisabled}"/>
                             </ox:separateConversationContext>
-                        </nobr>
                     </span>
             </h:panelGroup>
 
