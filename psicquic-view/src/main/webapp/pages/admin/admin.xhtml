@@ -63,6 +63,20 @@
                      </f:facet>
                    <tr:inputText value="#{config.miqlFilterQuery}" columns="100" simple="true"/>
                </tr:panelLabelAndMessage>
+               <tr:panelLabelAndMessage label="Included services: ">
+                   <f:facet name="help">
+                       <tr:outputText value="Comma-separated list of the services that will be used by default. Don't use the
+                        excluded services if this parameter is set"/>
+                     </f:facet>
+                   <tr:inputText value="#{config.includedServices}" columns="100" simple="true"/>
+               </tr:panelLabelAndMessage>
+               <tr:panelLabelAndMessage label="Excluded services: ">
+                   <f:facet name="help">
+                       <tr:outputText value="Comma-separated list of the services that won't be used by default. Don't use the
+                        included services if this parameter is set"/>
+                     </f:facet>
+                   <tr:inputText value="#{config.excludedServices}" columns="100" simple="true"/>
+               </tr:panelLabelAndMessage>
            </tr:panelFormLayout>
 
        </tr:form>

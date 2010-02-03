@@ -13,7 +13,6 @@ import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
@@ -33,7 +32,7 @@ import java.util.*;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Controller("searchBean")
+
 @Scope("conversation.access")
 @ConversationName("general")
 @ViewController(viewIds = {"/main.xhtml"})
@@ -44,7 +43,6 @@ public class SearchController extends BaseController {
     @Autowired
     private UserQuery userQuery;
 
-    @Autowired
     private PsicquicViewConfig config;
 
     private List<ServiceType> services;
@@ -63,7 +61,8 @@ public class SearchController extends BaseController {
 
     private boolean showAlternativeIds;
 
-    public SearchController() {
+    public SearchController(PsicquicViewConfig config) {
+        this.config = config;
         refresh(null);
     }
 
@@ -84,47 +83,13 @@ public class SearchController extends BaseController {
         String includedServicesParam = context.getExternalContext().getRequestParameterMap().get("included");
 
         if (includedServicesParam != null && includedServicesParam.length()>0) {
-            includedServices = includedServicesParam.split(",");
-
-            List<ServiceType> includedServicesList = new ArrayList<ServiceType>(includedServices.length);
-
-            for (ServiceType service : services) {
-                for (String serviceName : includedServices) {
-                    if (serviceName.equalsIgnoreCase(service.getName())) {
-                        includedServicesList.add(service);
-                    }
-                }
-            }
-
-            services = includedServicesList;
-
-            populateActiveServicesMap();
-            populateInactiveServicesMap();
+            processIncludedServices(includedServicesParam);
         }
 
         String excludedServicesParam = context.getExternalContext().getRequestParameterMap().get("excluded");
 
         if (excludedServicesParam != null && excludedServicesParam.length()>0) {
-            excludedServices = excludedServicesParam.split(",");
-
-            List<ServiceType> includedServicesList = new ArrayList<ServiceType>(excludedServices.length);
-
-            for (ServiceType service : services) {
-                boolean excluded = false;
-                for (String serviceName : excludedServices) {
-                    if (serviceName.equalsIgnoreCase(service.getName())) {
-                        excluded = true;
-                        break;
-                    }
-                }
-
-                if (!excluded) includedServicesList.add(service);
-            }
-
-            services = includedServicesList;
-
-            populateActiveServicesMap();
-            populateInactiveServicesMap();
+            processExcludedServices(excludedServicesParam);
         }
 
         // search
@@ -140,19 +105,7 @@ public class SearchController extends BaseController {
         this.inactiveServices = new HashMap<String,String>();
 
         try {
-            PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
-            allServices = registryClient.listServices();
-            services = new ArrayList<ServiceType>(allServices);
-
-            populateActiveServicesMap();
-            populateInactiveServicesMap();
-
-            servicesMap = new HashMap<String, ServiceType>(services.size());
-
-            for (ServiceType service : services) {
-                servicesMap.put(service.getName(), service);
-            }
-
+            refreshServices();
         } catch (PsicquicRegistryClientException e) {
             throw new RuntimeException("Problem loading services from registry", e);
         }
@@ -167,11 +120,12 @@ public class SearchController extends BaseController {
     }
 
     public String doNewBinarySearch() {
-        services = new ArrayList<ServiceType>(allServices);
-
-        populateActiveServicesMap();
-        populateInactiveServicesMap();
-
+        try {
+            refreshServices();
+        } catch (PsicquicRegistryClientException e) {
+            e.printStackTrace();
+            addErrorMessage("Problem loading services", e.getMessage());
+        }
         return doBinarySearchAction();
     }
 
@@ -212,6 +166,31 @@ public class SearchController extends BaseController {
             } else {
                 addErrorMessage("Psicquic problem", throwable.getMessage());
             }
+        }
+    }
+
+    private void refreshServices() throws PsicquicRegistryClientException {
+        PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
+
+        if (allServices == null) {
+            allServices = registryClient.listServices();
+        }
+
+        services = new ArrayList<ServiceType>(allServices);
+        
+        String included = config.getIncludedServices();
+        String excluded = config.getExcludedServices();
+
+        if (included != null && included.length() > 0) {
+            processIncludedServices(included);
+        } else if (excluded != null && excluded.length() > 0) {
+            processExcludedServices(excluded);
+        }
+
+        servicesMap = new HashMap<String, ServiceType>(services.size());
+
+        for (ServiceType service : services) {
+            servicesMap.put(service.getName(), service);
         }
     }
 
@@ -273,6 +252,48 @@ public class SearchController extends BaseController {
             e.printStackTrace();
         }
         return serviceUrls;
+    }
+
+    private void processExcludedServices(String excludedServicesParam) {
+        excludedServices = excludedServicesParam.split(",");
+
+        List<ServiceType> includedServicesList = new ArrayList<ServiceType>(excludedServices.length);
+
+        for (ServiceType service : services) {
+            boolean excluded = false;
+            for (String serviceName : excludedServices) {
+                if (serviceName.trim().equalsIgnoreCase(service.getName())) {
+                    excluded = true;
+                    break;
+                }
+            }
+
+            if (!excluded) includedServicesList.add(service);
+        }
+
+        services = includedServicesList;
+
+        populateActiveServicesMap();
+        populateInactiveServicesMap();
+    }
+
+    private void processIncludedServices(String includedServicesParam) {
+        includedServices = includedServicesParam.split(",");
+
+        List<ServiceType> includedServicesList = new ArrayList<ServiceType>(includedServices.length);
+
+        for (ServiceType service : services) {
+            for (String serviceName : includedServices) {
+                if (serviceName.trim().equalsIgnoreCase(service.getName())) {
+                    includedServicesList.add(service);
+                }
+            }
+        }
+
+        services = includedServicesList;
+
+        populateActiveServicesMap();
+        populateInactiveServicesMap();
     }
 
     // Getters & Setters

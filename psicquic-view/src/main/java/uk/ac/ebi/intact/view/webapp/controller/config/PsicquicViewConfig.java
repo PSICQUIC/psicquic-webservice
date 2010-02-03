@@ -40,6 +40,8 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
     private String logoUrl;
     private String registryTagsAsString;
     private String miqlFilterQuery;
+    private String includedServices;
+    private String excludedServices;
 
     public PsicquicViewConfig() {
     }
@@ -68,6 +70,8 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
         logoUrl = properties.getProperty("logo.url");
         registryTagsAsString = properties.getProperty("registry.tags");
         miqlFilterQuery = properties.getProperty("query.filter");
+        includedServices = properties.getProperty("services.included");
+        excludedServices = properties.getProperty("services.excluded");
     }
 
     public void saveConfigToFile() throws IOException {
@@ -81,6 +85,8 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
         setProperty(properties, "logo.url", logoUrl);
         setProperty(properties, "registry.tags", registryTagsAsString);
         setProperty(properties, "query.filter", miqlFilterQuery);
+        setProperty(properties, "services.included", includedServices);
+        setProperty(properties, "services.excluded", excludedServices);
 
         OutputStream outputStream = new FileOutputStream(configFile);
         properties.store(outputStream, "Configuration updated: "+new Date());
@@ -143,5 +149,19 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
         this.miqlFilterQuery = miqlFilterQuery;
     }
 
+    public String getIncludedServices() {
+        return includedServices;
+    }
 
+    public void setIncludedServices(String includedServices) {
+        this.includedServices = includedServices;
+    }
+
+    public String getExcludedServices() {
+        return excludedServices;
+    }
+
+    public void setExcludedServices(String excludedServices) {
+        this.excludedServices = excludedServices;
+    }
 }
