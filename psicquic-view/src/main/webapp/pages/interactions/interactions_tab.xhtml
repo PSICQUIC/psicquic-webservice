@@ -39,11 +39,15 @@
         <tr:panelGroupLayout layout="horizontal">
             <tr:panelButtonBar rendered="#{service.restUrl != null}">
                 <h:outputText value="Export: "/>
-                <tr:goLink text="MITAB 2.5" targetFrame="_blank" inlineStyle="white-space: pre;"
-                           destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}"/>
-                <tr:goLink text="PSI-XML 2.5.4" targetFrame="_blank" inlineStyle="white-space: pre;" disabled="#{searchBean.resultCountMap[service.name] gt 200}"
-                           shortDesc="Exports data to PSI-MI XML 2.5.4 if less that 200 interactions are present"
-                           destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}?format=xml25"/>
+                <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;"
+                           destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}">
+                    <tr:image source="/images/mitab.png"/>
+                    </tr:goLink>
+                <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;" disabled="#{searchBean.resultCountMap[service.name] gt 200}"
+                           destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}?format=xml25">
+                    <tr:image source="/images/psi25#{searchBean.resultCountMap[service.name] gt 200? '_disabled' : ''}.png"
+                              shortDesc="Exports data to PSI-MI XML 2.5.4 if less that 200 interactions are present"/>
+                    </tr:goLink>
             </tr:panelButtonBar>
         </tr:panelGroupLayout>
 
