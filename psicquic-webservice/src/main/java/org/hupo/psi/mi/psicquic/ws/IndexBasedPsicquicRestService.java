@@ -19,8 +19,12 @@ import org.apache.commons.lang.StringUtils;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
+import org.hupo.psi.mi.psicquic.ws.utils.rdf.RdfStreamingOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import psidev.psi.mi.xml.converter.ConverterException;
+import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
+import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 import javax.ws.rs.core.MediaType;
@@ -79,21 +83,53 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
             throw new PsicquicServiceException("maxResults parameter is not a number: "+maxResultsStr);
         }
 
-        if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_XML25).equals(format)) {
-            return getByQueryXml(query, firstResult, maxResults);
-        } else if (IndexBasedPsicquicService.RETURN_TYPE_COUNT.equals(format)) {
-            return count(query);
-        } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25_BIN).equals(format)) {
-            PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults, true);
-            return Response.status(200).type("application/x-gzip").entity(result).build();
-        } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25).equals(format) || format == null) {
-            PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
-            return Response.status(200).type(MediaType.TEXT_PLAIN).entity(result).build();
-        } else {
-            return Response.status(406).type(MediaType.TEXT_PLAIN).entity("Format not supported").build();
+        try {
+            if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_XML25).equalsIgnoreCase(format)) {
+                return getByQueryXml(query, firstResult, maxResults);
+            } else if (format.toLowerCase().startsWith("rdf")) {
+                String rdfFormat = getRdfFormatName(format);
+                String mediaType = format.contains("xml")? MediaType.APPLICATION_XML : MediaType.TEXT_PLAIN;
+                RdfStreamingOutput streamingOutput = createRdfStreamingOutput(query, rdfFormat, firstResult, maxResults);
+                return Response.status(200).type(mediaType).entity(streamingOutput).build();
+            } else if (IndexBasedPsicquicService.RETURN_TYPE_COUNT.equalsIgnoreCase(format)) {
+                return count(query);
+            } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25_BIN).equalsIgnoreCase(format)) {
+                PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults, true);
+                return Response.status(200).type("application/x-gzip").entity(result).build();
+            } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25).equalsIgnoreCase(format) || format == null) {
+                PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
+                return Response.status(200).type(MediaType.TEXT_PLAIN).entity(result).build();
+            } else {
+                return Response.status(406).type(MediaType.TEXT_PLAIN).entity("Format not supported").build();
+            }
+        } catch (Throwable e) {
+            throw new PsicquicServiceException("Problem creating output", e);
         }
 
 
+    }
+
+    private String getRdfFormatName(String format) {
+        format = format.substring(4);
+
+        String rdfFormat;
+
+        if ("xml".equalsIgnoreCase(format)) {
+            rdfFormat = "RDF/XML";
+        } else if ("xml-abbrev".equalsIgnoreCase(format)) {
+            rdfFormat = "RDF/XML-ABBREV";
+        } else {
+            rdfFormat = format.toUpperCase();
+        }
+
+        return rdfFormat;
+    }
+
+    private RdfStreamingOutput createRdfStreamingOutput(String query, String rdfFormat, int firstResult, int maxResults) throws ConverterException, PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+        EntrySetConverter converter = new EntrySetConverter();
+        converter.setDAOFactory(new InMemoryDAOFactory());
+        psidev.psi.mi.xml.model.EntrySet entrySet = converter.fromJaxb(getByQueryXml(query, firstResult, maxResults));
+        return new RdfStreamingOutput(psicquicService, entrySet, rdfFormat);
     }
 
     public Object getSupportedFormats() throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
