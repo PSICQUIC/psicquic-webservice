@@ -59,10 +59,10 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
             saveConfigToFile();
         }
 
-        loadConfigFromFile();
+        loadConfigFromFile(null);
     }
 
-    public void loadConfigFromFile() throws IOException {
+    public void loadConfigFromFile(ActionEvent evt) throws IOException {
         Properties properties = new Properties();
         properties.load(new FileInputStream(configFile));
 

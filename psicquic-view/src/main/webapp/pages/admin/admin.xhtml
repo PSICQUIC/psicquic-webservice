@@ -45,6 +45,7 @@
            <tr:panelFormLayout>
                <f:facet name="footer">
                    <tr:panelButtonBar>
+                       <tr:commandButton text="Load" actionListener="#{config.loadConfigFromFile}"/>
                        <tr:commandButton text="Save" actionListener="#{config.store}"/>
                    </tr:panelButtonBar>
                </f:facet>
