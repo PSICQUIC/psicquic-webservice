@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psicquic.expressionTree;
+package org.hupo.psi.mi.psicquic.expressiontree;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;

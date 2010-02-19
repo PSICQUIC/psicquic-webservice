@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.hupo.psi.mi.psicquic.expressionTree;
+package org.hupo.psi.mi.psicquic.expressiontree;
 
 /**
  * @author Erik Pfeiffenberger

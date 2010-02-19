@@ -16,8 +16,8 @@
 package org.hupo.psi.mi.psicquic.registry;
 
 import freemarker.template.Configuration;
-import org.hupo.psi.mi.psicquic.expressionTree.ExpressionTree;
-import org.hupo.psi.mi.psicquic.expressionTree.ParseExpressionException;
+import org.hupo.psi.mi.psicquic.expressiontree.ExpressionTree;
+import org.hupo.psi.mi.psicquic.expressiontree.ParseExpressionException;
 import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig;
 import org.hupo.psi.mi.psicquic.registry.util.FreemarkerStreamingOutput;
