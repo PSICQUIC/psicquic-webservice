@@ -354,7 +354,7 @@ public class PsicquicStatsCollector {
 
         // TODO Auto resize of the spreadsheet when we reach the maximum size
 
-        if ( args.length != 3 ) {
+        if ( args.length < 3 ) {
             System.err.println( "usage: PsicquicStatsCollector <gmail.account> <password> <spreadsheet.key> " +
                                 "[-D"+PSICQUIC_REGISTRY_URL_KEY+"=pathToFile] " +
                                 "[-D"+SMTP_CONFIG_FILE_KEY+"=pathToFile]" );
