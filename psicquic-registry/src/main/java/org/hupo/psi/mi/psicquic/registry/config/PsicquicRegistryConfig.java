@@ -22,10 +22,9 @@ import org.hupo.psi.mi.psicquic.registry.util.RegistryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-
-import java.util.List;
-
 import javax.annotation.PostConstruct;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Place-holder for the configuration. Initialized by Spring.
@@ -40,31 +39,31 @@ public class PsicquicRegistryConfig {
     private String registryXmlUrl;
 	private List<ServiceType> registeredServices;
 	
-	
-
 	@Autowired
 	private ApplicationContext springContext ;
 	
 
     public PsicquicRegistryConfig() {
         this.serviceCheckTimeout = 1000L;
-        //this.registryXmlUrl = "http://www.ebi.ac.uk/~epfeif/registry.xml";
-        
-       
     }
     
     @PostConstruct
     public void setup(){
-    	String registryXml = getRegistryXmlUrl();
+        Registry registry;
         
-        try {
-            Registry registry = RegistryUtil.readRegistry( registryXml );
-            registeredServices = registry.getServices();
-
-
-        } catch (Throwable e) {
-            e.printStackTrace();
+        if (registryXmlUrl != null && registryXmlUrl.trim().length() > 0) {
+            final URL url;
+            try {
+                url = new URL(registryXmlUrl);
+                registry = RegistryUtil.readRegistry(url.openStream());
+            } catch (Throwable e) {
+                throw new RuntimeException("Problem reading registry XML file: "+registryXmlUrl, e);
+            }
+        } else {
+            registry = RegistryUtil.readRegistry(PsicquicRegistryConfig.class.getResourceAsStream("/META-INF/psicquic-registry-default.xml"));
         }
+
+        registeredServices = registry.getServices();
     }
 
     public String getVersion() {
@@ -80,7 +79,6 @@ public class PsicquicRegistryConfig {
     }
 
     public void setRegisteredServices(List<ServiceType> registeredServices) {
-    
         this.registeredServices = registeredServices;
     }
 

@@ -21,8 +21,8 @@
     <bean name="psicquicConfig" class="org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig">
         <property name="version" value="${psicquic.version}"/>
         
-        <!-- This has to be changed to the final location of the registry.xml -->
-        <property name="registryXmlUrl" value="http://www.ebi.ac.uk/~epfeif/registry.xml"/>
+        <!-- This has to be changed to the final location of the psicquic-registry-default.xml -->
+        <property name="registryXmlUrl" value="${psicquic.registry.url}"/>
    		
 
     </bean>

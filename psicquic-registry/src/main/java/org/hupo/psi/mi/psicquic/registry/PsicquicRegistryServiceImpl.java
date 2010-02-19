@@ -108,6 +108,7 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
             for (ServiceFilter filter : filters) {
                 if (!filter.accept(service)) {
+                    System.out.println("NOT ACCEPTED: "+filter+" - "+service.getName());
                     accept = false;
                 }
             }
@@ -200,31 +201,28 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     
     private class TagsFilter implements ServiceFilter {
         
-        private ExpressionTree exTree;
+        private String expression;
         
 
         public TagsFilter(String expression) {
-        	try {
-				exTree = new ExpressionTree(expression, miOntologyTree,false);
-			} catch (ParseExpressionException e) {
-				exTree = null;
-			}
+            this.expression = expression;
 		}
 
 		public boolean accept(ServiceType service) {
-			boolean result = false;
+			boolean accept;
 			
-			if(exTree == null){
-				result = false;
-			}else {
+			if(expression != null && expression.trim().length() > 0) {
 				try {
-					result = exTree.evaluate(service);
+                    ExpressionTree exTree = new ExpressionTree(expression, miOntologyTree,false);
+					accept = exTree.evaluate(service);
 				} catch (ParseExpressionException e) {
-					result = false;
+					throw new IllegalArgumentException("Cannot parse expression: "+expression, e);
 				}
-			}
+			} else {
+                accept = true;
+            }
 			
-			return result;
+			return accept;
 		}
     }
 
