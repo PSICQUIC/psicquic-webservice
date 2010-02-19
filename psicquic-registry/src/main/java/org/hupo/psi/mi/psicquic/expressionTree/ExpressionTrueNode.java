@@ -15,26 +15,20 @@ public class ExpressionTrueNode implements ExpressionNode{
 		// does nothing...
 	}
 
-	@Override
 	public boolean evaluate(ServiceType service, SelfDiscoveringOntologyTree sdoTree) {
-		
 		return true;
 	}
 
-	@Override
 	public String getRepresentation() {
 		return "TRUE";
 	}
 
-	@Override
 	public ExpressionNode getLeftChild() {
 		
 		return null;
 	}
 
-	@Override
 	public ExpressionNode getRightChild() {
-		
 		return null;
 	}
 

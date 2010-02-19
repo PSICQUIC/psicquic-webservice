@@ -15,21 +15,10 @@
  */
 package org.hupo.psi.mi.psicquic.registry;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import freemarker.template.Configuration;
-
-import org.apache.commons.lang.StringUtils;
 import org.hupo.psi.mi.psicquic.expressionTree.ExpressionTree;
 import org.hupo.psi.mi.psicquic.expressionTree.ParseExpressionException;
-import org.hupo.psi.mi.psicquic.ols.client.OLSClient;
 import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
-import org.hupo.psi.mi.psicquic.ols.soap.OntologyQuerySoapBindingStub;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig;
 import org.hupo.psi.mi.psicquic.registry.util.FreemarkerStreamingOutput;
 import org.hupo.psi.mi.psicquic.registry.util.RawTextStreamingOutput;
@@ -220,17 +209,12 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
         public TagsFilter(String expression) {
         	try {
-        		
 				exTree = new ExpressionTree(expression, miOntologyTree,false);
 			} catch (ParseExpressionException e) {
 				exTree = null;
 			}
 		}
-    
 
-
-
-		@Override
 		public boolean accept(ServiceType service) {
 			boolean result = false;
 			
@@ -238,13 +222,6 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 				result = false;
 			}else {
 				try {
-					if(miOntologyTree != null){
-						System.out.println("PSICQUICREGISTRYSERVICEIMPL: miOntologyTree is NOT null");
-					} else {
-						System.out.println("PSICQUICREGISTRYSERVICEIMPL: miOntologyTree IS null");
-
-					}
-					
 					result = exTree.evaluate(service);
 				} catch (ParseExpressionException e) {
 					result = false;
@@ -252,10 +229,6 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 			}
 			
 			return result;
-
 		}
-        
     }
-
-
 }

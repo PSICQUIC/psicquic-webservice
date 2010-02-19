@@ -12,26 +12,19 @@ public class ExpressionAndNode implements ExpressionNode{
 		this.rightChild = rightChild;
 	}
 
-	@Override
 	public boolean evaluate(ServiceType service, SelfDiscoveringOntologyTree sdoTree) {
-		
 		return leftChild.evaluate(service, sdoTree) && rightChild.evaluate(service, sdoTree);
 	}
 
-	@Override
 	public String getRepresentation() {
 		return "AND";
 	}
 
-	@Override
 	public ExpressionNode getLeftChild() {
-		
 		return leftChild;
 	}
 
-	@Override
 	public ExpressionNode getRightChild() {
-		
 		return rightChild;
 	}
 

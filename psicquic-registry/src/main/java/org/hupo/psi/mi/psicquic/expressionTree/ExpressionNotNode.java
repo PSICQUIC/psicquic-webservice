@@ -18,9 +18,7 @@ public class ExpressionNotNode implements ExpressionNode{
 		this.child = child;
 	}
 
-	@Override
 	public boolean evaluate(ServiceType service, SelfDiscoveringOntologyTree sdoTree) {
-		
 		return !child.evaluate(service, sdoTree);
 	}
 
@@ -32,21 +30,15 @@ public class ExpressionNotNode implements ExpressionNode{
 		this.child = child;
 	}
 
-	@Override
 	public String getRepresentation() {
-		
 		return "NOT";
 	}
 
-	@Override
 	public ExpressionNode getLeftChild() {
-		
 		return getChild();
 	}
 
-	@Override
 	public ExpressionNode getRightChild() {
-		
 		return null;
 	}
 

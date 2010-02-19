@@ -47,78 +47,44 @@
                 </configuration>
             </plugin>
 
-            <!--<plugin>-->
-                <!--<groupId>org.apache.cxf</groupId>-->
-                <!--<artifactId>cxf-codegen-plugin</artifactId>-->
-                <!--<version>${cxf.version}</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>generate-sources</id>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<configuration>-->
-                            <!--<sourceRoot>${basedir}/target/generated/java</sourceRoot>-->
-                            <!--<wsdlOptions>-->
-                                <!--<wsdlOption>-->
-                                    <!--<wsdl>${basedir}/src/main/wsdl/psicquic.wsdl</wsdl>-->
-                                    <!--<extraargs>-->
-                                            <!--<extraarg>-b</extraarg>-->
-                                            <!--<extraarg>${basedir}/src/main/wsdl/binding.xjb</extraarg>-->
-                                          <!--</extraargs>-->
-                                <!--</wsdlOption>-->
-                            <!--</wsdlOptions>-->
-                        <!--</configuration>-->
-                        <!--<goals>-->
-                            <!--<goal>wsdl2java</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<dependencies>-->
-                	<!--<dependency>-->
-                  		<!--<groupId>xerces</groupId>-->
-                  		<!--<artifactId>xercesImpl</artifactId>-->
-                  		<!--<version>2.8.1</version>-->
-               		<!--</dependency>-->
-            	<!--</dependencies>-->
-            <!--</plugin>-->
-
-            <!-- Conversion of XML Schema into Java source code using JAXB-XJC -->         
-   <plugin>
-    <groupId>org.jvnet.jaxb2.maven2</groupId>
-    <artifactId>maven-jaxb2-plugin</artifactId>
-    <executions>
-        <execution>
-            <goals>
-                <goal>generate</goal>
-            </goals>
-        </execution>
-    </executions>
-    <configuration>
-     <schemaDirectory>${project.basedir}/src/main/resources/META-INF/schema</schemaDirectory>
-     <bindingDirectory>${project.basedir}/src/main/resources/META-INF/schema</bindingDirectory>
-    
-        <extension>true</extension>
-        <args>
-            <arg>-Xfluent-api</arg>
-            <arg>-Xcollection-setter-injector</arg>
-        </args>
-        <plugins>
+            <!-- Conversion of XML Schema into Java source code using JAXB-XJC -->
             <plugin>
-                <groupId>net.java.dev.jaxb2-commons</groupId>
-                <artifactId>jaxb-fluent-api</artifactId>
-                <version>2.1.8</version>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.7.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaDirectory>${project.basedir}/src/main/resources/META-INF/schema</schemaDirectory>
+                    <bindingDirectory>${project.basedir}/src/main/resources/META-INF/schema</bindingDirectory>
+
+                    <extension>true</extension>
+                    <args>
+                        <arg>-Xfluent-api</arg>
+                        <arg>-Xcollection-setter-injector</arg>
+                    </args>
+                    <plugins>
+                        <plugin>
+                            <groupId>net.java.dev.jaxb2-commons</groupId>
+                            <artifactId>jaxb-fluent-api</artifactId>
+                            <version>2.1.8</version>
+                        </plugin>
+                    </plugins>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.java.dev.vcc.thirdparty</groupId>
+                        <artifactId>collection-setter-injector</artifactId>
+                        <version>0.5.0-1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
-        </plugins>
-    </configuration>
-    <dependencies>
-        <!-- Had to manually install in repo, not in main java.net repo. -->
-        <dependency>
-            <groupId>org.jvnet.jaxb2-commons</groupId>
-            <artifactId>collection-setter-injector</artifactId>
-            <version>1.0</version>
-        </dependency>
-    </dependencies>
-</plugin>
-            
+
 
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
@@ -494,17 +460,17 @@
     
     
     <repositories>
-    <repository>
-	    <id>eriktest2-repo</id>
-	    <name>Test2 Repository</name>
-	    <url>http://repo1.maven.org/maven2/</url>
-	    <releases>
-		<enabled>true</enabled>
-	    </releases>
-	    <snapshots>
-		<enabled>false</enabled>
-	    </snapshots>
-        </repository>
+    <!--<repository>-->
+	    <!--<id>eriktest2-repo</id>-->
+	    <!--<name>Test2 Repository</name>-->
+	    <!--<url>http://repo1.maven.org/maven2/</url>-->
+	    <!--<releases>-->
+		<!--<enabled>true</enabled>-->
+	    <!--</releases>-->
+	    <!--<snapshots>-->
+		<!--<enabled>false</enabled>-->
+	    <!--</snapshots>-->
+        <!--</repository>-->
            
         <!-- EBI repository -->
         <repository>
@@ -557,6 +523,17 @@
             </releases>
             <snapshots>
                 <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>sun-repo-2</id>
+            <url>http://download.java.net/maven/2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>

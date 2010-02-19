@@ -30,8 +30,6 @@ public class ExpressionScanner {
 	
 	private int charsRead = 0;
 	
-	
-	
 	private final Pattern NOT_SYMBOL_PATTERN = Pattern.compile("^"+NOT_SYMBOL);
 	private final Pattern AND_SYMBOL_PATTERN = Pattern.compile("^"+AND_SYMBOL);
 	private final Pattern OR_SYMBOL_PATTERN = Pattern.compile("^"+OR_SYMBOL);
@@ -46,7 +44,7 @@ public class ExpressionScanner {
 
 	
 	private enum ExpressionStates{
-		FreeText, And, Or, Not, Para
+		FreeText
 	}
 	
 	
@@ -55,9 +53,7 @@ public class ExpressionScanner {
 		text = text.toLowerCase();
 		this.text = text;
 		String [] tmp = text.split("");
-		
-		
-		
+
 		characters = new String [tmp.length -1];
 		
 		//to remove "" on position 0
@@ -69,33 +65,6 @@ public class ExpressionScanner {
 		symbolsList = new ArrayList<String>();
 		
 		currentCharPosition = 0;
-		
-		
-	}
-	
-	public void printCharArray(){
-		for (int i=0; i < characters.length; i++){
-			System.out.println(i+": "+characters[i]);
-		}
-	}
-	
-	private void changeState(ExpressionStates s){
-		
-			if(!(currState == ExpressionStates.FreeText && s == ExpressionStates.FreeText))
-			{
-				currState = s;
-				charsRead = 0;
-				StringBuffer discoveredSymbol = new StringBuffer();
-				for (int i = currentCharPosition - charsRead; i < currentCharPosition && i < characters.length; i++){
-					discoveredSymbol.append(characters[i]);
-				}
-				
-				currentSymbolPosition++;
-				symbolsList.add(discoveredSymbol.toString());
-			
-			}
-		
-		
 	}
 	
 	public String nextSymbol(){
@@ -145,8 +114,6 @@ public class ExpressionScanner {
 	}
 	
 	public boolean isNot(){
-		
-		
 		return currentSymbolPosition == -1? false : NOT_SYMBOL_PATTERN.matcher(symbolsList.get(currentSymbolPosition)).matches();
 		
 	}

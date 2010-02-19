@@ -1,12 +1,10 @@
 package org.hupo.psi.mi.psicquic.expressionTree;
 
-import java.util.List;
-import java.util.Set;
-
 import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * 
@@ -71,18 +69,14 @@ public class ExpressionTree {
 	}
 
 	public boolean isCommaSeparatedList() {
-		
 		//comma separated list, e.g. "MI:0000 , MI:0001, some free text"
 		return expression.matches("(.+,.+)+");
 	
 	}
 
 	private ExpressionNode parseExpression() throws ParseExpressionException {
-		
-		
 		ExpressionNode rootNode = null;
-		
-	
+
 		rootNode = parseTerm();
 		scanner.nextSymbol();	
 		while(isLogicalOp()){
@@ -186,8 +180,6 @@ public class ExpressionTree {
 
 
 	public boolean evaluate (ServiceType service) throws ParseExpressionException {
-		boolean result = false;
-		
 		if (rootNode == null){
 			rootNode = parse();
 		}

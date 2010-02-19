@@ -3,19 +3,12 @@
  */
 package org.hupo.psi.mi.psicquic.freemarker.method;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-
-
-import org.hupo.psi.mi.psicquic.ols.client.OntologyTerm;
-import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import freemarker.template.TemplateMethodModel;
 import freemarker.template.TemplateModelException;
+import org.hupo.psi.mi.psicquic.ols.client.OntologyTerm;
+import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
+
+import java.util.List;
 
 /**
  * @author Erik Pfeiffenberger
@@ -25,8 +18,6 @@ import freemarker.template.TemplateModelException;
 public class TermName implements TemplateMethodModel {
 
 	SelfDiscoveringOntologyTree miOntologyTree;
-	
-
 	
 	public SelfDiscoveringOntologyTree getMiOntologyTree() {
 		return miOntologyTree;
@@ -38,23 +29,20 @@ public class TermName implements TemplateMethodModel {
 
 	public TermName(SelfDiscoveringOntologyTree miOntologyTree) {
 		this.miOntologyTree = miOntologyTree;
-		
-		System.out.println("TERM NAME: constructor called");
 	}
 	
-	@Override
 	public Object exec(List arg0) throws TemplateModelException {
-		String termName = "dummy";
+		String termName;
+
 		if(arg0.size() != 1){
 			throw new TemplateModelException("Wrong arguments");
 
 		} else {
 			String id = (String)arg0.get(0);
 			
-			
 			OntologyTerm term = miOntologyTree.getTerm(id);
 			
-			termName = new String(term.getName());
+			termName = term.getName();
 		}
 		return termName;
 	}
