@@ -206,8 +206,6 @@ public class ExpressionTree {
 				doPrintTree(node.getLeftChild(), depth+1);
 			}
 			
-			System.out.println(repeatStr("\t", depth)+node.getRepresentation());
-			
 			if(node.getRightChild() != null){
 				doPrintTree(node.getRightChild(), depth+1);
 			}

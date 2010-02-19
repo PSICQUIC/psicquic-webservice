@@ -94,13 +94,6 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
         final Configuration freemarkerCfg = freeMarkerConfigurer.getConfiguration();
 
-        //return Response.ok(new FreemarkerStreamingOutput(registry,freemarkerCfg), MediaType.TEXT_HTML_TYPE).build();
-        
-        
-//        for (ServiceType s : registry.getServices()){
-//        	System.out.println(s.getName()+" : RestURL="+s.getRestUrl()+" RestEXAMPLE="+s.getRestExample());
-//        }
-//        
         return Response.ok(new FreemarkerStreamingOutput(registry, miOntologyTree ,freemarkerCfg), MediaType.TEXT_HTML_TYPE).build();
     }
 

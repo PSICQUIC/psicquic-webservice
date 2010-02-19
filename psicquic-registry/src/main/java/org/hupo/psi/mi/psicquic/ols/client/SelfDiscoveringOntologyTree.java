@@ -3,16 +3,7 @@
  */
 package org.hupo.psi.mi.psicquic.ols.client;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
+import java.util.*;
 
 /**
  * @author Erik Pfeiffenberger
@@ -46,9 +37,7 @@ public class SelfDiscoveringOntologyTree {
 	
 	public SelfDiscoveringOntologyTree() {
 		this.ols = new OLSClient();
-		//this.ontology = "";
-		System.out.println("SELFDOT: default constructor called!");
-		
+
 		alreadyDiscovered = new HashMap<String, OntologyTerm>();
 	}
 	
@@ -56,9 +45,6 @@ public class SelfDiscoveringOntologyTree {
 		
 		if(!alreadyDiscovered.containsKey(oTerm.getId())){
 			alreadyDiscovered.put(oTerm.getId(), oTerm);
-		//	System.out.println("SELFDOT addDiscoveredTerm: ADDING id: "+oTerm.getId());
-		} else {
-		//	System.out.println("SELFDOT addDiscoveredTerm: cant add "+oTerm.getId()+ " is already discovered");
 		}
 	}
 	
@@ -66,24 +52,16 @@ public class SelfDiscoveringOntologyTree {
 		parentId = parentId.toUpperCase();
 		childId = childId.toUpperCase();
 		
-	//	System.out.println("SELFDOT: isChildTag called, parameter: parentId="+parentId +" childId="+childId);
 		OntologyTerm parentTerm = alreadyDiscovered.get(parentId);
 		OntologyTerm childTerm = alreadyDiscovered.get(childId);
 		
 		if(parentTerm == null){
-			//System.out.println("SELFDOT: isChildTag: parentTerm == NULL");
-		
-			parentTerm = new OntologyTerm(parentId,ontology, this, ols);					
-		} else {
-			//System.out.println("SELFDOT: isChildTag: parentTerm NOT NULL");
+			parentTerm = new OntologyTerm(parentId,ontology, this, ols);
 		}
 		
 		if(childTerm == null){
-			//System.out.println("SELFDOT: isChildTag: childTerm == NULL");
 			childTerm = new OntologyTerm(childId,ontology, this, ols);
-		} else {
-			//System.out.println("SELFDOT: isChildTag: childTerm NOT NULL");
-		}
+		} 
 		
 		return doIsChildTag(parentTerm, childTerm);
 	}
@@ -120,7 +98,6 @@ public class SelfDiscoveringOntologyTree {
 	}
 	
 	public Set<String> getIdByName(String text){
-		System.out.println("SELFDOT: ols.getTermsByName...");
 		Collection<String> result= ols.getTermsByName(text, ontology).values();
 		
 		Set<String> returnVal = new HashSet<String>();

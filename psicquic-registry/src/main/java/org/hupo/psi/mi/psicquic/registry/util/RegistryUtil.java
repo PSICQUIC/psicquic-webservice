@@ -3,17 +3,13 @@
  */
 package org.hupo.psi.mi.psicquic.registry.util;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.net.URL;
+import org.hupo.psi.mi.psicquic.registry.Registry;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
-import org.hupo.psi.mi.psicquic.registry.Registry;
+import java.io.InputStream;
+import java.net.URL;
 
 
 
@@ -24,13 +20,14 @@ import org.hupo.psi.mi.psicquic.registry.Registry;
  *
  */
 public class RegistryUtil {
-	   public static Registry readRegistry(String registryXml) {
+
+    public static Registry readRegistry(String registryXml) {
 	        Registry objRegistry;
 	        try {
 //	        	//TODO: change to URl after debugging
 //	            FileInputStream fileStream = new FileInputStream(registryXml);
 //	            objRegistry = (Registry) readRegistryXml(fileStream);
-	        	System.out.println("REGISTRY URL: "+registryXml);
+                
 	        	URL datasetsUrl = new URL(registryXml);
 	        	
 	            objRegistry = (Registry) readRegistryXml(datasetsUrl.openStream());

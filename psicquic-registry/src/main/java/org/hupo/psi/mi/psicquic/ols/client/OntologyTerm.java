@@ -71,7 +71,6 @@ public class OntologyTerm {
 	public String getName() {
 		
 		if (name == null){
-			System.out.println("SELFDOT: retrieving tag name from OLS");
 			name = ols.getTermNameByTermId(id, ontology);
 		} 
 		
@@ -92,24 +91,15 @@ public class OntologyTerm {
 		
 		if (childList == null){
 			childList = new HashSet<OntologyTerm>();
-			System.out.println("Ontology Term: ols.getChilden for Term "+this.id+"...");
+
 			Map<String, String>childMap = ols.getTermChildren(id, ontology);
 			
 			for (Map.Entry<String, String> entry : childMap.entrySet()){
 				
 				childList.add(new OntologyTerm(entry.getKey(), entry.getValue(), ontology, sdoTree, ols));
-			//	System.out.println("\t ONTOLOGYTERM: adding term "+entry.getKey()+" from ontology "+entry.getValue());
 			}
 		} 
 			
-//		System.out.println("\n");
-//		System.out.println("\t--- already discovered ---");
-//		for (Map.Entry<String, OntologyTerm> en : this.sdoTree.getAlreadyDiscovered().entrySet()){
-//			System.out.print("\tMapID: "+en.getKey());
-//			System.out.println("\t oTermID: "+en.getValue().getId()+" oTermName: "+en.getValue().getName());
-//		}
-//		System.out.println("\t-------------");
-		
 		return childList;
 	}
 
