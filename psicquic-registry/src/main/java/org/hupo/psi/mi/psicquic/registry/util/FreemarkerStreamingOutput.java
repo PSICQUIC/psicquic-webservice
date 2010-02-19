@@ -18,11 +18,17 @@ package org.hupo.psi.mi.psicquic.registry.util;
 import org.hupo.psi.mi.psicquic.PsicquicService;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.RequestInfo;
+import org.hupo.psi.mi.psicquic.freemarker.method.TermName;
+import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
 import org.hupo.psi.mi.psicquic.registry.Registry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -32,23 +38,35 @@ import freemarker.template.TemplateException;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
+
 public class FreemarkerStreamingOutput implements StreamingOutput {
 
     private Registry registry;
     private Configuration configuration;
+    private SelfDiscoveringOntologyTree miOntologyTree; 
+    
 
-    public FreemarkerStreamingOutput(Registry registry, Configuration config) {
+
+
+    
+    public FreemarkerStreamingOutput(Registry registry, SelfDiscoveringOntologyTree miOntologyTree,Configuration config) {
         this.registry = registry;
         this.configuration = config;
+        this.miOntologyTree = miOntologyTree;
     }
 
     public void write(OutputStream outputStream) throws IOException, WebApplicationException {
         final Template template = configuration.getTemplate("main.ftl");
-
+        
         Writer writer = new OutputStreamWriter(outputStream);
-
+        Map root = new HashMap();
+        
+        root.put("registry",registry);
+        //root.put("termName", new TermName(miOntologyTree));
+        root.put("termName", new TermName(miOntologyTree));
+        
         try {
-            template.process(registry, writer);
+            template.process(root, writer);
         } catch (TemplateException e) {
             throw new RuntimeException("Problem processing freemarker template");
         }

@@ -15,7 +15,21 @@
  */
 package org.hupo.psi.mi.psicquic.registry;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+
 import freemarker.template.Configuration;
+
+import org.apache.commons.lang.StringUtils;
+import org.hupo.psi.mi.psicquic.expressionTree.ExpressionTree;
+import org.hupo.psi.mi.psicquic.expressionTree.ParseExpressionException;
+import org.hupo.psi.mi.psicquic.ols.client.OLSClient;
+import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
+import org.hupo.psi.mi.psicquic.ols.soap.OntologyQuerySoapBindingStub;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig;
 import org.hupo.psi.mi.psicquic.registry.util.FreemarkerStreamingOutput;
 import org.hupo.psi.mi.psicquic.registry.util.RawTextStreamingOutput;
@@ -47,13 +61,18 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     private PsicquicRegistryConfig config;
     @Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;
+    
+    @Autowired
+    private SelfDiscoveringOntologyTree miOntologyTree;
 
-    public Object executeAction(String action, String name, String url, String format, String showRestricted) throws IllegalActionException {
+
+    public Object executeAction(String action, String name, String url, String format, String showRestricted, String tags) throws IllegalActionException {
         Registry registry;
 
         if (ACTION_STATUS.equalsIgnoreCase(action)) {
             registry = createRegistry(new NameFilter(name),
-                                      new RestrictedFilter(stringToBoolean(showRestricted)));
+                                      new RestrictedFilter(stringToBoolean(showRestricted)),
+            						  new TagsFilter(tags));
 
             for (ServiceType serviceStatus : registry.getServices()) {
                 checkStatus(serviceStatus);
@@ -61,11 +80,13 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
         } else if (ACTION_ACTIVE.equalsIgnoreCase(action)) {
             registry = createRegistry(new NameFilter(name),
                                       new ActiveFilter(),
-                                      new RestrictedFilter(stringToBoolean(showRestricted)));
+                                      new RestrictedFilter(stringToBoolean(showRestricted)),
+            						  new TagsFilter(tags));
         } else if (ACTION_INACTIVE.equalsIgnoreCase(action)) {
             registry = createRegistry(new NameFilter(name),
                                       new InactiveFilter(),
-                                      new RestrictedFilter(stringToBoolean(showRestricted)));
+                                      new RestrictedFilter(stringToBoolean(showRestricted)),
+            						  new TagsFilter(tags));
         } else {
             throw new IllegalActionException("Action not defined: "+action);
         }
@@ -84,7 +105,14 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
         final Configuration freemarkerCfg = freeMarkerConfigurer.getConfiguration();
 
-        return Response.ok(new FreemarkerStreamingOutput(registry, freemarkerCfg), MediaType.TEXT_HTML_TYPE).build();
+        //return Response.ok(new FreemarkerStreamingOutput(registry,freemarkerCfg), MediaType.TEXT_HTML_TYPE).build();
+        
+        
+//        for (ServiceType s : registry.getServices()){
+//        	System.out.println(s.getName()+" : RestURL="+s.getRestUrl()+" RestEXAMPLE="+s.getRestExample());
+//        }
+//        
+        return Response.ok(new FreemarkerStreamingOutput(registry, miOntologyTree ,freemarkerCfg), MediaType.TEXT_HTML_TYPE).build();
     }
 
     private Registry createRegistry(ServiceFilter ... filters) {
@@ -184,4 +212,50 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
         }
 
     }
+    
+    private class TagsFilter implements ServiceFilter {
+        
+        private ExpressionTree exTree;
+        
+
+        public TagsFilter(String expression) {
+        	try {
+        		
+				exTree = new ExpressionTree(expression, miOntologyTree,false);
+			} catch (ParseExpressionException e) {
+				exTree = null;
+			}
+		}
+    
+
+
+
+		@Override
+		public boolean accept(ServiceType service) {
+			boolean result = false;
+			
+			if(exTree == null){
+				result = false;
+			}else {
+				try {
+					if(miOntologyTree != null){
+						System.out.println("PSICQUICREGISTRYSERVICEIMPL: miOntologyTree is NOT null");
+					} else {
+						System.out.println("PSICQUICREGISTRYSERVICEIMPL: miOntologyTree IS null");
+
+					}
+					
+					result = exTree.evaluate(service);
+				} catch (ParseExpressionException e) {
+					result = false;
+				}
+			}
+			
+			return result;
+
+		}
+        
+    }
+
+
 }
