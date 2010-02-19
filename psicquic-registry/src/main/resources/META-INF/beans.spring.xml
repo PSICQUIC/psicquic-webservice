@@ -16,10 +16,6 @@
 
     <context:property-placeholder location="classpath:/META-INF/psicquic.properties"/>
 
-    <!--   <bean id="lala" class="">  -->
-    <!--   <constr-args -->
-    
-
 
     <!-- Configuration -->
     <bean name="psicquicConfig" class="org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig">
@@ -41,8 +37,6 @@
         <property name="ontology" value="MI"/>
         
     </bean>
-    
-
 
     <!-- this bean must not be lazily initialized if the exporting is to happen -->
     <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
