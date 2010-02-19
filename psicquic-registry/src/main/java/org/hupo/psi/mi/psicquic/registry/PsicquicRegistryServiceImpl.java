@@ -55,13 +55,14 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     private SelfDiscoveringOntologyTree miOntologyTree;
 
 
-    public Object executeAction(String action, String name, String url, String format, String showRestricted, String tags) throws IllegalActionException {
+    public Object executeAction(String action, String name, String url, String format, String showRestricted, String tags, String excluded) throws IllegalActionException {
         Registry registry;
 
         if (ACTION_STATUS.equalsIgnoreCase(action)) {
             registry = createRegistry(new NameFilter(name),
                                       new RestrictedFilter(stringToBoolean(showRestricted)),
-            						  new TagsFilter(tags));
+            						  new TagsFilter(tags),
+                                      new ExclusionFilter(excluded.split(",")));
 
             for (ServiceType serviceStatus : registry.getServices()) {
                 checkStatus(serviceStatus);
@@ -70,12 +71,14 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
             registry = createRegistry(new NameFilter(name),
                                       new ActiveFilter(),
                                       new RestrictedFilter(stringToBoolean(showRestricted)),
-            						  new TagsFilter(tags));
+            						  new TagsFilter(tags),
+                                      new ExclusionFilter(excluded.split(",")));
         } else if (ACTION_INACTIVE.equalsIgnoreCase(action)) {
             registry = createRegistry(new NameFilter(name),
                                       new InactiveFilter(),
                                       new RestrictedFilter(stringToBoolean(showRestricted)),
-            						  new TagsFilter(tags));
+            						  new TagsFilter(tags),
+                                      new ExclusionFilter(excluded.split(",")));
         } else {
             throw new IllegalActionException("Action not defined: "+action);
         }
@@ -223,5 +226,29 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 			
 			return result;
 		}
+    }
+
+    private class ExclusionFilter implements ServiceFilter {
+
+        private String[] excludedUrls;
+
+        private ExclusionFilter(String[] excludedUrls) {
+            this.excludedUrls = excludedUrls;
+        }
+
+        public boolean accept(ServiceType service) {
+            for (String excludedUrl : excludedUrls) {
+                if (service.getSoapUrl() != null) {
+                    if (excludedUrl.trim().equals(service.getSoapUrl())) {
+                        return false;
+                    }
+                } else if (service.getRestUrl() != null) {
+                    if (excludedUrl.trim().equals(service.getRestUrl())) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 }

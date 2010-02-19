@@ -15,8 +15,10 @@
  */
 package org.hupo.psi.mi.psicquic.registry;
 
-import javax.ws.rs.*;
-import java.util.List;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 /**
  * RESTful web service.
@@ -38,7 +40,8 @@ public interface PsicquicRegistryService {
                            @DefaultValue("0") @QueryParam("url") String url,
                            @DefaultValue("html") @QueryParam("format") String format,
                            @DefaultValue("y") @QueryParam("restricted") String showRestricted,
-                           @DefaultValue("MI:0000") @QueryParam("tags") String tags) throws IllegalActionException;
+                           @DefaultValue("MI:0000") @QueryParam("tags") String tags,
+                           @DefaultValue("") @QueryParam("excluded") String excludedUrls) throws IllegalActionException;
 
     @GET
     @Path("/version")
