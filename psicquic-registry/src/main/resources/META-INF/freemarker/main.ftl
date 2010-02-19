@@ -39,8 +39,9 @@
           <th><nobr>REST Access</nobr></th>
           <th>Restricted</th>
           <th>Comments</th>
+          <th>Tags</th>
       </tr>
-    <#list services as service>
+    <#list registry.services as service>
     <tr class="${service.active?string("active", "inactive")}" style="vertical-align:top">
         <td><a href="${service.organizationUrl}" target="_blank">${service.name}</a></td>
         <td>${service.active?string("YES", "NO")}</td>
@@ -56,6 +57,11 @@
         </td>
         <td>${service.restricted?string("YES", "NO")}</td>
         <td>${service.comments!''}</td>
+        <td>
+        <#list service.tags as tag>
+        <NOBR> <a href="http://www.ebi.ac.uk/ontology-lookup/?termId=${tag}" target="_blank">${termName(tag)}</a> </NOBR> 
+        </#list>
+        </td>
   </#list>
   </table>
 
