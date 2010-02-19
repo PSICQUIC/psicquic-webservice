@@ -82,6 +82,7 @@ public class PsicquicStatsCollector {
     private String senderEmail;
     private String mailSubjectPrefix;
     private List<String> recipients;
+    private static final String DEFAULT_SMTP_CONFIG = "/META-INF/smtp.properties";
 
     public PsicquicStatsCollector() throws IOException {
         // Initialize Spring for emails
@@ -94,9 +95,11 @@ public class PsicquicStatsCollector {
         File smtpConfig = null;
         final String configFile = System.getProperty( SMTP_CONFIG_FILE_KEY );
         if( configFile != null ) {
+            log.info( "Using user provided SMTP config from: '"+ configFile +"'" );
             smtpConfig = new File( configFile );
         } else {
-            smtpConfig = new File( PsicquicStatsCollector.class.getResource( "/META-INF/smtp.properties" ).getFile() );
+            log.info( "Using default SMTP config from '"+DEFAULT_SMTP_CONFIG+"'" );
+            smtpConfig = new File( PsicquicStatsCollector.class.getResource( DEFAULT_SMTP_CONFIG ).getFile() );
         }
 
         Properties properties = new Properties();
@@ -228,7 +231,10 @@ public class PsicquicStatsCollector {
 
         String registryUrl = System.getProperty( PSICQUIC_REGISTRY_URL_KEY );
         if( registryUrl == null ) {
+            log.info( "Using default registry URL: " + DEFAULT_REGISTRY_URL );
             registryUrl = DEFAULT_REGISTRY_URL;
+        } else {
+            log.info( "Using user provided registry URL: " + registryUrl );
         }
 
         log.info( "Reading PSICQUIC services list from: " + registryUrl );
