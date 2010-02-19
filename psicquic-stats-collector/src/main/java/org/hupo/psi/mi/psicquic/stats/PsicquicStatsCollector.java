@@ -48,10 +48,14 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Utility that collect IMEx statistics from existing PSICQUIC services and publishes it into a Google Spreadsheet.
+ * Utility that collect PSICQUIC statistics from existing services and publishes it into a Google Spreadsheet.
  * <p/>
- * Our sandbox spreadsheet: http://spreadsheets.google.com/ccc?key=0Ah1A6itoG95bdGdZQ2VhTXBHTVpGTndtYjFCc3pzNUE&hl=en_GB&pli=1
+ * The tool can be used to monitor the PSICQUIC services hosted on on the main Registry but an other Registry can also
+ * be used by passing the System property 'psicquic.registry.url'. Whether it's a totally different registry or the
+ * public one with some exclusion rules or tag filtering.
  * <p/>
+ * One can use the default SMTP configuration file provided (resources/META-INF/smtp.properties) or use an external one
+ * by setting it's location as a System's property: 'smtp.config.file'.
  * <p/>
  * Note: We used a lot of code sample from:
  * http://code.google.com/apis/spreadsheets/data/3.0/developers_guide_java.html
@@ -67,10 +71,14 @@ public class PsicquicStatsCollector {
 
     private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "dd/MM/yyyy" );
 
+    public static final String DEFAULT_REGISTRY_URL = "http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/";
+
+    private static final String PSICQUIC_REGISTRY_URL_KEY = "psicquic.registry.url";
+    private static final String SMTP_CONFIG_FILE_KEY = "smtp.config.file";
+
     private static final int PSICQUIC_BATCH_SIZE = 200;
 
     private MailSender mailSender;
-
     private String senderEmail;
     private String mailSubjectPrefix;
     private List<String> recipients;
@@ -84,8 +92,9 @@ public class PsicquicStatsCollector {
         // load email properties
         // if System.properties contain 'smtp.config.file', if so use that ! if not rely on the default
         File smtpConfig = null;
-        if( System.getProperty( "smtp.config.file" ) != null ) {
-            smtpConfig = new File( System.getProperty( "smtp.config.file" ) );
+        final String configFile = System.getProperty( SMTP_CONFIG_FILE_KEY );
+        if( configFile != null ) {
+            smtpConfig = new File( configFile );
         } else {
             smtpConfig = new File( PsicquicStatsCollector.class.getResource( "/META-INF/smtp.properties" ).getFile() );
         }
@@ -159,7 +168,7 @@ public class PsicquicStatsCollector {
 
                     final String previousValue = previousCell.getCell().getValue();
                     if ( previousValue != null && ! previousValue.equals( count ) ) {
-                        System.out.println( worksheetName + ": statistics for " + db + " has changed since " + previousDateCell.getCell().getValue() );
+                        log.info( worksheetName + ": statistics for " + db + " has changed since " + previousDateCell.getCell().getValue() );
                         if ( !"0".equals( count ) ) {
                             // the service has a positive count so we record it in the stats
                             cell.changeInputValueLocal( count );
@@ -167,7 +176,7 @@ public class PsicquicStatsCollector {
                         }
                     } else {
                         // For cells that haven't been filled, copy the value of the previous row.
-                        System.out.println( worksheetName + ": statistics for " + db + " has NOT changed since " + previousDateCell.getCell().getValue() );
+                        log.info( worksheetName + ": statistics for " + db + " has NOT changed since " + previousDateCell.getCell().getValue() );
                         cell.changeInputValueLocal( previousCell.getCell().getValue() );
                     }
                 } else {
@@ -216,17 +225,25 @@ public class PsicquicStatsCollector {
     // PSICQUIC/Registry related methods
 
     private List<ServiceType> collectPsicquicServiceNames() throws PsicquicRegistryClientException {
+
+        String registryUrl = System.getProperty( PSICQUIC_REGISTRY_URL_KEY );
+        if( registryUrl == null ) {
+            registryUrl = DEFAULT_REGISTRY_URL;
+        }
+
+        log.info( "Reading PSICQUIC services list from: " + registryUrl );
+
         PsicquicRegistryClient registry =
-                new DefaultPsicquicRegistryClient( "http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/" );
+                new DefaultPsicquicRegistryClient( registryUrl );
         final List<ServiceType> services = registry.listServices();
-        System.out.println( "Found " + services.size() + " PSICQUIC services in the Registry." );
+        log.info( "Found " + services.size() + " PSICQUIC services in the Registry." );
         return services;
     }
 
     private Map<String, Long> collectPsicquicInteractionsStats( List<ServiceType> psicquicServices ) {
         Map<String, Long> db2interactionCount = Maps.newHashMap();
         for ( ServiceType service : psicquicServices ) {
-            System.out.println( service.getName() + " -> " + service.getCount() );
+            log.info( service.getName() + " -> " + service.getCount() );
             db2interactionCount.put( service.getName(), service.getCount() );
         }
         return db2interactionCount;
@@ -240,7 +257,7 @@ public class PsicquicStatsCollector {
 
             if ( !psicquicWhiteList.contains( service.getName() ) ) {
                 // skip this resource.
-                System.out.println( "Skipping the count of pudmed for PSICQUIC sercice: " + service.getName() );
+                log.info( "Skipping the count of pudmed for PSICQUIC sercice: " + service.getName() );
                 continue;
             }
 
@@ -248,7 +265,7 @@ public class PsicquicStatsCollector {
             int current = 0;
             UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), 10000 );
 
-            System.out.println( "Querying PSICQUIC service: " + service.getSoapUrl() );
+            log.info( "Querying PSICQUIC service: " + service.getSoapUrl() );
             Set<String> pmids = Sets.newHashSet();
             boolean error = false;
 
@@ -268,10 +285,7 @@ public class PsicquicStatsCollector {
 
                     // show progress
                     if ( ( current % 1000 ) == 0 ) {
-                        System.out.print( current + "..." );
-                    }
-                    if ( ( current % 15000 ) == 0 ) {
-                        System.out.println();
+                        log.info( current );
                     }
                 } while ( current < totalInteractionCount );
             } catch ( PsicquicClientException pce ) {
@@ -282,8 +296,9 @@ public class PsicquicStatsCollector {
                 sendEmail( "[PsicquicStatsCollector] An error occured while reading data from " + service.getName(),
                            ExceptionUtils.getFullStackTrace( pce ) );
             }
-            System.out.println( "\n" + service.getName() + " -> " + pmids.size() + " publication(s)." +
-                                ( error ? " However the PMID collection may have been interupted." : "" ) );
+
+            log.info( "\n" + service.getName() + " -> " + pmids.size() + " publication(s)." +
+                      ( error ? " However the PMID collection may have been interupted." : "" ) );
 
             if ( !error ) {
                 db2publicationsCount.put( service.getName(), ( long ) pmids.size() );
@@ -325,13 +340,12 @@ public class PsicquicStatsCollector {
         // Update interaction counts
         Map<String, Long> db2interactionCount = collectPsicquicInteractionsStats( psicquicServices );
         final List<String> updatedServices = updateInteractionWorksheet( service, spreadsheetEntry, db2interactionCount );
-        System.out.println( updatedServices.size() + " services updated: " + updatedServices );
+        log.info( updatedServices.size() + " services updated: " + updatedServices );
 
         // Update publication for those services that have a different count of interactions
         Map<String, Long> db2publicationsCount = collectPsicquicPublicationsStats( psicquicServices, updatedServices );
         updatePublicationWorksheet( service, spreadsheetEntry, db2publicationsCount );
     }
-
 
     /////////////////
     // M A I N
@@ -341,10 +355,11 @@ public class PsicquicStatsCollector {
         // TODO Auto resize of the spreadsheet when we reach the maximum size
 
         if ( args.length != 3 ) {
-            System.err.println( "usage: PsicquicStatsCollector <gmail.account> <password> <spreadsheet.key>" );
+            System.err.println( "usage: PsicquicStatsCollector <gmail.account> <password> <spreadsheet.key> " +
+                                "[-D"+PSICQUIC_REGISTRY_URL_KEY+"=pathToFile] " +
+                                "[-D"+SMTP_CONFIG_FILE_KEY+"=pathToFile]" );
             System.exit( 1 );
         }
-
 
         // Handle input parameters
         final String email = args[0];
