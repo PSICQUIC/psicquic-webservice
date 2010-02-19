@@ -85,7 +85,7 @@
                         <argument>-classpath</argument>
                         <!-- automatically creates the classpath using all project dependencies, also adding the project build directory -->
                         <classpath/>
-                        <argument>IMExStatsCollector</argument>
+                        <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
                     </arguments>
                 </configuration>
             </plugin>
