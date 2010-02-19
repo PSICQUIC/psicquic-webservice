@@ -16,6 +16,45 @@
 
     <name>PSICQUIC :: PSICQUIC Statistics Collector</name>
 
+    <properties>
+        <psicquic.registry.url>http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/</psicquic.registry.url>
+        <smtp.config.file>/META-INF/smtp.properties</smtp.config.file>
+    </properties>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <!-- automatically creates the classpath using all project dependencies, also adding the project build directory -->
+                        <classpath/>
+                        <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
+
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
 
         <dependency>
@@ -65,31 +104,5 @@
             </snapshots>
         </repository>
     </repositories>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-classpath</argument>
-                        <!-- automatically creates the classpath using all project dependencies, also adding the project build directory -->
-                        <classpath/>
-                        <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
-                    </arguments>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
