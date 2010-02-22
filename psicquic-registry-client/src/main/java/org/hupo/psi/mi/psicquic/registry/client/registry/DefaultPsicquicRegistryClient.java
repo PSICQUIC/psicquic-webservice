@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -95,8 +96,13 @@ public class DefaultPsicquicRegistryClient implements PsicquicRegistryClient {
         } 
     }
 
-    public List<ServiceType> listServices(String action, boolean restricted, String[] tags) throws PsicquicRegistryClientException {
-        throw new UnsupportedOperationException("Not supported yet");
+    public List<ServiceType> listServices(String action, boolean restricted, String tagExpression) throws PsicquicRegistryClientException {
+        try {
+            String url = createDefaultRegistryUrl(action)+"&restricted="+(restricted? "y" : "n")+"&tags="+ URLEncoder.encode(tagExpression, "utf-8");
+            return unmarshalUrl(url);
+        } catch (Throwable t) {
+            throw new PsicquicRegistryClientException("Problem reading registry", t);
+        }
     }
 
     private String createServiceUrl(String base, String paramUrl) {
