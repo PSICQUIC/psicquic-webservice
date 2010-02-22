@@ -18,7 +18,6 @@
         </restExample>
         <organizationUrl>http://www.ebi.ac.uk/chembl</organizationUrl>
         <restricted>false</restricted>
-        <tag>MI:0959</tag>
     </service>
     <service>
         <name>IntAct</name>
