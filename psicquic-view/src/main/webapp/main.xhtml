@@ -33,20 +33,27 @@
              <trh:script source="/js/intact.js"/>
 
         </trh:head>
-      <trh:body inlineStyle="background-image: url('#{ebisf:absoluteContextPath()}/images/top_background.jpg'); background-repeat: repeat-x">
-          <div style="padding-left:10px; padding-right: 10px">
-       <tr:form>
+      
+      <c:set var="defaultBackImage" value="background-image: url('#{ebisf:absoluteContextPath()}/images/top_background.jpg')"/>
+      <c:set var="userBackImage" value="background-image: url('#{config.bannerBackgroundUrl}')"/>
+      <c:set var="backImage" value="#{empty config.bannerBackgroundUrl ? defaultBackImage : userBackImage}; background-repeat: repeat-x"/>
 
-           <trh:tableLayout width="100%">
+      <trh:body>
+          <trh:tableLayout width="100%"
+                            inlineStyle="#{config.bannerBackgroundUrl != null? backImage : ''}">
                <trh:rowLayout>
-                   <trh:cellFormat inlineStyle="vertical-align: bottom">
+                   <trh:cellFormat inlineStyle="width:2%" >
+                       <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}"/>
+                   </trh:cellFormat>
+                   <trh:cellFormat inlineStyle="vertical-align: bottom" rendered="#{not empty config.title}">
                        <h1>#{config.title}</h1>
                    </trh:cellFormat>
-                   <trh:cellFormat inlineStyle="text-align:right">
-                       <tr:image source="${config.logoUrl}" rendered="#{config.logoUrl != null}"/>
-                   </trh:cellFormat>
+
                </trh:rowLayout>
            </trh:tableLayout>
+
+          <div style="padding-left:10px; padding-right: 10px">
+              <tr:form>
 
            <!-- To avoid expired sessions, poll every 15 mins -->
            <tr:poll interval="#{15*60*1000}"/>

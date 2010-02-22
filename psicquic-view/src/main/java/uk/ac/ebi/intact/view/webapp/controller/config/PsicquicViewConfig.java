@@ -38,6 +38,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
     private String configFile;
     private String title;
     private String logoUrl;
+    private String bannerBackgroundUrl;
     private String registryTagsAsString;
     private String miqlFilterQuery;
     private String includedServices;
@@ -52,6 +53,8 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
             log.warn("No config file defined. Created new temporary configuration file: "+tempFile);
             configFile = tempFile;
         }
+
+        configFile = configFile.replaceAll("\\\\:", ":");
 
         File file = new File(configFile);
 
@@ -68,6 +71,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
         title = properties.getProperty("title");
         logoUrl = properties.getProperty("logo.url");
+        bannerBackgroundUrl = properties.getProperty("banner.background.url");
         registryTagsAsString = properties.getProperty("registry.tags");
         miqlFilterQuery = properties.getProperty("query.filter");
         includedServices = properties.getProperty("services.included");
@@ -83,6 +87,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
         setProperty(properties, "title", title);
         setProperty(properties, "logo.url", logoUrl);
+        setProperty(properties, "banner.background.url", bannerBackgroundUrl);
         setProperty(properties, "registry.tags", registryTagsAsString);
         setProperty(properties, "query.filter", miqlFilterQuery);
         setProperty(properties, "services.included", includedServices);
@@ -163,5 +168,13 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
     public void setExcludedServices(String excludedServices) {
         this.excludedServices = excludedServices;
+    }
+
+    public String getBannerBackgroundUrl() {
+        return bannerBackgroundUrl;
+    }
+
+    public void setBannerBackgroundUrl(String bannerBackgroundUrl) {
+        this.bannerBackgroundUrl = bannerBackgroundUrl;
     }
 }

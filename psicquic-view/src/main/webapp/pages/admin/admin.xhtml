@@ -52,9 +52,10 @@
                <tr:inputText label="Config File: " value="#{config.configFile}" columns="100" required="true"/>
                <tr:inputText label="Title: " value="#{config.title}" columns="100"/>
                <tr:inputText label="Logo URL: " value="#{config.logoUrl}" columns="100"/>
+               <tr:inputText label="Banner background URL: " value="#{config.bannerBackgroundUrl}" columns="100"/>
                <tr:panelLabelAndMessage label="Registry tags: ">
                    <f:facet name="help">
-                       <tr:outputText value="Comma-separated"/>
+                       <tr:outputText value="Expression to define the tags to be used"/>
                      </f:facet>
                    <tr:inputText value="#{config.registryTagsAsString}" columns="100" simple="true"/>
                </tr:panelLabelAndMessage>

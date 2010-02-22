@@ -173,7 +173,11 @@ public class SearchController extends BaseController {
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
 
         if (allServices == null) {
-            allServices = registryClient.listServices();
+            if (config.getRegistryTagsAsString() != null) {
+                allServices = registryClient.listServices("ACTIVE", true, config.getRegistryTagsAsString());
+            } else {
+                allServices = registryClient.listServices();
+            }
         }
 
         services = new ArrayList<ServiceType>(allServices);
