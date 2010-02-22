@@ -6,11 +6,22 @@
     <style type="text/css">
         body {
             font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 9pt;
         }
 
         th {
             text-align: left;
             border-bottom: black solid 1px;
+            font-size: 9pt;
+        }
+
+        td {
+            font-size: 9pt;
+            border-bottom: gray dashed 1px;
+        }
+
+        input {
+            font-size: 9pt;
         }
 
         table {
@@ -36,10 +47,11 @@
           <th>Interactions</th>
           <th>Version</th>
           <th><nobr>SOAP URL</nobr></th>
-          <th><nobr>REST Access</nobr></th>
+          <th><nobr>REST URL</nobr></th>
+          <th><nobr>REST Example</nobr></th>
           <th>Restricted</th>
-          <th>Comments</th>
           <th>Tags</th>
+          <th>Comments</th>
       </tr>
     <#list registry.services as service>
     <tr class="${service.active?string("active", "inactive")}" style="vertical-align:top">
@@ -47,7 +59,14 @@
         <td>${service.active?string("YES", "NO")}</td>
         <td>${service.count}</td>
         <td><nobr>${service.version!'-'}</nobr></td>
-        <td><nobr>${service.soapUrl}</nobr></td>
+        <td><input type="text" value="${service.soapUrl}" readonly="true"/></td>
+        <td>
+            <#if service.restExample??>
+                <input type="text" value="${service.restUrl}" readonly="true"/>
+                <#else>
+                N/A
+            </#if>
+        </td>
         <td>
             <#if service.restExample??>
                 <a href="${service.restExample}" target="_blank">Example</a>
@@ -56,12 +75,12 @@
             </#if>
         </td>
         <td>${service.restricted?string("YES", "NO")}</td>
-        <td>${service.comments!''}</td>
         <td>
         <#list service.tags as tag>
-        <NOBR> <a href="http://www.ebi.ac.uk/ontology-lookup/?termId=${tag}" target="_blank">${termName(tag)}</a> </NOBR> 
+        <NOBR> <a href="http://www.ebi.ac.uk/ontology-lookup/?termId=${tag}" target="_blank">${termName(tag)}</a> </NOBR>
         </#list>
         </td>
+        <td>${service.comments!''}</td>
   </#list>
   </table>
 
