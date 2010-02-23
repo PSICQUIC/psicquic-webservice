@@ -27,7 +27,7 @@
     </bean>
 
     <bean id="statsConfig" class="org.hupo.psi.mi.psicquic.stats.Config">
-         <property name="psicquicRegistryUrl" value="${psicquic.registry.url}"/>
+         <property name="psicquicRegistryUrl" value="${psicquic.registry.url}&amp;format=txt&amp;restricted=n"/>
          <property name="smtpConfigFile" value="${smtp.config.file}" />
     </bean>
 

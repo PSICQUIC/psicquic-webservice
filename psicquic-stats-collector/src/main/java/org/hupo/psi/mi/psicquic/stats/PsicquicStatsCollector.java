@@ -44,6 +44,7 @@ import psidev.psi.mi.tab.model.CrossReference;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import java.io.*;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -75,12 +76,14 @@ public class PsicquicStatsCollector {
 
     private static final String SMTP_CONFIG_FILE_KEY = "smtp.config.file";
 
+    private static final int PSICQUIC_DEFAULT_TIMEOUT = 10000;
     private static final int PSICQUIC_BATCH_SIZE = 200;
+    
     private MailSender mailSender;
     private String senderEmail;
     private String mailSubjectPrefix;
-    private List<String> recipients;
 
+    private List<String> recipients;
     private Config config;
 
     public PsicquicStatsCollector() throws IOException {
@@ -95,14 +98,14 @@ public class PsicquicStatsCollector {
         // load email properties
         // if System.properties contain 'smtp.config.file', if so use that ! if not rely on the default
         File smtpConfig = null;
-        final String configFile = System.getProperty( SMTP_CONFIG_FILE_KEY );
-        if( config.isDefaultSmtpConfigFile() ) {
-            log.info( "Using default SMTP config from '"+ config.DEFAULT_SMTP_CONFIG +"'" );
+//        final String configFile = System.getProperty( SMTP_CONFIG_FILE_KEY );
+        if( config.hasSmtpConfigFile() ) {
+            log.info( "Using default SMTP config from classpath: '"+ config.DEFAULT_SMTP_CONFIG +"'" );
             smtpConfig = new File( PsicquicStatsCollector.class.getResource( config.DEFAULT_SMTP_CONFIG ).getFile() );
         } else {
             smtpConfig = new File( config.getSmtpConfigFile() );
-            log.info( "Using user provided SMTP config from: '"+ configFile +"'" );
         }
+        log.info( "Using SMTP config from: '"+ smtpConfig.getAbsolutePath() +"'" );
 
         Properties properties = new Properties();
         FileInputStream in = new FileInputStream( smtpConfig );
@@ -172,7 +175,9 @@ public class PsicquicStatsCollector {
 
                     final String previousValue = previousCell.getCell().getValue();
                     if ( previousValue != null && ! previousValue.equals( count ) ) {
-                        log.info( worksheetName + ": statistics for " + db + " has changed since " + previousDateCell.getCell().getValue() );
+                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
+                                                              db + " has changed since " +
+                                                              previousDateCell.getCell().getValue() );
                         if ( !"0".equals( count ) ) {
                             // the service has a positive count so we record it in the stats
                             cell.changeInputValueLocal( count );
@@ -180,7 +185,9 @@ public class PsicquicStatsCollector {
                         }
                     } else {
                         // For cells that haven't been filled, copy the value of the previous row.
-                        log.info( worksheetName + ": statistics for " + db + " has NOT changed since " + previousDateCell.getCell().getValue() );
+                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
+                                                              db + " has NOT changed since " +
+                                                              previousDateCell.getCell().getValue() );
                         cell.changeInputValueLocal( previousCell.getCell().getValue() );
                     }
                 } else {
@@ -228,43 +235,63 @@ public class PsicquicStatsCollector {
     //////////////////////////////////////
     // PSICQUIC/Registry related methods
 
-    private List<ServiceType> collectPsicquicServiceNames() throws PsicquicRegistryClientException {
+    private List<PsicquicService> collectPsicquicServiceNames() throws IOException {
         final String registryUrl = config.getPsicquicRegistryUrl();
 
         if ( log.isInfoEnabled() ) log.info( "Reading PSICQUIC services list from: " + registryUrl );
 
-        PsicquicRegistryClient registry = new DefaultPsicquicRegistryClient( registryUrl );
-        final List<ServiceType> services = registry.listServices();
+        // collect services via REST to to be able to pass filters on the URL (status, tags...)
+        URL url = new URL( registryUrl );
+        Properties props = new Properties( );
+        final InputStream is = url.openStream();
+        props.load( is );
+        is.close();
+
+        List<PsicquicService> services  = Lists.newArrayList();
+
+        for ( Map.Entry<Object, Object> service : props.entrySet() ) {
+            final PsicquicService s = new PsicquicService( ( String ) service.getKey(),
+                                                           ( String ) service.getValue() );
+            services.add( s );
+            System.out.println( s );
+        }
 
         if ( log.isInfoEnabled() ) log.info( "Found " + services.size() + " PSICQUIC services in the Registry." );
 
         return services;
     }
 
-    private Map<String, Long> collectPsicquicInteractionsStats( List<ServiceType> psicquicServices ) {
+    /**
+     * Update the given list of PSICQUIC services. that is their interaction count.
+     * @param psicquicServices the list of services to update.
+     * @throws PsicquicClientException
+     */
+    private Map<String, Long> updatePsicquicInteractionsStats( List<PsicquicService> psicquicServices ) throws PsicquicClientException {
         Map<String, Long> db2interactionCount = Maps.newHashMap();
-        for ( ServiceType service : psicquicServices ) {
-            log.info( service.getName() + " -> " + service.getCount() );
-            db2interactionCount.put( service.getName(), service.getCount() );
+        for ( PsicquicService service : psicquicServices ) {
+            log.info( service.getName() + " -> " + service.getSoapUrl() );
+            UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), PSICQUIC_DEFAULT_TIMEOUT );
+            final SearchResult<BinaryInteraction> result = client.getByQuery( "*:*", 0, 0 );
+            service.setInteractionCount( result.getTotalCount() );
+            db2interactionCount.put( service.getName(), result.getTotalCount().longValue() );
         }
         return db2interactionCount;
     }
 
-    private Map<String, Long> collectPsicquicPublicationsStats( List<ServiceType> psicquicServices,
+    private Map<String, Long> collectPsicquicPublicationsStats( List<PsicquicService> psicquicServices,
                                                                 List<String> psicquicWhiteList ) throws IOException {
         Map<String, Long> db2publicationsCount = Maps.newHashMap();
 
-        for ( ServiceType service : psicquicServices ) {
-
+        for ( PsicquicService service : psicquicServices ) {
             if ( !psicquicWhiteList.contains( service.getName() ) ) {
                 // skip this resource.
                 if ( log.isInfoEnabled() ) log.info( "Skipping the count of pudmed for PSICQUIC sercice: " + service.getName() );
                 continue;
             }
 
-            final long totalInteractionCount = service.getCount();
+            final long totalInteractionCount = service.getInteractionCount();
             int current = 0;
-            UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), 10000 );
+            UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), PSICQUIC_DEFAULT_TIMEOUT );
 
             if ( log.isInfoEnabled() ) log.info( "Querying PSICQUIC service: " + service.getSoapUrl() );
             Set<String> pmids = Sets.newHashSet();
@@ -337,10 +364,10 @@ public class PsicquicStatsCollector {
 
         final SpreadsheetEntry spreadsheetEntry = SpreadsheetFacade.getSpreadsheetWithKey( service, spreadsheetKey );
 
-        List<ServiceType> psicquicServices = collectPsicquicServiceNames();
+        List<PsicquicService> psicquicServices = collectPsicquicServiceNames();
 
         // Update interaction counts
-        Map<String, Long> db2interactionCount = collectPsicquicInteractionsStats( psicquicServices );
+        Map<String, Long> db2interactionCount = updatePsicquicInteractionsStats( psicquicServices );
         final List<String> updatedServices = updateInteractionWorksheet( service, spreadsheetEntry, db2interactionCount );
         if ( log.isInfoEnabled() ) log.info( updatedServices.size() + " services updated: " + updatedServices );
 
