@@ -71,35 +71,37 @@ public class PsicquicStatsCollector {
 
     private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "dd/MM/yyyy" );
 
-    public static final String DEFAULT_REGISTRY_URL = "http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/";
-
     private static final String PSICQUIC_REGISTRY_URL_KEY = "psicquic.registry.url";
+
     private static final String SMTP_CONFIG_FILE_KEY = "smtp.config.file";
 
     private static final int PSICQUIC_BATCH_SIZE = 200;
-
     private MailSender mailSender;
     private String senderEmail;
     private String mailSubjectPrefix;
     private List<String> recipients;
-    private static final String DEFAULT_SMTP_CONFIG = "/META-INF/smtp.properties";
+
+    private Config config;
 
     public PsicquicStatsCollector() throws IOException {
         // Initialize Spring for emails
-        String[] configFiles = new String[]{"/META-INF/smtp.spring.xml"};
+        String[] configFiles = new String[]{"/META-INF/beans.spring.xml"};
         BeanFactory factory = new ClassPathXmlApplicationContext( configFiles );
+
+        // inject my spring beans
         this.mailSender = ( MailSender ) factory.getBean( "mailSender" );
+        this.config = ( Config ) factory.getBean( "statsConfig" );
 
         // load email properties
         // if System.properties contain 'smtp.config.file', if so use that ! if not rely on the default
         File smtpConfig = null;
         final String configFile = System.getProperty( SMTP_CONFIG_FILE_KEY );
-        if( configFile != null ) {
-            log.info( "Using user provided SMTP config from: '"+ configFile +"'" );
-            smtpConfig = new File( configFile );
+        if( config.isDefaultSmtpConfigFile() ) {
+            log.info( "Using default SMTP config from '"+ config.DEFAULT_SMTP_CONFIG +"'" );
+            smtpConfig = new File( PsicquicStatsCollector.class.getResource( config.DEFAULT_SMTP_CONFIG ).getFile() );
         } else {
-            log.info( "Using default SMTP config from '"+DEFAULT_SMTP_CONFIG+"'" );
-            smtpConfig = new File( PsicquicStatsCollector.class.getResource( DEFAULT_SMTP_CONFIG ).getFile() );
+            smtpConfig = new File( config.getSmtpConfigFile() );
+            log.info( "Using user provided SMTP config from: '"+ configFile +"'" );
         }
 
         Properties properties = new Properties();
@@ -228,21 +230,15 @@ public class PsicquicStatsCollector {
     // PSICQUIC/Registry related methods
 
     private List<ServiceType> collectPsicquicServiceNames() throws PsicquicRegistryClientException {
+        String registryUrl = config.getPsicquicRegistryUrl();
 
-        String registryUrl = System.getProperty( PSICQUIC_REGISTRY_URL_KEY );
-        if( registryUrl == null ) {
-            log.info( "Using default registry URL: " + DEFAULT_REGISTRY_URL );
-            registryUrl = DEFAULT_REGISTRY_URL;
-        } else {
-            log.info( "Using user provided registry URL: " + registryUrl );
-        }
+        if ( log.isDebugEnabled() ) log.info( "Reading PSICQUIC services list from: " + registryUrl );
 
-        log.info( "Reading PSICQUIC services list from: " + registryUrl );
-
-        PsicquicRegistryClient registry =
-                new DefaultPsicquicRegistryClient( registryUrl );
+        PsicquicRegistryClient registry = new DefaultPsicquicRegistryClient( registryUrl );
         final List<ServiceType> services = registry.listServices();
-        log.info( "Found " + services.size() + " PSICQUIC services in the Registry." );
+
+        if ( log.isDebugEnabled() ) log.info( "Found " + services.size() + " PSICQUIC services in the Registry." );
+
         return services;
     }
 
