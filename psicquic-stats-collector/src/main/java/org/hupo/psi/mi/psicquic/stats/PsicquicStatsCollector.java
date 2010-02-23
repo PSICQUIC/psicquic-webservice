@@ -260,14 +260,20 @@ public class PsicquicStatsCollector {
      * @param psicquicServices the list of services to update.
      * @throws PsicquicClientException
      */
-    private Map<String, Long> updatePsicquicInteractionsStats( List<PsicquicService> psicquicServices ) throws PsicquicClientException {
+    private Map<String, Long> updatePsicquicInteractionsStats( List<PsicquicService> psicquicServices ) {
         Map<String, Long> db2interactionCount = Maps.newHashMap();
         for ( PsicquicService service : psicquicServices ) {
             log.info( service.getName() + " -> " + service.getSoapUrl() );
             UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), PSICQUIC_DEFAULT_TIMEOUT );
-            final SearchResult<BinaryInteraction> result = client.getByQuery( "*:*", 0, 0 );
-            service.setInteractionCount( result.getTotalCount() );
-            db2interactionCount.put( service.getName(), result.getTotalCount().longValue() );
+            final SearchResult<BinaryInteraction> result;
+            try {
+                result = client.getByQuery( "*:*", 0, 0 );
+                service.setInteractionCount( result.getTotalCount() );
+                db2interactionCount.put( service.getName(), result.getTotalCount().longValue() );
+            } catch ( PsicquicClientException e ) {
+                log.error( "An error occured while querying PSICQUIC service: " + service.getName() );
+                sendEmail( "Failed to query " + service.getName(), ExceptionUtils.getFullStackTrace( e ) );
+            }
         }
         return db2interactionCount;
     }
@@ -315,7 +321,7 @@ public class PsicquicStatsCollector {
                 error = true;
 
                 // email error
-                sendEmail( "[PsicquicStatsCollector] An error occured while reading data from " + service.getName(),
+                sendEmail( "An error occured while querying PSICQUIC service: " + service.getName(), 
                            ExceptionUtils.getFullStackTrace( pce ) );
             }
 
