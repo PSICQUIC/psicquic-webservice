@@ -230,14 +230,14 @@ public class PsicquicStatsCollector {
     // PSICQUIC/Registry related methods
 
     private List<ServiceType> collectPsicquicServiceNames() throws PsicquicRegistryClientException {
-        String registryUrl = config.getPsicquicRegistryUrl();
+        final String registryUrl = config.getPsicquicRegistryUrl();
 
-        if ( log.isDebugEnabled() ) log.info( "Reading PSICQUIC services list from: " + registryUrl );
+        if ( log.isInfoEnabled() ) log.info( "Reading PSICQUIC services list from: " + registryUrl );
 
         PsicquicRegistryClient registry = new DefaultPsicquicRegistryClient( registryUrl );
         final List<ServiceType> services = registry.listServices();
 
-        if ( log.isDebugEnabled() ) log.info( "Found " + services.size() + " PSICQUIC services in the Registry." );
+        if ( log.isInfoEnabled() ) log.info( "Found " + services.size() + " PSICQUIC services in the Registry." );
 
         return services;
     }
@@ -259,7 +259,7 @@ public class PsicquicStatsCollector {
 
             if ( !psicquicWhiteList.contains( service.getName() ) ) {
                 // skip this resource.
-                log.info( "Skipping the count of pudmed for PSICQUIC sercice: " + service.getName() );
+                if ( log.isInfoEnabled() ) log.info( "Skipping the count of pudmed for PSICQUIC sercice: " + service.getName() );
                 continue;
             }
 
@@ -267,7 +267,7 @@ public class PsicquicStatsCollector {
             int current = 0;
             UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), 10000 );
 
-            log.info( "Querying PSICQUIC service: " + service.getSoapUrl() );
+            if ( log.isInfoEnabled() ) log.info( "Querying PSICQUIC service: " + service.getSoapUrl() );
             Set<String> pmids = Sets.newHashSet();
             boolean error = false;
 
@@ -291,7 +291,7 @@ public class PsicquicStatsCollector {
                     }
                 } while ( current < totalInteractionCount );
             } catch ( PsicquicClientException pce ) {
-                System.err.println( "An error occured while collecting PMIDs from " + service.getName() );
+                log.error( "An error occured while collecting PMIDs from " + service.getName() );
                 error = true;
 
                 // email error
@@ -299,8 +299,9 @@ public class PsicquicStatsCollector {
                            ExceptionUtils.getFullStackTrace( pce ) );
             }
 
-            log.info( "\n" + service.getName() + " -> " + pmids.size() + " publication(s)." +
-                      ( error ? " However the PMID collection may have been interupted." : "" ) );
+            if ( log.isInfoEnabled() )
+                log.info( "\n" + service.getName() + " -> " + pmids.size() + " publication(s)." +
+                          ( error ? " However the PMID collection may have been interupted." : "" ) );
 
             if ( !error ) {
                 db2publicationsCount.put( service.getName(), ( long ) pmids.size() );
@@ -342,7 +343,7 @@ public class PsicquicStatsCollector {
         // Update interaction counts
         Map<String, Long> db2interactionCount = collectPsicquicInteractionsStats( psicquicServices );
         final List<String> updatedServices = updateInteractionWorksheet( service, spreadsheetEntry, db2interactionCount );
-        log.info( updatedServices.size() + " services updated: " + updatedServices );
+        if ( log.isInfoEnabled() ) log.info( updatedServices.size() + " services updated: " + updatedServices );
 
         // Update publication for those services that have a different count of interactions
         Map<String, Long> db2publicationsCount = collectPsicquicPublicationsStats( psicquicServices, updatedServices );
