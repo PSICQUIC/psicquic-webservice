@@ -124,20 +124,19 @@ public class PsicquicStatsCollector {
     // Mail handling
 
     public void sendEmail( String title, String body ) {
-        final List<String> recipients = Arrays.asList( "skerrien@ebi.ac.uk" );
-
         if ( mailSender == null ) {
             log.debug( "------------------------------------------------------------" );
-            log.debug( "To: " + recipients.toString() );
-            log.debug( "Title: " + title );
+            log.debug( "From:  " + senderEmail );
+            log.debug( "To:    " + recipients );
+            log.debug( "Title: " + mailSubjectPrefix + title );
             log.debug( body );
             log.debug( "------------------------------------------------------------" );
         } else {
             final SimpleMailMessage message = new SimpleMailMessage();
             message.setTo( recipients.toArray( new String[]{} ) );
-            message.setFrom( "imex.bot@gmail.com" );
-            message.setSubject( "test" );
-            message.setText( "lala" );
+            message.setFrom( senderEmail );
+            message.setSubject( mailSubjectPrefix + " " + title );
+            message.setText( body );
             mailSender.send( message );
         }
     }
@@ -348,6 +347,12 @@ public class PsicquicStatsCollector {
         // Update publication for those services that have a different count of interactions
         Map<String, Long> db2publicationsCount = collectPsicquicPublicationsStats( psicquicServices, updatedServices );
         updatePublicationWorksheet( service, spreadsheetEntry, db2publicationsCount );
+
+        if( ! updatedServices.isEmpty() ) {
+            sendEmail( "Spreadsheet was updated", "Some services had new data online: " + psicquicServices );
+        } else {
+            sendEmail( "Spreadsheet was NOT updated", "No PSICQUIC services had new data." );
+        }
     }
 
     /////////////////
