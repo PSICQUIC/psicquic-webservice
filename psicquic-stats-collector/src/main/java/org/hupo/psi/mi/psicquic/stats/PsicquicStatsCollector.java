@@ -15,10 +15,6 @@ import org.springframework.mail.SimpleMailMessage;
 import uk.ac.ebi.intact.google.spreadsheet.SpreadsheetFacade;
 import uk.ac.ebi.intact.google.spreadsheet.WorksheetFacade;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.hupo.psi.mi.psicquic.registry.ServiceType;
-import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
-import org.hupo.psi.mi.psicquic.registry.client.registry.DefaultPsicquicRegistryClient;
-import org.hupo.psi.mi.psicquic.registry.client.registry.PsicquicRegistryClient;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import psidev.psi.mi.search.SearchResult;
@@ -96,9 +92,7 @@ public class PsicquicStatsCollector {
         this.config = ( Config ) factory.getBean( "statsConfig" );
 
         // load email properties
-        // if System.properties contain 'smtp.config.file', if so use that ! if not rely on the default
         File smtpConfig = null;
-//        final String configFile = System.getProperty( SMTP_CONFIG_FILE_KEY );
         if( config.hasSmtpConfigFile() ) {
             log.info( "Using default SMTP config from classpath: '"+ config.DEFAULT_SMTP_CONFIG +"'" );
             smtpConfig = new File( PsicquicStatsCollector.class.getResource( config.DEFAULT_SMTP_CONFIG ).getFile() );
@@ -363,7 +357,6 @@ public class PsicquicStatsCollector {
         service.setUserCredentials( email, password );
 
         final SpreadsheetEntry spreadsheetEntry = SpreadsheetFacade.getSpreadsheetWithKey( service, spreadsheetKey );
-
         List<PsicquicService> psicquicServices = collectPsicquicServiceNames();
 
         // Update interaction counts
