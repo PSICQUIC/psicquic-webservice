@@ -17,7 +17,7 @@
     <name>PSICQUIC :: PSICQUIC Statistics Collector</name>
 
     <properties>
-        <psicquic.registry.url>http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/</psicquic.registry.url>
+        <psicquic.registry.url>http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS</psicquic.registry.url>
         <smtp.config.file>/META-INF/smtp.properties</smtp.config.file>
     </properties>
 
@@ -54,10 +54,6 @@
                                 <classpath/>
                                 <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
 
-                                <argument></argument>  <!-- GMail account -->
-                                <argument></argument>                <!-- GMail account password -->
-                                <argument></argument> <!-- Spreadsheet key -->
-
                             </arguments>
                         </configuration>
                     </plugin>
@@ -75,11 +71,11 @@
         </dependency>
 
         <!--Psicquic Registry Client-->
-        <dependency>
-            <groupId>org.hupo.psi.mi.psicquic</groupId>
-            <artifactId>psicquic-registry-client</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.hupo.psi.mi.psicquic</groupId>-->
+            <!--<artifactId>psicquic-registry-client</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
 
         <!-- Psicquic Service Client -->
         <dependency>
