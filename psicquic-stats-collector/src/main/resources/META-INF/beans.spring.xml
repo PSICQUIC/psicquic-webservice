@@ -26,8 +26,12 @@
         </property>
     </bean>
 
+
+
     <bean id="statsConfig" class="org.hupo.psi.mi.psicquic.stats.Config">
-         <property name="psicquicRegistryUrl" value="${psicquic.registry.url}&amp;format=txt&amp;restricted=n"/>
+        <property name="psicquicRegistryUrl">
+            <value><![CDATA[${psicquic.registry.url}]]></value>
+        </property>
          <property name="smtpConfigFile" value="${smtp.config.file}" />
     </bean>
 
