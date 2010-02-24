@@ -25,14 +25,13 @@
             </props>
         </property>
     </bean>
-
-
-
+            
     <bean id="statsConfig" class="org.hupo.psi.mi.psicquic.stats.Config">
         <property name="psicquicRegistryUrl">
             <value><![CDATA[${psicquic.registry.url}]]></value>
         </property>
          <property name="smtpConfigFile" value="${smtp.config.file}" />
+         <property name="miqlQuery" value="${psicquic.miql.query}" />
     </bean>
 
 </beans>
