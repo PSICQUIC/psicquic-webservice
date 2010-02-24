@@ -9,11 +9,13 @@ package org.hupo.psi.mi.psicquic.stats;
  */
 public class Config {
 
-//    public static final String DEFAULT_REGISTRY_URL = "http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS&format=txt";
     public static final String DEFAULT_SMTP_CONFIG = "/META-INF/smtp.properties";
 
     private String psicquicRegistryUrl; // = DEFAULT_REGISTRY_URL;
+
     private String smtpConfigFile; // = DEFAULT_SMTP_CONFIG;
+
+    private String miqlQuery;
 
     public Config() {
     }
@@ -38,7 +40,11 @@ public class Config {
         return smtpConfigFile != null;
     }
 
-//    public boolean isDefaultSmtpConfigFile() {
-//        return DEFAULT_SMTP_CONFIG.equals( smtpConfigFile );
-//    }
+    public String getMiqlQuery() {
+        return miqlQuery;
+    }
+
+    public void setMiqlQuery( String miqlQuery ) {
+        this.miqlQuery = miqlQuery;
+    }
 }

@@ -146,11 +146,17 @@ public class PsicquicStatsCollector {
                                      String worksheetName,
                                      Map<String, Long> db2count ) throws IOException, ServiceException {
 
-        List<String> updatedServices = Lists.newArrayList();
+        final List<String> updatedServices = Lists.newArrayList();
 
         final WorksheetFacade myWorksheet = WorksheetFacade.getWorksheetByName( service, spreadsheetEntry, worksheetName );
+        if( myWorksheet == null ) {
+            final String msg = "Could not find the worksheet '" + worksheetName + "' in spreadsheet '" + spreadsheetEntry.getTitle().getPlainText() + "'";
+            sendEmail(msg, "");
+            throw new IllegalArgumentException( msg );
+        }
+
         Map<String, Integer> columnName2Index = myWorksheet.getColumnNameIndex();
-        final int row = myWorksheet.getNextEmptyRow();
+        final int nextEmptyRow = myWorksheet.getNextEmptyRow();
         List<CellEntry> updatedCells = Lists.newArrayList();
 
         for ( Map.Entry<String, Long> e : db2count.entrySet() ) {
@@ -161,11 +167,11 @@ public class PsicquicStatsCollector {
             if ( colIndex != null ) {
 
                 // found it, prepare the data
-                final CellEntry cell = myWorksheet.getCell( row, colIndex );
+                final CellEntry cell = myWorksheet.getCell( nextEmptyRow, colIndex );
 
-                if ( row > 2 ) {
-                    final CellEntry previousCell = myWorksheet.getCell( row - 1, colIndex );
-                    final CellEntry previousDateCell = myWorksheet.getCell( row - 1, 1 );
+                if ( nextEmptyRow > 2 ) {
+                    final CellEntry previousCell = myWorksheet.getCell( nextEmptyRow - 1, colIndex );
+                    final CellEntry previousDateCell = myWorksheet.getCell( nextEmptyRow - 1, 1 );
 
                     final String previousValue = previousCell.getCell().getValue();
                     if ( previousValue != null && ! previousValue.equals( count ) ) {
@@ -186,6 +192,7 @@ public class PsicquicStatsCollector {
                     }
                 } else {
                     // we don't have data yet so all service have to be updated
+                    cell.changeInputValueLocal( count );
                     updatedServices.add( db );
                 }
 
@@ -200,7 +207,7 @@ public class PsicquicStatsCollector {
 
         if ( !updatedServices.isEmpty() ) {
             // add date to the row
-            final CellEntry cell = myWorksheet.getCell( row, 1 );
+            final CellEntry cell = myWorksheet.getCell( nextEmptyRow, 1 );
             cell.changeInputValueLocal( today() );
             updatedCells.add( cell );
 
@@ -267,7 +274,7 @@ public class PsicquicStatsCollector {
             UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), PSICQUIC_DEFAULT_TIMEOUT );
             final SearchResult<BinaryInteraction> result;
             try {
-                result = client.getByQuery( "*:*", 0, 0 );
+                result = client.getByQuery( config.getMiqlQuery(), 0, 0 );
                 service.setInteractionCount( result.getTotalCount() );
                 db2interactionCount.put( service.getName(), result.getTotalCount().longValue() );
             } catch ( PsicquicClientException e ) {
@@ -299,7 +306,7 @@ public class PsicquicStatsCollector {
 
             try {
                 do {
-                    final SearchResult<BinaryInteraction> query = client.getByQuery( "*:*", current, PSICQUIC_BATCH_SIZE );
+                    final SearchResult<BinaryInteraction> query = client.getByQuery( config.getMiqlQuery(), current, PSICQUIC_BATCH_SIZE );
                     for ( BinaryInteraction interaction : query.getData() ) {
                         for ( Object o : interaction.getPublications() ) {
                             CrossReference cr = ( CrossReference ) o;
@@ -350,7 +357,7 @@ public class PsicquicStatsCollector {
     private void writeListToDisk( Set<String> list, File file ) throws IOException {
         BufferedWriter out = new BufferedWriter( new FileWriter( file ) );
         for ( String line : list ) {
-            out.write( line );
+            out.write( line + "\n" );
         }
         out.flush();
         out.close();
