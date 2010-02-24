@@ -363,6 +363,20 @@ public class PsicquicStatsCollector {
         out.close();
     }
 
+    private String showServices( List<PsicquicService> psicquicServices ) {
+        StringBuilder sb = new StringBuilder( 256 );
+        sb.append( '[' );
+        for ( Iterator<PsicquicService> iterator = psicquicServices.iterator(); iterator.hasNext(); ) {
+            PsicquicService service = iterator.next();
+            sb.append( service.getName() );
+            if( iterator.hasNext() ) {
+                sb.append( ", " );
+            }
+        }
+        sb.append( ']' );
+        return sb.toString();
+    }
+
     private void updateSpreadsheet( String email, String password, String spreadsheetKey ) throws Exception {
         SpreadsheetService service = new SpreadsheetService( "PSICQUIC-stats-collector-1" );
         // 2010-02: necessary or batch update fail with error like: "If-Match or If-None-Match header required"
@@ -382,7 +396,7 @@ public class PsicquicStatsCollector {
         updatePublicationWorksheet( service, spreadsheetEntry, db2publicationsCount );
 
         if( ! updatedServices.isEmpty() ) {
-            sendEmail( "Spreadsheet was updated", "Some services had new data online: " + psicquicServices );
+            sendEmail( "Spreadsheet was updated", "Some services had new data online: " + showServices(psicquicServices) );
         } else {
             sendEmail( "Spreadsheet was NOT updated", "No PSICQUIC services had new data." );
         }
