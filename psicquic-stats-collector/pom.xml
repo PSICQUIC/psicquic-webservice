@@ -17,8 +17,9 @@
     <name>PSICQUIC :: PSICQUIC Statistics Collector</name>
 
     <properties>
-        <psicquic.registry.url>http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS</psicquic.registry.url>
+        <psicquic.registry.url>http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS&amp;format=txt</psicquic.registry.url>
         <smtp.config.file>/META-INF/smtp.properties</smtp.config.file>
+        <psicquic.miql.query>*:*</psicquic.miql.query>
     </properties>
 
     <build>
@@ -54,6 +55,38 @@
                                 <classpath/>
                                 <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
 
+
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>collect-stats-imex</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <!-- automatically creates the classpath using all project dependencies, also adding the project build directory -->
+                                <classpath/>
+                                <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
+
+                                
                             </arguments>
                         </configuration>
                     </plugin>
