@@ -38,7 +38,7 @@ public class RdfBuilderTest {
         RdfBuilder rdfBuilder = new RdfBuilder();
         Model model = rdfBuilder.createModel(entrySet);
         
-        model.write(System.out, "N3");
+        model.write(System.out, "RDF/XML-ABBREV");
         model.write(new FileOutputStream(new File("c:/test/test.rdf")));
     }
 }
