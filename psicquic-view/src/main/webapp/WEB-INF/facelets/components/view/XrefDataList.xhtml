@@ -42,7 +42,7 @@
                             <ox:separateConversationContext>
                                 <tr:goLink
                                         text="#{xrefUrl == null? iav:xrefToString(xref, !onlyText, !onlyText, onlyText) : text}"
-                                        shortDesc="#{xref.text}"
+                                        shortDesc="#{xref.text}" inlineStyle="white-space: pre;"
                                         targetFrame="_blank"
                                         destination="#{iav:xrefUrl(appConfigBean.linkContext, xref, linkType)}"
                                         disabled="#{xrefUrl == null or xrefUrl == '#' or itemDisabled}"/>
