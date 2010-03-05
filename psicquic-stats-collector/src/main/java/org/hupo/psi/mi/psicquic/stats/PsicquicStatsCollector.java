@@ -310,7 +310,9 @@ public class PsicquicStatsCollector {
                     for ( BinaryInteraction interaction : query.getData() ) {
                         for ( Object o : interaction.getPublications() ) {
                             CrossReference cr = ( CrossReference ) o;
-                            if ( "pubmed".equalsIgnoreCase( cr.getDatabase() ) ) {
+                            if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
+                                 ||
+                                 "pmid".equalsIgnoreCase( cr.getDatabase() )) {
                                 pmids.add( cr.getIdentifier() );
                             }
                         }
