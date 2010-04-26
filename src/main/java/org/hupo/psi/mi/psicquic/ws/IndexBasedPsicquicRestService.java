@@ -15,11 +15,13 @@
  */
 package org.hupo.psi.mi.psicquic.ws;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFWriter;
 import org.apache.commons.lang.StringUtils;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
-import org.hupo.psi.mi.psicquic.ws.utils.rdf.RdfStreamingOutput;
+import org.hupo.psi.mi.psicquic.ws.utils.rdf.RdfBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import psidev.psi.mi.xml.converter.ConverterException;
@@ -29,6 +31,8 @@ import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -83,14 +87,42 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
             throw new PsicquicServiceException("maxResults parameter is not a number: "+maxResultsStr);
         }
 
+        format = format.toLowerCase();
+
+        // TODO develMode to be remove when biopax works fine
+        boolean develMode = false;
+        if (format.contains("dev")) {
+            develMode = true;
+        }
+
+        if (format.startsWith("biopax")) {
+            format = "rdf-xml-abbrev";
+        }
+
         try {
             if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_XML25).equalsIgnoreCase(format)) {
                 return getByQueryXml(query, firstResult, maxResults);
             } else if (format.toLowerCase().startsWith("rdf")) {
                 String rdfFormat = getRdfFormatName(format);
                 String mediaType = format.contains("xml")? MediaType.APPLICATION_XML : MediaType.TEXT_PLAIN;
-                RdfStreamingOutput streamingOutput = createRdfStreamingOutput(query, rdfFormat, firstResult, maxResults);
-                return Response.status(200).type(mediaType).entity(streamingOutput).build();
+                //RdfStreamingOutput streamingOutput = createRdfStreamingOutput(query, rdfFormat, firstResult, maxResults);
+                final RdfBuilder rdfBuilder = new RdfBuilder(develMode);
+
+                psidev.psi.mi.xml.model.EntrySet entrySet = createEntrySet(query, firstResult, maxResults);
+                final String baseUri = "http://www.ebi.ac.uk/Tools/webservices/psicquic/";
+                final Model model = rdfBuilder.createModel(entrySet, baseUri);
+
+                final RDFWriter rdfWriter = model.getWriter(rdfFormat);
+                rdfWriter.setProperty("xmlbase", baseUri);
+                model.setNsPrefix("", baseUri);
+
+                Writer writer = new StringWriter();
+                rdfWriter.write(model, writer, baseUri);
+
+                String rdfOutputStr = writer.toString();
+
+                return Response.status(200).type(mediaType).entity(rdfOutputStr).build();
+
             } else if (IndexBasedPsicquicService.RETURN_TYPE_COUNT.equalsIgnoreCase(format)) {
                 return count(query);
             } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25_BIN).equalsIgnoreCase(format)) {
@@ -125,11 +157,11 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
         return rdfFormat;
     }
 
-    private RdfStreamingOutput createRdfStreamingOutput(String query, String rdfFormat, int firstResult, int maxResults) throws ConverterException, PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    private psidev.psi.mi.xml.model.EntrySet createEntrySet(String query, int firstResult, int maxResults) throws ConverterException, PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         EntrySetConverter converter = new EntrySetConverter();
         converter.setDAOFactory(new InMemoryDAOFactory());
         psidev.psi.mi.xml.model.EntrySet entrySet = converter.fromJaxb(getByQueryXml(query, firstResult, maxResults));
-        return new RdfStreamingOutput(psicquicService, entrySet, rdfFormat);
+        return entrySet;
     }
 
     public Object getSupportedFormats() throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
