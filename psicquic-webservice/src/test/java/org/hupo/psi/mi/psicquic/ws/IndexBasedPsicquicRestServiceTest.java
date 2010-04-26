@@ -15,6 +15,7 @@
  */
 package org.hupo.psi.mi.psicquic.ws;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.impl.ResponseImpl;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
@@ -119,5 +120,13 @@ public class IndexBasedPsicquicRestServiceTest {
         mitabOut.close();
 
         Assert.assertEquals(12, mitabOut.toString().split("\n").length);
+    }
+
+    @Test
+    public void testGetByQuery_biopax() throws Exception {
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "biopax", "0", "5");
+
+        final String output = (String) response.getEntity();
+        Assert.assertEquals(5, StringUtils.countMatches(output, "<bp:MolecularInteraction "));
     }
 }
