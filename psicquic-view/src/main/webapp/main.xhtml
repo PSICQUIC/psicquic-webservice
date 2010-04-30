@@ -104,7 +104,7 @@
 
                       <tr:spacer height="4px"/>
 
-               <tr:panelFormLayout rows="3" maxColumns="6" >
+               <tr:panelFormLayout rows="4" maxColumns="3" >
                    <c:forEach var="name" items="#{searchBean.allServiceNames}">
                        <tr:panelHorizontalLayout>
                            <h:graphicImage alt="Status" url="#{searchBean.servicesMap[name].active? '/images/status_online.png' : '/images/status_offline.png'}"/>
