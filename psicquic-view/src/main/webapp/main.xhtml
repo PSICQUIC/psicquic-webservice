@@ -97,21 +97,46 @@
                </div>
            </tr:panelGroupLayout>
 
-           <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0}">
+                  <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0}">
 
+                      Click on the links below to display the results for each service
+                      &#160;(<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
 
+                      <tr:spacer height="4px"/>
 
-               <tr:panelTabbed position="above">
-                   <c:forEach var="name" items="#{searchBean.activeServiceNames}">
-                       <ui:include src="/pages/search/result_tab.xhtml">
-                           <ui:param name="name" value="#{name}"/>
-                       </ui:include>
+               <tr:panelFormLayout rows="3" maxColumns="6" >
+                   <c:forEach var="name" items="#{searchBean.allServiceNames}">
+                       <tr:panelHorizontalLayout>
+                           <h:graphicImage alt="Status" url="#{searchBean.servicesMap[name].active? '/images/status_online.png' : '/images/status_offline.png'}"/>
+                       <tr:commandLink text="#{name}" styleClass="resultLink"
+                                       disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0}">
+                           <f:setPropertyActionListener value="#{name}" target="#{searchBean.selectedServiceName}"/>
+                           <ui:param name="service" value="#{searchBean.servicesMap[name]}"/>
+                       </tr:commandLink>
+                           <h:panelGroup rendered="#{searchBean.resultCountMap[name] != null}">
+                               &#160;-&#160;
+                               <tr:outputText value="#{searchBean.resultCountMap[name]}" styleClass="resultCount">
+                                   <tr:convertNumber pattern="#,###"/>
+                               </tr:outputText>
+                           </h:panelGroup>
+                       </tr:panelHorizontalLayout>
                    </c:forEach>
-               </tr:panelTabbed>
+               </tr:panelFormLayout>
 
-           </tr:panelGroupLayout>
+                      <tr:separator/>
 
-            <tr:panelGroupLayout rendered="#{fn:length(searchBean.inactiveServices) gt 0}">
+                  </tr:panelGroupLayout>
+
+                  <tr:panelGroupLayout rendered="#{searchBean.selectedServiceName != null}" >
+                  <strong>#{searchBean.selectedServiceName}</strong>
+                  <ui:include src="/pages/interactions/interactions_tab.xhtml">
+                  <ui:param name="service" value="#{searchBean.servicesMap[searchBean.selectedServiceName]}"/>
+                  <ui:param name="results" value="#{searchBean.resultDataModelMap[searchBean.selectedServiceName]}"/>
+              </ui:include>
+              </tr:panelGroupLayout>
+
+
+            <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
                 <tr:separator/>
 
                    <div style="padding-left:10px">

@@ -19,11 +19,6 @@ import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -59,7 +54,8 @@ public class SearchController extends BaseController {
     private String[] includedServices;
     private String[] excludedServices;
 
-    private boolean showAlternativeIds;
+
+    private String selectedServiceName;
 
     public SearchController(PsicquicViewConfig config) {
         this.config = config;
@@ -181,7 +177,7 @@ public class SearchController extends BaseController {
         }
 
         services = new ArrayList<ServiceType>(allServices);
-        
+
         String included = config.getIncludedServices();
         String excluded = config.getExcludedServices();
 
@@ -189,7 +185,10 @@ public class SearchController extends BaseController {
             processIncludedServices(included);
         } else if (excluded != null && excluded.length() > 0) {
             processExcludedServices(excluded);
-        }
+        } 
+
+        populateActiveServicesMap();
+        populateInactiveServicesMap();
 
         servicesMap = new HashMap<String, ServiceType>(services.size());
 
@@ -236,28 +235,6 @@ public class SearchController extends BaseController {
         }
     }
 
-    private List<String[]> getServices(String urlStr) {
-        List<String[]> serviceUrls = new ArrayList<String[]>();
-        try {
-            URL url = new URL(urlStr);
-
-            final InputStream inputStream = url.openStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] nameAndUrl = line.split("=");
-                serviceUrls.add(nameAndUrl);
-            }
-
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return serviceUrls;
-    }
-
     private void processExcludedServices(String excludedServicesParam) {
         excludedServices = excludedServicesParam.split(",");
 
@@ -276,9 +253,6 @@ public class SearchController extends BaseController {
         }
 
         services = includedServicesList;
-
-        populateActiveServicesMap();
-        populateInactiveServicesMap();
     }
 
     private void processIncludedServices(String includedServicesParam) {
@@ -295,9 +269,6 @@ public class SearchController extends BaseController {
         }
 
         services = includedServicesList;
-
-        populateActiveServicesMap();
-        populateInactiveServicesMap();
     }
 
     // Getters & Setters
@@ -323,16 +294,28 @@ public class SearchController extends BaseController {
         return inactiveServices;
     }
 
+    public String[] getAllServiceNames() {
+        final String[] services = servicesMap.keySet().toArray(new String[servicesMap.size()]);
+        Arrays.sort(services, new ServiceNameComparator());
+        return services;
+    }
+
     public String[] getActiveServiceNames() {
         final String[] services = activeServices.keySet().toArray(new String[activeServices.size()]);
-        Arrays.sort(services);
+        Arrays.sort(services, new ServiceNameComparator());
         return services;
     }
 
     public String[] getInactiveServiceNames() {
         final String[] services = inactiveServices.keySet().toArray(new String[inactiveServices.size()]);
-        Arrays.sort(services);
+        Arrays.sort(services, new ServiceNameComparator());
         return services;
+    }
+
+    private class ServiceNameComparator implements Comparator<String> {
+        public int compare(String o1, String o2) {
+            return o1.toLowerCase().compareTo(o2.toLowerCase());
+        }
     }
 
     public List<ServiceType> getServices() {
@@ -341,5 +324,13 @@ public class SearchController extends BaseController {
 
     public Map<String, ServiceType> getServicesMap() {
         return servicesMap;
+    }
+
+    public String getSelectedServiceName() {
+        return selectedServiceName;
+    }
+
+    public void setSelectedServiceName(String selectedServiceName) {
+        this.selectedServiceName = selectedServiceName;
     }
 }

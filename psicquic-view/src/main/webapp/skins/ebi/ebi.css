@@ -8,7 +8,6 @@ body {
     width:100%;
 }
 
-
 .AFDefaultFont:alias {
     font-family:helvetica,"trebuchet MS",arial,sans-serif;
     font-weight:normal;
@@ -43,7 +42,6 @@ a.OraLink:hover {
 .OraLink:hover::SideMenu {
     text-decoration:underline;
 }
-
 
 
 /** icons **/
@@ -642,4 +640,12 @@ af|commandButton {
 
 .autocomplete-button-action{
     background-image:url(/images/autocomplete-button-action.gif);
+}
+
+a.OraLinkDisabled {
+    font-size: 8pt;
+}
+
+.resultCount {
+    color: gray;
 }
