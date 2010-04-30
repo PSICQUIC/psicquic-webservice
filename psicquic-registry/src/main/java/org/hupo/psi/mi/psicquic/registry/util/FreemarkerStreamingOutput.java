@@ -21,6 +21,7 @@ import org.hupo.psi.mi.psicquic.RequestInfo;
 import org.hupo.psi.mi.psicquic.freemarker.method.TermName;
 import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
 import org.hupo.psi.mi.psicquic.registry.Registry;
+import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,11 +44,7 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
 
     private Registry registry;
     private Configuration configuration;
-    private SelfDiscoveringOntologyTree miOntologyTree; 
-    
-
-
-
+    private SelfDiscoveringOntologyTree miOntologyTree;
     
     public FreemarkerStreamingOutput(Registry registry, SelfDiscoveringOntologyTree miOntologyTree,Configuration config) {
         this.registry = registry;
@@ -60,9 +57,15 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
         
         Writer writer = new OutputStreamWriter(outputStream);
         Map root = new HashMap();
-        
+
+        long totalCount = 0L;
+
+        for (ServiceType service : registry.getServices()) {
+            totalCount += service.getCount();
+        }
+
         root.put("registry",registry);
-        //root.put("termName", new TermName(miOntologyTree));
+        root.put("totalCount", totalCount);
         root.put("termName", new TermName(miOntologyTree));
         
         try {

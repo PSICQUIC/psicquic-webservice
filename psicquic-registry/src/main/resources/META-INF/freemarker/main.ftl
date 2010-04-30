@@ -1,7 +1,7 @@
 
 <html>
 <head>
-  <title>PSICQUIC Web Services</title>
+  <title>PSICQUIC Registry</title>
 
     <style type="text/css">
         body {
@@ -9,22 +9,22 @@
             font-size: 9pt;
         }
 
-        th {
+        .registry th {
             text-align: left;
             border-bottom: black solid 1px;
             font-size: 9pt;
         }
 
-        td {
+        .registry td {
             font-size: 9pt;
             border-bottom: gray dashed 1px;
         }
 
-        input {
+        input.registry {
             font-size: 9pt;
         }
 
-        table {
+        table.registry {
             border-bottom: black solid 1px;
         }
 
@@ -36,11 +36,17 @@
         }
     </style>
 </head>
-<body>
+<body style="background-image: url(http://www.ebi.ac.uk:80/Tools/webservices/psicquic/view/images/top_background.jpg); background-repeat: repeat-x;">
 
-  <h1>PSICQUIC Web Services</h1>
+<table>
+    <tr style="vertical-align:top;">
+        <td><img src="http://www.ebi.ac.uk/Tools/webservices/psicquic/view/images/logos/psicquicLogo.png"</td>
+        <td><h1>PSICQUIC Registry</h1></td>
+    </tr>
+</table>
 
-  <table cellpadding="4" cellspacing="0">
+
+  <table cellpadding="4" cellspacing="0" class="registry">
       <tr>
           <th>Name</th>
           <th>Active</th>
@@ -57,7 +63,7 @@
     <tr class="${service.active?string("active", "inactive")}" style="vertical-align:top">
         <td><a href="${service.organizationUrl}" target="_blank">${service.name}</a></td>
         <td>${service.active?string("YES", "NO")}</td>
-        <td>${service.count}</td>
+        <td style="text-align:right">${service.count}</td>
         <td><nobr>${service.version!'-'}</nobr></td>
         <td><input type="text" value="${service.soapUrl}" readonly="true"/></td>
         <td>
@@ -78,13 +84,15 @@
         <td>
         <#list service.tags as tag>
         <NOBR> <a href="http://www.ebi.ac.uk/ontology-lookup/?termId=${tag}" target="_blank">${termName(tag)}</a> </NOBR>
-        </#list>
+        </#list>&#160;
         </td>
-        <td>${service.comments!''}</td>
+        <td>${service.comments!''}&#160;</td>
   </#list>
   </table>
 
-  <h2>Using the Registry</h2>
+   <p>Total: <strong>${totalCount}</strong>&#160;Interactions</p>
+
+  <h2>How to use the Registry</h2>
 
   Check the documentation <a href="http://code.google.com/p/psicquic/wiki/Registry">here</a>
   on how to use this registry.

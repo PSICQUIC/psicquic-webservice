@@ -16,6 +16,7 @@
 package org.hupo.psi.mi.psicquic.registry;
 
 import freemarker.template.Configuration;
+import org.apache.commons.io.IOUtils;
 import org.hupo.psi.mi.psicquic.expressiontree.ExpressionTree;
 import org.hupo.psi.mi.psicquic.expressiontree.ParseExpressionException;
 import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
@@ -31,6 +32,10 @@ import psidev.psi.mi.tab.model.BinaryInteraction;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -164,22 +169,30 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     }
 
     private void checkStatus(ServiceType serviceStatus) {
-        String version = null;
+       try {
+            final URL versionUrl = new URL(serviceStatus.getRestUrl()+"version");
+            final HttpURLConnection urlConnection = (HttpURLConnection) versionUrl.openConnection();
+            int code = urlConnection.getResponseCode();
 
-        try {
-            final UniversalPsicquicClient client = new UniversalPsicquicClient(serviceStatus.getSoapUrl(), config.getServiceCheckTimeout());
-            version = client.getService().getVersion();
+            urlConnection.connect();
 
-            final SearchResult<BinaryInteraction> result = client.getByQuery("*:*", 0, 0);
-            serviceStatus.setCount(result.getTotalCount());
+            if (HttpURLConnection.HTTP_OK == code) {
+                serviceStatus.setActive(true);
+                final String version = IOUtils.toString((InputStream)urlConnection.getContent());
+
+                serviceStatus.setVersion(version);
+
+                final URL countURL = new URL(serviceStatus.getRestUrl()+"query/*?format=count");
+                final String strCount = IOUtils.toString(countURL.openStream());
+                serviceStatus.setCount(Long.valueOf(strCount));
+            } else {
+                serviceStatus.setActive(false);
+            }
+
+
         } catch (Throwable e) {
             serviceStatus.setActive(false);
-            return;
-        } finally {
-            serviceStatus.setVersion(version);
         }
-
-        serviceStatus.setActive(true);
 
     }
 
