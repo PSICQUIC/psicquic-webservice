@@ -31,6 +31,12 @@ import psidev.psi.mi.tab.model.BinaryInteraction;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -64,9 +70,25 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
             						  new TagsFilter(tags),
                                       new ExclusionFilter(excluded.split(",")));
 
-            for (ServiceType serviceStatus : registry.getServices()) {
-                checkStatus(serviceStatus);
+            final ExecutorService executorService = Executors.newCachedThreadPool();
+
+            for (final ServiceType serviceStatus : registry.getServices()) {
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        checkStatus(serviceStatus);
+                    }
+                };
+                executorService.submit(runnable);
+
             }
+            executorService.shutdown();
+
+            try {
+                executorService.awaitTermination(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         } else if (ACTION_ACTIVE.equalsIgnoreCase(action)) {
             registry = createRegistry(new NameFilter(name),
                                       new ActiveFilter(),
@@ -100,23 +122,43 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
         return Response.ok(new FreemarkerStreamingOutput(registry, miOntologyTree ,freemarkerCfg), MediaType.TEXT_HTML_TYPE).build();
     }
 
-    private Registry createRegistry(ServiceFilter ... filters) {
+    private Registry createRegistry(final ServiceFilter ... filters) {
        Registry registry = new Registry();
 
-       for (ServiceType service : config.getRegisteredServices()) {
-            boolean accept = true;
+        final List<ServiceType> acceptedServices = Collections.synchronizedList(new ArrayList<ServiceType>(16));
 
-            for (ServiceFilter filter : filters) {
-                if (!filter.accept(service)) {
-                    System.out.println("NOT ACCEPTED: "+filter+" - "+service.getName());
-                    accept = false;
+        final ExecutorService executorService = Executors.newCachedThreadPool();
+
+        for (final ServiceType service : config.getRegisteredServices()) {
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    boolean accept = true;
+
+                    for (ServiceFilter filter : filters) {
+                        if (!filter.accept(service)) {
+                            accept = false;
+                        }
+                    }
+
+                    if (accept) {
+                        acceptedServices.add(service);
+                    }
+
                 }
-            }
+            };
 
-            if (accept) {
-                registry.getServices().add(service);
-            }
+            executorService.submit(runnable);
         }
+
+        executorService.shutdown();
+
+        try {
+            executorService.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        registry.getServices().addAll(acceptedServices);
 
         return registry;
     }
