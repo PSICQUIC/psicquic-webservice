@@ -1,5 +1,6 @@
 package uk.ac.ebi.intact.view.webapp.controller.search;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
@@ -19,7 +20,13 @@ import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Search controller.
@@ -95,10 +102,10 @@ public class SearchController extends BaseController {
     }
 
     public void refresh(ActionEvent evt) {
-        this.resultDataModelMap = new HashMap<String,PsicquicResultDataModel>();
-        this.resultCountMap = new HashMap<String,Integer>();
-        this.activeServices = new HashMap<String,String>();
-        this.inactiveServices = new HashMap<String,String>();
+        this.resultDataModelMap = Collections.synchronizedMap(new HashMap<String,PsicquicResultDataModel>());
+        this.resultCountMap = Collections.synchronizedMap(new HashMap<String,Integer>());
+        this.activeServices = Collections.synchronizedMap(new HashMap<String,String>());
+        this.inactiveServices = Collections.synchronizedMap(new HashMap<String,String>());
 
         try {
             refreshServices();
@@ -165,6 +172,20 @@ public class SearchController extends BaseController {
         }
     }
 
+    public void loadResults(ServiceType service) {
+        if (resultDataModelMap.containsKey(service.getName())) {
+            return;
+        }
+
+        PsicquicResultDataModel results = null;
+        try {
+            results = new PsicquicResultDataModel(new UniversalPsicquicClient(service.getSoapUrl()), userQuery.getFilteredSearchQuery());
+            resultDataModelMap.put(service.getName(), results);
+        } catch (PsicquicClientException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void refreshServices() throws PsicquicRegistryClientException {
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
 
@@ -200,23 +221,49 @@ public class SearchController extends BaseController {
     private void searchAndCreateResultModels() {
         resultCountMap.clear();
         resultDataModelMap.clear();
-        
-        for (Map.Entry<String,String> serviceUrl : activeServices.entrySet()) {
-            try {
-                PsicquicResultDataModel results = psicquicResults(serviceUrl.getValue());
 
-                resultDataModelMap.put(serviceUrl.getKey(), results);
-                resultCountMap.put(serviceUrl.getKey(), results.getRowCount());
+        final String filteredSearchQuery = userQuery.getFilteredSearchQuery();
 
-            } catch (PsicquicClientException e) {
-                e.printStackTrace();
+        final ExecutorService executorService = Executors.newCachedThreadPool();
+
+        for (final ServiceType service : services) {
+            if (service.isActive()) {
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                            int count = countInPsicquicService(service, filteredSearchQuery);
+                            resultCountMap.put(service.getName(), count);
+                    }
+                };
+                executorService.submit(runnable);
             }
+        }
+
+        executorService.shutdown();
+
+        try {
+            executorService.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    private PsicquicResultDataModel psicquicResults(String endpoint) throws PsicquicClientException {
-        return new PsicquicResultDataModel(new UniversalPsicquicClient(endpoint), userQuery.getFilteredSearchQuery());
+    private int countInPsicquicService(ServiceType service, String query) {
+        int psicquicCount = 0;
+
+        try {
+            String encoded = URLEncoder.encode(query, "UTF-8");
+            encoded = encoded.replaceAll("\\+", "%20");
+
+            String url = service.getRestUrl()+"query/"+ encoded +"?format=count";
+            String strCount = IOUtils.toString(new URL(url).openStream());
+            psicquicCount = Integer.parseInt(strCount);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return psicquicCount;
     }
+
     private void populateActiveServicesMap() {
         activeServices.clear();
         for (ServiceType service : services) {
@@ -332,5 +379,7 @@ public class SearchController extends BaseController {
 
     public void setSelectedServiceName(String selectedServiceName) {
         this.selectedServiceName = selectedServiceName;
+
+        loadResults(servicesMap.get(selectedServiceName));
     }
 }
