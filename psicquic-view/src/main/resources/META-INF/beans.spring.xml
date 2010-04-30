@@ -21,6 +21,7 @@
     <bean id="config" class="uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig">
         <property name="configFile" value="${config.file}"/>
         <property name="title" value="PSICQUIC View"/>
+        <property name="logoUrl" value="/images/logos/psicquicLogo.png"/>
     </bean>
     
 </beans>

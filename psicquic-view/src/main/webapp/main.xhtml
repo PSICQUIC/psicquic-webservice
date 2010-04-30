@@ -40,7 +40,7 @@
 
       <trh:body>
           <trh:tableLayout width="100%"
-                            inlineStyle="#{config.bannerBackgroundUrl != null? backImage : ''}">
+                            inlineStyle="#{config.bannerBackgroundUrl != null? config.bannerBackgroundUrl : backImage}">
                <trh:rowLayout>
                    <trh:cellFormat inlineStyle="width:2%" >
                        <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}"/>
