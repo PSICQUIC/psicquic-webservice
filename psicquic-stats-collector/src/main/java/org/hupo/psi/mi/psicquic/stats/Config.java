@@ -47,4 +47,15 @@ public class Config {
     public void setMiqlQuery( String miqlQuery ) {
         this.miqlQuery = miqlQuery;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "Config" );
+        sb.append( "{psicquicRegistryUrl='" ).append( psicquicRegistryUrl ).append( '\'' );
+        sb.append( ", smtpConfigFile='" ).append( smtpConfigFile ).append( '\'' );
+        sb.append( ", miqlQuery='" ).append( miqlQuery ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.*;
 import com.google.gdata.util.ServiceException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -66,7 +67,9 @@ public class PsicquicStatsCollector {
 
     private static final Log log = LogFactory.getLog( PsicquicStatsCollector.class );
 
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "dd/MM/yyyy" );
+    public static final String FILE_SEPARATOR = System.getProperty( "file.separator" );
+
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy/MM/dd" );
 
     private static final String PSICQUIC_REGISTRY_URL_KEY = "psicquic.registry.url";
 
@@ -81,6 +84,7 @@ public class PsicquicStatsCollector {
 
     private List<String> recipients;
     private Config config;
+    private static final String TOTAL_COLUMN = "Total";
 
     public PsicquicStatsCollector() throws IOException {
         // Initialize Spring for emails
@@ -115,6 +119,13 @@ public class PsicquicStatsCollector {
 
         senderEmail = properties.getProperty( "email.sender" );
         log.info( "senderEmail = " + senderEmail );
+        if( StringUtils.isEmpty(senderEmail ) ) {
+            // disable email sending facilities
+            log.warn( "No email sender specified, running with email facilities dsabled." );
+            mailSender = null;
+        }
+
+        log.info( config );
     }
 
     ///////////////////////////////////////
@@ -157,28 +168,59 @@ public class PsicquicStatsCollector {
 
         Map<String, Integer> columnName2Index = myWorksheet.getColumnNameIndex();
         final int nextEmptyRow = myWorksheet.getNextEmptyRow();
-        List<CellEntry> updatedCells = Lists.newArrayList();
+        final List<CellEntry> updatedCells = Lists.newArrayList();
 
-        for ( Map.Entry<String, Long> e : db2count.entrySet() ) {
-            String db = e.getKey();
-            String count = e.getValue().toString();
+        // If a total column is present, then sum up all cells into it
+        boolean hasTotalColumn = false;
+        int totalColumnIndex = -1;
+        int currentTotalSum = 0;
 
-            final Integer colIndex = columnName2Index.get( db );
+        for ( Map.Entry<String, Integer> e : columnName2Index.entrySet() ) {
+            final String db = e.getKey();
+            final Integer colIndex = e.getValue();
+            final Long dbCount = db2count.get( db );
+
+            String count;
+            if( dbCount != null ) {
+                count = dbCount.toString();
+            } else {
+
+                if( TOTAL_COLUMN.equalsIgnoreCase( db ) ) {
+                    if ( colIndex != null ) {
+                        totalColumnIndex = colIndex;
+                    }
+                    hasTotalColumn = true;
+                }
+
+                continue; // skip further processing as we don't have data for that database
+            }
+
+            CellEntry previousCell = null;
+            CellEntry previousDateCell = null;
+
+            if ( colIndex != null ) {
+                // TODO create WorksheetFacade.hasData() that returns true if there is at least one row of data in it.
+                if ( nextEmptyRow > 2 ) {
+                    previousCell = myWorksheet.getCell( nextEmptyRow - 1, colIndex.intValue() );
+                    previousDateCell = myWorksheet.getCell( nextEmptyRow - 1, 1 );
+                }
+            }
+
+            CellEntry cell = null;
+
             if ( colIndex != null ) {
 
-                // found it, prepare the data
-                final CellEntry cell = myWorksheet.getCell( nextEmptyRow, colIndex );
+                // we have data for that database
+                cell = myWorksheet.getCell( nextEmptyRow, colIndex.intValue() );
 
-                if ( nextEmptyRow > 2 ) {
-                    final CellEntry previousCell = myWorksheet.getCell( nextEmptyRow - 1, colIndex );
-                    final CellEntry previousDateCell = myWorksheet.getCell( nextEmptyRow - 1, 1 );
+                if ( previousCell != null ) {
 
                     final String previousValue = previousCell.getCell().getValue();
                     if ( previousValue != null && ! previousValue.equals( count ) ) {
                         if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
                                                               db + " has changed since " +
                                                               previousDateCell.getCell().getValue() );
-                        if ( !"0".equals( count ) ) {
+                        if ( ! "0".equals( count ) ) {
                             // the service has a positive count so we record it in the stats
                             cell.changeInputValueLocal( count );
                             updatedServices.add( db );
@@ -199,13 +241,99 @@ public class PsicquicStatsCollector {
                 updatedCells.add( cell );
 
             } else {
+
+                // We haven't got data for that database, copy the previous cell's data
+
+                if ( previousCell != null ) {
+
+                    if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " + db +
+                                                          " has NOT changed since " +
+                                                          previousDateCell.getCell().getValue() +
+                                                          " copying previous one instead." );
+
+                    cell = myWorksheet.getCell( nextEmptyRow, colIndex.intValue() );
+
+                    cell.changeInputValueLocal( previousCell.getCell().getValue() );
+                    updatedCells.add( cell );
+                }
+            }
+
+            if( cell != null && cell.getCell().getInputValue() != null ) {
+                log.info( "Adding " + cell.getCell().getValue() + " to total sum" );
+                // keep track of current total
+                currentTotalSum += Integer.parseInt( cell.getCell().getInputValue() );
+            }
+
+        } // All databases registered in the worksheet header
+
+        if( hasTotalColumn ) {
+            // process all existing rows and update the total column
+
+            log.info( "Updating Total..." );
+            log.info( "getNextEmptyRow(): " + myWorksheet.getNextEmptyRow() );
+            for ( int row = 2; row < myWorksheet.getNextEmptyRow(); row++ ) {
+
+                int totalSum = 0;
+                boolean abortRow = false;
+
+                log.info( "getNextEmptyColumn(): " + myWorksheet.getNextEmptyColumn() );
+                for ( int col = 2; col < myWorksheet.getNextEmptyColumn(); col++ ) {
+                    if( col != totalColumnIndex ) {
+                        final CellEntry cell = myWorksheet.getCell( row, col );
+                        final String value = cell.getCell().getValue();
+                        if( value != null ) {
+                            try {
+                                final int valueInt = Integer.parseInt( value );
+                                totalSum += valueInt;
+
+                                log.info( myWorksheet.getCell( row, 1 ).getCell().getValue() + " -> " + valueInt);
+                            } catch ( NumberFormatException e ) {
+                                // report cell format issue by email, and skip
+                                sendEmail( "Cell format error in worksheet: " + worksheetName,
+                                           "Cell["+row+","+col+"]='"+value + "' when an integer was expected" );
+                                abortRow = true;
+                                continue; // exit column loop
+                            }
+                        }
+                    } else {
+                        log.info( "Total contains: " + myWorksheet.getCell( row, col ).getCell().getValue() );
+                    }
+                }
+
+                log.info( myWorksheet.getCell( row, 1 ).getCell().getValue() + " -> " + totalSum + " (SUM)");
+
+                if( ! abortRow ) {
+                    final CellEntry cell = myWorksheet.getCell( row, totalColumnIndex );
+                    cell.changeInputValueLocal( String.valueOf( totalSum ) );
+                    updatedCells.add( cell );
+                }
+            }
+
+            log.info( "currentTotalSum = " + currentTotalSum );
+            if( currentTotalSum != 0 ) {
+                // given that the last row of this sheet is not available in the WorksheetFacade until we save the updatedCells,
+                // we save the last total additionally
+                log.info( "Current total: " + currentTotalSum );
+                final CellEntry cell = myWorksheet.getCell( myWorksheet.getNextEmptyRow(), totalColumnIndex );
+                cell.changeInputValueLocal( String.valueOf( currentTotalSum ) );
+                updatedCells.add( cell );
+            }
+        }
+
+
+        // Check if a database is not yet registered in the spreadsheet.
+        for ( Map.Entry<String, Long> e : db2count.entrySet() ) {
+            String db = e.getKey();
+
+            final Integer colIndex = columnName2Index.get( db );
+            if( colIndex == null ) {
                 sendEmail( "Missing DB name in header of worksheet '" + worksheetName + "'",
                            "Please add " + db + " in the header of the spreadsheet - please visit "
                            + spreadsheetEntry.getSpreadsheetLink().getHref() );
             }
-        } // cell values
+        }
 
-        if ( !updatedServices.isEmpty() ) {
+        if ( ! updatedCells.isEmpty() ) {
             // add date to the row
             final CellEntry cell = myWorksheet.getCell( nextEmptyRow, 1 );
             cell.changeInputValueLocal( today() );
@@ -254,7 +382,7 @@ public class PsicquicStatsCollector {
             final PsicquicService s = new PsicquicService( ( String ) service.getKey(),
                                                            ( String ) service.getValue() );
             services.add( s );
-            System.out.println( s );
+            log.info( s );
         }
 
         if ( log.isInfoEnabled() ) log.info( "Found " + services.size() + " PSICQUIC services in the Registry." );
@@ -277,9 +405,9 @@ public class PsicquicStatsCollector {
                 result = client.getByQuery( config.getMiqlQuery(), 0, 0 );
                 service.setInteractionCount( result.getTotalCount() );
                 db2interactionCount.put( service.getName(), result.getTotalCount().longValue() );
-            } catch ( PsicquicClientException e ) {
-                log.error( "An error occured while querying PSICQUIC service: " + service.getName() );
-                sendEmail( "Failed to query " + service.getName(), ExceptionUtils.getFullStackTrace( e ) );
+            } catch ( Throwable t ) {
+                log.error( "An error occured while querying PSICQUIC service: " + service.getName(), t );
+                sendEmail( "Failed to query " + service.getName(), ExceptionUtils.getFullStackTrace( t ) );
             }
         }
         return db2interactionCount;
@@ -325,13 +453,13 @@ public class PsicquicStatsCollector {
                         log.info( current );
                     }
                 } while ( current < totalInteractionCount );
-            } catch ( PsicquicClientException pce ) {
-                log.error( "An error occured while collecting PMIDs from " + service.getName() );
+            } catch ( Throwable t ) {
+                log.error( "An error occured while collecting PMIDs from " + service.getName(), t );
                 error = true;
 
                 // email error
-                sendEmail( "An error occured while querying PSICQUIC service: " + service.getName(), 
-                           ExceptionUtils.getFullStackTrace( pce ) );
+                sendEmail( "An error occured while collecting PMIDs from: " + service.getName(), 
+                           ExceptionUtils.getFullStackTrace( t ) );
             }
 
             if ( log.isInfoEnabled() )
@@ -345,7 +473,11 @@ public class PsicquicStatsCollector {
             }
 
             // Save pmid list for later processing.
-            File parentDir = new File( today() );
+            String user = null;
+            if( senderEmail != null ) {
+                user = senderEmail.substring( 0, senderEmail.indexOf( '@' ));
+            }
+            File parentDir = new File( (user == null ? "" : user + FILE_SEPARATOR ) + today() );
             if ( !parentDir.exists() ) {
                 parentDir.mkdirs();
             }
