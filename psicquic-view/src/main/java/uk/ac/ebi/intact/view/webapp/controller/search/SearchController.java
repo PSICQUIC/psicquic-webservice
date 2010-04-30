@@ -170,6 +170,8 @@ public class SearchController extends BaseController {
                 addErrorMessage("Psicquic problem", throwable.getMessage());
             }
         }
+
+        setSelectedServiceName(null);
     }
 
     public void loadResults(ServiceType service) {
@@ -380,6 +382,8 @@ public class SearchController extends BaseController {
     public void setSelectedServiceName(String selectedServiceName) {
         this.selectedServiceName = selectedServiceName;
 
-        loadResults(servicesMap.get(selectedServiceName));
+        if (selectedServiceName != null) {
+            loadResults(servicesMap.get(selectedServiceName));
+        }
     }
 }
