@@ -38,13 +38,7 @@
 </head>
 <body style="background-image: url(http://www.ebi.ac.uk:80/Tools/webservices/psicquic/view/images/top_background.jpg); background-repeat: repeat-x;">
 
-<table>
-    <tr>
-        <td><img src="http://www.ebi.ac.uk/Tools/webservices/psicquic/view/images/logos/psicquicLogo.png"</td>
-        <td style="vertical-align:bottom"><h2>PSICQUIC Registry</h2></td>
-    </tr>
-</table>
-
+<h2>PSICQUIC Registry</h2>
 
   <table cellpadding="4" cellspacing="0" class="registry">
       <tr>
