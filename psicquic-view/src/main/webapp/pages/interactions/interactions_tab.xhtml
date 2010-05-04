@@ -24,8 +24,7 @@
 <tr:table id="interactionResults" value="#{results}" var="binaryInteraction" varStatus="status"
           summary="Binary Interactions"
           emptyText="No interactions found matching the query."
-          rows="#{userQuery.pageSize}" rowBandingInterval="1"
-          partialTriggers=":interactionResults:btnToogleProps">
+          rows="#{userQuery.pageSize}" rowBandingInterval="1">
 
 <f:facet name="actions">
     <tr:panelHorizontalLayout>
@@ -141,7 +140,7 @@
      <tr:iterator var="alias" value="#{binaryInteraction.interactorB.aliases}"
                              varStatus="rowStatus" rows="0">
                     <tr:outputText value="#{alias.name}"/>
-                    <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.aliases)}"/>
+                    <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.aliases)}"/>
                 </tr:iterator>
 </tr:column>
 

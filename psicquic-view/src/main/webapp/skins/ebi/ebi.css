@@ -649,3 +649,8 @@ a.OraLinkDisabled {
 .resultCount {
     color: gray;
 }
+
+a .resultLink-selected {
+    font-weight: bold;
+    background-color: yellow;
+}

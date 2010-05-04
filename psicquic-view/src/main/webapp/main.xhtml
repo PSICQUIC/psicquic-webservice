@@ -24,11 +24,9 @@
             <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/contents.css" type="text/css"/>
             <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/userstyles.css" type="text/css"/>
             <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/sidebars.css" type="text/css"/>
+            <link rel="stylesheet" href="#{requestConfigBean.absoluteContextPath}/skins/ebi/ebi.css" type="text/css"/>
 
             <trh:script source="#{ebisf:absoluteEbiUrl()}/inc/js/contents.js" type="text/javascript"/>
-
-             <script type="text/javascript"
-                src="http://o.aolcdn.com/dojo/1.0.0/dojo/dojo.xd.js"></script>
 
              <trh:script source="/js/intact.js"/>
 
@@ -59,7 +57,7 @@
                        <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}"/>
                    </trh:cellFormat>
                    <trh:cellFormat inlineStyle="vertical-align: bottom" rendered="#{not empty config.title}">
-                       <h1>#{config.title}</h1>
+                       <h1><tr:outputFormatted value="&#160;#{config.title}"/></h1>
                    </trh:cellFormat>
 
                </trh:rowLayout>
@@ -81,8 +79,6 @@
                    </tr:panelGroupLayout>
                </f:facet>
            </tr:statusIndicator>
-
-          <br/>
 
            <ui:include src="/pages/search/search_panel.xhtml"  />
 
@@ -117,15 +113,17 @@
 
                       <tr:spacer height="4px"/>
 
-               <tr:panelFormLayout rows="4" maxColumns="3" >
+               <tr:panelFormLayout rows="3" maxColumns="4" >
                    <c:forEach var="name" items="#{searchBean.allServiceNames}">
                        <tr:panelHorizontalLayout>
-                           <h:graphicImage alt="Status" url="#{searchBean.servicesMap[name].active? '/images/status_online.png' : '/images/status_offline.png'}"/>
-                       <tr:commandLink text="#{name}" styleClass="resultLink"
-                                       disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0}">
+                           <h:graphicImage alt="Status" title="#{searchBean.servicesMap[name].active? 'Status: ONLINE' : 'Status: OFFLINE'}"
+                                           url="#{searchBean.servicesMap[name].active? '/images/status_online.png' : '/images/status_offline.png'}"/>
+                       <h:commandLink value="#{name}" styleClass="#{searchBean.selectedServiceName == name? 'resultLink-selected' : ''}"
+                                       disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0}"
+                               style="#{searchBean.selectedServiceName == name? 'font-weight:bold; text-decoration: none' : ''}">
                            <f:setPropertyActionListener value="#{name}" target="#{searchBean.selectedServiceName}"/>
                            <ui:param name="service" value="#{searchBean.servicesMap[name]}"/>
-                       </tr:commandLink>
+                       </h:commandLink>
                            <h:panelGroup rendered="#{searchBean.resultCountMap[name] != null}">
                                &#160;-&#160;
                                <tr:outputText value="#{searchBean.resultCountMap[name]}" styleClass="resultCount">
