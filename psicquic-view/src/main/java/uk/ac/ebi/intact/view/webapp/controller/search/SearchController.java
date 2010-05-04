@@ -14,10 +14,12 @@ import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import java.io.IOException;
@@ -35,6 +37,7 @@ import java.util.concurrent.TimeUnit;
  * @version $Id$
  */
 
+@Controller("searchBean")
 @Scope("conversation.access")
 @ConversationName("general")
 @ViewController(viewIds = {"/main.xhtml"})
@@ -45,6 +48,7 @@ public class SearchController extends BaseController {
     @Autowired
     private UserQuery userQuery;
 
+    @Autowired
     private PsicquicViewConfig config;
 
     private List<ServiceType> services;
@@ -64,8 +68,11 @@ public class SearchController extends BaseController {
 
     private String selectedServiceName;
 
-    public SearchController(PsicquicViewConfig config) {
-        this.config = config;
+    public SearchController() {
+    }
+
+    @PostConstruct
+    public void refresh() {
         refresh(null);
     }
 
@@ -218,6 +225,8 @@ public class SearchController extends BaseController {
         for (ServiceType service : services) {
             servicesMap.put(service.getName(), service);
         }
+
+        doBinarySearchAction();
     }
 
     private void searchAndCreateResultModels() {
