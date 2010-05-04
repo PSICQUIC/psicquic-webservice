@@ -77,14 +77,16 @@ public class PsicquicStatsCollector {
 
     private static final int PSICQUIC_DEFAULT_TIMEOUT = 10000;
     private static final int PSICQUIC_BATCH_SIZE = 200;
-    
+
+    private static final String TOTAL_COLUMN = "Total";
+    private static final String DATE_COLUMN = "Date";
+
     private MailSender mailSender;
     private String senderEmail;
     private String mailSubjectPrefix;
 
     private List<String> recipients;
     private Config config;
-    private static final String TOTAL_COLUMN = "Total";
 
     public PsicquicStatsCollector() throws IOException {
         // Initialize Spring for emails
@@ -122,6 +124,7 @@ public class PsicquicStatsCollector {
         if( StringUtils.isEmpty(senderEmail ) ) {
             // disable email sending facilities
             log.warn( "No email sender specified, running with email facilities dsabled." );
+            senderEmail = null;
             mailSender = null;
         }
 
@@ -180,38 +183,39 @@ public class PsicquicStatsCollector {
             final Integer colIndex = e.getValue();
             final Long dbCount = db2count.get( db );
 
-            String count;
-            if( dbCount != null ) {
-                count = dbCount.toString();
-            } else {
+            log.info( "Updating worksheet for '"+ db +"' having count of "+ dbCount );
 
-                if( TOTAL_COLUMN.equalsIgnoreCase( db ) ) {
+            String count;
+            if( dbCount == null ) {
+                if( TOTAL_COLUMN.equalsIgnoreCase( db ) || DATE_COLUMN.equalsIgnoreCase( db ) ) {
                     if ( colIndex != null ) {
                         totalColumnIndex = colIndex;
                     }
                     hasTotalColumn = true;
-                }
 
-                continue; // skip further processing as we don't have data for that database
+                    System.out.println( "Skipping column: " + db );
+                    continue; // skip further processing as we don't have data for that database
+                }
             }
 
             CellEntry previousCell = null;
             CellEntry previousDateCell = null;
 
-            if ( colIndex != null ) {
-                // TODO create WorksheetFacade.hasData() that returns true if there is at least one row of data in it.
-                if ( nextEmptyRow > 2 ) {
-                    previousCell = myWorksheet.getCell( nextEmptyRow - 1, colIndex.intValue() );
-                    previousDateCell = myWorksheet.getCell( nextEmptyRow - 1, 1 );
-                }
+            // TODO create WorksheetFacade.hasData() that returns true if there is at least one row of data in it.
+            if ( nextEmptyRow > 2 ) {
+                previousCell = myWorksheet.getCell( nextEmptyRow - 1, colIndex );
+                log.info( "Collecting data for previous cell (value="+ previousCell.getCell().getValue() +")" );
+                previousDateCell = myWorksheet.getCell( nextEmptyRow - 1, 1 );
             }
 
             CellEntry cell = null;
 
-            if ( colIndex != null ) {
+            if ( dbCount != null ) {
+
+                count = dbCount.toString();
 
                 // we have data for that database
-                cell = myWorksheet.getCell( nextEmptyRow, colIndex.intValue() );
+                cell = myWorksheet.getCell( nextEmptyRow, colIndex );
 
                 if ( previousCell != null ) {
 
@@ -242,6 +246,9 @@ public class PsicquicStatsCollector {
 
             } else {
 
+                System.out.println( "++++ No data for " + db );
+                System.out.println( "++++ previousCell: " + previousCell );
+
                 // We haven't got data for that database, copy the previous cell's data
 
                 if ( previousCell != null ) {
@@ -252,12 +259,14 @@ public class PsicquicStatsCollector {
                                                           " copying previous one instead." );
 
                     cell = myWorksheet.getCell( nextEmptyRow, colIndex.intValue() );
-
                     cell.changeInputValueLocal( previousCell.getCell().getValue() );
                     updatedCells.add( cell );
+                } else {
+                    System.out.println( "Previous cell is null :(" );
                 }
             }
 
+            // ! updatedServices.isEmpty() &&
             if( cell != null && cell.getCell().getInputValue() != null ) {
                 log.info( "Adding " + cell.getCell().getValue() + " to total sum" );
                 // keep track of current total
@@ -475,7 +484,10 @@ public class PsicquicStatsCollector {
             // Save pmid list for later processing.
             String user = null;
             if( senderEmail != null ) {
-                user = senderEmail.substring( 0, senderEmail.indexOf( '@' ));
+                System.out.println( "senderEmail='"+senderEmail+"'" );
+                if( senderEmail.indexOf( "@" ) != -1 ) {
+                    user = senderEmail.substring( 0, senderEmail.indexOf( "@" ));
+                }
             }
             File parentDir = new File( (user == null ? "" : user + FILE_SEPARATOR ) + today() );
             if ( !parentDir.exists() ) {
