@@ -43,6 +43,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
     private String miqlFilterQuery;
     private String includedServices;
     private String excludedServices;
+    private int serviceRows;
 
     public PsicquicViewConfig() {
     }
@@ -76,6 +77,9 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
         miqlFilterQuery = properties.getProperty("query.filter");
         includedServices = properties.getProperty("services.included");
         excludedServices = properties.getProperty("services.excluded");
+
+        final String strRows = properties.getProperty("services.rows");
+        if (strRows != null) serviceRows = Integer.parseInt(strRows);
     }
 
     public void saveConfigToFile() throws IOException {
@@ -92,6 +96,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
         setProperty(properties, "query.filter", miqlFilterQuery);
         setProperty(properties, "services.included", includedServices);
         setProperty(properties, "services.excluded", excludedServices);
+        setProperty(properties, "services.rows", String.valueOf(serviceRows));
 
         OutputStream outputStream = new FileOutputStream(configFile);
         properties.store(outputStream, "Configuration updated: "+new Date());
@@ -176,5 +181,13 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
     public void setBannerBackgroundUrl(String bannerBackgroundUrl) {
         this.bannerBackgroundUrl = bannerBackgroundUrl;
+    }
+
+    public int getServiceRows() {
+        return serviceRows;
+    }
+
+    public void setServiceRows(int serviceRows) {
+        this.serviceRows = serviceRows;
     }
 }

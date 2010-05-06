@@ -51,7 +51,7 @@
 
       <trh:body>
           <trh:tableLayout width="100%"
-                            inlineStyle="#{config.bannerBackgroundUrl != null? config.bannerBackgroundUrl : backImage}">
+                            inlineStyle="#{backImage}">
                <trh:rowLayout>
                    <trh:cellFormat inlineStyle="width:2%" >
                        <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}"/>
@@ -113,7 +113,7 @@
 
                       <tr:spacer height="4px"/>
 
-               <tr:panelFormLayout rows="3" maxColumns="4" >
+               <tr:panelFormLayout rows="#{config.serviceRows}" maxColumns="4" fieldWidth="200" >
                    <c:forEach var="name" items="#{searchBean.allServiceNames}">
                        <tr:panelHorizontalLayout>
                            <h:graphicImage alt="Status" title="#{searchBean.servicesMap[name].active? 'Status: ONLINE' : 'Status: OFFLINE'}"

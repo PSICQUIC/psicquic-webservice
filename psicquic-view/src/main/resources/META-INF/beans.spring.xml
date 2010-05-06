@@ -18,6 +18,7 @@
         <property name="configFile" value="${config.file}"/>
         <property name="title" value="PSICQUIC View"/>
         <property name="logoUrl" value="/images/logo_psi.gif"/>
+        <property name="serviceRows" value="3"/>
     </bean>
     
 </beans>

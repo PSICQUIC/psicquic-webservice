@@ -200,7 +200,7 @@ public class SearchController extends BaseController {
 
         if (allServices == null) {
             if (config.getRegistryTagsAsString() != null) {
-                allServices = registryClient.listServices("ACTIVE", true, config.getRegistryTagsAsString());
+                allServices = registryClient.listServices("STATUS", true, config.getRegistryTagsAsString());
             } else {
                 allServices = registryClient.listServices();
             }
@@ -298,7 +298,7 @@ public class SearchController extends BaseController {
 
         List<ServiceType> includedServicesList = new ArrayList<ServiceType>(excludedServices.length);
 
-        for (ServiceType service : services) {
+        for (ServiceType service : allServices) {
             boolean excluded = false;
             for (String serviceName : excludedServices) {
                 if (serviceName.trim().equalsIgnoreCase(service.getName())) {
@@ -318,7 +318,7 @@ public class SearchController extends BaseController {
 
         List<ServiceType> includedServicesList = new ArrayList<ServiceType>(includedServices.length);
 
-        for (ServiceType service : services) {
+        for (ServiceType service : allServices) {
             for (String serviceName : includedServices) {
                 if (serviceName.trim().equalsIgnoreCase(service.getName())) {
                     includedServicesList.add(service);
