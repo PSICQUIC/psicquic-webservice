@@ -8,16 +8,19 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:ebi="http://ebi.ac.uk/faces/components"
                 xmlns:ebisf="http://www.ebi.ac.uk/faces/site"
-                xmlns:iaf="http://intact.ebi.ac.uk/functions">
+                xmlns:iaf="http://intact.ebi.ac.uk/functions"
+                xmlns:ot="http://myfaces.apache.org/orchestra">
 
     <c:set var="showLogoOnly" value="#{onlyLogo != null? ebisf:convertToBoolean(onlyLogo) : false}"/>
     <c:set var="showDrugPort" value="#{renderDrugPort != null? ebisf:convertToBoolean(renderDrugPort) : true}"/>
 
+    <ot:separateConversationContext>
         <h:outputLink value="#{queryUrl}" target="_blank"
                  disabled="#{disabled != null? ebisf:convertToBoolean(disabled) : false}" rendered="#{showDrugPort}">
                 <tr:image source="#{imageSource}" inlineStyle="border-width:0"
                           rendered="#{showLogoOnly}"/>
             <tr:outputText value="#{(text != null)? text : query}" rendered="#{!showLogoOnly}"/>
         </h:outputLink>
+    </ot:separateConversationContext>
 
 </ui:composition>

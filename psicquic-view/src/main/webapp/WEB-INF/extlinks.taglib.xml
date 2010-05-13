@@ -19,6 +19,14 @@
         <source>facelets/components/links/GoDrugbank.xhtml</source>
     </tag>
     <tag>
+        <tag-name>goChemblCompound</tag-name>
+        <source>facelets/components/links/GoChemblCompound.xhtml</source>
+    </tag>
+    <tag>
+        <tag-name>goChemblTarget</tag-name>
+        <source>facelets/components/links/GoChemblTarget.xhtml</source>
+    </tag>
+    <tag>
         <tag-name>goDrugPortProteinView</tag-name>
         <source>facelets/components/links/GoDrugPortProteinView.xhtml</source>
     </tag>

@@ -56,7 +56,7 @@
 </tr:column>
 
 <tr:column headerText="#{messages['moleculeA.name']}" styleClass="cellTextCompound">
-    <iav:xrefDataList value="#{binaryInteraction.interactorA.identifiers}" onlyText="false" linkType="molecule"/>
+    <iav:xrefDataList value="#{binaryInteraction.interactorA.identifiers}" onlyText="false" linkType="molecule.A"/>
  </tr:column>
 
 <tr:column headerText="#{messages['moleculeA.links']}" styleClass="cellTextCompound">
@@ -81,12 +81,18 @@
                     <br/>
                 </h:panelGroup>
             </f:facet>
+            <f:facet name="chembl">
+                <h:panelGroup>
+                    <iax:goChemblCompound query="#{xref.identifier}" onlyLogo="true"/>
+                    <br/>
+                </h:panelGroup>
+            </f:facet>
         </tr:switcher>
     </tr:iterator>
 </tr:column>
 
 <tr:column headerText="#{messages['moleculeB.name']}" styleClass="cellTextTarget">
-    <iav:xrefDataList value="#{binaryInteraction.interactorB.identifiers}" onlyText="false" linkType="molecule"/>
+    <iav:xrefDataList value="#{binaryInteraction.interactorB.identifiers}" onlyText="false" linkType="molecule.B"/>
 </tr:column>
 
 <tr:column headerText="#{messages['moleculeB.links']}" styleClass="cellTextTarget">
@@ -108,6 +114,12 @@
            <f:facet name="drugbank">
                 <h:panelGroup>
                     <iax:goDrugbank query="#{xref.identifier}" onlyLogo="true"/>
+                    <br/>
+                </h:panelGroup>
+            </f:facet>
+           <f:facet name="chembl">
+                <h:panelGroup>
+                    <iax:goChemblTarget query="#{xref.identifier}" onlyLogo="true"/>
                     <br/>
                 </h:panelGroup>
             </f:facet>

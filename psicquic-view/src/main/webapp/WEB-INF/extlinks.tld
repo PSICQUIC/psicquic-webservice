@@ -37,6 +37,26 @@
         </attribute>
     </tag>
     <tag>
+        <name>goChemblCompound</name>
+        <attribute>
+            <name>query</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>onlyLogo</name>
+        </attribute>
+    </tag>
+    <tag>
+        <name>goChemblTarget</name>
+        <attribute>
+            <name>query</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>onlyLogo</name>
+        </attribute>
+    </tag>
+    <tag>
         <name>goDrugPortProteinView</name>
         <attribute>
             <name>query</name>
