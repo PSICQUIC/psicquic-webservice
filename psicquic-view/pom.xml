@@ -34,7 +34,7 @@
         <appRoot>/psicquic</appRoot>
 
         <!-- configurable -->
-        <config.file>${java.io.tmpdir}/psicquic-view.config.properties</config.file>
+            <config.file>/tmp/psicquic-view.config.properties</config.file>
         <openid.admin>http://intact.myopenid.com/</openid.admin>
 
     </properties>
