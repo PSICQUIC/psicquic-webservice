@@ -268,9 +268,10 @@ public class PsicquicStatsCollector {
                     updatedServices.add( db );
                 }
 
-
-                log.info( "Adding new cell with value: " + cell.getCell().getInputValue() );
-                updatedCells.add( cell );
+                if( ! StringUtils.isEmpty( cell.getCell().getInputValue() ) ) {
+                    log.info( "Adding new cell for service '"+ db +"' with value: " + cell.getCell().getInputValue() );
+                    updatedCells.add( cell );
+                }
 
             } else {
 
