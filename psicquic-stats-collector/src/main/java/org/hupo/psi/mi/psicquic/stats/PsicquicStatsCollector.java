@@ -124,7 +124,7 @@ public class PsicquicStatsCollector {
         log.info( "senderEmail = " + senderEmail );
         if( StringUtils.isEmpty(senderEmail ) ) {
             // disable email sending facilities
-            log.warn( "No email sender specified, running with email facilities dsabled." );
+            log.warn( "No email sender specified, running with email facilities disabled." );
             senderEmail = null;
             mailSender = null;
         }
@@ -172,6 +172,7 @@ public class PsicquicStatsCollector {
 
         Map<String, Integer> columnName2Index = myWorksheet.getColumnNameIndex();
         final int nextEmptyRow = myWorksheet.getNextEmptyRow();
+        log.info( "Next empty Row: " + nextEmptyRow );
         final List<CellEntry> updatedCells = Lists.newArrayList();
 
         // If a total column is present, then sum up all cells into it
@@ -182,18 +183,28 @@ public class PsicquicStatsCollector {
         for ( Map.Entry<String, Integer> e : columnName2Index.entrySet() ) {
             final String db = e.getKey();
             final Integer colIndex = e.getValue();
+
+            if ( colIndex == null ) {
+                throw new IllegalArgumentException( "You must give a non null colIndex" );
+            }
+
+
             final Long dbCount = db2count.get( db );
 
             log.info( "Updating worksheet for '"+ db +"' having count of "+ dbCount );
 
             String count;
             if( dbCount == null ) {
-                if( TOTAL_COLUMN.equalsIgnoreCase( db ) || DATE_COLUMN.equalsIgnoreCase( db ) ) {
-                    if ( colIndex != null ) {
-                        totalColumnIndex = colIndex;
-                    }
+
+                if( TOTAL_COLUMN.equalsIgnoreCase( db ) ) {
+                    totalColumnIndex = colIndex;
                     hasTotalColumn = true;
 
+                    log.info( "Skipping column: " + db );
+                    continue; // skip further processing as we don't have data for that database
+                }
+
+                if( DATE_COLUMN.equalsIgnoreCase( db ) ) {
                     log.info( "Skipping column: " + db );
                     continue; // skip further processing as we don't have data for that database
                 }
@@ -577,8 +588,12 @@ public class PsicquicStatsCollector {
         if ( log.isInfoEnabled() ) log.info( updatedServices.size() + " services updated: " + updatedServices );
 
         // Update publication for those services that have a different count of interactions
-        Map<String, Long> db2publicationsCount = collectPsicquicPublicationsStats( psicquicServices, updatedServices );
-        updatePublicationWorksheet( service, spreadsheetEntry, db2publicationsCount );
+        if( ! updatedServices.isEmpty() ) {
+            Map<String, Long> db2publicationsCount = collectPsicquicPublicationsStats( psicquicServices, updatedServices );
+            updatePublicationWorksheet( service, spreadsheetEntry, db2publicationsCount );
+        } else {
+            log.info( "No services with interaction count update, skipping publication update." );
+        }
 
         if( ! updatedServices.isEmpty() ) {
             sendEmail( "Spreadsheet was updated", "Some services had new data online: " + showServices(psicquicServices) );
