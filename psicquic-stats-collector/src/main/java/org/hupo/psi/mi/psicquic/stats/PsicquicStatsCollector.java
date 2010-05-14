@@ -360,6 +360,15 @@ public class PsicquicStatsCollector {
             }
         }
 
+        if ( log.isDebugEnabled() ) {
+            log.info( "has new data ? " + hasNewData );
+            log.info( "About to update spreadsheet with " + updatedCells.size() + " cell(s)" );
+            for ( CellEntry c : updatedCells ) {
+                final Cell cc = c.getCell();
+                log.info( "["+cc.getCol() +","+cc.getRow()+"]: "+cc.getInputValue()+( cc.getValue() != null ? " (was "+ cc.getValue() +")" : " (new)" ) );
+            }
+        }
+
         if ( ! updatedCells.isEmpty() ) {
             if( hasNewData ) {
                 // add date to the row
