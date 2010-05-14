@@ -194,7 +194,7 @@ public class PsicquicStatsCollector {
                     }
                     hasTotalColumn = true;
 
-                    System.out.println( "Skipping column: " + db );
+                    log.info( "Skipping column: " + db );
                     continue; // skip further processing as we don't have data for that database
                 }
             }
@@ -239,10 +239,13 @@ public class PsicquicStatsCollector {
                     }
                 } else {
                     // we don't have data yet so all service have to be updated
+                    log.info( "No previous cell available." );
                     cell.changeInputValueLocal( count );
                     updatedServices.add( db );
                 }
 
+
+                log.info( "Adding new cell with value: " + cell.getCell().getInputValue() );
                 updatedCells.add( cell );
 
             } else {
@@ -269,7 +272,7 @@ public class PsicquicStatsCollector {
 
             // ! updatedServices.isEmpty() &&
             if( cell != null && cell.getCell().getInputValue() != null ) {
-                log.info( "Adding " + cell.getCell().getValue() + " to total sum" );
+                log.info( "Adding " + cell.getCell().getInputValue() + " to total sum" );
                 // keep track of current total
                 currentTotalSum += Integer.parseInt( cell.getCell().getInputValue() );
             }
@@ -328,7 +331,7 @@ public class PsicquicStatsCollector {
                 cell.changeInputValueLocal( String.valueOf( currentTotalSum ) );
                 updatedCells.add( cell );
             }
-        }
+        } // hasTotalColumn
 
 
         // Check if a database is not yet registered in the spreadsheet.
