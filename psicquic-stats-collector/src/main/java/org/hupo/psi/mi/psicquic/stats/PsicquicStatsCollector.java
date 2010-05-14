@@ -221,22 +221,46 @@ public class PsicquicStatsCollector {
                 if ( previousCell != null ) {
 
                     final String previousValue = previousCell.getCell().getValue();
-                    if ( previousValue != null && ! previousValue.equals( count ) ) {
-                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
-                                                              db + " has changed since " +
-                                                              previousDateCell.getCell().getValue() );
+
+                    if( previousValue == null ) {
+                        log.info( "No previous cell available." );
                         if ( ! "0".equals( count ) ) {
+                            if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
+                                                                  db + " has changed since " +
+                                                                  previousDateCell.getCell().getValue() );
                             // the service has a positive count so we record it in the stats
                             cell.changeInputValueLocal( count );
                             updatedServices.add( db );
+                        } else {
+                            log.info( "Skip update as the count is 0" );
                         }
                     } else {
-                        // For cells that haven't been filled, copy the value of the previous row.
-                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
-                                                              db + " has NOT changed since " +
-                                                              previousDateCell.getCell().getValue() );
-                        cell.changeInputValueLocal( previousCell.getCell().getValue() );
+                        log.info( "Previous cell available: " + previousValue );
+                        if( ! previousValue.equals( count ) && ! "0".equals( count ) ) {
+                            // the service has a positive count so we record it in the stats
+                            cell.changeInputValueLocal( count );
+                            updatedServices.add( db );
+                        } else {
+                            log.info( "Skip update as the count is 0 or the same as previous ("+ previousValue +")" );
+                        }
                     }
+
+//                    if ( previousValue != null && ! previousValue.equals( count ) ) {
+//                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
+//                                                              db + " has changed since " +
+//                                                              previousDateCell.getCell().getValue() );
+//                        if ( ! "0".equals( count ) ) {
+//                            // the service has a positive count so we record it in the stats
+//                            cell.changeInputValueLocal( count );
+//                            updatedServices.add( db );
+//                        }
+//                    } else {
+//                        // For cells that haven't been filled, copy the value of the previous row.
+//                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
+//                                                              db + " has NOT changed since " +
+//                                                              previousDateCell.getCell().getValue() );
+//                        cell.changeInputValueLocal( previousCell.getCell().getValue() );
+//                    }
                 } else {
                     // we don't have data yet so all service have to be updated
                     log.info( "No previous cell available." );
