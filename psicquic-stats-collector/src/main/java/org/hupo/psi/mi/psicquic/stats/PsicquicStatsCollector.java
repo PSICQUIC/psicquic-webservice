@@ -279,6 +279,8 @@ public class PsicquicStatsCollector {
 
         } // All databases registered in the worksheet header
 
+        boolean hasNewData = ! updatedCells.isEmpty();
+
         if( hasTotalColumn ) {
             // process all existing rows and update the total column
 
@@ -311,7 +313,7 @@ public class PsicquicStatsCollector {
                     } else {
                         log.info( "Total contains: " + myWorksheet.getCell( row, col ).getCell().getValue() );
                     }
-                }
+                } // columns
 
                 log.info( myWorksheet.getCell( row, 1 ).getCell().getValue() + " -> " + totalSum + " (SUM)");
 
@@ -320,10 +322,10 @@ public class PsicquicStatsCollector {
                     cell.changeInputValueLocal( String.valueOf( totalSum ) );
                     updatedCells.add( cell );
                 }
-            }
+            } // rows
 
             log.info( "currentTotalSum = " + currentTotalSum );
-            if( currentTotalSum != 0 ) {
+            if( hasNewData && currentTotalSum != 0 ) {
                 // given that the last row of this sheet is not available in the WorksheetFacade until we save the updatedCells,
                 // we save the last total additionally
                 log.info( "Current total: " + currentTotalSum );
