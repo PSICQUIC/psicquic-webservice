@@ -69,13 +69,14 @@ public class PsicquicStatsCollector {
 
     public static final String FILE_SEPARATOR = System.getProperty( "file.separator" );
 
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy/MM/dd" );
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "dd/MM/yyyy" );
+    private static SimpleDateFormat DATE_AS_DIR = new SimpleDateFormat( "yyyy/MM/dd" );
 
     private static final String PSICQUIC_REGISTRY_URL_KEY = "psicquic.registry.url";
 
     private static final String SMTP_CONFIG_FILE_KEY = "smtp.config.file";
 
-    private static final int PSICQUIC_DEFAULT_TIMEOUT = 10000;
+    private static final int PSICQUIC_DEFAULT_TIMEOUT = 60000;
     private static final int PSICQUIC_BATCH_SIZE = 200;
 
     private static final String TOTAL_COLUMN = "Total";
@@ -99,7 +100,7 @@ public class PsicquicStatsCollector {
 
         // load email properties
         File smtpConfig = null;
-        if( config.hasSmtpConfigFile() ) {
+        if( ! config.hasSmtpConfigFile() ) {
             log.info( "Using default SMTP config from classpath: '"+ config.DEFAULT_SMTP_CONFIG +"'" );
             smtpConfig = new File( PsicquicStatsCollector.class.getResource( config.DEFAULT_SMTP_CONFIG ).getFile() );
         } else {
@@ -247,7 +248,7 @@ public class PsicquicStatsCollector {
             } else {
 
                 System.out.println( "++++ No data for " + db );
-                System.out.println( "++++ previousCell: " + previousCell );
+                System.out.println( "++++ previousCell: " + previousCell.getCell().getValue() );
 
                 // We haven't got data for that database, copy the previous cell's data
 
@@ -357,6 +358,8 @@ public class PsicquicStatsCollector {
 
     private String today() {return DATE_FORMAT.format( new Date() );}
 
+    private String todayDirectory() {return DATE_AS_DIR.format( new Date() );}
+
     public List<String> updateInteractionWorksheet( final SpreadsheetService service,
                                                     SpreadsheetEntry spreadsheet,
                                                     Map<String, Long> db2interactionCount ) throws Exception {
@@ -419,6 +422,14 @@ public class PsicquicStatsCollector {
                 sendEmail( "Failed to query " + service.getName(), ExceptionUtils.getFullStackTrace( t ) );
             }
         }
+
+        if ( log.isDebugEnabled() ) {
+            log.debug( "Interaction count collected:" );
+            for ( Map.Entry<String, Long> entry : db2interactionCount.entrySet() ) {
+                log.debug( entry.getKey() + " -> " + entry.getValue() );
+            }
+        }
+
         return db2interactionCount;
     }
 
@@ -473,7 +484,7 @@ public class PsicquicStatsCollector {
 
             if ( log.isInfoEnabled() )
                 log.info( "\n" + service.getName() + " -> " + pmids.size() + " publication(s)." +
-                          ( error ? " However the PMID collection may have been interupted." : "" ) );
+                          ( error ? " However the PMID collection may have been interrupted." : "" ) );
 
             if ( !error ) {
                 db2publicationsCount.put( service.getName(), ( long ) pmids.size() );
@@ -489,7 +500,7 @@ public class PsicquicStatsCollector {
                     user = senderEmail.substring( 0, senderEmail.indexOf( "@" ));
                 }
             }
-            File parentDir = new File( (user == null ? "" : user + FILE_SEPARATOR ) + today() );
+            File parentDir = new File( (user == null ? "" : user + FILE_SEPARATOR ) + todayDirectory() );
             if ( !parentDir.exists() ) {
                 parentDir.mkdirs();
             }
