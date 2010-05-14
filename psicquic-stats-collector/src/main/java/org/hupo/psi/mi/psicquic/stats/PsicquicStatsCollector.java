@@ -275,8 +275,8 @@ public class PsicquicStatsCollector {
 
             } else {
 
-                System.out.println( "++++ No data for " + db );
-                System.out.println( "++++ previousCell: " + previousCell.getCell().getValue() );
+                log.info( "++++ No data for " + db );
+                log.info( "++++ previousCell: " + previousCell.getCell().getValue() );
 
                 // We haven't got data for that database, copy the previous cell's data
 
@@ -291,12 +291,11 @@ public class PsicquicStatsCollector {
                     cell.changeInputValueLocal( previousCell.getCell().getValue() );
                     updatedCells.add( cell );
                 } else {
-                    System.out.println( "Previous cell is null :(" );
+                    log.info( "Previous cell is null :(" );
                 }
             }
 
-            // ! updatedServices.isEmpty() &&
-            if( cell != null && cell.getCell().getInputValue() != null ) {
+            if( cell != null && ! StringUtils.isEmpty( cell.getCell().getInputValue() ) ) {
                 log.info( "Adding " + cell.getCell().getInputValue() + " to total sum" );
                 // keep track of current total
                 currentTotalSum += Integer.parseInt( cell.getCell().getInputValue() );
