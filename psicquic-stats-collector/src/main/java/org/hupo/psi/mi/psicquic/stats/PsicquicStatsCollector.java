@@ -266,14 +266,18 @@ public class PsicquicStatsCollector {
 
                 if ( previousCell != null ) {
 
-                    if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " + db +
-                                                          " has NOT changed since " +
-                                                          previousDateCell.getCell().getValue() +
-                                                          " copying previous one instead." );
+                    final String previousValue = previousCell.getCell().getValue();
+                    if( ! "0".equals( previousValue ) ) {
+                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " + db +
+                                                              " has NOT changed since " +
+                                                              previousDateCell.getCell().getValue() +
+                                                              " copying previous one instead: " + previousValue );
 
-                    cell = myWorksheet.getCell( nextEmptyRow, colIndex.intValue() );
-                    cell.changeInputValueLocal( previousCell.getCell().getValue() );
-                    updatedCells.add( cell );
+                        cell = myWorksheet.getCell( nextEmptyRow, colIndex.intValue() );
+                        cell.changeInputValueLocal( previousCell.getCell().getValue() );
+                        updatedCells.add( cell );
+                    }
+                    
                 } else {
                     log.info( "Previous cell is null :(" );
                 }
