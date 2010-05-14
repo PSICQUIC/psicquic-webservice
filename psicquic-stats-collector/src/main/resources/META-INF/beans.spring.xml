@@ -18,7 +18,7 @@
     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
         <property name="host" value="smtp.ebi.ac.uk"/>
         <property name="port" value="25"/>
-        <property name="username" value="imex.bot@gmail.com"/>
+        <property name="username" value="default.user@gmail.com"/>
         <property name="javaMailProperties">
             <props>
                 <prop key="mail.smtp.starttls.enable">true</prop>
