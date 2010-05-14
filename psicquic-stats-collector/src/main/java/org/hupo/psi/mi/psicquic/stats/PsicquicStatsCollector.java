@@ -245,22 +245,6 @@ public class PsicquicStatsCollector {
                         }
                     }
 
-//                    if ( previousValue != null && ! previousValue.equals( count ) ) {
-//                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
-//                                                              db + " has changed since " +
-//                                                              previousDateCell.getCell().getValue() );
-//                        if ( ! "0".equals( count ) ) {
-//                            // the service has a positive count so we record it in the stats
-//                            cell.changeInputValueLocal( count );
-//                            updatedServices.add( db );
-//                        }
-//                    } else {
-//                        // For cells that haven't been filled, copy the value of the previous row.
-//                        if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
-//                                                              db + " has NOT changed since " +
-//                                                              previousDateCell.getCell().getValue() );
-//                        cell.changeInputValueLocal( previousCell.getCell().getValue() );
-//                    }
                 } else {
                     // we don't have data yet so all service have to be updated
                     log.info( "No previous cell available." );
@@ -303,7 +287,7 @@ public class PsicquicStatsCollector {
 
         } // All databases registered in the worksheet header
 
-        boolean hasNewData = ! updatedCells.isEmpty();
+        final boolean hasNewData = ! updatedCells.isEmpty();
 
         if( hasTotalColumn ) {
             // process all existing rows and update the total column
@@ -373,11 +357,13 @@ public class PsicquicStatsCollector {
         }
 
         if ( ! updatedCells.isEmpty() ) {
-            // add date to the row
-            final CellEntry cell = myWorksheet.getCell( nextEmptyRow, 1 );
-            cell.changeInputValueLocal( today() );
-            updatedCells.add( cell );
-
+            if( hasNewData ) {
+                // add date to the row
+                final CellEntry cell = myWorksheet.getCell( nextEmptyRow, 1 );
+                cell.changeInputValueLocal( today() );
+                updatedCells.add( cell );
+            }
+            
             // upload update
             myWorksheet.batchUpdate( updatedCells );
         }
