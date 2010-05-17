@@ -188,7 +188,6 @@ public class PsicquicStatsCollector {
                 throw new IllegalArgumentException( "You must give a non null colIndex" );
             }
 
-
             final Long dbCount = db2count.get( db );
 
             log.info( "Updating worksheet for '"+ db +"' having count of "+ dbCount );
@@ -201,12 +200,12 @@ public class PsicquicStatsCollector {
                     hasTotalColumn = true;
 
                     log.info( "Skipping column: " + db );
-                    continue; // skip further processing as we don't have data for that database
+                    continue; // go to next databse
                 }
 
                 if( DATE_COLUMN.equalsIgnoreCase( db ) ) {
                     log.info( "Skipping column: " + db );
-                    continue; // skip further processing as we don't have data for that database
+                    continue; // go to next databse
                 }
             }
 
@@ -294,10 +293,17 @@ public class PsicquicStatsCollector {
                 }
             }
 
+            // we may ommit part of the totalSum as we only count those that have new data.
             if( cell != null && ! StringUtils.isEmpty( cell.getCell().getInputValue() ) ) {
                 log.info( "Adding " + cell.getCell().getInputValue() + " to total sum" );
                 // keep track of current total
                 currentTotalSum += Integer.parseInt( cell.getCell().getInputValue() );
+            } else {
+                if( previousCell != null ) {
+                    log.info( "Adding " + previousCell.getCell().getInputValue() + " to total sum (previous cell)" );
+                    // keep track of current total
+                    currentTotalSum += Integer.parseInt( previousCell.getCell().getValue() );
+                }
             }
 
         } // All databases registered in the worksheet header
