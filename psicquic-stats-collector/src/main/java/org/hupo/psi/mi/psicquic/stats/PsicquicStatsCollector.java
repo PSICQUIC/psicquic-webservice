@@ -256,7 +256,7 @@ public class PsicquicStatsCollector {
                     }
 
                 } else {
-                    // we don't have data yet so all service have to be updated
+                    // we don't have data yet so all services have to be updated
                     log.info( "No previous cell available." );
                     cell.changeInputValueLocal( count );
                     updatedServices.add( db );
@@ -307,6 +307,11 @@ public class PsicquicStatsCollector {
             }
 
         } // All databases registered in the worksheet header
+
+        if( updatedServices.isEmpty() ) {
+            // no services updated, flush the collection of updatedCells
+            updatedCells.clear();
+        }
 
         final boolean hasNewData = ! updatedCells.isEmpty();
 
