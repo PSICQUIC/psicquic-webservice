@@ -101,7 +101,8 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
         try {
             if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_XML25).equalsIgnoreCase(format)) {
-                return getByQueryXml(query, firstResult, maxResults);
+                final EntrySet entrySet = getByQueryXml(query, firstResult, maxResults);
+                return Response.status(200).type(MediaType.APPLICATION_XML).entity(entrySet).build();
             } else if (format.toLowerCase().startsWith("rdf")) {
                 String rdfFormat = getRdfFormatName(format);
                 String mediaType = format.contains("xml")? MediaType.APPLICATION_XML : MediaType.TEXT_PLAIN;
