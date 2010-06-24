@@ -16,6 +16,7 @@
 package org.hupo.psi.mi.psicquic.ws.utils.rdf;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import org.junit.Ignore;
 import org.junit.Test;
 import psidev.psi.mi.xml.PsimiXmlReader;
 import psidev.psi.mi.xml.PsimiXmlVersion;
@@ -31,12 +32,13 @@ import java.io.FileOutputStream;
 public class RdfBuilderTest {
 
     @Test
+    @Ignore
     public void testCreateModel() throws Exception {
         PsimiXmlReader reader = new PsimiXmlReader(PsimiXmlVersion.VERSION_254);
         EntrySet entrySet = reader.read(RdfBuilder.class.getResourceAsStream("/META-INF/10380924.xml"));
 
         RdfBuilder rdfBuilder = new RdfBuilder();
-        Model model = rdfBuilder.createModel(entrySet);
+        Model model = rdfBuilder.createModel(entrySet, "http://www.ebi.ac.uk/intact");
         
         model.write(System.out, "RDF/XML-ABBREV");
         model.write(new FileOutputStream(new File("c:/test/test.rdf")));
