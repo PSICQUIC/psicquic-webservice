@@ -31,7 +31,7 @@ public class BuildCache {
         InteractionClusterAdv iC = new InteractionClusterAdv();
 
         /* Query one or more IDs */
-        iC.addQueryAcc( "BRCA2" );
+        iC.addQueryAcc( "*" );
 
         /* sources to query */
         /* IMEX curated databases */
