@@ -49,7 +49,7 @@ public class ComputeStats {
                 // TODO why is that a list ???
                 final String interactionAc = dbEntry.getKey();
                 final List<String> serviceName = dbEntry.getValue();
-                System.out.println( "\t" + interactionAc + " -> " + serviceName );
+//                System.out.println( "\t" + interactionAc + " -> " + serviceName );
                 for ( String name : serviceName ) {
 
                     if ( !service2count.containsKey( name ) ) {
@@ -58,7 +58,7 @@ public class ComputeStats {
                     int count = service2count.get( name );
                     Integer newCount = count + 1;
                     service2count.put( name, newCount );
-                    System.out.println( "\t\t" + name + ":" + newCount );
+//                    System.out.println( "\t\t" + name + ":" + newCount );
                 }
             } // evidences
 
