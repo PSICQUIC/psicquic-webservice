@@ -36,11 +36,12 @@ public class ComputeStats {
         final Map<String, ServiceStat> service2stats = new HashMap<String, ServiceStat>();
 
         // clusters are stored iusing a cluster id ( 1 .. cache.size() )
-        for ( int i = 1; i <= cache.size(); i++ ) {
+        final int clusterCount = cache.size();
+        for ( int i = 1; i <= clusterCount; i++ ) {
 
             EncoreInteraction interaction = cache.get( i );
 
-            System.out.println( i );
+            System.out.println( i + "" + clusterCount );
 
             final Map<String, Integer> service2count = new HashMap<String, Integer>();
 
@@ -92,16 +93,25 @@ public class ComputeStats {
                 } // evidence count per service
             } // services' stats
 
-            System.out.println( "--- Stats ---" );
-            for ( Map.Entry<String, ServiceStat> serviceStatEntry : service2stats.entrySet() ) {
-                final ServiceStat stat = serviceStatEntry.getValue();
-                System.out.println( stat );
+            if( ( i % 5000 ) == 0 ) {
+                 printStats( service2stats );
             }
 
         } // clusters
 
+        System.out.println( "" );
+        System.out.println( "--- Final Stats ---" );
+        printStats( service2stats );
+
         System.out.println( "Collected stats about " + service2stats.size() + " services" );
 
         ClusterContext.getInstance().getCacheManager().shutdown();
+    }
+
+    private static void printStats( Map<String, ServiceStat> service2stats ) {
+        for ( Map.Entry<String, ServiceStat> serviceStatEntry : service2stats.entrySet() ) {
+            final ServiceStat stat = serviceStatEntry.getValue();
+            System.out.println( stat );
+        }
     }
 }
