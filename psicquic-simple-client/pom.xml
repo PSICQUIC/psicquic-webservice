@@ -3,7 +3,7 @@
 
     <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-simple-client</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <version>1.0-SNAPSHOT</version>
 
