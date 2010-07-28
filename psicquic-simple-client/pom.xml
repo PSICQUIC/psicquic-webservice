@@ -7,7 +7,7 @@
 
     <version>1.0-SNAPSHOT</version>
 
-    <name>PSI :: Simple PSICQUIC Client</name>
+    <name>PSI :: PSICQUIC Simple Client</name>
 
     <scm>
         <connection>scm:svn:http://psicquic.googlecode.com/svn/trunk/psicquic-simple-client</connection>
