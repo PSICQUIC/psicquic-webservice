@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Example of use.
+ * Example of use, limiting the results to 5 interactions.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
