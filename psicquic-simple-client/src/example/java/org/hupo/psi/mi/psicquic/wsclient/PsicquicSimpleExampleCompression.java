@@ -22,7 +22,7 @@ import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
 
 /**
- * This example shows how to access the service and retrieve compressed MITAB results. This uses much less bandwith, so it may be faster,
+ * This example shows how to access the service and retrieve compressed MITAB results. This uses much less bandwidth, so it may be faster,
  * but increases CPU consumption due to the fact that the response needs to be uncompressed.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
