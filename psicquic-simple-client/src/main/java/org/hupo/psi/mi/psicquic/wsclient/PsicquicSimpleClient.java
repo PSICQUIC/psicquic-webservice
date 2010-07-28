@@ -51,15 +51,27 @@ public class PsicquicSimpleClient {
     }
 
     public InputStream getByQuery(String query, String format) throws IOException {
-        return getBy("query", query, format);
+        return getByQuery(query, format, 0, Integer.MAX_VALUE);
     }
 
     public InputStream getByInteractor(String query, String format) throws IOException {
-        return getBy("interactor", query, format);
+        return getByInteractor(query, format, 0, Integer.MAX_VALUE);
     }
 
     public InputStream getByInteraction(String query, String format) throws IOException {
-        return getBy("interaction", query, format);
+        return getByInteraction(query, format, 0, Integer.MAX_VALUE);
+    }
+
+    public InputStream getByQuery(String query, String format, int firstResult, int maxResults) throws IOException {
+        return getBy("query", query, format, firstResult, maxResults);
+    }
+
+    public InputStream getByInteractor(String query, String format, int firstResult, int maxResults) throws IOException {
+        return getBy("interactor", query, format, firstResult, maxResults);
+    }
+
+    public InputStream getByInteraction(String query, String format, int firstResult, int maxResults) throws IOException {
+        return getBy("interaction", query, format, firstResult, maxResults);
     }
 
     public long countByQuery(String query) throws IOException {
@@ -74,16 +86,16 @@ public class PsicquicSimpleClient {
         return countBy("interaction", query);
     }
 
-    private InputStream getBy(String queryType, String query, String format) throws IOException {
+    private InputStream getBy(String queryType, String query, String format, int firstResult, int maxResults) throws IOException {
         final String encodedQuery = encodeQuery(query);
 
-        URL url = createUrl(queryType, encodedQuery, format);
+        URL url = createUrl(queryType, encodedQuery, format, firstResult, maxResults);
         
         return url.openStream();
     }
 
     private long countBy(String queryType, String query) throws IOException {
-        InputStream result = getBy(queryType, query, COUNT);
+        InputStream result = getBy(queryType, query, COUNT, 0, 0);
 
         String strCount = streamToString(result);
         strCount = strCount.replaceAll("\n", "");
@@ -104,8 +116,8 @@ public class PsicquicSimpleClient {
     }
 
 
-    private URL createUrl(String queryType, String encodedQuery, String format) {
-        String strUrl = serviceRestUrl+"/"+queryType+"/"+encodedQuery+"?format="+format;
+    private URL createUrl(String queryType, String encodedQuery, String format, int firstResult, int maxResults) {
+        String strUrl = serviceRestUrl+"/"+queryType+"/"+encodedQuery+"?format="+format+"&firstResult="+firstResult+"&maxResults="+maxResults;
         strUrl = strUrl.replaceAll("//"+queryType, "/"+queryType);
 
         URL url;
