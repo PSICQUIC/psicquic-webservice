@@ -76,9 +76,16 @@
         </td>
         <td>${service.restricted?string("YES", "NO")}</td>
         <td>
-        <#list service.tags as tag>
-        <NOBR> <a href="http://www.ebi.ac.uk/ontology-lookup/?termId=${tag}" target="_blank">${termName(tag)}</a> </NOBR>
-        </#list>&#160;
+
+                <#list service.tags as tag>
+                    <#if tag?starts_with('MI:')>
+                        <NOBR> <a href="http://www.ebi.ac.uk/ontology-lookup/?termId=${tag}" target="_blank">${termName(tag)}</a> </NOBR>
+                    <#else>
+                        <NOBR> ${termName(tag)} </NOBR>
+                    </#if>
+                    <#if tag_has_next> <br/> </#if>
+                </#list>&#160;
+
         </td>
         <td>${service.comments!''}&#160;</td>
   </#list>

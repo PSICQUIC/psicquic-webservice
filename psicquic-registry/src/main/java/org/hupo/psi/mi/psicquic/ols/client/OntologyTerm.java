@@ -12,7 +12,8 @@ import java.util.Set;
  *
  */
 public class OntologyTerm {
-	private String id;
+
+    private String id;
 	private String name;
 	private OLSClient ols;
 	private String ontology;
@@ -31,12 +32,11 @@ public class OntologyTerm {
 	}
 	
 	private void init(String id,String name,String ontology, SelfDiscoveringOntologyTree sdoTree, OLSClient ols){
-		this.id = id.toUpperCase();
+		this.id = id;
 		this.name = name;
 		this.ols = ols;
 		this.ontology = ontology;
 		this.sdoTree = sdoTree;
-		
 
 		childList = null;
 		this.sdoTree.addDiscoveredTerm(this);
@@ -57,8 +57,6 @@ public class OntologyTerm {
 	
 		return equal;
 	}
-	
-	
 
 	public String getId() {
 		return id;
@@ -76,8 +74,6 @@ public class OntologyTerm {
 		
 		return name;
 	}
-
-
 
 	public OLSClient getOls() {
 		return ols;
@@ -106,6 +102,4 @@ public class OntologyTerm {
 	public void setChildList(Set<OntologyTerm> childList) {
 		this.childList = childList;
 	}
-	
-	
 }
