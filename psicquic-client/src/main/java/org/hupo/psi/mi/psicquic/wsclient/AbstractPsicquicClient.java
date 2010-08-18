@@ -43,7 +43,7 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
     private PsicquicService service;
 
     public AbstractPsicquicClient(String serviceAddress) {
-        this(serviceAddress, 5000L);
+        this(serviceAddress, 0L);
     }
 
     public AbstractPsicquicClient(String serviceAddress, long timeout) {
@@ -64,7 +64,7 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
 
         httpClientPolicy.setReceiveTimeout(timeout);
         httpClientPolicy.setAllowChunking(false);
-        httpClientPolicy.setConnectionTimeout(1000L);
+        httpClientPolicy.setConnectionTimeout(0L);
         httpClientPolicy.setAcceptEncoding("UTF-8");
 
 
