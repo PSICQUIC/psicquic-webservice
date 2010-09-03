@@ -1,0 +1,4 @@
+* Add into micluster a strategy for the reading of MITAB data, default being PSICQUIC but open the possibility to run
+  off MITAB files stored on disk (handy for unit testing offline)
+
+* cannot run 2 jobs simultaneously as the (spring-batch) job definition is the same   

@@ -1,0 +1,179 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.hupo.psi.mi.psicquic</groupId>
+    <artifactId>psicquic-clustering</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <name>PSI :: PSICQUIC Clustering</name>
+
+    <build>
+        <finalName>${artifactId}-${version}</finalName>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <!--Enfin-->
+
+        <dependency>
+            <groupId>uk.ac.ebi.enfin.mi.cluster</groupId>
+            <artifactId>micluster</artifactId>
+            <version>1.2-SNAPSHOT</version>
+        </dependency>
+
+        <!-- PSICQUIC -->
+
+        <dependency>
+            <groupId>org.hupo.psi.mi.psicquic</groupId>
+            <artifactId>psicquic-simple-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hupo.psi.mi.psicquic</groupId>
+            <artifactId>psicquic-registry-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>psidev.psi.mi</groupId>
+            <artifactId>psimitab</artifactId>
+            <version>1.7.8-SNAPSHOT</version>
+        </dependency>
+
+        <!--Testing-->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>3.0.1.RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring batch -->
+
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-core</artifactId>
+            <version>2.0.4.RELEASE</version>
+        </dependency>
+
+        <!-- Spring Core -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+        
+        <!-- Needed to run Quartz -->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-context-support</artifactId>-->
+            <!--<version>2.5.6</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>quartz</groupId>
+            <artifactId>quartz</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
+        <!-- Misc. -->
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <!-- EBI repository -->
+        <repository>
+            <id>ebi-repo</id>
+            <name>The EBI internal repository</name>
+            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>ebi-repo-snapshots</id>
+            <name>The EBI internal repository</name>
+            <url>http://www.ebi.ac.uk/~maven/m2repo_snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- for jaxb-impl -->
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/1/</url>
+            <layout>legacy</layout>
+        </repository>
+
+        <repository>
+            <id>apache-incubating</id>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+        </repository>
+
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>http://repository.apache.org/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+</project>

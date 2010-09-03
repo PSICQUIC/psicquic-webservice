@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.0.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <context:component-scan base-package="org.hupo.psi.mi.psicquic.clustering"/>
+
+    <!-- Batch framework -->
+
+    <bean id="transactionManager"
+          class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>
+
+    <bean id="jobRepository"
+          class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean">
+        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
+
+    <bean id="jobLauncher"
+          class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <!-- Clustering -->
+
+    <bean id="clusteringTask" class="org.hupo.psi.mi.psicquic.clustering.job.batch.PsicquicClustererTasklet"/>
+
+    <bean id="clusteringJob" class="org.springframework.batch.core.job.SimpleJob">
+        <property name="name" value="Clustering"/>
+        <property name="steps">
+            <list>
+                <bean class="org.springframework.batch.core.step.tasklet.TaskletStep">
+                    <property name="tasklet" ref="clusteringTask"/>
+                    <property name="jobRepository" ref="jobRepository"/>
+                    <property name="transactionManager" ref="transactionManager"/>
+                </bean>
+            </list>
+        </property>
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <!-- Quartz scheduling
+         http://static.springsource.org/spring/docs/1.2.x/reference/scheduling.html
+    -->
+
+    <!--<bean id="clusteringLauncher" class="org.hupo.psi.mi.psicquic.clustering.ClusteringLauncher" scope="singleton"/>-->
+
+    <bean name="clusteringScheduler" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="org.hupo.psi.mi.psicquic.clustering.ClusteringLauncher"/>
+    </bean>
+
+    <bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <!-- our launcher -->
+        <property name="jobDetail" ref="clusteringScheduler"/>
+        <!-- 5 seconds -->
+        <property name="startDelay" value="2000"/>
+        <!-- repeat every 5 seconds -->
+        <property name="repeatInterval" value="60000"/>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="simpleTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
