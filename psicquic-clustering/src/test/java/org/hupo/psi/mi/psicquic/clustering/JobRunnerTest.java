@@ -41,11 +41,11 @@ public class JobRunnerTest {
         final JobDao jobDao = daoFactory.getJobDao();
 
         // create a job
-        JobDefinition job1 = new JobDefinition( "brca2", Arrays.asList( new Service( "IntAct" ), new Service( "MINT" ) ) );
+        JobDefinition job1 = new JobDefinition( "brca2", Arrays.asList( new Service( "IntAct" ) ) ); // , new Service( "MINT" )
         jobDao.addJob( new JobIdGenerator().generateJobId( job1 ), job1 );
 
-//        JobDefinition job2 = new JobDefinition( "mouse", Arrays.asList( new Service( "MINT" ), new Service( "IntAct" ) ) );
-//        jobDao.addJob( new JobIdGenerator().generateJobId( job2 ), job2 );
+        JobDefinition job2 = new JobDefinition( "brca2", Arrays.asList( new Service( "MINT" ), new Service( "IntAct" ) ) );
+        jobDao.addJob( new JobIdGenerator().generateJobId( job2 ), job2 );
 
         // run the next available job
         JobDefinition nextJob = jobDao.getNextJobToRun();

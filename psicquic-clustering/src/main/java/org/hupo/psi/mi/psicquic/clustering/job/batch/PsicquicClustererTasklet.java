@@ -16,9 +16,9 @@ import org.springframework.batch.repeat.RepeatStatus;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
 import uk.ac.ebi.enfin.mi.cluster.ClusterContext;
+import uk.ac.ebi.enfin.mi.cluster.Encore2Binary;
 import uk.ac.ebi.enfin.mi.cluster.EncoreInteraction;
 import uk.ac.ebi.enfin.mi.cluster.InteractionClusterAdv;
-import uk.ac.ebi.enfin.mi.cluster.InteractionConverter;
 import uk.ac.ebi.enfin.mi.cluster.cache.CacheManager;
 import uk.ac.ebi.enfin.mi.cluster.cache.CacheStrategy;
 
@@ -144,8 +144,8 @@ public class PsicquicClustererTasklet implements Tasklet, StepExecutionListener 
 
 
         String tempDirectory = "/Users/samuel/projects/psiqcuic/cache";
-//        ClusterContext.getInstance().setCacheStrategy( CacheStrategy.IN_MEMORY );
-        ClusterContext.getInstance().setCacheStrategy( CacheStrategy.ON_DISK );
+        ClusterContext.getInstance().setCacheStrategy( CacheStrategy.IN_MEMORY );
+//        ClusterContext.getInstance().setCacheStrategy( CacheStrategy.ON_DISK );
         ClusterContext.getInstance().getCacheManager().setCacheStorage( new File( tempDirectory ) );
 
         // Setup up enfin clustering
@@ -161,7 +161,7 @@ public class PsicquicClustererTasklet implements Tasklet, StepExecutionListener 
 
         // Extract MITAB lines from cluster cache
         Map<Integer, EncoreInteraction> interactionMapping = iC.getInteractionMapping();
-        InteractionConverter iConverter = new InteractionConverter( iC.getMappingIdDbNames() );
+        Encore2Binary iConverter = new Encore2Binary( iC.getMappingIdDbNames() );
 
         MitabDocumentDefinition documentDefinition = new MitabDocumentDefinition();
 
@@ -172,7 +172,6 @@ public class PsicquicClustererTasklet implements Tasklet, StepExecutionListener 
             BinaryInteraction bi = iConverter.getBinaryInteraction( ei );
 
             String mitab = documentDefinition.interactionToString( bi );
-
             System.out.println( mitab );
         }
 
