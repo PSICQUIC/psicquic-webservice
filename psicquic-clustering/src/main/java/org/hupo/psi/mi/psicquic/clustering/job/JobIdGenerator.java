@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
- * Generates random string for our JobDefinition ids.
+ * Generates random string for our ClusteringJob ids.
  * <p/>
  * Logic of this generator based on: http://stackoverflow.com/questions/41107/how-to-generate-a-random-alpha-numeric-string-in-java
  *
@@ -54,7 +54,7 @@ public class JobIdGenerator {
         return convertToHex(sha1hash);
     }
 
-    public String generateJobId( JobDefinition job ) {
+    public String generateJobId( ClusteringJob job ) {
         StringBuilder sb = new StringBuilder(512);
         sb.append( job.getMiql().trim() ).append( "/" );
 

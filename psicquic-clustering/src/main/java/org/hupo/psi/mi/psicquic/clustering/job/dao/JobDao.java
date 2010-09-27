@@ -1,23 +1,23 @@
 package org.hupo.psi.mi.psicquic.clustering.job.dao;
 
-import org.hupo.psi.mi.psicquic.clustering.job.JobDefinition;
+import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 
 /**
- * JobDefinition DAO.
+ * ClusteringJob DAO.
  *
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  * @since 0.1
  */
-public interface JobDao {
+public interface JobDao extends BaseDao<ClusteringJob> {
 
-    void addJob( String jobId, JobDefinition job );
+    void addJob( String jobId, ClusteringJob job );
 
-    JobDefinition getJob( String jobId );
+    ClusteringJob getJob( String jobId );
 
-    JobDefinition removeJob( String jobId );
+    ClusteringJob removeJob( String jobId );
 
-    JobDefinition getLastRanJob();
+    ClusteringJob getLastRanJob();
 
-    JobDefinition getNextJobToRun();
+    ClusteringJob getNextJobToRun();
 }

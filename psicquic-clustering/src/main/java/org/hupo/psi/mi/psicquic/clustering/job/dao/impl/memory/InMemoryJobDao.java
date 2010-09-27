@@ -1,6 +1,6 @@
 package org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory;
 
-import org.hupo.psi.mi.psicquic.clustering.job.JobDefinition;
+import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 
@@ -16,9 +16,9 @@ import java.util.Map;
  */
 public class InMemoryJobDao implements JobDao {
 
-    private Map<String, JobDefinition> jobid2job = new HashMap<String, JobDefinition>();
+    private Map<String, ClusteringJob> jobid2job = new HashMap<String, ClusteringJob>();
 
-    public void addJob( String jobId, JobDefinition job ) {
+    public void addJob( String jobId, ClusteringJob job ) {
         if ( jobId == null ) {
             throw new IllegalArgumentException( "You must give a non null jobId" );
         }
@@ -32,12 +32,12 @@ public class InMemoryJobDao implements JobDao {
         jobid2job.put( jobId, job );
     }
 
-    public JobDefinition getJob( String jobId ) {
+    public ClusteringJob getJob( String jobId ) {
         return jobid2job.get( jobId );
     }
 
-    public JobDefinition removeJob( String jobId ) {
-        JobDefinition job = jobid2job.remove( jobId );
+    public ClusteringJob removeJob( String jobId ) {
+        ClusteringJob job = jobid2job.remove( jobId );
         if ( job == null ) {
             throw new IllegalArgumentException( "This job could not be found: " + jobId );
         }
@@ -48,10 +48,10 @@ public class InMemoryJobDao implements JobDao {
      * Fetches the job with the most recent completion data being in state FAILED or COMPLETED.
      * @return
      */
-    public JobDefinition getLastRanJob() {
-        JobDefinition lastRanJob = null;
-        for ( Map.Entry<String, JobDefinition> entry : jobid2job.entrySet() ) {
-            JobDefinition job = entry.getValue();
+    public ClusteringJob getLastRanJob() {
+        ClusteringJob lastRanJob = null;
+        for ( Map.Entry<String, ClusteringJob> entry : jobid2job.entrySet() ) {
+            ClusteringJob job = entry.getValue();
             final JobStatus jobStatus = job.getStatus();
 
             if ( jobStatus != null && ( jobStatus.equals( JobStatus.FAILED )
@@ -75,10 +75,10 @@ public class InMemoryJobDao implements JobDao {
      * Fetches the next job with status QUEUED and the oldest creation date.
      * @return
      */
-    public JobDefinition getNextJobToRun() {
-        JobDefinition nextJob = null;
-        for ( Map.Entry<String, JobDefinition> entry : jobid2job.entrySet() ) {
-            JobDefinition job = entry.getValue();
+    public ClusteringJob getNextJobToRun() {
+        ClusteringJob nextJob = null;
+        for ( Map.Entry<String, ClusteringJob> entry : jobid2job.entrySet() ) {
+            ClusteringJob job = entry.getValue();
             final JobStatus jobStatus = job.getStatus();
             if ( JobStatus.QUEUED.equals( jobStatus ) ) {
                 if ( nextJob == null ) {
@@ -93,5 +93,25 @@ public class InMemoryJobDao implements JobDao {
         }
 
         return nextJob;
+    }
+
+    //////////////////
+    // BaseDao
+    
+    public void save( ClusteringJob job ) {
+        // nothing to do, all in memory
+    }
+
+    public void update( ClusteringJob job ) {
+        // nothing to do, all in memory
+    }
+
+    public void delete( ClusteringJob job ) {
+        for ( Map.Entry<String, ClusteringJob> entry : jobid2job.entrySet() ) {
+            if( entry.getValue() == job ) {
+                jobid2job.remove( entry.getKey() );
+                return;
+            }
+        }
     }
 }

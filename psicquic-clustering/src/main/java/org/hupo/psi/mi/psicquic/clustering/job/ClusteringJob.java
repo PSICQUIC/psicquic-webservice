@@ -15,7 +15,7 @@ import java.util.List;
  * @version $Id$
  * @since 0.1
  */
-public class JobDefinition implements Serializable {
+public class ClusteringJob implements Serializable {
 
     /**
      * The miql query we will use to extract data from the PSICQUIC services.
@@ -33,12 +33,18 @@ public class JobDefinition implements Serializable {
     private Date created;
     private Date completed; // whether it's failed or succeeded.
 
+    private String luceneIndexLocation;
+
     private JobStatus status = JobStatus.QUEUED;
+
+    private String statusMessage;
+
+    private Throwable statusException;
 
     //////////////////
     // Constructors
 
-    public JobDefinition( String miql, List<Service> services ) {
+    public ClusteringJob( String miql, List<Service> services ) {
         if ( miql == null ) {
             throw new IllegalArgumentException( "You must give a non null miql" );
         }
@@ -94,6 +100,22 @@ public class JobDefinition implements Serializable {
         this.status = status;
     }
 
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage( String statusMessage ) {
+        this.statusMessage = statusMessage;
+    }
+
+    public Throwable getStatusException() {
+        return statusException;
+    }
+
+    public void setStatusException( Throwable statusException ) {
+        this.statusException = statusException;
+    }
+
     public Date getCompleted() {
         return completed;
     }
@@ -102,17 +124,26 @@ public class JobDefinition implements Serializable {
         this.completed = completed;
     }
 
+    public String getLuceneIndexLocation() {
+        return luceneIndexLocation;
+    }
+
+    public void setLuceneIndexLocation( String luceneIndexLocation ) {
+        this.luceneIndexLocation = luceneIndexLocation;
+    }
+
     ///////////////
     // Object
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append( "JobDefinition" );
+        sb.append( "ClusteringJob" );
         sb.append( "{miql='" ).append( miql ).append( '\'' );
         sb.append( ", services=" ).append( services );
         sb.append( ", created=" ).append( created );
         sb.append( ", status=" ).append( status );
+        sb.append( ", luceneIndexLocation=" ).append( luceneIndexLocation );
         sb.append( '}' );
         return sb.toString();
     }
@@ -120,9 +151,9 @@ public class JobDefinition implements Serializable {
     @Override
     public boolean equals( Object o ) {
         if ( this == o ) return true;
-        if ( !( o instanceof JobDefinition ) ) return false;
+        if ( !( o instanceof ClusteringJob ) ) return false;
 
-        JobDefinition job = ( JobDefinition ) o;
+        ClusteringJob job = ( ClusteringJob ) o;
 
         if ( !miql.equals( job.miql ) ) return false;
         if ( !services.equals( job.services ) ) return false;

@@ -1,8 +1,12 @@
 package org.hupo.psi.mi.psicquic.clustering;
 
+import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
+import org.hupo.psi.mi.psicquic.PsicquicServiceException;
+import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
 import org.hupo.psi.mi.psicquic.clustering.job.PollResult;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,6 +17,17 @@ import java.util.List;
  * @since 0.1
  */
 public interface InteractionClusteringService {
+
+    public static final int BLOCKSIZE_MAX = 200;
+
+    public static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
+    public static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
+    public static final String RETURN_TYPE_MITAB25_BIN = "psi-mi/tab25-bin";
+    public static final String RETURN_TYPE_COUNT = "count";
+
+    public static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
+
+    public static final List<String> SUPPORTED_RETURN_TYPES = Arrays.asList( RETURN_TYPE_XML25, RETURN_TYPE_MITAB25, RETURN_TYPE_COUNT );
 
     /**
      * Initiate the clustering of a MIQL query based on the given list of services.
@@ -39,8 +54,14 @@ public interface InteractionClusteringService {
      * @param query run a query on the clustered data, * will return all.
      * @param from considering the data being indexed from 0..(n-1), we return data from the interaction position at index 'from'
      * @param maxResult the maximum number of interactions to be returned.
+     * @param resultType the return type of the data generated.
      * @return  a <code>List</code> of MITAB lines.
      */
-    List<String> query( String jobId, String query, long from, long maxResult ) throws JobNotCompletedException;
-
+    public QueryResponse query( String jobId,
+                                String query,
+                                final int from,
+                                final int maxResult,
+                                String resultType ) throws JobNotCompletedException,
+                                                           NotSupportedTypeException,
+                                                           PsicquicServiceException;
 }

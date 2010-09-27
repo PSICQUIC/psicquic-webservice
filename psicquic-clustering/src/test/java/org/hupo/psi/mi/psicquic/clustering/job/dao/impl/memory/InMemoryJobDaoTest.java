@@ -2,7 +2,7 @@ package org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory;
 
 import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.hupo.psi.mi.psicquic.clustering.Service;
-import org.hupo.psi.mi.psicquic.clustering.job.JobDefinition;
+import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
@@ -25,14 +25,14 @@ public class InMemoryJobDaoTest {
         final JobDao jobDao = daoFactory.getJobDao();
 
         // create a job
-        JobDefinition job1 = new JobDefinition( "9606", Arrays.asList( new Service( "IntAct" ) ) );
+        ClusteringJob job1 = new ClusteringJob( "9606", Arrays.asList( new Service( "IntAct" ) ) );
         jobDao.addJob( new JobIdGenerator().generateJobId( job1 ), job1 );
 
-        JobDefinition job2 = new JobDefinition( "mouse", Arrays.asList( new Service( "MINT" ), new Service( "IntAct" ) ) );
+        ClusteringJob job2 = new ClusteringJob( "mouse", Arrays.asList( new Service( "MINT" ), new Service( "IntAct" ) ) );
         jobDao.addJob( new JobIdGenerator().generateJobId( job2 ), job2 );
 
         // run the next available job
-        JobDefinition nextJob = jobDao.getNextJobToRun();
+        ClusteringJob nextJob = jobDao.getNextJobToRun();
         Assert.assertNotNull( nextJob );
 
         Assert.assertSame( job1, nextJob );

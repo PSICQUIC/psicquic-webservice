@@ -23,12 +23,15 @@ public class ClusteringContext {
 
     private final ApplicationContext springContext;
 
+    private ClusteringConfig config;
+
     public static ClusteringContext getInstance() {
         return ourInstance;
     }
 
     private ClusteringContext() {
         springContext = new ClassPathXmlApplicationContext( "job-clustering.xml" );
+        config = new ClusteringConfig();
     }
 
     public ClusteringServiceDaoFactory getDaoFactory() {
@@ -37,5 +40,9 @@ public class ClusteringContext {
 
     public ApplicationContext getSpringContext() {
         return springContext;
+    }
+
+    public ClusteringConfig getConfig() {
+        return config;
     }
 }

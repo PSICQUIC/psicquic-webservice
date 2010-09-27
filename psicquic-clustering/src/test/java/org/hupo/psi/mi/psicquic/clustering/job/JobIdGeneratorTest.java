@@ -61,36 +61,36 @@ public class JobIdGeneratorTest {
 
         final JobIdGenerator jig = new JobIdGenerator();
         
-        JobDefinition job;
+        ClusteringJob job;
         String jobId;
 
-        job = new JobDefinition( "9606", Arrays.asList( new Service( "IntAct" ) ) );
+        job = new ClusteringJob( "9606", Arrays.asList( new Service( "IntAct" ) ) );
         jobId = jig.generateJobId( job );
         Assert.assertNotNull( jobId );
         Assert.assertEquals( "b170829b1cd9bf67c5c1eadc56b2a2bcbd0751e0", jobId );
 
         // same jobid if the miql is the same when trimmed
 
-        job = new JobDefinition( " 9606 ", Arrays.asList( new Service( "IntAct" ) ) );
+        job = new ClusteringJob( " 9606 ", Arrays.asList( new Service( "IntAct" ) ) );
         jobId = jig.generateJobId( job );
         Assert.assertNotNull( jobId );
         Assert.assertEquals( "b170829b1cd9bf67c5c1eadc56b2a2bcbd0751e0", jobId );
 
         // different jobid for different services
 
-        job = new JobDefinition( "9606", Arrays.asList( new Service( "MINT" ) ) );
+        job = new ClusteringJob( "9606", Arrays.asList( new Service( "MINT" ) ) );
         jobId = jig.generateJobId( job );
         Assert.assertNotNull( jobId );
         Assert.assertEquals( "947ee901544dedfb5c9d83575a6d41dec633bb9b", jobId );
 
         // the same jobId should be generated for the same list of services, irrespectively of their order.
 
-        job = new JobDefinition( "9606", Arrays.asList( new Service( "IntAct" ), new Service( "MINT" ) ) );
+        job = new ClusteringJob( "9606", Arrays.asList( new Service( "IntAct" ), new Service( "MINT" ) ) );
         jobId = jig.generateJobId( job );
         Assert.assertNotNull( jobId );
         Assert.assertEquals( "67d3ffa60d5cd1a4e751f97f4f965e0bd7c4e3a2", jobId );
 
-        job = new JobDefinition( "9606", Arrays.asList( new Service( "MINT" ), new Service( "IntAct" ) ) );
+        job = new ClusteringJob( "9606", Arrays.asList( new Service( "MINT" ), new Service( "IntAct" ) ) );
         jobId = jig.generateJobId( job );
         Assert.assertNotNull( jobId );
         Assert.assertEquals( "67d3ffa60d5cd1a4e751f97f4f965e0bd7c4e3a2", jobId );

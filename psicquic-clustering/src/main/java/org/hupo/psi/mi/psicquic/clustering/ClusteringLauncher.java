@@ -1,9 +1,9 @@
 package org.hupo.psi.mi.psicquic.clustering;
 
-import org.apache.commons.lang.StringUtils;
-import org.hupo.psi.mi.psicquic.clustering.job.JobDefinition;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
-import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.quartz.SchedulerException;
@@ -28,6 +28,8 @@ import java.util.Iterator;
  */
 public class ClusteringLauncher extends QuartzJobBean {
 
+    private static final Log log = LogFactory.getLog( ClusteringLauncher.class );
+
     private ApplicationContext springContext;
 
     private JobRepository jobRepository;
@@ -40,22 +42,22 @@ public class ClusteringLauncher extends QuartzJobBean {
     // Constructors
 
     public ClusteringLauncher() {
-        System.out.println( "ClusteringLauncher.ClusteringLauncher: " + this );
+        log.debug( "ClusteringLauncher.ClusteringLauncher: " + this );
 
         springContext = ClusteringContext.getInstance().getSpringContext();
 
         if ( jobRepository == null ) {
-            System.out.println( "JobDefinition repository was null, attempting to load it through getBean..." );
+            log.debug( "ClusteringJob repository was null, attempting to load it through getBean..." );
             jobRepository = ( JobRepository ) springContext.getBean( "jobRepository" );
         }
 
         if ( jobLauncher == null ) {
-            System.out.println( "JobDefinition launcher was null, attempting to load it through getBean..." );
+            log.debug( "ClusteringJob launcher was null, attempting to load it through getBean..." );
             jobLauncher = ( JobLauncher ) springContext.getBean( "jobLauncher" );
         }
 
         if ( job == null ) {
-            System.out.println( "JobDefinition was null, attempting to load it through getBean..." );
+            log.debug( "ClusteringJob was null, attempting to load it through getBean..." );
             job = ( org.springframework.batch.core.Job ) springContext.getBean( "clusteringJob" );
         }
     }
@@ -89,14 +91,14 @@ public class ClusteringLauncher extends QuartzJobBean {
 
     @Override
     protected void executeInternal( org.quartz.JobExecutionContext context ) {
-        System.out.println( "---------------------- QUARTZ TRIGGER ----------------------------" );
-        System.out.println( "ClusteringLauncher.executeInternal" );
+        log.debug( "---------------------- QUARTZ TRIGGER ----------------------------" );
+        log.debug( "ClusteringLauncher.executeInternal" );
 
         final ClusteringServiceDaoFactory daoFactory = ClusteringContext.getInstance().getDaoFactory();
         final JobDao jobDao = daoFactory.getJobDao();
 
         // run the next available job
-        JobDefinition nextJob = jobDao.getNextJobToRun();
+        ClusteringJob nextJob = jobDao.getNextJobToRun();
 
         if ( nextJob != null ) {
 
@@ -112,9 +114,9 @@ public class ClusteringLauncher extends QuartzJobBean {
                     }
                 }
 
-                System.out.println( "miql:     "+ nextJob.getMiql() );
-                System.out.println( "services: "+ serviceBuf.toString() );
-                System.out.println( "jobId:    "+ new JobIdGenerator().generateJobId( nextJob ) );
+                log.debug( "miql:     "+ nextJob.getMiql() );
+                log.debug( "services: "+ serviceBuf.toString() );
+                log.debug( "jobId:    "+ new JobIdGenerator().generateJobId( nextJob ) );
 
                 JobParameters jobParameters =
                         new JobParametersBuilder()
@@ -124,11 +126,11 @@ public class ClusteringLauncher extends QuartzJobBean {
                                 .toJobParameters();
 
                 if ( jobLauncher == null ) {
-                    System.err.println( "null launcher" );
+                    log.debug( "null launcher" );
                     return;
                 }
                 if ( job == null ) {
-                    System.err.println( "null job" );
+                    log.debug( "null job" );
                     return;
                 }
 
@@ -146,7 +148,7 @@ public class ClusteringLauncher extends QuartzJobBean {
             }
             
         } else {
-            System.out.println( "No job to be processed." );
+            log.debug( "No job to be processed." );
         }
     }
 
