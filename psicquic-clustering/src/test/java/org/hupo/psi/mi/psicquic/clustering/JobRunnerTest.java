@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Arrays;
 
@@ -28,12 +29,12 @@ public class JobRunnerTest extends ClusteringTestCase {
     private JobLauncher launcher;
 
     @Autowired
+    @Qualifier( "clusteringJob" )
     private org.springframework.batch.core.Job job;
 
     @Test
     public void runJob() throws Exception {
-        final ClusteringServiceDaoFactory daoFactory = ClusteringContext.getInstance().getDaoFactory();
-        final JobDao jobDao = daoFactory.getJobDao();
+        final JobDao jobDao = getDaoFactory().getJobDao();
 
         // create a job
         ClusteringJob job1 = new ClusteringJob( "brca2", Arrays.asList( new Service( "IntAct" ) ) ); // , new Service( "MINT" )
@@ -49,6 +50,6 @@ public class JobRunnerTest extends ClusteringTestCase {
         Assert.assertSame( job1, nextJob );
 
         // get the test to hang in there to let Quartz fire some jobs ...
-        for ( ;; ) { }
+//        for ( ;; ) { }
     }
 }

@@ -4,6 +4,8 @@ import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,7 +99,15 @@ public class InMemoryJobDao implements JobDao {
 
     //////////////////
     // BaseDao
-    
+
+    public int countAll() {
+        return jobid2job.size();
+    }
+
+    public Collection<ClusteringJob> getAll() {
+        return new ArrayList( jobid2job.values() );
+    }
+
     public void save( ClusteringJob job ) {
         // nothing to do, all in memory
     }

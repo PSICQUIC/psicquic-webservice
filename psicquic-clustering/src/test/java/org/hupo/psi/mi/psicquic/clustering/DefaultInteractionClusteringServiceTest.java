@@ -20,7 +20,7 @@ import java.util.List;
 public class DefaultInteractionClusteringServiceTest extends ClusteringTestCase {
 
     @Test
-    public void submitJob() throws Exception {
+    public void submit_poll_query() throws Exception {
         final InteractionClusteringService ics = new DefaultInteractionClusteringService();
         final String jobId = ics.submitJob( "brca2", Arrays.asList( new Service( "IntAct" ) ) );
         PollResult pollResult = ics.poll( jobId );
@@ -53,13 +53,5 @@ public class DefaultInteractionClusteringServiceTest extends ClusteringTestCase 
 
             Assert.assertEquals( 27, mitab.split( "\n" ).length );
         }
-    }
-
-    @Test
-    public void poll() throws Exception {
-    }
-
-    @Test
-    public void query() throws Exception {
     }
 }

@@ -27,12 +27,32 @@
 
     <bean id="clusteringTask" class="org.hupo.psi.mi.psicquic.clustering.job.batch.PsicquicClustererTasklet"/>
 
-    <bean id="clusteringJob" class="org.springframework.batch.core.job.SimpleJob">
+    <!--Thre is a way to autoconfigure the parameter via an incrementer: http://www.opendocs.net/spring/spring-batch/2.0.3/reference/configureJob.html-->
+    <!--<job id="footballJob" incrementer="sampleIncrementer">-->
+
+    <bean id="clusteringJob" class="org.springframework.batch.core.job.SimpleJob"
+            >
         <property name="name" value="Clustering"/>
         <property name="steps">
             <list>
                 <bean class="org.springframework.batch.core.step.tasklet.TaskletStep">
                     <property name="tasklet" ref="clusteringTask"/>
+                    <property name="jobRepository" ref="jobRepository"/>
+                    <property name="transactionManager" ref="transactionManager"/>
+                </bean>
+            </list>
+        </property>
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <bean id="demoTask" class="org.hupo.psi.mi.psicquic.clustering.job.batch.DemoTasklet"/>
+
+    <bean id="demoJob" class="org.springframework.batch.core.job.SimpleJob">
+        <property name="name" value="demo"/>
+        <property name="steps">
+            <list>
+                <bean class="org.springframework.batch.core.step.tasklet.TaskletStep">
+                    <property name="tasklet" ref="demoTask"/>
                     <property name="jobRepository" ref="jobRepository"/>
                     <property name="transactionManager" ref="transactionManager"/>
                 </bean>

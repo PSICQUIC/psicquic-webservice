@@ -1,5 +1,7 @@
 package org.hupo.psi.mi.psicquic.clustering.job.dao;
 
+import java.util.Collection;
+
 /**
  * TODO document this !
  *
@@ -8,6 +10,8 @@ package org.hupo.psi.mi.psicquic.clustering.job.dao;
  * @since TODO add POM version
  */
 public interface BaseDao<T> {
+    int countAll();
+    Collection<T> getAll();
     void save( T object );
     void update( T object );
     void delete( T object );

@@ -22,7 +22,6 @@ public interface InteractionClusteringService {
 
     public static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
     public static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
-    public static final String RETURN_TYPE_MITAB25_BIN = "psi-mi/tab25-bin";
     public static final String RETURN_TYPE_COUNT = "count";
 
     public static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
@@ -49,13 +48,13 @@ public interface InteractionClusteringService {
     PollResult poll( String jobId );
 
     /**
-     * Once a job has a status <code>JobStatus.COMPLETED</code>, a user can query the clustered data. Otherwise
+     * Once a job has a status <code>JobStatus.COMPLETED</code>, a user can query the clustered data.
      * @param jobId
      * @param query run a query on the clustered data, * will return all.
      * @param from considering the data being indexed from 0..(n-1), we return data from the interaction position at index 'from'
      * @param maxResult the maximum number of interactions to be returned.
      * @param resultType the return type of the data generated.
-     * @return  a <code>List</code> of MITAB lines.
+     * @return  a <code>QueryResponse</code> wrapping the resulting data.
      */
     public QueryResponse query( String jobId,
                                 String query,

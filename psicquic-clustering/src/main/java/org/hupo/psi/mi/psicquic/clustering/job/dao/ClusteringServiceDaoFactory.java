@@ -1,11 +1,11 @@
 package org.hupo.psi.mi.psicquic.clustering.job.dao;
 
 /**
- * TODO document this !
+ * DAO Factory.
  *
  * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
- * @since TODO add POM version
+ * @since 0.1
  */
 public interface ClusteringServiceDaoFactory {
 

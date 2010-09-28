@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
+import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.quartz.SchedulerException;
@@ -136,27 +137,14 @@ public class ClusteringLauncher extends QuartzJobBean {
 
                 jobLauncher.run( job, jobParameters );
 
-
-                // TODO the Batch job should update the status of this clustering job upon completion
-
-            } catch ( JobExecutionAlreadyRunningException e ) {
-                e.printStackTrace();
-            } catch ( JobRestartException e ) {
-                e.printStackTrace();
-            } catch ( JobInstanceAlreadyCompleteException e ) {
-                e.printStackTrace();
-            }
+            } catch ( Exception e ) {
+                nextJob.setStatus( JobStatus.FAILED );
+                nextJob.setStatusException( e );
+                log.error( "Error while starting job:" + nextJob, e );
+            } 
             
         } else {
             log.debug( "No job to be processed." );
         }
-    }
-
-    public static void main( String[] args ) throws SchedulerException {
-
-//        final ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext( "job-clustering.xml" );
-
-        final ClusteringLauncher cl = new ClusteringLauncher();
-        cl.executeInternal( null );
     }
 }
