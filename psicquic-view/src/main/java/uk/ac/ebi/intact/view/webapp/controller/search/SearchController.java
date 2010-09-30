@@ -6,6 +6,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
 import org.apache.myfaces.orchestra.viewController.annotations.PreRenderView;
 import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
+import org.apache.myfaces.trinidad.model.SortableModel;
+import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
+import org.hupo.psi.mi.psicquic.clustering.Service;
+import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
+import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
 import org.hupo.psi.mi.psicquic.registry.client.registry.DefaultPsicquicRegistryClient;
@@ -17,6 +22,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
+import uk.ac.ebi.intact.view.webapp.model.ClusteringResultDataModel;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
 
 import javax.annotation.PostConstruct;
@@ -59,26 +65,49 @@ public class SearchController extends BaseController {
 
     private Map<String,String> activeServices;
     private Map<String,String> inactiveServices;
-    private Map<String,PsicquicResultDataModel> resultDataModelMap;
+    private Map<String,SortableModel> resultDataModelMap;
     private Map<String,Integer> resultCountMap;
 
     private String[] includedServices;
     private String[] excludedServices;
 
-
     private String selectedServiceName;
 
+    private boolean clusterSelected;
+    private ClusteringJob job;
+
     public SearchController() {
+        this.clusterSelected = false;
     }
 
     @PostConstruct
     public void refresh() {
+        System.out.println( "SearchController.refresh" );
         refresh(null);
     }
 
     @PreRenderView
     public void preRender() {
+        System.out.println( "SearchController.preRender" );
         FacesContext context = FacesContext.getCurrentInstance();
+
+        // TODO add new param 'clusterJobId' that can be combined with parameter 'query'
+
+        String jobId = context.getExternalContext().getRequestParameterMap().get("clusterJobId");
+        if( jobId == null ) {
+//            this.job = null;
+//            this.clusterSelected = false;
+        } else {
+            final JobDao jobDao = ClusteringContext.getInstance().getDaoFactory().getJobDao();
+            final ClusteringJob job = jobDao.getJob( jobId );
+            if( job == null ) {
+                log.error( "Could not find job by id: " + jobId );
+            } else {
+                // TODO add job to UserJobs.currentJobs
+                this.job = job;
+                this.clusterSelected = true;
+            }
+        }
 
         String queryParam = context.getExternalContext().getRequestParameterMap().get("query");
 
@@ -109,7 +138,9 @@ public class SearchController extends BaseController {
     }
 
     public void refresh(ActionEvent evt) {
-        this.resultDataModelMap = Collections.synchronizedMap(new HashMap<String,PsicquicResultDataModel>());
+        System.out.println( "SearchController.refresh" );
+
+        this.resultDataModelMap = Collections.synchronizedMap(new HashMap<String,SortableModel>());
         this.resultCountMap = Collections.synchronizedMap(new HashMap<String,Integer>());
         this.activeServices = Collections.synchronizedMap(new HashMap<String,String>());
         this.inactiveServices = Collections.synchronizedMap(new HashMap<String,String>());
@@ -122,34 +153,81 @@ public class SearchController extends BaseController {
     }
 
     public String doBinarySearchAction() {
+        System.out.println( "SearchController.doBinarySearchAction" );
         String searchQuery = userQuery.getSearchQuery();
 
-        doBinarySearch( searchQuery );
+        if( ! clusterSelected ) {
+            doPsicquicBinarySearch( searchQuery );
+        } else {
+            doClusteredJobBinarySearch( searchQuery );
+        }
 
         return "interactions";
     }
 
     public String doNewBinarySearch() {
+        System.out.println( "SearchController.doNewBinarySearch" );
         try {
+            // TODO don't need that when querying the clustered job
+            // TODO this method is calling doBinarySearchAction ... when it's going to be called here too ?!!!
             refreshServices();
         } catch (PsicquicRegistryClientException e) {
-            e.printStackTrace();
             addErrorMessage("Problem loading services", e.getMessage());
+            log.error("Problem loading services", e);
         }
         return doBinarySearchAction();
     }
 
     public void doBinarySearch(ActionEvent evt) {
+        System.out.println( "SearchController.doBinarySearch" );
         refreshComponent("mainPanels");
         doBinarySearchAction();
     }
 
     public void doClearFilterAndSearch(ActionEvent evt) {
+        System.out.println( "SearchController.doClearFilterAndSearch" );
         userQuery.clearFilters();
         doBinarySearch(evt);
     }
 
-    public void doBinarySearch(String searchQuery) {
+    private void doClusteredJobBinarySearch( String searchQuery ) {
+        System.out.println( "SearchController.doClusteredJobBinarySearch" );
+        if ( log.isDebugEnabled() ) {log.debug( "\tcluster query:  "+ searchQuery );}
+
+        final String jobId = job.getJobId();
+        String serviceName =  "Clustered query: '"+ job.getMiql() +"' from " + printServiceNames( job.getServices() );
+        selectedServiceName = serviceName;
+
+        final ServiceType service = new ServiceType();
+        service.setName( serviceName );
+        
+        // TODO to enable download of data via table, create a servlet and set the URL here
+//        service.setRestUrl( "http://localhost:9095/psicquic/view/download?jobId=" );
+
+        servicesMap.put( jobId, service );
+        int totalCount = job.getClusteredInteractionCount();
+        resultCountMap.put( jobId, totalCount );
+        totalResults = totalCount;
+
+        loadResults( service );
+    }
+
+    private String printServiceNames( List<Service> services ) {
+        StringBuilder sb = new StringBuilder( 256 );
+        final Iterator<Service> it = services.iterator();
+        while ( it.hasNext() ) {
+            Service service = it.next();
+            sb.append( service.getName() );
+            if( it.hasNext() ) {
+                sb.append( ", " );
+            }
+        }
+        return sb.toString();
+    }
+
+    public void doPsicquicBinarySearch(String searchQuery) {
+        System.out.println( "SearchController.doPsicquicBinarySearch" );
+
         try {
             if ( log.isDebugEnabled() ) {log.debug( "\tquery:  "+ searchQuery );}
 
@@ -171,7 +249,7 @@ public class SearchController extends BaseController {
                 userQuery.setSearchQuery( "*:*" );
                 addErrorMessage( "Your query '"+ searchQuery +"' is not correctly formatted",
                                  "Currently we do not support queries prefixed with wildcard characters such as '*' or '?'. " +
-                                 "However, wildcard characters can be used anywhere else in one's query (eg. g?vin or gav* for gavin). " +
+                                 "However, wildcard characters can be used anywhere else in a query (eg. g?vin or gav* for gavin). " +
                                  "Please do reformat your query." );
             } else {
                 addErrorMessage("Psicquic problem", throwable.getMessage());
@@ -182,20 +260,28 @@ public class SearchController extends BaseController {
     }
 
     public void loadResults(ServiceType service) {
+        System.out.println( "SearchController.loadResults" );
         if (resultDataModelMap.containsKey(service.getName())) {
+            System.out.println( "skip loading ... data already present" );
             return;
         }
 
-        PsicquicResultDataModel results = null;
+        SortableModel results = null;
         try {
-            results = new PsicquicResultDataModel(new UniversalPsicquicClient(service.getSoapUrl()), userQuery.getFilteredSearchQuery());
+            if( ! clusterSelected ) {
+                results = new PsicquicResultDataModel(new UniversalPsicquicClient(service.getSoapUrl()), userQuery.getFilteredSearchQuery());
+            } else {
+                // TODO for the time being we load all data, later we could allow filtering
+                results = new ClusteringResultDataModel( job, "*" );
+            }
             resultDataModelMap.put(service.getName(), results);
         } catch (PsicquicClientException e) {
-            e.printStackTrace();
+            log.error( "Error while building results", e );
         }
     }
 
     private void refreshServices() throws PsicquicRegistryClientException {
+        System.out.println( "SearchController.refreshServices" );
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
 
         if (allServices == null) {
@@ -230,6 +316,7 @@ public class SearchController extends BaseController {
     }
 
     private void searchAndCreateResultModels() {
+        System.out.println( "SearchController.searchAndCreateResultModels" );
         resultCountMap.clear();
         resultDataModelMap.clear();
 
@@ -254,18 +341,20 @@ public class SearchController extends BaseController {
         try {
             executorService.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error( "Error while terminating ExecutorService", e );
         }
     }
 
     private int countInPsicquicService(ServiceType service, String query) {
+        System.out.println( "SearchController.countInPsicquicService( '"+ service.getName() +"', '"+query+"' )" );
         int psicquicCount = 0;
 
         try {
             String encoded = URLEncoder.encode(query, "UTF-8");
             encoded = encoded.replaceAll("\\+", "%20");
 
-            String url = service.getRestUrl()+"query/"+ encoded +"?format=count";
+            String separator = (service.getRestUrl().endsWith( "/" ) ? "" : "/" );
+            String url = service.getRestUrl() + separator + "query/" + encoded + "?format=count";
             String strCount = IOUtils.toString(new URL(url).openStream());
             psicquicCount = Integer.parseInt(strCount);
         } catch (IOException e) {
@@ -276,6 +365,7 @@ public class SearchController extends BaseController {
     }
 
     private void populateActiveServicesMap() {
+        System.out.println( "SearchController.populateActiveServicesMap" );
         activeServices.clear();
         for (ServiceType service : services) {
             if (service.isActive()) {
@@ -285,6 +375,7 @@ public class SearchController extends BaseController {
     }
 
     private void populateInactiveServicesMap() {
+        System.out.println( "SearchController.populateInactiveServicesMap" );
         inactiveServices.clear();
         for (ServiceType service : services) {
             if (!service.isActive()) {
@@ -294,6 +385,7 @@ public class SearchController extends BaseController {
     }
 
     private void processExcludedServices(String excludedServicesParam) {
+        System.out.println( "SearchController.processExcludedServices" );
         excludedServices = excludedServicesParam.split(",");
 
         List<ServiceType> includedServicesList = new ArrayList<ServiceType>(excludedServices.length);
@@ -314,6 +406,7 @@ public class SearchController extends BaseController {
     }
 
     private void processIncludedServices(String includedServicesParam) {
+        System.out.println( "SearchController.processIncludedServices" );
         includedServices = includedServicesParam.split(",");
 
         List<ServiceType> includedServicesList = new ArrayList<ServiceType>(includedServices.length);
@@ -340,7 +433,7 @@ public class SearchController extends BaseController {
         return resultCountMap;
     }
 
-    public Map<String, PsicquicResultDataModel> getResultDataModelMap() {
+    public Map<String, SortableModel> getResultDataModelMap() {
         return resultDataModelMap;
     }
 
@@ -394,5 +487,29 @@ public class SearchController extends BaseController {
         if (selectedServiceName != null) {
             loadResults(servicesMap.get(selectedServiceName));
         }
+    }
+
+    public boolean isClusterSelected() {
+        return clusterSelected;
+    }
+
+    public void setClusterSelected( boolean clusterSelected ) {
+        this.clusterSelected = clusterSelected;
+    }
+
+    public ClusteringJob getJob() {
+        return job;
+    }
+
+    public void setJob( ClusteringJob job ) {
+        this.job = job;
+    }
+
+    public String unselectClusterJob() {
+        clusterSelected = false;
+        job = null;
+        refresh(); // clean up the list of services
+
+        return "interactions";
     }
 }

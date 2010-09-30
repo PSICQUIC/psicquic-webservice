@@ -50,8 +50,7 @@
       <c:set var="backImage" value="#{empty config.bannerBackgroundUrl ? defaultBackImage : userBackImage}; background-repeat: repeat-x"/>
 
       <trh:body>
-          <trh:tableLayout width="100%"
-                            inlineStyle="#{backImage}">
+          <trh:tableLayout width="100%" inlineStyle="#{backImage}">
                <trh:rowLayout>
                    <trh:cellFormat inlineStyle="width:2%" >
                        <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}"/>
@@ -59,12 +58,12 @@
                    <trh:cellFormat inlineStyle="vertical-align: bottom" rendered="#{not empty config.title}">
                        <h1><tr:outputFormatted value="&#160;#{config.title}"/></h1>
                    </trh:cellFormat>
-
                </trh:rowLayout>
            </trh:tableLayout>
 
           <div style="padding-left:10px; padding-right: 10px">
-              <tr:form>
+
+          <tr:form>
 
            <!-- To avoid expired sessions, poll every 15 mins -->
            <tr:poll interval="#{15*60*1000}"/>
@@ -80,7 +79,7 @@
                </f:facet>
            </tr:statusIndicator>
 
-           <ui:include src="/pages/search/search_panel.xhtml"  />
+           <ui:include src="/pages/search/search_panel.xhtml" />
 
            <div style="text-align:right; width:100%; margin-top: -20px; position:absolute;">
                <trh:tableLayout width="98%">
@@ -100,63 +99,136 @@
                </trh:tableLayout>
            </div>
 
+
+
+
+
            <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
                <div style="padding-left:10px">
-                <b>No results were found for this query.</b>
+                 <b>No results were found for this query.</b>
                </div>
            </tr:panelGroupLayout>
 
-                  <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0}">
+           <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0 and not searchBean.clusterSelected}">
 
-                      Click on the links below to display the results for each service
-                      &#160;(<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
+               Click on the links below to display the results for each service
+               &#160;(<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
 
-                      <tr:spacer height="4px"/>
+               <tr:spacer height="4px"/>
 
-               <tr:panelFormLayout rows="#{config.serviceRows}" maxColumns="4" fieldWidth="200" >
-                   <c:forEach var="name" items="#{searchBean.allServiceNames}">
-                       <tr:panelHorizontalLayout>
-                           <h:graphicImage alt="Status" title="#{searchBean.servicesMap[name].active? 'Status: ONLINE' : 'Status: OFFLINE'}"
-                                           url="#{searchBean.servicesMap[name].active? '/images/status_online.png' : '/images/status_offline.png'}"/>
-                       <h:commandLink value="#{name}" styleClass="#{searchBean.selectedServiceName == name? 'resultLink-selected' : ''}"
-                                       disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0}"
-                               style="#{searchBean.selectedServiceName == name? 'font-weight:bold; text-decoration: none' : ''}">
-                           <f:setPropertyActionListener value="#{name}" target="#{searchBean.selectedServiceName}"/>
-                           <ui:param name="service" value="#{searchBean.servicesMap[name]}"/>
-                       </h:commandLink>
-                           <h:panelGroup rendered="#{searchBean.resultCountMap[name] != null}">
-                               &#160;-&#160;
-                               <tr:outputText value="#{searchBean.resultCountMap[name]}" styleClass="resultCount">
-                                   <tr:convertNumber pattern="#,###"/>
-                               </tr:outputText>
+               <tr:panelHorizontalLayout>
+
+                   <div style="float:left; ">
+                       <tr:panelFormLayout rows="#{config.serviceRows}" maxColumns="4" fieldWidth="200" >
+                           <c:forEach var="name" items="#{searchBean.allServiceNames}">
+                               <tr:panelHorizontalLayout>
+                                   <h:graphicImage alt="Status" title="#{searchBean.servicesMap[name].active? 'Status: ONLINE' : 'Status: OFFLINE'}"
+                                                   url="#{searchBean.servicesMap[name].active? '/images/status_online.png' : '/images/status_offline.png'}"/>
+                                   <h:commandLink value="#{name}" styleClass="#{searchBean.selectedServiceName == name? 'resultLink-selected' : ''}"
+                                                  disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0}"
+                                                  style="#{searchBean.selectedServiceName == name? 'font-weight:bold; text-decoration: none' : ''}">
+                                       <f:setPropertyActionListener value="#{name}" target="#{searchBean.selectedServiceName}"/>
+                                       <ui:param name="service" value="#{searchBean.servicesMap[name]}"/>
+                                   </h:commandLink>
+                                   <h:panelGroup rendered="#{searchBean.resultCountMap[name] != null}">
+                                       &#160;-&#160;
+                                       <tr:outputText value="#{searchBean.resultCountMap[name]}" styleClass="resultCount">
+                                           <tr:convertNumber pattern="#,###"/>
+                                       </tr:outputText>
+                                   </h:panelGroup>
+                               </tr:panelHorizontalLayout>
+                           </c:forEach>
+                       </tr:panelFormLayout>
+                   </div>
+
+                   <!--<tr:spacer width="200" />-->
+
+                   <div style="float:right; padding-left:50px; padding-right:10px">
+
+                       <tr:panelFormLayout rows="2" maxColumns="1">
+                           <h:panelGroup>
+                               <!-- Refresh the clustering status message every 5 secs -->
+                               <tr:poll id="clusteringStatus" interval="5000"/>
+
+                               <tr:panelBox id="jobListBox" text=" Status of your cluster queries" background="blue"
+                                            icon="/images/li.gif"
+                                            rendered="#{userJobs.jobCount gt 0 and not searchBean.clusterSelected}" partialTriggers="clusteringStatus">
+
+                                   <tr:table value="#{userJobs.refreshedJobs}" var="job">
+                                        <tr:column inlineStyle="white-space: nowrap;">
+                                             <tr:outputText value="#{job.miql}" />
+                                        </tr:column>
+                                        <tr:column inlineStyle="white-space: nowrap;">
+                                             <tr:outputText value="#{job.status}" shortDesc="#{job.statusMessage}" />
+                                        </tr:column>
+                                        <tr:column inlineStyle="white-space: nowrap;">
+                                            <tr:panelHorizontalLayout>
+                                                <!-- View Job -->
+                                                <tr:commandLink action="#{clusteringBean.viewJob}" text="view" rendered="#{job.status == 'COMPLETED'}">
+                                                    <f:param name="jobId" value="#{job.jobId}"/>
+                                                </tr:commandLink>
+                                                <tr:outputText value="view" rendered="#{job.status != 'COMPLETED'}" />
+                                                <tr:outputText value="&#160;|&#160;" />
+                                                <!-- Remove Job -->
+                                                <tr:commandLink action="#{clusteringBean.removeJob}" text="remove">
+                                                    <f:param name="jobId" value="#{job.jobId}"/>
+                                                </tr:commandLink>
+                                            </tr:panelHorizontalLayout>
+                                        </tr:column>
+                                   </tr:table>
+                               </tr:panelBox>
                            </h:panelGroup>
-                       </tr:panelHorizontalLayout>
-                   </c:forEach>
-               </tr:panelFormLayout>
 
-                      <tr:separator/>
+                           <tr:panelHorizontalLayout>
+                               <tr:commandButton action="#{clusteringBean.start}"
+                                                 rendered="#{searchBean.totalResults > 0}"
+                                                 disabled="#{searchBean.totalResults > config.clusteringSizeLimit}"
+                                                 text="Cluster this query"/>
 
-                  </tr:panelGroupLayout>
+                               <tr:commandLink action="dialog:help.clustering" partialSubmit="true"
+                                               windowWidth="600" windowHeight="600" immediate="true"
+                                               useWindow="true">
+                                   <tr:image source="/images/question.jpeg"
+                                             shortDesc="#{ clusteringBean.clusterButtonHelpMessage}" />
+                               </tr:commandLink>
+                           </tr:panelHorizontalLayout>
 
-                  <tr:panelGroupLayout rendered="#{searchBean.selectedServiceName != null}" >
-                  <strong>#{searchBean.selectedServiceName}</strong>
-                  <ui:include src="/pages/interactions/interactions_tab.xhtml">
+                       </tr:panelFormLayout>
+
+                   </div>
+
+               </tr:panelHorizontalLayout>
+
+               <tr:separator/>
+
+            </tr:panelGroupLayout>
+
+            <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0 and searchBean.clusterSelected}">
+                <table>
+                    <tr>
+                        <td align="middle"><tr:image source="/images/back_arrow.gif" /></td>
+                        <td align="middle"><tr:commandLink action="#{searchBean.unselectClusterJob}" text="Back to all services"/></td>
+                    </tr>
+                </table>
+            </tr:panelGroupLayout>
+
+
+            <tr:panelGroupLayout rendered="#{searchBean.selectedServiceName != null}">
+              <strong>#{searchBean.selectedServiceName}</strong>
+              <ui:include src="/pages/interactions/interactions_tab.xhtml">
                   <ui:param name="service" value="#{searchBean.servicesMap[searchBean.selectedServiceName]}"/>
                   <ui:param name="results" value="#{searchBean.resultDataModelMap[searchBean.selectedServiceName]}"/>
               </ui:include>
-              </tr:panelGroupLayout>
-
+            </tr:panelGroupLayout>
 
             <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
                 <tr:separator/>
 
                    <div style="padding-left:10px">
-                   It searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
-
-                   There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
-                   <tr:goLink text="check status" destination="http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS"
-                           targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
-
+                       It searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
+                       There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
+                       <tr:goLink text="check status" destination="http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS"
+                               targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
                    </div>
 
                 <tr:separator/>

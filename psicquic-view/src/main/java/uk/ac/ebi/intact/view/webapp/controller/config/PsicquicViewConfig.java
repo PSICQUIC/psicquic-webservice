@@ -18,7 +18,6 @@ package uk.ac.ebi.intact.view.webapp.controller.config;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 
 import javax.faces.event.ActionEvent;
@@ -27,13 +26,18 @@ import java.util.Date;
 import java.util.Properties;
 
 /**
+ * Application configuration.
+ *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-@Controller("config")
+//@Controller("config")
 public class PsicquicViewConfig extends BaseController implements InitializingBean {
 
     private static final Log log = LogFactory.getLog( PsicquicViewConfig.class );
+
+    private static final String DEFAULT_CLUSTERING_STORAGE = System.getProperty( "java.io.tmp" );
+    public static final int DEFAULT_CLUSTERING_SIZE_LIMIT = 2000;
 
     private String configFile;
     private String title;
@@ -44,6 +48,8 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
     private String includedServices;
     private String excludedServices;
     private int serviceRows;
+    private String clusteringDataStorageDirectory;
+    private int clusteringSizeLimit;
 
     public PsicquicViewConfig() {
     }
@@ -78,8 +84,41 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
         includedServices = properties.getProperty("services.included");
         excludedServices = properties.getProperty("services.excluded");
 
+        clusteringDataStorageDirectory = loadProperty( properties, "clustering.storage.directory", DEFAULT_CLUSTERING_STORAGE );
+        clusteringSizeLimit = loadIntProperty( properties, "clustering.limit.count", DEFAULT_CLUSTERING_SIZE_LIMIT );
+
         final String strRows = properties.getProperty("services.rows");
         if (strRows != null) serviceRows = Integer.parseInt(strRows);
+    }
+
+    private int loadIntProperty( Properties properties, String name, int defaultValue ) {
+        final String strValue = properties.getProperty( name );
+        if (strValue != null) {
+            return Integer.parseInt( strValue );
+        } else {
+            final String sysStrValue = System.getProperty( name );
+            if( sysStrValue != null ) {
+                return Integer.parseInt( sysStrValue );
+            } else {
+                log.warn( "Setting '"+ name +"' to default value: " + defaultValue );
+                return defaultValue;
+            }
+        }
+    }
+
+    private String loadProperty( Properties properties, String name, String defaultValue ) {
+        final String strValue = properties.getProperty( name );
+        if (strValue != null) {
+            return strValue;
+        } else {
+            final String sysStrValue = System.getProperty( name );
+            if( sysStrValue != null ) {
+                return sysStrValue;
+            } else {
+                log.warn( "Setting '"+ name +"' to default value: " + defaultValue );
+                return defaultValue;
+            }
+        }
     }
 
     public void saveConfigToFile() throws IOException {
@@ -96,6 +135,8 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
         setProperty(properties, "query.filter", miqlFilterQuery);
         setProperty(properties, "services.included", includedServices);
         setProperty(properties, "services.excluded", excludedServices);
+        setProperty(properties, "clustering.storage.directory", String.valueOf(clusteringDataStorageDirectory));
+        setProperty(properties, "clustering.maximum.count", String.valueOf( clusteringSizeLimit ));
         setProperty(properties, "services.rows", String.valueOf(serviceRows));
 
         OutputStream outputStream = new FileOutputStream(configFile);
@@ -189,5 +230,21 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
     public void setServiceRows(int serviceRows) {
         this.serviceRows = serviceRows;
+    }
+
+    public String getClusteringDataStorageDirectory() {
+        return clusteringDataStorageDirectory;
+    }
+
+    public void setClusteringDataStorageDirectory( String clusteringDataStorageDirectory ) {
+        this.clusteringDataStorageDirectory = clusteringDataStorageDirectory;
+    }
+
+    public int getClusteringSizeLimit() {
+        return clusteringSizeLimit;
+    }
+
+    public void setClusteringSizeLimit( int clusteringSizeLimit ) {
+        this.clusteringSizeLimit = clusteringSizeLimit;
     }
 }

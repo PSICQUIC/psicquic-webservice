@@ -7,6 +7,7 @@ package uk.ac.ebi.intact.view.webapp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -30,6 +31,9 @@ public class StartupListener implements ServletContextListener {
      */
     public void contextInitialized(ServletContextEvent sce) {
 
+        if( ClusteringContext.getInstance().getSpringContext() == null ) {
+            throw new RuntimeException( "Failed to initialize clustering context" );
+        }
     }
 
     /**

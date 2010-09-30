@@ -19,32 +19,42 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.trinidad.model.SortCriterion;
 import org.apache.myfaces.trinidad.model.SortableModel;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
-import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
+import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
+import org.hupo.psi.mi.psicquic.PsicquicServiceException;
+import org.hupo.psi.mi.psicquic.QueryResponse;
+import org.hupo.psi.mi.psicquic.clustering.DefaultInteractionClusteringService;
+import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
+import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
+import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
 import psidev.psi.mi.search.SearchResult;
+import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.model.BinaryInteraction;
+import psidev.psi.mi.xml.converter.ConverterException;
 
 import javax.faces.model.DataModelEvent;
 import javax.faces.model.DataModelListener;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * DataModel for dar retreived from PSICQUIC services.
+ * DataModel for the clustered data.
  *
- * @author Bruno Aranda (baranda@ebi.ac.uk)
+ * @author Samuel Kerrien (skerrien@ebi.ac.uk)
  * @version $Id$
  */
-public class PsicquicResultDataModel extends SortableModel implements Serializable {
+public class ClusteringResultDataModel extends SortableModel implements Serializable {
 
-    private static final Log log = LogFactory.getLog(PsicquicResultDataModel.class);
+    private static final Log log = LogFactory.getLog( ClusteringResultDataModel.class);
 
     private static String DEFAULT_SORT_COLUMN = "rigid";
 
+    private ClusteringJob job;
+
+    /**
+     * User query on the clustered data.
+     */
     private String query;
-    private UniversalPsicquicClient psicquicClient;
 
     private SearchResult<BinaryInteraction> result;
     private int rowIndex = -1;
@@ -56,17 +66,15 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
 
     private Map<String,Boolean> columnSorts;
 
-    // TODO get the services
-
-    public PsicquicResultDataModel(UniversalPsicquicClient psicquicClient, String query) throws PsicquicClientException {
-        if (psicquicClient == null) {
-            throw new IllegalArgumentException("Trying to create data model with a null Psicquic client");
+    public ClusteringResultDataModel(ClusteringJob job, String query) {
+        if (job == null) {
+            throw new IllegalArgumentException("Trying to create data model with a null job");
         }
         if (query == null) {
             throw new IllegalArgumentException("Trying to create data model with a null query");
         }
 
-        this.psicquicClient = psicquicClient;
+        this.job = job;
         this.query = query;
 
         columnSorts = new HashMap<String, Boolean>(16);
@@ -77,14 +85,53 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
         setWrappedData(result);
     }
 
-    protected void fetchResults() throws PsicquicClientException {
+    protected void fetchResults() {
         if (query == null) {
             throw new IllegalStateException("Trying to fetch results for a null query");
         }
 
         if (log.isDebugEnabled()) log.debug("Fetching results: "+ query);
 
-        result = psicquicClient.getByQuery(query, firstResult, maxResults);
+        // search Lucene index and wrap the data
+        final InteractionClusteringService ics = new DefaultInteractionClusteringService();
+        try {
+
+            // TODO more straight forward to query the Lucene index directly here
+
+            final QueryResponse response = ics.query( job.getJobId(),
+                                                      query,
+                                                      firstResult,
+                                                      maxResults,
+                                                      InteractionClusteringService.RETURN_TYPE_MITAB25 );
+
+            // convert to a list of BinaryInteraction
+            String mitab = response.getResultSet().getMitab();
+
+            String[] lines = mitab.split( "\n" );
+            System.out.println( " **************** MITAB ("+ lines.length +") ************** " );
+            System.out.println( lines );
+
+            PsimiTabReader reader = new PsimiTabReader( false );
+            final List<BinaryInteraction> interactions;
+            interactions = new ArrayList<BinaryInteraction>( reader.read( mitab ) );
+
+
+            result = new SearchResult<BinaryInteraction>( interactions,
+                                                          response.getResultInfo().getTotalResults(),
+                                                          firstResult,
+                                                          maxResults,
+                                                          null );
+        } catch ( JobNotCompletedException e ) {
+            throw new IllegalStateException("Problem querying localy indexed data", e);
+        } catch ( NotSupportedTypeException e ) {
+            throw new IllegalStateException("Problem querying localy indexed data", e);
+        } catch ( PsicquicServiceException e ) {
+            throw new IllegalStateException("Problem querying localy indexed data", e);
+        } catch ( IOException e ) {
+            throw new IllegalStateException( "Could not parse clustered MITAB data", e );
+        } catch ( ConverterException e ) {
+            throw new IllegalStateException( "Could not parse clustered MITAB data", e );
+        }
     }
 
     public int getRowCount() {
@@ -98,11 +145,7 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
 
         if (!isRowWithinResultRange()) {
             firstResult = getRowIndex();
-            try {
-                fetchResults();
-            } catch (PsicquicClientException e) {
-                throw new IllegalStateException("Problem running psicquic", e);
-            }
+            fetchResults();
         }
 
         if (!isRowAvailable()) {
@@ -150,12 +193,12 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
     }
 
     @Override
-       public void setSortCriteria(List<SortCriterion> criteria) {
+    public void setSortCriteria(List<SortCriterion> criteria) {
            if ((criteria == null) || (criteria.isEmpty())) {
                this.sortColumn = DEFAULT_SORT_COLUMN;
                columnSorts.clear();
-           }
-           else {
+
+           } else {
                // only use the first criterion
                SortCriterion criterion = criteria.get(0);
 
@@ -172,13 +215,8 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
                    log.debug("\tSorting by '" + criterion.getProperty() + "' " + (criterion.isAscending() ? "ASC" : "DESC"));
            }
 
-        try {
-            fetchResults();
-        } catch (PsicquicClientException e) {
-            throw new RuntimeException("Problem fetching results using psicquic", e);
-        }
+        fetchResults();
     }
-
 
     /**
      * Checks to see if the underlying collection is sortable by the given property.
@@ -206,7 +244,6 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
             setRowIndex((Integer) key);
         }
     }
-
 
     public SearchResult<BinaryInteraction> getResult() {
         return result;
