@@ -15,21 +15,22 @@
 
     This application allows you to query PSICQUIC services and browse their respective interactions. However these
     dataset can feature multiple evidence of two molecule interacting together, not only within one service but also
-    across several. The clustering feature will allow you to bring under a single binary interaction all evidences
-    for that given pair of molecules. All details such as experimental methods, publications, source database, scoring
-    will be aggregated in the resulting interaction.
+    across several. The same, redundant information may have been separately curated by multiple resources.
+    The clustering feature will allow you to bring under a single binary interaction all evidences for that given pair
+    of molecules. All details such as experimental methods, publications, source database, scoring will be aggregated
+    in the resulting interaction.
 
     <tr:panelHeader text="How to build a clustered query">
 
         First of all you need to build your query via the usual means, that is, typing a MIQL query in the search box
         and press the search button). On the right hand side of the services list should appear a button labelled
         'Cluster this query'. So far the button will only be available if the sum of all interactions available for
-        your query is no higher than 5000 interactions (we are working on relaxing these contrainsts in the future).
-        Once you have pressed the button, a job will be created to process your request. The list of your job should
-        appear above the button. The displayed status of your job can be as follow:
+        your query is no higher than 5000 interactions (we are working on relaxing these constraints in the future).
+        Once you have pressed the button, a job will be created to process your request. The list of your jobs should
+        appear above the button. The displayed status of each job can be as follows:
         <ul>
-            <li><b>QUEUED</b>: your job has been submited but no work has yet been carried out,</li>
-            <li><b>RUNNING</b>: your clustered query is being build,</li>
+            <li><b>QUEUED</b>: your job has been submitted but no work has yet been carried out,</li>
+            <li><b>RUNNING</b>: your clustered query is being built,</li>
             <li><b>COMPLETED</b>: your clustered query is now ready to be used,</li>
             <li><b>FAILED</b>: the processing of you request has failed.</li>
         </ul>
@@ -39,11 +40,11 @@
 
     <tr:panelHeader text="How to broswe your clustered query">
 
-        Once your job's status is set to COMPLETED, you can click on the 'view' link to open the set of interaction.
-        The display is similar to the one you use to view the data of a given PSICQUIC service.
-        Please not that the search functionality are disabled while browsing a clustered dataset. Should you want to
-        return to the complete list of PSICQUIC services, you only need to press the link 'back to all services'
-        positioned at the top left of the interaction table.
+        Once your job's status is set to COMPLETED, you can click on the 'view' link to open the set of interactions.
+        The display is similar to the one you use to view the data of a given PSICQUIC service. Please note that the
+        search functionality is disabled while browsing a clustered dataset. Should you want to return to the complete
+        list of PSICQUIC services, you only need press the link 'back to all services' positioned at the top left of
+        the interaction table.
 
     </tr:panelHeader>
 
