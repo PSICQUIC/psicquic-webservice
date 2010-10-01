@@ -183,6 +183,32 @@ public class SearchController extends BaseController {
         doBinarySearch(evt);
     }
 
+    public String getActiveServicesName() {
+        StringBuilder sb = new StringBuilder( 256 );
+        final Iterator<String> it = activeServices.keySet().iterator();
+        while ( it.hasNext() ) {
+            String serviceName = it.next();
+            sb.append( serviceName );
+            if( it.hasNext() ) {
+                sb.append( ", " );
+            }
+        }
+        return sb.toString();
+    }
+
+    public String getInactiveServicesName() {
+        StringBuilder sb = new StringBuilder( 256 );
+        final Iterator<String> it = inactiveServices.keySet().iterator();
+        while ( it.hasNext() ) {
+            String serviceName = it.next();
+            sb.append( serviceName );
+            if( it.hasNext() ) {
+                sb.append( ", " );
+            }
+        }
+        return sb.toString();
+    }
+
     private void doClusteredJobBinarySearch( String searchQuery ) {
         if ( log.isDebugEnabled() ) {log.debug( "\tcluster query:  "+ searchQuery );}
 
@@ -234,7 +260,7 @@ public class SearchController extends BaseController {
                 addErrorMessage( "Your query didn't return any results", "Use a different query" );
             }
 
-        } catch ( Throwable throwable ) {
+        } catch ( Throwable t ) {
 
             if ( searchQuery != null && ( searchQuery.startsWith( "*" ) || searchQuery.startsWith( "?" ) ) ) {
                 userQuery.setSearchQuery( "*:*" );
@@ -243,7 +269,8 @@ public class SearchController extends BaseController {
                                  "However, wildcard characters can be used anywhere else in a query (eg. g?vin or gav* for gavin). " +
                                  "Please do reformat your query." );
             } else {
-                addErrorMessage("Psicquic problem", throwable.getMessage());
+                addErrorMessage("Psicquic problem", t.getMessage());
+                log.error( "Error while building results based on your query: '" + searchQuery + "'", t );
             }
         }
 

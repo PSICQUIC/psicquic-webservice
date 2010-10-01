@@ -227,8 +227,9 @@
                 <tr:separator/>
 
                    <div style="padding-left:10px">
-                       It searches these databases: <b>#{fn:join(searchBean.activeServiceNames, ', ')}</b>
-                       There are some inactive services at the moment: <b>#{fn:join(searchBean.inactiveServiceNames, ', ')}</b>. (
+                       It searches these databases: <b>#{searchBean.activeServicesName}</b>
+                       <br/>
+                       There are some inactive services at the moment: <b>#{searchBean.inactiveServicesName}</b>. (
                        <tr:goLink text="check status" destination="http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS"
                                targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
                    </div>
