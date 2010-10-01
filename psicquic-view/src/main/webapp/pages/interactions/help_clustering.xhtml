@@ -20,6 +20,25 @@
     of molecules. All details such as experimental methods, publications, source database, scoring will be aggregated
     in the resulting interaction.
 
+    <tr:panelHeader text="How do we cluster your query">
+
+        The method we are using is clustering together molecular interactions that are found to be between the
+        same pair of molecules. That is, whenever the molecules are described using the same identifier from the
+        following ordered list of public databases:
+        <ul>
+            <li><a href="http://www.uniprot.org" target="_blank">UniProtKB</a></li>
+            <li><a href="http://irefindex.uio.no/wiki/iRefIndex" target="_blank">IRefIndex</a></li>
+            <li><a href="http://www.ddbj.nig.ac.jp" target="_blank">DDBJ</a>/
+                <a href="http://www.ebi.ac.uk/embl" target="_blank">EMBL</a>/
+                <a href="http://www.ncbi.nlm.nih.gov/genbank" target="_blank">GenBank</a>
+            </li>
+            <li><a href="http://www.ncbi.nlm.nih.gov/refseq" target="_blank">RefSeq</a></li>
+            <li><a href="http://www.ebi.ac.uk/chebi" target="_blank">ChEBI</a></li>
+        </ul>
+        The order of the molecules, whether A-B or B-A does not matter and results in the same final data.
+
+    </tr:panelHeader>
+
     <tr:panelHeader text="How to build a clustered query">
 
         First of all you need to build your query via the usual means, that is, typing a MIQL query in the search box
