@@ -37,7 +37,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
     private static final Log log = LogFactory.getLog( PsicquicViewConfig.class );
 
     private static final String DEFAULT_CLUSTERING_STORAGE = System.getProperty( "java.io.tmp" );
-    public static final int DEFAULT_CLUSTERING_SIZE_LIMIT = 2000;
+    public static final int DEFAULT_CLUSTERING_SIZE_LIMIT = 5000;
 
     private String configFile;
     private String title;
