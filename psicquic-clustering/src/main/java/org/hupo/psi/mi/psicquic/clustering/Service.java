@@ -38,4 +38,14 @@ public class Service implements Comparable<Service> {
     public int compareTo( Service s ) {
         return this.getName().compareTo( s.getName() );
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "Service" );
+        sb.append( "{name='" ).append( name ).append( '\'' );
+        sb.append( ", restUrl='" ).append( restUrl ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

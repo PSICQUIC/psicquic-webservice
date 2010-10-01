@@ -20,4 +20,12 @@ public interface JobDao extends BaseDao<ClusteringJob> {
     ClusteringJob getLastRanJob();
 
     ClusteringJob getNextJobToRun();
+
+    int getCompletedJobCount();
+
+    int getQueuedJobCount();
+
+    int getRunningJobCount();
+
+    int getFailedJobCount();
 }

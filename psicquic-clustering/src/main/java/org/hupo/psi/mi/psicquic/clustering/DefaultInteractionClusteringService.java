@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
-import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
 import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
 import org.hupo.psi.mi.psicquic.clustering.job.PollResult;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
@@ -23,7 +22,6 @@ import psidev.psi.mi.xml254.jaxb.Entry;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,14 +46,15 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
         final ClusteringJob job = new ClusteringJob( miql, services );
 
         // Generate an id based on the definition of the job
-        final String jobId = new JobIdGenerator().generateJobId( job );
+        final String jobId = job.getJobId();
 
         // detect if this job is already running
         ClusteringServiceDaoFactory csd = ClusteringContext.getInstance().getDaoFactory();
         final JobDao jobDao = csd.getJobDao();
-        if ( jobDao.getJob( miql ) != null ) {
+        ClusteringJob existingJob;
+        if ( ( existingJob = jobDao.getJob( jobId ) ) != null ) {
             // job was already submitted
-            log.info( "This job was already submitted: " + job.toString() );
+            log.info( "This job was already submitted: " + existingJob.toString() );
         } else {
             // new job
             jobDao.addJob( jobId, job );
@@ -104,7 +103,7 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
 
         final int blockSize = Math.min( maxResult, 200 );
 
-        log.info( "Lucene search: [query='"+query+"'; from='"+from+"'; blockSize='"+blockSize+"']" );
+        log.info( "Lucene search: [query='" + query + "'; from='" + from + "'; blockSize='" + blockSize + "']" );
         SearchResult searchResult = searchEngine.search( query, from, blockSize );
 
         // preparing the response (PSICQUIC style response)
@@ -132,7 +131,7 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
     ///////////////////////////////
     // PSICQUIC WS
 
-    public List<String> getSupportedReturnTypes()  {
+    public List<String> getSupportedReturnTypes() {
         return SUPPORTED_RETURN_TYPES;
     }
 
@@ -188,37 +187,37 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
         return resultSet;
     }
 
-    protected String createMitabResults(SearchResult searchResult) {
+    protected String createMitabResults( SearchResult searchResult ) {
         MitabDocumentDefinition docDef = new MitabDocumentDefinition();
 
         List<BinaryInteraction> binaryInteractions = searchResult.getData();
 
-        StringBuilder sb = new StringBuilder(binaryInteractions.size() * 512);
+        StringBuilder sb = new StringBuilder( binaryInteractions.size() * 512 );
 
-        for (BinaryInteraction binaryInteraction : binaryInteractions) {
-            String binaryInteractionString = docDef.interactionToString(binaryInteraction);
-            sb.append(binaryInteractionString);
-            sb.append(NEW_LINE);
+        for ( BinaryInteraction binaryInteraction : binaryInteractions ) {
+            String binaryInteractionString = docDef.interactionToString( binaryInteraction );
+            sb.append( binaryInteractionString );
+            sb.append( NEW_LINE );
         }
         return sb.toString();
     }
 
-    private EntrySet createEntrySet(SearchResult searchResult) throws PsicquicServiceException {
-        if (searchResult.getData().isEmpty()) {
+    private EntrySet createEntrySet( SearchResult searchResult ) throws PsicquicServiceException {
+        if ( searchResult.getData().isEmpty() ) {
             return new EntrySet();
         }
 
         Tab2Xml tab2Xml = new Tab2Xml();
         try {
-            psidev.psi.mi.xml.model.EntrySet mEntrySet = tab2Xml.convert(searchResult.getData());
+            psidev.psi.mi.xml.model.EntrySet mEntrySet = tab2Xml.convert( searchResult.getData() );
 
             EntrySetConverter converter = new EntrySetConverter();
-            converter.setDAOFactory(new InMemoryDAOFactory());
+            converter.setDAOFactory( new InMemoryDAOFactory() );
 
-            return converter.toJaxb(mEntrySet);
+            return converter.toJaxb( mEntrySet );
 
-        } catch (Exception e) {
-            throw new PsicquicServiceException("Problem converting results to PSI-MI XML", e);
+        } catch ( Exception e ) {
+            throw new PsicquicServiceException( "Problem converting results to PSI-MI XML", e );
         }
     }
 }

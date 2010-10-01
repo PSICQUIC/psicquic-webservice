@@ -4,3 +4,7 @@
 
 - Can only keep the query cached while all services selected display the same BI count for the same query.
   If at least one differs, recompute the clustering (ask the user).
+
+- Add a quartz job that cleans up completed jobs if the underlying data is not present anymore.
+
+- Add a quartz job that cleans up data older than a configured TTL.   

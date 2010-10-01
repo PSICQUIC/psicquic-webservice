@@ -17,6 +17,8 @@ import java.util.List;
  */
 public class ClusteringJob implements Serializable {
 
+    private String jobId;
+
     /**
      * The miql query we will use to extract data from the PSICQUIC services.
      */
@@ -41,6 +43,8 @@ public class ClusteringJob implements Serializable {
 
     private Throwable statusException;
 
+    private int clusteredInteractionCount;
+
     //////////////////
     // Constructors
 
@@ -53,17 +57,27 @@ public class ClusteringJob implements Serializable {
         if ( services == null ) {
             throw new IllegalArgumentException( "You must give a non null services" );
         }
-        if( services.isEmpty() ) {
+        if ( services.isEmpty() ) {
             throw new IllegalArgumentException( "You must give at least one PSICQUIC service" );
         }
         this.services = new ArrayList<Service>( services );
         Collections.sort( this.services );
 
         this.created = new Date();
+
+        this.jobId = new JobIdGenerator().generateJobId( this );
     }
 
     ///////////////////////////
     // Getters and Setters
+
+    public String getJobId() {
+        return jobId;
+    }
+
+    private void setJobId( String jobId ) {
+        this.jobId = jobId;
+    }
 
     public String getMiql() {
         return miql;
@@ -130,6 +144,14 @@ public class ClusteringJob implements Serializable {
 
     public void setLuceneIndexLocation( String luceneIndexLocation ) {
         this.luceneIndexLocation = luceneIndexLocation;
+    }
+
+    public int getClusteredInteractionCount() {
+        return clusteredInteractionCount;
+    }
+
+    public void setClusteredInteractionCount( int clusteredInteractionCount ) {
+        this.clusteredInteractionCount = clusteredInteractionCount;
     }
 
     ///////////////

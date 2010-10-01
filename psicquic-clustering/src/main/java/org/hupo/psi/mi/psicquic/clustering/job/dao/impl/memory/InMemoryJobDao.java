@@ -48,6 +48,7 @@ public class InMemoryJobDao implements JobDao {
 
     /**
      * Fetches the job with the most recent completion data being in state FAILED or COMPLETED.
+     *
      * @return
      */
     public ClusteringJob getLastRanJob() {
@@ -59,7 +60,7 @@ public class InMemoryJobDao implements JobDao {
             if ( jobStatus != null && ( jobStatus.equals( JobStatus.FAILED )
                                         || jobStatus.equals( JobStatus.COMPLETED ) ) ) {
 
-                if ( lastRanJob == null ) {     
+                if ( lastRanJob == null ) {
                     lastRanJob = job;
                 } else {
                     // take the one with the most recent completion date.
@@ -75,6 +76,7 @@ public class InMemoryJobDao implements JobDao {
 
     /**
      * Fetches the next job with status QUEUED and the oldest creation date.
+     *
      * @return
      */
     public ClusteringJob getNextJobToRun() {
@@ -95,6 +97,32 @@ public class InMemoryJobDao implements JobDao {
         }
 
         return nextJob;
+    }
+
+    public int getCompletedJobCount() {
+        return countJobsByStatus( JobStatus.COMPLETED );
+    }
+
+    public int getQueuedJobCount() {
+        return countJobsByStatus( JobStatus.QUEUED );
+    }
+
+    public int getRunningJobCount() {
+        return countJobsByStatus( JobStatus.RUNNING );
+    }
+
+    public int getFailedJobCount() {
+        return countJobsByStatus( JobStatus.FAILED );
+    }
+
+    private int countJobsByStatus( JobStatus status ) {
+        int count = 0;
+        for ( ClusteringJob job : getAll() ) {
+            if ( job.getStatus().equals( status ) ) {
+                count++;
+            }
+        }
+        return count;
     }
 
     //////////////////
@@ -118,7 +146,7 @@ public class InMemoryJobDao implements JobDao {
 
     public void delete( ClusteringJob job ) {
         for ( Map.Entry<String, ClusteringJob> entry : jobid2job.entrySet() ) {
-            if( entry.getValue() == job ) {
+            if ( entry.getValue() == job ) {
                 jobid2job.remove( entry.getKey() );
                 return;
             }
