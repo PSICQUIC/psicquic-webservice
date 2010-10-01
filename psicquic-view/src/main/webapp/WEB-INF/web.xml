@@ -360,7 +360,7 @@
     </welcome-file-list>
 
     <session-config>
-        <session-timeout>20</session-timeout>
+        <session-timeout>60</session-timeout>
     </session-config>
 
     <!-- Handling of the HTTP error 404(Not found) and 500(internal server error)-->
