@@ -490,7 +490,9 @@ public class SearchController extends BaseController {
     public String unselectClusterJob() {
         clusterSelected = false;
         job = null;
+
         refresh(); // clean up the list of services
+        doBinarySearchAction();
 
         return "interactions";
     }
