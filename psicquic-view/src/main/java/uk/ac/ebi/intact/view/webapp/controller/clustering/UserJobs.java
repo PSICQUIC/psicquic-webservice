@@ -8,6 +8,7 @@ import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @Controller
 @Scope( "session" )
-public class UserJobs {
+public class UserJobs implements Serializable {
 
     private List<ClusteringJob> currentJobs;
 

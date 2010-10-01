@@ -514,6 +514,14 @@ public class SearchController extends BaseController {
         this.job = job;
     }
 
+    public UserJobs getUserJobs() {
+        return userJobs;
+    }
+
+    public void setUserJobs( UserJobs userJobs ) {
+        this.userJobs = userJobs;
+    }
+
     public String unselectClusterJob() {
         clusterSelected = false;
         job = null;
