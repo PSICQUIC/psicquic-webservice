@@ -14,7 +14,7 @@
 
     <properties>
         <batch.jdbc.driver>org.h2.Driver</batch.jdbc.driver>
-        <batch.jdbc.url>jdbc:h2:file:${java.io.tmp}/psicquic-clustering/psicquic-batch</batch.jdbc.url>
+        <batch.jdbc.url>jdbc:h2:file:${java.io.tmpdir}/psicquic-clustering/psicquic-batch</batch.jdbc.url>
         <batch.jdbc.user>psicquic-batch</batch.jdbc.user>
         <batch.jdbc.password>batch</batch.jdbc.password>
 
