@@ -25,7 +25,7 @@ public class UserJobs implements Serializable {
 
     private List<ClusteringJob> currentJobs;
 
-    private JobDao jobDao;
+    private transient JobDao jobDao;
 
     public UserJobs() {
         currentJobs = new ArrayList<ClusteringJob>( );
