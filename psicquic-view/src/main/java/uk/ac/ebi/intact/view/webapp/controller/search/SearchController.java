@@ -82,7 +82,6 @@ public class SearchController extends BaseController {
 
     @PostConstruct
     public void refresh() {
-        System.out.println( "SearchController.refresh" );
         refresh(null);
     }
 
@@ -138,8 +137,6 @@ public class SearchController extends BaseController {
     }
 
     public void refresh(ActionEvent evt) {
-        System.out.println( "SearchController.refresh" );
-
         this.resultDataModelMap = Collections.synchronizedMap(new HashMap<String,SortableModel>());
         this.resultCountMap = Collections.synchronizedMap(new HashMap<String,Integer>());
         this.activeServices = Collections.synchronizedMap(new HashMap<String,String>());
@@ -153,7 +150,6 @@ public class SearchController extends BaseController {
     }
 
     public String doBinarySearchAction() {
-        System.out.println( "SearchController.doBinarySearchAction" );
         String searchQuery = userQuery.getSearchQuery();
 
         if( ! clusterSelected ) {
@@ -166,7 +162,6 @@ public class SearchController extends BaseController {
     }
 
     public String doNewBinarySearch() {
-        System.out.println( "SearchController.doNewBinarySearch" );
         try {
             // TODO don't need that when querying the clustered job
             // TODO this method is calling doBinarySearchAction ... when it's going to be called here too ?!!!
@@ -179,19 +174,16 @@ public class SearchController extends BaseController {
     }
 
     public void doBinarySearch(ActionEvent evt) {
-        System.out.println( "SearchController.doBinarySearch" );
         refreshComponent("mainPanels");
         doBinarySearchAction();
     }
 
     public void doClearFilterAndSearch(ActionEvent evt) {
-        System.out.println( "SearchController.doClearFilterAndSearch" );
         userQuery.clearFilters();
         doBinarySearch(evt);
     }
 
     private void doClusteredJobBinarySearch( String searchQuery ) {
-        System.out.println( "SearchController.doClusteredJobBinarySearch" );
         if ( log.isDebugEnabled() ) {log.debug( "\tcluster query:  "+ searchQuery );}
 
         final String jobId = job.getJobId();
@@ -226,7 +218,6 @@ public class SearchController extends BaseController {
     }
 
     public void doPsicquicBinarySearch(String searchQuery) {
-        System.out.println( "SearchController.doPsicquicBinarySearch" );
 
         try {
             if ( log.isDebugEnabled() ) {log.debug( "\tquery:  "+ searchQuery );}
@@ -260,9 +251,7 @@ public class SearchController extends BaseController {
     }
 
     public void loadResults(ServiceType service) {
-        System.out.println( "SearchController.loadResults" );
         if (resultDataModelMap.containsKey(service.getName())) {
-            System.out.println( "skip loading ... data already present" );
             return;
         }
 
@@ -281,7 +270,6 @@ public class SearchController extends BaseController {
     }
 
     private void refreshServices() throws PsicquicRegistryClientException {
-        System.out.println( "SearchController.refreshServices" );
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
 
         if (allServices == null) {
@@ -316,7 +304,6 @@ public class SearchController extends BaseController {
     }
 
     private void searchAndCreateResultModels() {
-        System.out.println( "SearchController.searchAndCreateResultModels" );
         resultCountMap.clear();
         resultDataModelMap.clear();
 
@@ -346,7 +333,6 @@ public class SearchController extends BaseController {
     }
 
     private int countInPsicquicService(ServiceType service, String query) {
-        System.out.println( "SearchController.countInPsicquicService( '"+ service.getName() +"', '"+query+"' )" );
         int psicquicCount = 0;
 
         try {
@@ -365,7 +351,6 @@ public class SearchController extends BaseController {
     }
 
     private void populateActiveServicesMap() {
-        System.out.println( "SearchController.populateActiveServicesMap" );
         activeServices.clear();
         for (ServiceType service : services) {
             if (service.isActive()) {
@@ -375,7 +360,6 @@ public class SearchController extends BaseController {
     }
 
     private void populateInactiveServicesMap() {
-        System.out.println( "SearchController.populateInactiveServicesMap" );
         inactiveServices.clear();
         for (ServiceType service : services) {
             if (!service.isActive()) {
@@ -385,7 +369,6 @@ public class SearchController extends BaseController {
     }
 
     private void processExcludedServices(String excludedServicesParam) {
-        System.out.println( "SearchController.processExcludedServices" );
         excludedServices = excludedServicesParam.split(",");
 
         List<ServiceType> includedServicesList = new ArrayList<ServiceType>(excludedServices.length);
@@ -406,7 +389,6 @@ public class SearchController extends BaseController {
     }
 
     private void processIncludedServices(String includedServicesParam) {
-        System.out.println( "SearchController.processIncludedServices" );
         includedServices = includedServicesParam.split(",");
 
         List<ServiceType> includedServicesList = new ArrayList<ServiceType>(includedServices.length);

@@ -27,7 +27,6 @@ public class UserJobs {
     private JobDao jobDao;
 
     public UserJobs() {
-        System.out.println( "UserJobs.UserJobs" );
         currentJobs = new ArrayList<ClusteringJob>( );
         jobDao = ClusteringContext.getInstance().getDaoFactory().getJobDao();
     }

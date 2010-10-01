@@ -107,14 +107,9 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
             // convert to a list of BinaryInteraction
             String mitab = response.getResultSet().getMitab();
 
-            String[] lines = mitab.split( "\n" );
-            System.out.println( " **************** MITAB ("+ lines.length +") ************** " );
-            System.out.println( lines );
-
             PsimiTabReader reader = new PsimiTabReader( false );
             final List<BinaryInteraction> interactions;
             interactions = new ArrayList<BinaryInteraction>( reader.read( mitab ) );
-
 
             result = new SearchResult<BinaryInteraction>( interactions,
                                                           response.getResultInfo().getTotalResults(),

@@ -57,8 +57,6 @@ public class ClusteringController extends BaseController {
     }
 
     public String start() {
-        System.out.println( "ClusteringController.startAction" );
-
         final int totalCount = searchController.getTotalResults();
         if ( totalCount > 0 ) {
 
@@ -140,9 +138,8 @@ public class ClusteringController extends BaseController {
     }
 
     public String viewJob() {
-        System.out.println( "ClusteringController.viewJob" );
         String jobId = getParameterValue("jobId");
-        log.info( "Selected viewJob: " + jobId );
+        log.debug( "Selected viewJob: " + jobId );
 
         final JobDao jobDao = ClusteringContext.getInstance().getDaoFactory().getJobDao();
         final ClusteringJob job = jobDao.getJob( jobId );
