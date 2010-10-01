@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO comment this!
+ * URL Factory.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$

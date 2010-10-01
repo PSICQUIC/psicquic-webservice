@@ -31,11 +31,10 @@ public class UserJobs {
         jobDao = ClusteringContext.getInstance().getDaoFactory().getJobDao();
     }
 
-    public String clearJobs() {
-        currentJobs.clear();
-        // TODO the user has abandoned them ... remove them from the storage (synch issue!!!)
-        return "interactions";
-    }
+//    public String clearJobs() {
+//        currentJobs.clear();
+//        return "interactions";
+//    }
 
     public List<ClusteringJob> getRefreshedJobs() {
         List<ClusteringJob> refreshedJobs = new ArrayList<ClusteringJob>( currentJobs.size() );
@@ -77,30 +76,11 @@ public class UserJobs {
 
     private int countJobsByStatus( JobStatus status ) {
         int count = 0;
-        // TODO might be worth reversing the logic and pulling out all currentJobs rather than all jobs
-        for ( ClusteringJob job : jobDao.getAll() ) {
-            if( currentJobs.contains( job ) ) {
-                if( job.getStatus().equals( status ) ) {
-                      count++;
-                }
+        for ( ClusteringJob job : getRefreshedJobs() ) {
+            if( job.getStatus().equals( status ) ) {
+                count++;
             }
         }
         return count;
-    }
-    public String getClusteringOverview() {
-        // build a message that reflects the current clustering jobs.
-        int queuedJobs = getQueuedJobCount();
-        int runningJobs = getRunningJobCount();
-        int completedJobs = getCompletedJobCount();
-        int failedJobs = getFailedJobCount();
-
-        StringBuilder sb = new StringBuilder(256);
-        
-        if(queuedJobs > 0) sb.append( "queued("+ queuedJobs +") " );
-        if(runningJobs > 0) sb.append( "running("+runningJobs+") " );
-        if(completedJobs > 0) sb.append( "completed("+ completedJobs +") " );
-        if(failedJobs > 0) sb.append( "failed("+failedJobs+") " );
-        
-        return sb.toString().trim() + ".";
     }
 }

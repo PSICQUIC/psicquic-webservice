@@ -61,7 +61,6 @@ public class ClusteringController extends BaseController {
         if ( totalCount > 0 ) {
 
             if ( totalCount < appConfig.getClusteringSizeLimit() ) {
-                // TODO check that we don't have a job with the same query
                 clusterQuery( userQuery.getSearchQuery() );
             } else {
                 log.info( "Too many interactions (" + totalCount +
@@ -84,44 +83,9 @@ public class ClusteringController extends BaseController {
 
         // keep a bookmark on that job
         if( ! userJobs.getCurrentJobs().contains( job ) ) {
+            // only add jobs that are not yet submitted.
             userJobs.getCurrentJobs().add( job );
         }
-
-
-
-
-//        // TODO do not wait until completion here but rather create a worker that is going to look after the job and update the job status
-//        PollResult pollResult = ics.poll( jobId );
-//
-//        try {
-//            while ( ! ( isCompleted( pollResult ) || isFailed( pollResult ) ) ) {
-//                Thread.sleep( 1000 );
-//                pollResult = ics.poll( jobId );
-//            }
-//
-//            if ( isCompleted( pollResult ) ) {
-//
-//                // TODO setup up environment to enable the user to query the clustered index
-//
-//                final String format = InteractionClusteringService.RETURN_TYPE_MITAB25;
-//                final QueryResponse response = ics.query( jobId, "*:*", 0, 0, format );
-//
-//                final int totalCount = response.getResultInfo().getTotalResults();
-//                log.info( "Clustered the dataset into " + totalCount + " binary interaction(s)" );
-//
-//            } else if( isFailed( pollResult ) ) {
-//
-//                // TODO report the error and give access to some explanations
-//            }
-//        } catch ( InterruptedException e ) {
-//            e.printStackTrace();
-//        } catch ( JobNotCompletedException e ) {
-//            e.printStackTrace();
-//        } catch ( NotSupportedTypeException e ) {
-//            e.printStackTrace();
-//        } catch ( PsicquicServiceException e ) {
-//            e.printStackTrace();
-//        }
     }
 
     private List<Service> collectServicesToBeClustered() {

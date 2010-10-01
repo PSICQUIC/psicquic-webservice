@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.view.webapp;
 
 /**
- * TODO comment this!
+ * Psicquic view exception.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$

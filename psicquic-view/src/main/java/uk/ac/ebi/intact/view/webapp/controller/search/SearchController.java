@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
+import uk.ac.ebi.intact.view.webapp.controller.clustering.UserJobs;
 import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
 import uk.ac.ebi.intact.view.webapp.model.ClusteringResultDataModel;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
@@ -57,6 +58,9 @@ public class SearchController extends BaseController {
     @Autowired
     private PsicquicViewConfig config;
 
+    @Autowired
+    private UserJobs userJobs;
+
     private List<ServiceType> services;
     private List<ServiceType> allServices;
     private Map<String,ServiceType> servicesMap;
@@ -87,22 +91,18 @@ public class SearchController extends BaseController {
 
     @PreRenderView
     public void preRender() {
-        System.out.println( "SearchController.preRender" );
         FacesContext context = FacesContext.getCurrentInstance();
 
         // TODO add new param 'clusterJobId' that can be combined with parameter 'query'
 
         String jobId = context.getExternalContext().getRequestParameterMap().get("clusterJobId");
-        if( jobId == null ) {
-//            this.job = null;
-//            this.clusterSelected = false;
-        } else {
+        if( jobId != null ) {
             final JobDao jobDao = ClusteringContext.getInstance().getDaoFactory().getJobDao();
             final ClusteringJob job = jobDao.getJob( jobId );
             if( job == null ) {
                 log.error( "Could not find job by id: " + jobId );
             } else {
-                // TODO add job to UserJobs.currentJobs
+                this.userJobs.getCurrentJobs().add( job );
                 this.job = job;
                 this.clusterSelected = true;
             }
@@ -260,7 +260,7 @@ public class SearchController extends BaseController {
             if( ! clusterSelected ) {
                 results = new PsicquicResultDataModel(new UniversalPsicquicClient(service.getSoapUrl()), userQuery.getFilteredSearchQuery());
             } else {
-                // TODO for the time being we load all data, later we could allow filtering
+                // TODO for the time being we load ALL clustered data, later we could allow further filtering
                 results = new ClusteringResultDataModel( job, "*" );
             }
             resultDataModelMap.put(service.getName(), results);

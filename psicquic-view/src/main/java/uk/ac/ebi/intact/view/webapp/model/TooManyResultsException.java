@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.view.webapp.model;
 
 /**
- * TODO comment that class header
+ * Too many results exception.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$

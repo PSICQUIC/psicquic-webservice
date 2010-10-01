@@ -16,7 +16,7 @@
 package uk.ac.ebi.intact.view.webapp.controller.search;
 
 /**
- * TODO comment that class header
+ * A query token.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$

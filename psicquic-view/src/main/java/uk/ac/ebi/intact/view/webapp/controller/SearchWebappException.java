@@ -1,7 +1,7 @@
 package uk.ac.ebi.intact.view.webapp.controller;
 
 /**
- * TODO comment this
+ * Search webapp exception.
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
