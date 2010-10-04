@@ -27,7 +27,7 @@ and instances get persisted into an RDBMS. Thereafter, we assume you are install
 To do so, you will have to add the following bean definition in the Spring configuration file of your own project:
 
     <!-- Batch storage -->
-    <bean id="springBatchDataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <bean id="clusteringDataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="${batch.jdbc.driver}"/>
         <property name="url" value="${batch.jdbc.url}"/>
         <property name="username" value="${batch.jdbc.user}"/>
@@ -61,6 +61,6 @@ definition:
 
     <!-- Auto initialization of the Spring Batch schema in H2 -->
     <!-- http://static.springsource.org/spring/docs/3.0.4.RELEASE/spring-framework-reference/htmlsingle/spring-framework-reference.html#d0e24245 -->
-    <jdbc:initialize-database data-source="springBatchDataSource" ignore-failures="ALL">
+    <jdbc:initialize-database data-source="clusteringDataSource" ignore-failures="ALL">
         <jdbc:script location="classpath*:/org/springframework/batch/core/schema-h2.sql"/>
     </jdbc:initialize-database>
