@@ -1,5 +1,7 @@
 package org.hupo.psi.mi.psicquic.clustering;
 
+import java.io.Serializable;
+
 /**
  * Basic description of a PSICQUIC service.
  *
@@ -7,7 +9,7 @@ package org.hupo.psi.mi.psicquic.clustering;
  * @version $Id$
  * @since 0.1
  */
-public class Service implements Comparable<Service> {
+public class Service implements Comparable<Service>, Serializable {
 
     String name;
     String restUrl;
