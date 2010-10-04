@@ -13,11 +13,6 @@
     <name>PSI :: PSICQUIC Clustering</name>
 
     <properties>
-        <batch.jdbc.driver>org.h2.Driver</batch.jdbc.driver>
-        <batch.jdbc.url>jdbc:h2:file:${java.io.tmpdir}/psicquic-clustering/psicquic-batch</batch.jdbc.url>
-        <batch.jdbc.user>psicquic-batch</batch.jdbc.user>
-        <batch.jdbc.password>batch</batch.jdbc.password>
-
         <spring.version>3.0.4.RELEASE</spring.version>
         <spring.batch.version>2.1.3.RELEASE</spring.batch.version>
     </properties>
@@ -139,9 +134,9 @@
         <!-- Quartz -->
 
         <dependency>
-            <groupId>quartz</groupId>
+            <groupId>opensymphony</groupId>
             <artifactId>quartz</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.3</version>
         </dependency>
 
         <!--Testing-->
@@ -159,6 +154,7 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.2.143</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -171,6 +167,7 @@
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <version>1.4</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -224,7 +221,7 @@
         </repository>
     </repositories>
 
-   <distributionManagement>
+    <distributionManagement>
         <repository>
             <id>ebi-repo</id>
             <name>EBI Repository</name>

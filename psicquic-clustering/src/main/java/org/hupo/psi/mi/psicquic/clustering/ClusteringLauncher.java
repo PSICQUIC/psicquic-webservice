@@ -11,6 +11,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
@@ -33,11 +34,27 @@ public class ClusteringLauncher extends QuartzJobBean {
 
     private org.springframework.batch.core.Job job;
 
+    private boolean initialized = false;
+
+    @Autowired
+    private ApplicationContext springContext;
+
     //////////////////
     // Constructors
 
     public ClusteringLauncher() {
-        final ApplicationContext springContext = ClusteringContext.getInstance().getSpringContext();
+    }
+
+    private void init() {
+        //        final ApplicationContext springContext = ClusteringContext.getInstance().getSpringContext();
+
+        if ( initialized ) return;
+
+        springContext = ClusteringContext.getInstance().getSpringContext();
+
+        if ( springContext == null ) {
+            throw new RuntimeException( "Spring application context wasn't injected, we cannot process any further." );
+        }
 
         if ( jobRepository == null ) {
             jobRepository = ( JobRepository ) springContext.getBean( "jobRepository" );
@@ -50,10 +67,15 @@ public class ClusteringLauncher extends QuartzJobBean {
         if ( job == null ) {
             job = ( org.springframework.batch.core.Job ) springContext.getBean( "clusteringJob" );
         }
+
+        initialized = true;
     }
 
     @Override
     protected void executeInternal( org.quartz.JobExecutionContext context ) {
+
+        init();
+
         log.debug( "---------------------- QUARTZ TRIGGER: ClusteringLauncher ----------------------------" );
 
         final ClusteringServiceDaoFactory daoFactory = ClusteringContext.getInstance().getDaoFactory();
@@ -108,5 +130,13 @@ public class ClusteringLauncher extends QuartzJobBean {
         } else {
             log.debug( "No job to be processed." );
         }
+    }
+
+    public ApplicationContext getSpringContext() {
+        return springContext;
+    }
+
+    public void setSpringContext( ApplicationContext springContext ) {
+        this.springContext = springContext;
     }
 }

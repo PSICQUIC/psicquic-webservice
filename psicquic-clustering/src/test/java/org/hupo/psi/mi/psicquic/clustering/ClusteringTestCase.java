@@ -19,8 +19,10 @@ import java.util.Collection;
  * @version $Id$
  * @since 0.1
  */
-@ContextConfiguration( locations = "classpath:job-clustering.xml" )
+
 @RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = {"classpath*:/META-INF/job-clustering.xml",
+                                    "classpath*:/META-INF/job-clustering-test.xml"} )
 public abstract class ClusteringTestCase {
 
     private ClusteringServiceDaoFactory daoFactory;
@@ -36,7 +38,7 @@ public abstract class ClusteringTestCase {
 
     @After
     public void afterEachTest() {
-       // delete all remaining jobs
+        // delete all remaining jobs
         final JobDao jobDao = daoFactory.getJobDao();
         final Collection<ClusteringJob> clusteringJobs = jobDao.getAll();
         for ( ClusteringJob job : clusteringJobs ) {

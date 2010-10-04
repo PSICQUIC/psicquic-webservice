@@ -2,6 +2,7 @@ package org.hupo.psi.mi.psicquic.clustering;
 
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory.InMemoryClusteringServiceDaoFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -19,9 +20,10 @@ public class ClusteringContext {
      */
     private static ClusteringContext ourInstance = new ClusteringContext();
 
-    private final ClusteringServiceDaoFactory daoFactory = new InMemoryClusteringServiceDaoFactory();
+    private final ClusteringServiceDaoFactory daoFactory;
 
-    private final ApplicationContext springContext;
+    @Autowired
+    private ApplicationContext springContext;
 
     private ClusteringConfig config;
 
@@ -32,6 +34,7 @@ public class ClusteringContext {
     private ClusteringContext() {
         springContext = new ClassPathXmlApplicationContext( "job-clustering.xml" );
         config = new ClusteringConfig();
+        daoFactory = new InMemoryClusteringServiceDaoFactory();
     }
 
     public ClusteringServiceDaoFactory getDaoFactory() {
