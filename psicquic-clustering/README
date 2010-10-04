@@ -12,8 +12,8 @@ by correctly configuring Spring. Now let's assume you have stored the following 
 
 Now you could initilize spring using the following method call:
 
-     ApplicationContext ac = new ClassPathXmlApplicationContext( "/META-INF/job-clustering.xml",
-                                                                 "/META-INF/myconfig-spring.xml" );
+     ApplicationContext ac = new ClassPathXmlApplicationContext( "/META-INF/psicquic-clustering.spring.xml",
+                                                                 "/META-INF/myconfig.spring.xml" );
 
 This will initialize spring with the base clustering config and your added one.
 

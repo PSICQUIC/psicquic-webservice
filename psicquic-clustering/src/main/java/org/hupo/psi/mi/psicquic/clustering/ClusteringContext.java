@@ -4,7 +4,6 @@ import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory.InMemoryClusteringServiceDaoFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Application context.
@@ -32,7 +31,6 @@ public class ClusteringContext {
     }
 
     private ClusteringContext() {
-        springContext = new ClassPathXmlApplicationContext( "job-clustering.xml" );
         config = new ClusteringConfig();
         daoFactory = new InMemoryClusteringServiceDaoFactory();
     }

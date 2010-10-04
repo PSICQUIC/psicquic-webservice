@@ -21,7 +21,7 @@ import java.util.Collection;
  */
 
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = {"classpath*:/META-INF/job-clustering.xml",
+@ContextConfiguration( locations = {"classpath*:/META-INF/psicquic-clustering.spring.xml",
                                     "classpath*:/META-INF/job-clustering-test.xml"} )
 public abstract class ClusteringTestCase {
 
