@@ -155,7 +155,8 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            classpath*:/META-INF/*.spring.xml
+            classpath*:/META-INF/*.spring.xml,
+            classpath*:/META-INF/psicquic-clustering.spring.xml
         </param-value>
     </context-param>
 
@@ -287,7 +288,7 @@
     <!-- Intact view listener -->
     <listener>
         <description>Listener to startup the application</description>
-        <listener-class>uk.ac.ebi.intact.view.webapp.StartupListener</listener-class>
+        <listener-class>uk.ac.ebi.intact.view.webapp.ApplicationInitializer</listener-class>
     </listener>
 
     <!-- Spring Framework 2.0 -->

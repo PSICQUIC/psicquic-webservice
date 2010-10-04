@@ -33,6 +33,14 @@
 
         <clustering.storage.directory>cluster-store</clustering.storage.directory>
         <clustering.limit.count>5000</clustering.limit.count>
+
+        <batch.db.port>25043</batch.db.port>
+        
+        <batch.jdbc.driver>org.h2.Driver</batch.jdbc.driver>
+        <batch.jdbc.url>jdbc:h2:tcp://localhost:${batch.db.port}/clusteringJobDB</batch.jdbc.url>
+        <batch.jdbc.user>sa</batch.jdbc.user>
+        <batch.jdbc.password></batch.jdbc.password>
+        <batch.schema.create>true</batch.schema.create>
     </properties>
 
     <build>
@@ -440,10 +448,21 @@
             </exclusions>
         </dependency>
 
+        <!-- PSICQUIC Clustering -->
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-clustering</artifactId>
             <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.2.143</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4</version>
         </dependency>
             
     </dependencies>
