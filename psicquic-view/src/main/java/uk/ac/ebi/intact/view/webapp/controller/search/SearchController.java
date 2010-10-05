@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
 import org.apache.myfaces.orchestra.viewController.annotations.PreRenderView;
 import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
+import org.apache.myfaces.trinidad.context.RequestContext;
 import org.apache.myfaces.trinidad.model.SortableModel;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.hupo.psi.mi.psicquic.clustering.Service;
@@ -91,7 +92,12 @@ public class SearchController extends BaseController {
 
     @PreRenderView
     public void preRender() {
+
+
         FacesContext context = FacesContext.getCurrentInstance();
+        if( RequestContext.getCurrentInstance().isPartialRequest( context )) {
+            return;
+        }
 
         // TODO add new param 'clusterJobId' that can be combined with parameter 'query'
 
@@ -106,9 +112,9 @@ public class SearchController extends BaseController {
                 this.job = job;
                 this.clusterSelected = true;
             }
-        }
+        } 
 
-        String queryParam = context.getExternalContext().getRequestParameterMap().get("query");
+        final String queryParam = context.getExternalContext().getRequestParameterMap().get("query");
 
         if (queryParam != null && queryParam.length()>0) {
             userQuery.reset();
@@ -118,13 +124,13 @@ public class SearchController extends BaseController {
         services = new ArrayList<ServiceType>(allServices);
 
         // included/excluded services
-        String includedServicesParam = context.getExternalContext().getRequestParameterMap().get("included");
+        final String includedServicesParam = context.getExternalContext().getRequestParameterMap().get("included");
 
         if (includedServicesParam != null && includedServicesParam.length()>0) {
             processIncludedServices(includedServicesParam);
         }
 
-        String excludedServicesParam = context.getExternalContext().getRequestParameterMap().get("excluded");
+        final String excludedServicesParam = context.getExternalContext().getRequestParameterMap().get("excluded");
 
         if (excludedServicesParam != null && excludedServicesParam.length()>0) {
             processExcludedServices(excludedServicesParam);
@@ -132,6 +138,8 @@ public class SearchController extends BaseController {
 
         // search
         if (queryParam != null || includedServicesParam != null || excludedServices != null) {
+            System.out.println( "preRender: doBinarySearchAction" );
+
             doBinarySearchAction();
         }
     }

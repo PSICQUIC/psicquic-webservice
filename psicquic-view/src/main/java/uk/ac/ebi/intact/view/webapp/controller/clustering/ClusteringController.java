@@ -64,7 +64,8 @@ public class ClusteringController extends BaseController {
                 clusterQuery( userQuery.getSearchQuery() );
             } else {
                 log.info( "Too many interactions (" + totalCount +
-                          ") to be clustered, please narrow down your search to a set not exceeding 1000." );
+                          ") to be clustered, please narrow down your search to a set not exceeding " +
+                          appConfig.getClusteringSizeLimit() );
             }
         } else {
             log.info( "No interaction to be clustered !!" );
@@ -122,7 +123,7 @@ public class ClusteringController extends BaseController {
 
     public String removeJob() {
         String jobId = getParameterValue("jobId");
-        log.info( "Selected removeJob: " + jobId );
+        log.debug( "Selected removeJob: " + jobId );
 
         // remove the job from the user's current job but let it run in the background if already running.
         final Iterator<ClusteringJob> iterator = userJobs.getRefreshedJobs().iterator();
@@ -131,7 +132,7 @@ public class ClusteringController extends BaseController {
             ClusteringJob job = iterator.next();
             if( job.getJobId().equals( jobId ) ) {
                 iterator.remove();
-                log.info( "Removed job " + job + " on user request." );
+                log.debug( "Removed job " + job + " on user request." );
                 break;
             }
         }

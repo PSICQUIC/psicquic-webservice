@@ -93,14 +93,11 @@
                    <h:outputText value="#{searchBean.totalResults}" style="background-color:white;">
                        <f:convertNumber pattern="#,###"/>
                    </h:outputText></b>
-                   binary interactions
+                   <tr:outputText value="#{searchBean.clusterSelected ? ' clustered' : ''} binary interactions" />
                        </trh:cellFormat>
                    </trh:rowLayout>
                </trh:tableLayout>
            </div>
-
-
-
 
 
            <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
@@ -141,16 +138,13 @@
                        </tr:panelFormLayout>
                    </div>
 
-                   <!--<tr:spacer width="200" />-->
-
                    <div style="float:right; padding-left:50px; padding-right:10px">
-
                        <tr:panelFormLayout rows="2" maxColumns="1">
                            <h:panelGroup>
-                               <!-- Refresh the clustering status message every 5 secs -->
-                               <tr:poll id="clusteringStatus" interval="5000" />
-
-                               <!-- TODO FIXME: Make this update happen via Ajax so the @PreRenderView of searchBean doesn't fire -->
+                               <!-- Refresh the clustering status message every 5 secs when there are jobs to be displayed -->
+                               <tr:panelGroupLayout rendered="#{not searchBean.clusterSelected and userJobs.jobCount gt 0}">
+                                   <tr:poll id="clusteringStatus" interval="5000" />
+                               </tr:panelGroupLayout>
 
                                <tr:panelBox id="jobListBox" text=" Status of your cluster queries" background="blue"
                                             icon="/images/li.gif"
