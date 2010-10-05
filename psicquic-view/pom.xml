@@ -35,9 +35,11 @@
         <clustering.limit.count>5000</clustering.limit.count>
 
         <batch.db.port>25043</batch.db.port>
-        
+        <!--<batch.db.path>/ebi/sp/misc1/intact/psicquic-clustering/batchClusteringDB</batch.db.path>-->
+        <batch.db.path>batchClusteringDB</batch.db.path>
+
         <batch.jdbc.driver>org.h2.Driver</batch.jdbc.driver>
-        <batch.jdbc.url>jdbc:h2:tcp://localhost:${batch.db.port}/clusteringJobDB</batch.jdbc.url>
+        <batch.jdbc.url>jdbc:h2:tcp://localhost:${batch.db.port}/${batch.db.path}</batch.jdbc.url>
         <batch.jdbc.user>sa</batch.jdbc.user>
         <batch.jdbc.password></batch.jdbc.password>
         <batch.schema.create>true</batch.schema.create>
@@ -82,7 +84,7 @@
                     <contextPath>${appRoot}/${jetty.context}</contextPath>
                 </configuration>
             </plugin>
-        
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>maven-buildnumber-plugin</artifactId>
@@ -221,49 +223,6 @@
         </profile>
     </profiles>
 
-    <repositories>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>apache-maven-snapshots</id>
-            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-        </repository>
-
-        <!-- EBI Repos -->
-        <repository>
-            <id>ebi-repo</id>
-            <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>ebi-repo-snapshots</id>
-            <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/~maven/m2repo_snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <!-- PrimeFaces repo -->
-        <repository>
-            <id>prime-repo</id>
-            <name>Prime Technology Maven Repository</name>
-            <url>http://repository.prime.com.tr/</url>
-        </repository>
-    </repositories>
 
     <!-- Project dependencies -->
     <dependencies>
@@ -466,5 +425,50 @@
         </dependency>
             
     </dependencies>
+
+
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>apache-maven-snapshots</id>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+        </repository>
+
+        <!-- EBI Repos -->
+        <repository>
+            <id>ebi-repo</id>
+            <name>The EBI internal repository</name>
+            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>ebi-repo-snapshots</id>
+            <name>The EBI internal repository</name>
+            <url>http://www.ebi.ac.uk/~maven/m2repo_snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- PrimeFaces repo -->
+        <repository>
+            <id>prime-repo</id>
+            <name>Prime Technology Maven Repository</name>
+            <url>http://repository.prime.com.tr/</url>
+        </repository>
+    </repositories>
 
 </project>
