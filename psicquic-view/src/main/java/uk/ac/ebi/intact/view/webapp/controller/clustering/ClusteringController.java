@@ -33,7 +33,6 @@ import java.util.Map;
 @Controller( "clusteringBean" )
 @Scope( "conversation.access" )
 @ConversationName( "general" )
-@ViewController( viewIds = {"/main.xhtml"} )
 public class ClusteringController extends BaseController {
 
     private static final Log log = LogFactory.getLog( ClusteringController.class );
