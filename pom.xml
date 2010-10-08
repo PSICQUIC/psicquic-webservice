@@ -1,18 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!--
+    <parent>
+        <artifactId>psicquic</artifactId>
+        <groupId>uk.ac.ebi.intact.service.psicquic</groupId>
+        <version>1.6.0-SNAPSHOT</version>
+    </parent>
+    -->
+
     <groupId>uk.ac.ebi.intact.service.psicquic</groupId>
-    <artifactId>psicquic-registry</artifactId>
+    <artifactId>psicquic-ws</artifactId>
     <packaging>war</packaging>
 
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.6</version>
 
-    <name>PSI :: PSICQUIC Registry Service</name>
+    <name>PSI :: PSICQUIC WS Reference Implementation</name>
 
     <scm>
-        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-registry</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-registry</developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-registry</url>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-webservice</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-webservice</developerConnection>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-webservice</url>
     </scm>
 
     <properties>
@@ -21,8 +29,8 @@
 
         <!-- configurable bits -->
 
-        <psicquic.registry.url/>
-
+        <psicquic.index>${basedir}/target/psicquic-index</psicquic.index>
+        <psicquic.properties/>
     </properties>
 
     <build>
@@ -45,44 +53,39 @@
                 </configuration>
             </plugin>
 
-            <!-- Conversion of XML Schema into Java source code using JAXB-XJC -->
             <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.7.2</version>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>${cxf.version}</version>
                 <executions>
                     <execution>
+                        <id>generate-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sourceRoot>${basedir}/target/generated/java</sourceRoot>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>${basedir}/src/main/wsdl/psicquic11.wsdl</wsdl>
+                                    <extraargs>
+                                            <extraarg>-b</extraarg>
+                                            <extraarg>${basedir}/src/main/wsdl/binding.xjb</extraarg>
+                                          </extraargs>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>wsdl2java</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <schemaDirectory>${project.basedir}/src/main/resources/META-INF/schema</schemaDirectory>
-                    <bindingDirectory>${project.basedir}/src/main/resources/META-INF/schema</bindingDirectory>
-
-                    <extension>true</extension>
-                    <args>
-                        <arg>-Xfluent-api</arg>
-                        <arg>-Xcollection-setter-injector</arg>
-                    </args>
-                    <plugins>
-                        <plugin>
-                            <groupId>net.java.dev.jaxb2-commons</groupId>
-                            <artifactId>jaxb-fluent-api</artifactId>
-                            <version>2.1.8</version>
-                        </plugin>
-                    </plugins>
-                </configuration>
                 <dependencies>
-                    <dependency>
-                        <groupId>net.java.dev.vcc.thirdparty</groupId>
-                        <artifactId>collection-setter-injector</artifactId>
-                        <version>0.5.0-1</version>
-                    </dependency>
-                </dependencies>
+                	<dependency>
+                  		<groupId>xerces</groupId>
+                  		<artifactId>xercesImpl</artifactId>
+                  		<version>2.8.1</version>
+               		</dependency>
+            	</dependencies>
             </plugin>
-
 
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
@@ -90,13 +93,6 @@
                 <version>6.1.15</version>
                 <configuration>
                     <contextPath>${pom.artifactId}</contextPath>
-		     <connectors>
-			<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-			  <port>9090</port>
-			  <maxIdleTime>60000</maxIdleTime>
-			</connector>
-		     </connectors>
-
                 </configuration>
             </plugin>
 
@@ -132,7 +128,7 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <classpath />
-                                <argument>org.hupo.psi.mi.psicquic.registry.util.MitabIndexer</argument>
+                                <argument>org.hupo.psi.mi.psicquic.ws.utils.MitabIndexer</argument>
                                 <argument>${psicquic.index}</argument>
                                 <argument>${mitabFile}</argument>
                                 <argument>${hasHeader}</argument>
@@ -220,29 +216,23 @@
                     <version>1.1.2</version>
                     <scope>provided</scope>
                 </dependency>
-                
             </dependencies>
         </profile>
     </profiles>
 
-   <dependencies>
-        <!-- PSICQUIC -->
+    <dependencies>
+        <!-- PSIMI -->
         <dependency>
-            <groupId>org.hupo.psi.mi.psicquic</groupId>
-            <artifactId>psicquic-client</artifactId>
-            <version>1.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>psidev.psi.mi</groupId>
+            <artifactId>psimitab-search</artifactId>
+            <version>1.7.7</version>
         </dependency>
 
+        <!-- RDF -->
         <dependency>
-            <groupId>freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>2.3.9</version>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>jena</artifactId>
+            <version>2.6.2</version>
         </dependency>
 
         <!-- Logging -->
@@ -255,11 +245,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.5.6</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Spring -->
@@ -267,67 +253,26 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring</artifactId>
             <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Apache CXF -->
@@ -335,12 +280,6 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-core</artifactId>
             <version>${cxf.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -356,12 +295,6 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-frontend-jaxrs</artifactId>
             <version>${cxf.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -393,23 +326,11 @@
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
             <version>${cxf.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-jdk14</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-jms</artifactId>
             <version>${cxf.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -446,123 +367,35 @@
             <version>4.2</version>
             <scope>test</scope>
         </dependency>
-        
-        <!-- OLS -->
-        <dependency>
-            <groupId>axis</groupId>
-            <artifactId>axis</artifactId>
-            <version>1.4</version>
-        </dependency>
-        
     </dependencies>
-    
-    
+
     <repositories>
-    <!--<repository>-->
-	    <!--<id>eriktest2-repo</id>-->
-	    <!--<name>Test2 Repository</name>-->
-	    <!--<url>http://repo1.maven.org/maven2/</url>-->
-	    <!--<releases>-->
-		<!--<enabled>true</enabled>-->
-	    <!--</releases>-->
-	    <!--<snapshots>-->
-		<!--<enabled>false</enabled>-->
-	    <!--</snapshots>-->
-        <!--</repository>-->
-           
-        <!-- EBI repository -->
         <repository>
-            <id>ebi-repo</id>
-            <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>ebi-repo-snapshots</id>
-            <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/~maven/m2repo_snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-
-        <!-- for jaxb-impl -->
-        <repository>
-            <id>java.net</id>
-            <url>http://repo1.maven.org/maven2/</url>
-            <releases>
-               <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                 <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>apache-incubating</id>
-            <url>http://people.apache.org/repo/m2-incubating-repository</url>
-        </repository>
-
-        <repository>
-            <id>apache.snapshots</id>
-            <name>Apache Snapshots Repository</name>
-            <url>http://repository.apache.org/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>sun-repo-2</id>
-            <url>http://download.java.net/maven/2/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+           <id>intact.nexus</id>
+           <name>IntAct Nexus</name>
+           <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public</url>
         </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
-   	        <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-	        <url>http://download.java.net/maven/2/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>apache.snapshots</id>
-            <name>Apache Snapshots Repository</name>
-            <url>http://repository.apache.org/snapshots</url>
+   	        <id>intact.nexus</id>
+            <name>IntAct Nexus</name>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public</url>
         </pluginRepository>
    </pluginRepositories>
 
    <distributionManagement>
-        <repository>
-            <id>ebi-repo</id>
-            <name>EBI Repository</name>
-            <url>scp://localhost/homes/maven/public_html/m2repo_snapshots</url>
-        </repository>
+       <repository>
+           <id>ebi-repo</id>
+           <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo</url>
+       </repository>
 
-        <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>ebi-repo-snapshots</id>
-            <name>EBI Snapshots Repository</name>
-            <url>scp://localhost/homes/maven/public_html/m2repo_snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+       <snapshotRepository>
+           <id>ebi-repo-snapshots</id>
+           <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots</url>
+       </snapshotRepository>
+   </distributionManagement>
 
 
 </project>
