@@ -54,7 +54,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
     private PsicquicService psicquicService;
 
     public Object getByInteractor(String interactorAc, String db, String format, String firstResult, String maxResults) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
-        String query = "id:"+createQueryValue(interactorAc, db)+ " OR alias:"+createQueryValue(interactorAc, db);
+        String query = "identifier:"+createQueryValue(interactorAc, db);
         return getByQuery(query, format, firstResult, maxResults);
     }
 
