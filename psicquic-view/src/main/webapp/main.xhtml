@@ -142,13 +142,16 @@
                        <tr:panelFormLayout rows="2" maxColumns="1">
                            <h:panelGroup>
                                <!-- Refresh the clustering status message every 5 secs when there are jobs to be displayed -->
-                               <tr:panelGroupLayout rendered="#{not searchBean.clusterSelected and userJobs.jobCount gt 0}">
-                                   <tr:poll id="clusteringStatus" interval="5000" />
-                               </tr:panelGroupLayout>
+                               <!--<tr:panelGroupLayout partialTriggers="clusterButton">-->
+                                   <tr:panelGroupLayout rendered="#{not searchBean.clusterSelected and userJobs.jobCount gt 0}">
+                                       <tr:poll id="clusteringStatus" interval="5000" />
+                                   </tr:panelGroupLayout>
+                               <!--</tr:panelGroupLayout>-->
 
                                <tr:panelBox id="jobListBox" text=" Status of your cluster queries" background="blue"
                                             icon="/images/li.gif"
-                                            rendered="#{userJobs.jobCount gt 0 and not searchBean.clusterSelected}" partialTriggers="clusteringStatus">
+                                            rendered="#{userJobs.jobCount gt 0 and not searchBean.clusterSelected}"
+                                            partialTriggers="clusteringStatus"> <!-- ,clusterButton -->
 
                                    <tr:table value="#{userJobs.refreshedJobs}" var="job">
                                         <tr:column inlineStyle="white-space: nowrap;">
@@ -176,10 +179,12 @@
                            </h:panelGroup>
 
                            <tr:panelHorizontalLayout>
-                               <tr:commandButton action="#{clusteringBean.start}"
+                               <tr:commandButton id="clusterButton"
+
+                                                 action="#{clusteringBean.start}"
                                                  rendered="#{searchBean.totalResults > 0}"
                                                  disabled="#{searchBean.totalResults > config.clusteringSizeLimit}"
-                                                 text="Cluster this query"/>
+                                                 text="Cluster this query"/>   <!-- partialSubmit="true" -->
 
                                <tr:commandLink action="dialog:help.clustering" partialSubmit="true"
                                                windowWidth="600" windowHeight="500" immediate="true"

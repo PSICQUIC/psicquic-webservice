@@ -93,7 +93,6 @@ public class SearchController extends BaseController {
     @PreRenderView
     public void preRender() {
 
-
         FacesContext context = FacesContext.getCurrentInstance();
         if( RequestContext.getCurrentInstance().isPartialRequest( context )) {
             return;
@@ -115,7 +114,6 @@ public class SearchController extends BaseController {
         } 
 
         final String queryParam = context.getExternalContext().getRequestParameterMap().get("query");
-
         if (queryParam != null && queryParam.length()>0) {
             userQuery.reset();
             userQuery.setSearchQuery( queryParam );
@@ -138,8 +136,6 @@ public class SearchController extends BaseController {
 
         // search
         if (queryParam != null || includedServicesParam != null || excludedServices != null) {
-            System.out.println( "preRender: doBinarySearchAction" );
-
             doBinarySearchAction();
         }
     }
