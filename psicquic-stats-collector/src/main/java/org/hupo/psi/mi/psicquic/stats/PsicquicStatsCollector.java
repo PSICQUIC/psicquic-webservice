@@ -91,12 +91,16 @@ public class PsicquicStatsCollector {
 
     public PsicquicStatsCollector() throws IOException {
         // Initialize Spring for emails
+        log.info("Initializing Spring ...");
         String[] configFiles = new String[]{"/META-INF/beans.spring.xml"};
         BeanFactory factory = new ClassPathXmlApplicationContext( configFiles );
+        log.info("Spring was initialized.");
 
         // inject my spring beans
         this.mailSender = ( MailSender ) factory.getBean( "mailSender" );
         this.config = ( Config ) factory.getBean( "statsConfig" );
+
+        log.info("Config post spring initialization:" + config);
 
         // load email properties
         File smtpConfig = null;
@@ -129,7 +133,7 @@ public class PsicquicStatsCollector {
             mailSender = null;
         }
 
-        log.info( config );
+        log.info( "configuration post initialization: " + config );
     }
 
     ///////////////////////////////////////
@@ -252,6 +256,8 @@ public class PsicquicStatsCollector {
                             updatedServices.add( db );
                         } else {
                             log.info( "Skip update as the count is 0 or the same as previous ("+ previousValue +")" );
+                            // we store the value anyways but do not register the service as updated.
+                            cell.changeInputValueLocal( count );
                         }
                     }
 

@@ -11,9 +11,9 @@ public class Config {
 
     public static final String DEFAULT_SMTP_CONFIG = "/META-INF/smtp.properties";
 
-    private String psicquicRegistryUrl; // = DEFAULT_REGISTRY_URL;
+    private String psicquicRegistryUrl;
 
-    private String smtpConfigFile; // = DEFAULT_SMTP_CONFIG;
+    private String smtpConfigFile;
 
     private String miqlQuery;
 
