@@ -30,6 +30,10 @@
 
              <trh:script source="/js/intact.js"/>
 
+             <trh:script source="/js/cytoscape_web/AC_OETags.min.js"/>
+             <trh:script source="/js/cytoscape_web/json2.min.js"/>
+             <trh:script source="/js/cytoscape_web/cytoscapeweb.min.js"/>
+
              <script type="text/javascript">
                  var _gaq = _gaq || [];
                  _gaq.push(['_setAccount', 'UA-672146-7']);
@@ -122,6 +126,7 @@
                                    <h:graphicImage alt="Status" title="#{searchBean.servicesMap[name].active? 'Status: ONLINE' : 'Status: OFFLINE'}"
                                                    url="#{searchBean.servicesMap[name].active? '/images/status_online.png' : '/images/status_offline.png'}"/>
                                    <h:commandLink value="#{name}" styleClass="#{searchBean.selectedServiceName == name? 'resultLink-selected' : ''}"
+                                                  onclick="_gaq.push(['_trackEvent', 'Database', '#{name}', '#{searchBean.userQuery.searchQuery}']);"
                                                   disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0}"
                                                   style="#{searchBean.selectedServiceName == name? 'font-weight:bold; text-decoration: none' : ''}">
                                        <f:setPropertyActionListener value="#{name}" target="#{searchBean.selectedServiceName}"/>
@@ -215,12 +220,41 @@
 
 
             <tr:panelGroupLayout rendered="#{searchBean.selectedServiceName != null}">
-              <strong>#{searchBean.selectedServiceName}</strong>
-              <ui:include src="/pages/interactions/interactions_tab.xhtml">
-                  <ui:param name="service" value="#{searchBean.servicesMap[searchBean.selectedServiceName]}"/>
-                  <ui:param name="results" value="#{searchBean.resultDataModelMap[searchBean.selectedServiceName]}"/>
-              </ui:include>
+              <span style="font-weight:bold; font-size:16px"> #{searchBean.selectedServiceName}</span>
+
+                <script type="text/javascript" >
+
+                    var tableSelected = true;
+
+                </script>
+
+                <div style="margin-top:5px">
+                    <strong>View</strong>:&#160;&#160;&#160;
+                    <tr:image source="/images/table.png" inlineStyle="width:12px;" onclick="selectTableTab();"/>
+                    <a href="#" onclick="selectTableTab();"><tr:outputText id="tableLabel" value="Table" inlineStyle="font-weight:bold"/></a>
+                    &#160;|&#160;&#160;
+
+                    <tr:panelGroupLayout rendered="#{searchBean.graphEnabled}">
+                        <tr:image source="/images/graph.png" inlineStyle="width:12px;" onclick="selectGraphTab();"/>
+                        <a href="#" onclick="selectGraphTab();"><tr:outputText id="graphLabel" value="Graph" inlineStyle="font-weight:normal"/></a>
+                    </tr:panelGroupLayout>
+                    <tr:panelGroupLayout rendered="#{not searchBean.graphEnabled}">
+                        <tr:image source="/images/graph_grey.png" inlineStyle="width:12px;"/>
+                        <a onclick="alert( 'You can only visualize network with up to #{searchBean.maxNetworkSize} interactions.' );"><tr:outputText value="Graph" inlineStyle="color:#d3d3d3"/></a>
+                    </tr:panelGroupLayout>
+                </div>
+
+                <div style="margin-top:10px">
+                    <ui:include src="/pages/interactions/interactions_tab.xhtml">
+                    <ui:param name="service" value="#{searchBean.servicesMap[searchBean.selectedServiceName]}"/>
+                      <ui:param name="results" value="#{searchBean.resultDataModelMap[searchBean.selectedServiceName]}"/>
+                  </ui:include>
+
+                  <ui:include src="/pages/graph/graph.xhtml"/>
+                </div>
+
             </tr:panelGroupLayout>
+
 
             <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
                 <tr:separator/>

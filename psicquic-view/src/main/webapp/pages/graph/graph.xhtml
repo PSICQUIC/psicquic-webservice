@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://intact.ebi.ac.uk/miscel /WEB-INF/intact-miscel.tld">
+
+    <div id="cytoscapeweb" style="width:800px;height:600px;">
+
+        Interaction Graph should show here in a few moment...
+
+    </div>
+
+    <script type="text/javascript">
+
+        // network data could alternatively be grabbed via ajax
+        var xml ='#{searchBean.graphml}';
+
+        // init and draw
+        var vis = new org.cytoscapeweb.Visualization("cytoscapeweb");
+
+        // callback when Cytoscape Web has finished drawing
+        vis.ready(function() {
+
+            vis.edgesMerged( true );
+
+            // add a listener for when nodes and edges are clicked
+            vis.addListener("click", "nodes", function(event) {
+                handle_click(event);
+            })
+            .addListener("click", "edges", function(event) {
+                handle_click(event);
+            });
+
+            function handle_click(event) {
+                 var target = event.target;
+
+                 clear();
+                 print("event.group = " + event.group);
+                 for (var i in target.data) {
+                    var variable_name = i;
+                    var variable_value = target.data[i];
+                    print( "event.target.data." + variable_name + " = " + variable_value );
+                 }
+            }
+
+            function clear() {
+                document.getElementById("note").innerHTML = "";
+            }
+
+            function print(msg) {
+                document.getElementById("note").innerHTML += "<p>" + msg + "</p>";
+            }
+        });
+
+
+        var draw_options = {
+            // your data goes here
+            network: xml
+        };
+
+        vis.draw(draw_options);
+
+        showhide('cytoscapeweb');
+    </script>
+
+</ui:composition>

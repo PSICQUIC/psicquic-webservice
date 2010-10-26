@@ -21,17 +21,21 @@ import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import psidev.psi.mi.xml.converter.ConverterException;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 import uk.ac.ebi.intact.view.webapp.controller.clustering.UserJobs;
 import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
 import uk.ac.ebi.intact.view.webapp.model.ClusteringResultDataModel;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
+import uk.ac.ebi.intact.view.webapp.visualisation.GraphmlBuilder;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -52,6 +56,7 @@ import java.util.concurrent.TimeUnit;
 public class SearchController extends BaseController {
 
     private static final Log log = LogFactory.getLog(SearchController.class);
+    private static final int MAX_NETWORK_SIZE = 1000;
 
     @Autowired
     private UserQuery userQuery;
@@ -534,5 +539,62 @@ public class SearchController extends BaseController {
         doBinarySearchAction();
 
         return "interactions";
+    }
+
+    public UserQuery getUserQuery() {
+        return userQuery;
+    }
+
+    public void setUserQuery(UserQuery userQuery) {
+        this.userQuery = userQuery;
+    }
+
+    private String encodeUrl(String s) {
+        return s.replaceAll( " ", "%20" );
+    }
+
+    public String getGraphml() throws IOException, ConverterException {
+
+        String output = "";
+
+        // only fire a conversion if the dataset if no more than 1000 interactions.
+        if( isGraphEnabled() ) {
+
+            final GraphmlBuilder builder = new GraphmlBuilder( this );
+
+            final String serviceName = getSelectedServiceName();
+            final ServiceType serviceType = getServicesMap().get(serviceName);
+            final String query = encodeUrl(getUserQuery().getFilteredSearchQuery());
+            final String restUrl = serviceType.getRestUrl();
+            boolean endWithSlash = restUrl.endsWith( "/" );
+            final String queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
+
+            log.info("Reading data from: " + queryUrl);
+
+            final URLConnection connection = new URL(queryUrl).openConnection();
+            InputStream is = connection.getInputStream();
+
+            output = builder.build( is );
+
+            is.close();
+        }
+
+        return output;
+    }
+
+    public boolean isGraphEnabled() {
+        Boolean enabled = false;
+        final String serviceName = getSelectedServiceName();
+        if( serviceName != null ) {
+            final Integer count = getResultCountMap().get(serviceName);
+            if( count != null ) {
+                enabled = ( count <= MAX_NETWORK_SIZE );
+            }
+        }
+        return enabled;
+    }
+
+    public int getMaxNetworkSize() {
+        return MAX_NETWORK_SIZE;
     }
 }
