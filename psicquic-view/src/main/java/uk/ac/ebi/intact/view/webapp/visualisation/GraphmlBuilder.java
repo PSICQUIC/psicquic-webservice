@@ -1,21 +1,18 @@
 package uk.ac.ebi.intact.view.webapp.visualisation;
 
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.tab.PsimiTabReader;
-import psidev.psi.mi.tab.model.Alias;
-import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.tab.model.CrossReference;
-import psidev.psi.mi.tab.model.Interactor;
+import psidev.psi.mi.tab.model.*;
 import psidev.psi.mi.xml.converter.ConverterException;
 import uk.ac.ebi.intact.view.webapp.controller.search.SearchController;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Converts MITAB stream into graphml.
@@ -31,6 +28,9 @@ import java.util.Map;
  */
 public class GraphmlBuilder {
 
+    // TODO deal with iRefIndex complexes and represent that interactor with a different shape
+    // TODO deal with ChEMBL compounds and represent that interactor with a different shape
+
     private static final Log log = LogFactory.getLog(GraphmlBuilder.class);
 
     public static final String NEW_LINE = "\\\n";
@@ -41,6 +41,7 @@ public class GraphmlBuilder {
             "    xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns" + NEW_LINE +
             "     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">" + NEW_LINE +
             "  <key id=\"label\" for=\"all\" attr.name=\"label\" attr.type=\"string\"/>" + NEW_LINE +
+            "  <key id=\"specie\" for=\"all\" attr.name=\"specie\" attr.type=\"string\"/>" + NEW_LINE +
             "  <graph id=\"G\" edgedefault=\"undirected\">" + NEW_LINE;
 
     public static final String GRAPHML_FOOTER = "  </graph>" + NEW_LINE +
@@ -60,23 +61,23 @@ public class GraphmlBuilder {
         this.searchController = searchController;
     }
 
-    protected Iterator<BinaryInteraction> getMitabIterator( InputStream is ) throws ConverterException, IOException {
-        PsimiTabReader reader = new PsimiTabReader( false );
-        return reader.iterate( is );
+    protected Iterator<BinaryInteraction> getMitabIterator(InputStream is) throws ConverterException, IOException {
+        PsimiTabReader reader = new PsimiTabReader(false);
+        return reader.iterate(is);
     }
 
-    public String build( InputStream is ) throws IOException, ConverterException {
+    public String build(InputStream is) throws IOException, ConverterException {
 
         // TODO use node shapes to differenciate proteins from small molecules
         // TODO Create a download servlet for the clustered datasets so that we can have a graph for them too
 
-        StringBuilder sb = new StringBuilder( 4096 );
-        
+        StringBuilder sb = new StringBuilder(4096);
+
         // get MITAB data from the current service
         final Iterator<BinaryInteraction> iterator;
         int interactionCount = 0;
         try {
-            iterator = getMitabIterator( is );
+            iterator = getMitabIterator(is);
 
             // create header of GraphML
             sb.append(GRAPHML_HEADER);
@@ -107,9 +108,9 @@ public class GraphmlBuilder {
 
         } catch (ConverterException e) {
 
-            sb.append( "Failed to parse MITAB data" );
+            sb.append("Failed to parse MITAB data");
             sb.append(NEW_LINE);
-            sb.append( ExceptionUtils.getFullStackTrace(e) );
+            sb.append(ExceptionUtils.getFullStackTrace(e));
 
         } finally {
 
@@ -127,7 +128,14 @@ public class GraphmlBuilder {
     }
 
     private class Node {
+        /**
+         * The selected id (based on MITAB data) that will allow to merge this node.
+         */
         int id;
+
+        /**
+         * the XML snippet for that node.
+         */
         String xml;
 
         private Node(int id, String xml) {
@@ -166,11 +174,34 @@ public class GraphmlBuilder {
         String label = pickLabel(interactor);
         final int nodeId = getNextNodeId();
         sb.append("     <node id=\"").append(nodeId).append("\">").append(NEW_LINE)
-          .append("        <data key=\"label\">").append(label).append("</data>").append(NEW_LINE)
-          .append("     </node>").append(NEW_LINE);
+                .append("        <data key=\"label\">").append(label).append("</data>").append(NEW_LINE);
+
+        final String specieName = getSpecieName(interactor.getOrganism());
+        if( specieName != null ) {
+            sb.append("        <data key=\"specie\">").append(specieName).append("</data>").append(NEW_LINE);
+        }
+        sb.append("     </node>").append(NEW_LINE);
 
         molecule2node.put(id, nodeId);
         return new Node(nodeId, sb.toString());
+    }
+
+    private String getSpecieName(Organism organism) {
+
+        String name = null;
+        if( ! organism.getIdentifiers().isEmpty() ) {
+            final CrossReference first = organism.getIdentifiers().iterator().next();
+            name = first.getText();
+            if( name == null || StringUtils.isEmpty( name ) ) {
+                name = first.getIdentifier();
+            }
+        }
+
+        if( name == null ) {
+            name = organism.getTaxid();
+        }
+
+        return name;
     }
 
     private int getNextNodeId() {
@@ -178,8 +209,7 @@ public class GraphmlBuilder {
     }
 
     /**
-     * Quick and dirty: pick the first identifier available.
-     * Later: will look through an ordered list of databases.
+     * Pick the first relevant identifier available.
      *
      * @param interactor
      * @return
@@ -188,18 +218,22 @@ public class GraphmlBuilder {
 
         String identifier = null;
 
-        // BIND has multiple uniprotkb identifiers ?
+        if( ! interactor.getIdentifiers().isEmpty() ) {
+            final IdentifierByDatabaseComparator comparator = new IdentifierByDatabaseComparator();
+            identifier = pickFirstRelevantIdentifier(interactor.getIdentifiers(), comparator, true );
+        } else if( ! interactor.getAlternativeIdentifiers().isEmpty() ) {
+            final IdentifierByDatabaseComparator comparator = new IdentifierByDatabaseComparator();
+            identifier = pickFirstRelevantIdentifier( interactor.getAlternativeIdentifiers(), comparator, true );
+        }
 
-//        List<String> databases = Lists.newArrayList();
-//        databases.add( "uniprotkb" );
-//        databases.add( "chebi" );
-//        databases.add( "intact" );
-//        databases.add( "chembl" );
-//        databases.add( "genbank_protein_gi" );
-//        databases.add( "entrez gene/locuslink" );
-
-        if (!interactor.getIdentifiers().isEmpty()) {
-            identifier = interactor.getIdentifiers().iterator().next().getIdentifier();
+        // get less strict and just pick the first thing available in identifier or alt. identifier.
+        if( identifier == null ) {
+            System.out.println( "WARNING - Could not find a relevant identifier for interactor: " + interactor );
+            if( ! interactor.getIdentifiers().isEmpty() ) {
+                identifier = interactor.getIdentifiers().iterator().next().getIdentifier();
+            } else if( ! interactor.getAlternativeIdentifiers().isEmpty() ) {
+                identifier = interactor.getAlternativeIdentifiers().iterator().next().getIdentifier();
+            }
         }
 
         if (identifier == null) {
@@ -210,7 +244,55 @@ public class GraphmlBuilder {
     }
 
     /**
-     * Quick and Dirty: pick the first alias or if not present, the first identifier.
+     * Assumes that the list of not empty.
+     *
+     * @param identifiers a non null, non empty list of <code>CrossRefenrence</code>.
+     * @return the identifier of the first relevant cross reference based on the current IdentifierByDatabaseComparator.
+     */
+    private String pickFirstRelevantIdentifier( Collection<CrossReference> identifiers,
+                                                CrossReferenceComparator comparator,
+                                                boolean allowNullIfNoMatch ) {
+
+        if (identifiers == null || identifiers.isEmpty()) {
+            throw new IllegalArgumentException("You must give a non null/empty collection of identifiers");
+        }
+
+        boolean hasMatched = false;
+        CrossReference picked = null;
+        if( identifiers.size() > 1 ) {
+            List<CrossReference> orderedRefs = new ArrayList<CrossReference>( identifiers );
+            Collections.sort(orderedRefs, comparator);
+            picked = orderedRefs.get( 0 );
+            hasMatched = comparator.hasMatchedAny();
+            if( log.isInfoEnabled() ) printIdentifiers(orderedRefs);
+        } else {
+            // only 1 element
+            picked = identifiers.iterator().next();
+            hasMatched = comparator.matches( picked );
+        }
+
+        if( log.isInfoEnabled() ) log.info( "Matches: " + hasMatched );
+
+        if( allowNullIfNoMatch && ! hasMatched ) {
+            return null;
+        }
+
+        return picked.getIdentifier();
+    }
+
+    private static void printIdentifiers(List<CrossReference> identifiers) {
+        log.info("--- ordered list of Refs ---");
+        for (CrossReference cr : identifiers) {
+            log.info( cr.getDatabase() + ":" + cr.getIdentifier());
+        }
+        log.info("----------------------------");
+    }
+
+    /**
+     * Pick from the alias according to an ordered list of alias type, if none matched, then look into the alternative
+     * identifiers according to an ordered list of text, if none matched, pick the shortest alias, if none found pick
+     * the first alternative identifier, or if none found pick the first identifier according to the ordered list of
+     * database, and if no match, pick the first one.
      *
      * @param interactor
      * @return
@@ -219,12 +301,26 @@ public class GraphmlBuilder {
 
         String label = null;
 
-        if (!interactor.getAliases().isEmpty()) {
-            Alias alias = interactor.getAliases().iterator().next();
-            label = alias.getName();
-        } else if (!interactor.getIdentifiers().isEmpty()) {
-            final CrossReference cr = interactor.getIdentifiers().iterator().next();
-            label = cr.getIdentifier();
+        // TODO Encourage the use of the alias type: 'display label' so that PSICQUIC providers can control the label used
+
+        if ( ! interactor.getAliases().isEmpty() ) {
+            label = pickFirstRelevantAlias(interactor.getAliases(), new AliasByTypeComparator(), true);
+        } else if ( ! interactor.getAlternativeIdentifiers().isEmpty() ) {
+            final IdentifierByTextComparator comparator = new IdentifierByTextComparator();
+            label = pickFirstRelevantIdentifier(interactor.getAlternativeIdentifiers(), comparator, true);
+        }
+
+        if( label == null ) {
+            System.out.println( "WARNING - Could not find a relevant label for interactor: " + interactor );
+            if (!interactor.getAliases().isEmpty()) {
+                label = pickFirstRelevantAlias(interactor.getAliases(), new AliasByIncreasingLengthComparator(), true);
+            } else if (!interactor.getAlternativeIdentifiers().isEmpty()) {
+                final CrossReference cr = interactor.getAlternativeIdentifiers().iterator().next();
+                label = cr.getIdentifier();
+            } else if(!interactor.getIdentifiers().isEmpty()) {
+                final CrossReferenceComparator comparator = new IdentifierByDatabaseComparator();
+                label = pickFirstRelevantIdentifier(interactor.getIdentifiers(), comparator, false);
+            }
         }
 
         if (label == null) {
@@ -232,5 +328,49 @@ public class GraphmlBuilder {
         }
 
         return label;
+    }
+
+    /**
+     * Assumes that the list of not empty.
+     *
+     * @param aliases a non null, non empty list of <code>CrossRefenrence</code>.
+     * @return the identifier of the first relevant cross reference based on the current IdentifierByDatabaseComparator.
+     */
+    private String pickFirstRelevantAlias( Collection<Alias> aliases,
+                                           AliasComparator comparator,
+                                           boolean allowNullIfNoMatch ) {
+
+        if (aliases == null || aliases.isEmpty()) {
+            throw new IllegalArgumentException("You must give a non null/empty collection of aliases");
+        }
+
+        boolean hasMatched = false;
+        Alias picked = null;
+        if( aliases.size() > 1 ) {
+            List<Alias> orderedRefs = new ArrayList<Alias>(aliases);
+            Collections.sort(orderedRefs, comparator);
+            picked = orderedRefs.get(0);
+            hasMatched = comparator.hasMatchedAny();
+            if( log.isInfoEnabled() ) printAliases( orderedRefs );
+        } else {
+            picked = aliases.iterator().next();
+            hasMatched = comparator.matches( picked );
+        }
+
+        if( log.isInfoEnabled() ) log.info( "Matches: " + hasMatched );
+
+        if( allowNullIfNoMatch && ! hasMatched ) {
+            return null;
+        }
+
+        return picked.getName();
+    }
+
+    private void printAliases(List<Alias> aliases) {
+        log.info("--- Ordered list of Aliases ---");
+        for (Alias a : aliases) {
+            log.info( a.getDbSource() + ":" + a.getName()+"("+ a.getAliasType() +")");
+        }
+        log.info("-------------------------------");
     }
 }
