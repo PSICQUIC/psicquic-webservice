@@ -330,6 +330,18 @@
         <url-pattern>/adf/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>clusterDownload</servlet-name>
+        <servlet-class>uk.ac.ebi.intact.view.webapp.controller.clustering.ClusteringDownloadServlet</servlet-class>
+    </servlet>
+
+    <!-- Faces Servlet Mappings -->
+    <servlet-mapping>
+        <servlet-name>clusterDownload</servlet-name>
+        <url-pattern>download</url-pattern>
+    </servlet-mapping>
+
+
     <!-- PrimeFaces resources -->
     <!--<servlet>-->
         <!--<servlet-name>Resource Servlet</servlet-name>-->

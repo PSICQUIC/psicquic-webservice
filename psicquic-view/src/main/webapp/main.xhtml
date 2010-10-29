@@ -54,6 +54,13 @@
       <c:set var="backImage" value="#{empty config.bannerBackgroundUrl ? defaultBackImage : userBackImage}; background-repeat: repeat-x"/>
 
       <trh:body>
+
+          <script type="text/javascript">
+              /* this combination also work in safari */
+              window.onresize = function(){ graphResize(); /* firefox */ }
+              document.body.onresize=function(){graphResize(); /* chrome */ }
+          </script>
+
           <trh:tableLayout width="100%" inlineStyle="#{backImage}">
                <trh:rowLayout>
                    <trh:cellFormat inlineStyle="width:2%" >
@@ -244,13 +251,13 @@
                     </tr:panelGroupLayout>
                 </div>
 
-                <div style="margin-top:10px">
+                <div style="height:100%; margin-top:10px">
                     <ui:include src="/pages/interactions/interactions_tab.xhtml">
-                    <ui:param name="service" value="#{searchBean.servicesMap[searchBean.selectedServiceName]}"/>
-                      <ui:param name="results" value="#{searchBean.resultDataModelMap[searchBean.selectedServiceName]}"/>
-                  </ui:include>
+                        <ui:param name="service" value="#{searchBean.servicesMap[searchBean.selectedServiceName]}"/>
+                        <ui:param name="results" value="#{searchBean.resultDataModelMap[searchBean.selectedServiceName]}"/>
+                    </ui:include>
 
-                  <ui:include src="/pages/graph/graph.xhtml"/>
+                    <ui:include src="/pages/graph/graph.xhtml"/>
                 </div>
 
             </tr:panelGroupLayout>

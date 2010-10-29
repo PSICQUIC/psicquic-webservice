@@ -32,6 +32,8 @@ import uk.ac.ebi.intact.view.webapp.visualisation.GraphmlBuilder;
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -222,18 +224,27 @@ public class SearchController extends BaseController {
         if ( log.isDebugEnabled() ) {log.debug( "\tcluster query:  "+ searchQuery );}
 
         final String jobId = job.getJobId();
-        String serviceName =  "Clustered query: '"+ job.getMiql() +"' from " + printServiceNames( job.getServices() );
+        final String serviceName =  "Clustered query: '"+ job.getMiql() +"' from " + printServiceNames( job.getServices() );
         selectedServiceName = serviceName;
 
         final ServiceType service = new ServiceType();
         service.setName( serviceName );
-        
-        // TODO to enable download of data via table, create a servlet and set the URL here
-//        service.setRestUrl( "http://localhost:9095/psicquic/view/download?jobId=" );
 
-        servicesMap.put( jobId, service );
+        // To enable download of data via table, create a servlet and set the URL here
+        FacesContext fc = FacesContext.getCurrentInstance();
+
+        ServletContext sc = (ServletContext) fc.getExternalContext().getContext();
+
+        final String contextPath = sc.getContextPath();
+        System.out.println("contextPath = " + contextPath);
+
+        final String appRoot = sc.getRealPath( "/" );
+        System.out.println("appRoot = " + appRoot);
+        service.setRestUrl( "/download?jobId="+jobId+"&query=*" );
+
+        servicesMap.put( serviceName, service );
         int totalCount = job.getClusteredInteractionCount();
-        resultCountMap.put( jobId, totalCount );
+        resultCountMap.put( serviceName, totalCount );
         totalResults = totalCount;
 
         loadResults( service );
@@ -553,33 +564,63 @@ public class SearchController extends BaseController {
         return s.replaceAll( " ", "%20" );
     }
 
+    private String cachedGraphml = null;
+    private String cachedGraphmlQuery = null;
+
     public String getGraphml() throws IOException, ConverterException {
 
+        FacesContext context = FacesContext.getCurrentInstance();
+        if( RequestContext.getCurrentInstance().isPartialRequest( context )) {
+            return null;
+        }
+
         String output = "";
+//        && ( ! cachedGraphmlQuery.equals( getUserQuery().getFilteredSearchQuery()) || cachedGraphml == null )
 
         // only fire a conversion if the dataset if no more than 1000 interactions.
         if( isGraphEnabled() ) {
 
-            final GraphmlBuilder builder = new GraphmlBuilder( this );
+            cachedGraphmlQuery = getUserQuery().getFilteredSearchQuery();
 
             final String serviceName = getSelectedServiceName();
             final ServiceType serviceType = getServicesMap().get(serviceName);
             final String query = encodeUrl(getUserQuery().getFilteredSearchQuery());
             final String restUrl = serviceType.getRestUrl();
-            boolean endWithSlash = restUrl.endsWith( "/" );
-            final String queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
+            final String queryUrl;
 
-            log.info("Reading data from: " + queryUrl);
+            if( ! clusterSelected ) {
+                boolean endWithSlash = restUrl.endsWith( "/" );
+                queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
+            } else {
+                final FacesContext facesContext = FacesContext.getCurrentInstance();
+                HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
+
+                final String scheme = request.getScheme();
+                final String serverName = request.getServerName();
+                final int serverport = request.getServerPort();
+                final String contextPath = request.getContextPath();
+
+                String servletPrefix = scheme + "://" + serverName + ":" + serverport + contextPath;
+
+                System.out.println("request.getRequestURL() = " + request.getRequestURL());
+
+                queryUrl = servletPrefix + restUrl;
+            }
+
+            if(log.isDebugEnabled()) log.debug("Reading data from: " + queryUrl);
 
             final URLConnection connection = new URL(queryUrl).openConnection();
             InputStream is = connection.getInputStream();
 
+            final GraphmlBuilder builder = new GraphmlBuilder();
             output = builder.build( is );
+
+            cachedGraphml = output;
 
             is.close();
         }
 
-        return output;
+        return cachedGraphml;
     }
 
     public boolean isGraphEnabled() {

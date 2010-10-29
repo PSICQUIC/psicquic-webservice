@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class IdentifierByDatabaseComparator implements CrossReferenceComparator {
 
-    private static List<String> DEFAULT_DATABASES = Lists.newArrayList();
+    private final static List<String> DEFAULT_DATABASES = Lists.newArrayList();
     static {
         DEFAULT_DATABASES.add("uniprotkb");
         DEFAULT_DATABASES.add("uniprot");
@@ -35,9 +35,13 @@ public class IdentifierByDatabaseComparator implements CrossReferenceComparator 
 
     private boolean matchedAny = false;
 
-    private List<String> databases = Lists.newArrayList();
+    private List<String> databases;
 
     public IdentifierByDatabaseComparator(List<String> databases) {
+        if (databases == null) {
+            throw new IllegalArgumentException("You must give a non null list of databases");
+        }
+
         this.databases = databases;
     }
 

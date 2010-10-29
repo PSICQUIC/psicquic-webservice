@@ -40,14 +40,16 @@ public class GraphmlBuilder {
             "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" + NEW_LINE +
             "    xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns" + NEW_LINE +
             "     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">" + NEW_LINE +
-            "  <key id=\"label\" for=\"all\" attr.name=\"label\" attr.type=\"string\"/>" + NEW_LINE +
-            "  <key id=\"specie\" for=\"all\" attr.name=\"specie\" attr.type=\"string\"/>" + NEW_LINE +
+            "  <key id=\"label\" for=\"node\" attr.name=\"label\" attr.type=\"string\"/>" + NEW_LINE +
+            "  <key id=\"specie\" for=\"node\" attr.name=\"specie\" attr.type=\"string\"/>" + NEW_LINE +
+            "  <key id=\"type\" for=\"node\" attr.name=\"type\" attr.type=\"string\"/>" + NEW_LINE +
+            "  <key id=\"shape\" for=\"node\" attr.name=\"shape\" attr.type=\"string\">"  + NEW_LINE +
+            "    <default>ELLIPSE</default>"  + NEW_LINE +
+            "  </key>"  + NEW_LINE +
             "  <graph id=\"G\" edgedefault=\"undirected\">" + NEW_LINE;
 
     public static final String GRAPHML_FOOTER = "  </graph>" + NEW_LINE +
             "</graphml>";
-
-    private SearchController searchController;
 
     private int nextNodeId = 1;
 
@@ -57,8 +59,7 @@ public class GraphmlBuilder {
      */
     private Map<String, Integer> molecule2node = Maps.newHashMap();
 
-    public GraphmlBuilder(SearchController searchController) {
-        this.searchController = searchController;
+    public GraphmlBuilder() {
     }
 
     protected Iterator<BinaryInteraction> getMitabIterator(InputStream is) throws ConverterException, IOException {
@@ -68,8 +69,9 @@ public class GraphmlBuilder {
 
     public String build(InputStream is) throws IOException, ConverterException {
 
-        // TODO use node shapes to differenciate proteins from small molecules
         // TODO Create a download servlet for the clustered datasets so that we can have a graph for them too
+
+        final long start = System.currentTimeMillis();
 
         StringBuilder sb = new StringBuilder(4096);
 
@@ -115,10 +117,16 @@ public class GraphmlBuilder {
         } finally {
 
             molecule2node.clear();
-
         }
 
-        return sb.toString();
+        final String graphmlOutput = sb.toString();
+
+        log.trace(graphmlOutput);
+
+        final long stop = System.currentTimeMillis();
+        log.debug("GraphML conversion took: " + (stop - start) + "ms");
+
+        return graphmlOutput;
     }
 
     private String buildEdge(int ida, int idb) {
@@ -165,9 +173,18 @@ public class GraphmlBuilder {
      */
     private Node buildNode(Interactor interactor) {
 
-        final String id = pickIdentifier(interactor);
+        final CrossReference cr = pickIdentifier(interactor);
+        final String id = cr.getIdentifier();
         if (molecule2node.containsKey(id)) {
             return new Node(molecule2node.get(id), null); // the node was already exported, return its id instead
+        }
+
+        final String db = cr.getDatabase();
+        String moleculeType = "protein";
+        if( db.equals( "chebi" ) || db.equals("chembl") ) {
+            moleculeType = "compound";
+        } else if( db.equals("complex") ) {
+            moleculeType = "complex";
         }
 
         StringBuilder sb = new StringBuilder(128);
@@ -180,6 +197,17 @@ public class GraphmlBuilder {
         if( specieName != null ) {
             sb.append("        <data key=\"specie\">").append(specieName).append("</data>").append(NEW_LINE);
         }
+
+        sb.append("        <data key=\"type\">").append(moleculeType).append("</data>").append(NEW_LINE);
+
+        if( moleculeType.equals( "compound" ) ) {
+            sb.append("        <data key=\"shape\">").append("TRIANGLE").append("</data>").append(NEW_LINE);
+            System.out.println("TRIANGLE");
+        } else if( moleculeType.equals( "compound" ) ) {
+            sb.append("        <data key=\"shape\">").append("VEE").append("</data>").append(NEW_LINE);
+            System.out.println("VEE");
+        }
+
         sb.append("     </node>").append(NEW_LINE);
 
         molecule2node.put(id, nodeId);
@@ -214,15 +242,15 @@ public class GraphmlBuilder {
      * @param interactor
      * @return
      */
-    protected String pickIdentifier(Interactor interactor) {
+    protected CrossReference pickIdentifier(Interactor interactor) {
 
-        String identifier = null;
+        CrossReference identifier = null;
 
         if( ! interactor.getIdentifiers().isEmpty() ) {
-            final IdentifierByDatabaseComparator comparator = new IdentifierByDatabaseComparator();
+            final CrossReferenceComparator comparator = new IdentifierByDatabaseComparator();
             identifier = pickFirstRelevantIdentifier(interactor.getIdentifiers(), comparator, true );
         } else if( ! interactor.getAlternativeIdentifiers().isEmpty() ) {
-            final IdentifierByDatabaseComparator comparator = new IdentifierByDatabaseComparator();
+            final CrossReferenceComparator comparator = new IdentifierByDatabaseComparator();
             identifier = pickFirstRelevantIdentifier( interactor.getAlternativeIdentifiers(), comparator, true );
         }
 
@@ -230,9 +258,9 @@ public class GraphmlBuilder {
         if( identifier == null ) {
             System.out.println( "WARNING - Could not find a relevant identifier for interactor: " + interactor );
             if( ! interactor.getIdentifiers().isEmpty() ) {
-                identifier = interactor.getIdentifiers().iterator().next().getIdentifier();
+                identifier = interactor.getIdentifiers().iterator().next();
             } else if( ! interactor.getAlternativeIdentifiers().isEmpty() ) {
-                identifier = interactor.getAlternativeIdentifiers().iterator().next().getIdentifier();
+                identifier = interactor.getAlternativeIdentifiers().iterator().next();
             }
         }
 
@@ -249,9 +277,9 @@ public class GraphmlBuilder {
      * @param identifiers a non null, non empty list of <code>CrossRefenrence</code>.
      * @return the identifier of the first relevant cross reference based on the current IdentifierByDatabaseComparator.
      */
-    private String pickFirstRelevantIdentifier( Collection<CrossReference> identifiers,
-                                                CrossReferenceComparator comparator,
-                                                boolean allowNullIfNoMatch ) {
+    private CrossReference pickFirstRelevantIdentifier( Collection<CrossReference> identifiers,
+                                                        CrossReferenceComparator comparator,
+                                                        boolean allowNullIfNoMatch ) {
 
         if (identifiers == null || identifiers.isEmpty()) {
             throw new IllegalArgumentException("You must give a non null/empty collection of identifiers");
@@ -264,20 +292,17 @@ public class GraphmlBuilder {
             Collections.sort(orderedRefs, comparator);
             picked = orderedRefs.get( 0 );
             hasMatched = comparator.hasMatchedAny();
-            if( log.isInfoEnabled() ) printIdentifiers(orderedRefs);
         } else {
             // only 1 element
             picked = identifiers.iterator().next();
             hasMatched = comparator.matches( picked );
         }
 
-        if( log.isInfoEnabled() ) log.info( "Matches: " + hasMatched );
-
         if( allowNullIfNoMatch && ! hasMatched ) {
             return null;
         }
 
-        return picked.getIdentifier();
+        return picked;
     }
 
     private static void printIdentifiers(List<CrossReference> identifiers) {
@@ -307,19 +332,21 @@ public class GraphmlBuilder {
             label = pickFirstRelevantAlias(interactor.getAliases(), new AliasByTypeComparator(), true);
         } else if ( ! interactor.getAlternativeIdentifiers().isEmpty() ) {
             final IdentifierByTextComparator comparator = new IdentifierByTextComparator();
-            label = pickFirstRelevantIdentifier(interactor.getAlternativeIdentifiers(), comparator, true);
+            CrossReference cr = pickFirstRelevantIdentifier(interactor.getAlternativeIdentifiers(), comparator, true);
+            if( cr != null ) label = cr.getIdentifier();
         }
 
         if( label == null ) {
             System.out.println( "WARNING - Could not find a relevant label for interactor: " + interactor );
             if (!interactor.getAliases().isEmpty()) {
                 label = pickFirstRelevantAlias(interactor.getAliases(), new AliasByIncreasingLengthComparator(), true);
-            } else if (!interactor.getAlternativeIdentifiers().isEmpty()) {
-                final CrossReference cr = interactor.getAlternativeIdentifiers().iterator().next();
-                label = cr.getIdentifier();
             } else if(!interactor.getIdentifiers().isEmpty()) {
                 final CrossReferenceComparator comparator = new IdentifierByDatabaseComparator();
-                label = pickFirstRelevantIdentifier(interactor.getIdentifiers(), comparator, false);
+                CrossReference cr = pickFirstRelevantIdentifier(interactor.getIdentifiers(), comparator, false);
+                if( cr != null ) label = cr.getIdentifier();
+            }else if (!interactor.getAlternativeIdentifiers().isEmpty()) {
+                final CrossReference cr = interactor.getAlternativeIdentifiers().iterator().next();
+                label = cr.getIdentifier();
             }
         }
 
@@ -351,13 +378,10 @@ public class GraphmlBuilder {
             Collections.sort(orderedRefs, comparator);
             picked = orderedRefs.get(0);
             hasMatched = comparator.hasMatchedAny();
-            if( log.isInfoEnabled() ) printAliases( orderedRefs );
         } else {
             picked = aliases.iterator().next();
             hasMatched = comparator.matches( picked );
         }
-
-        if( log.isInfoEnabled() ) log.info( "Matches: " + hasMatched );
 
         if( allowNullIfNoMatch && ! hasMatched ) {
             return null;

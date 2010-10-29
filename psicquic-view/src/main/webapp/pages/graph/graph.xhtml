@@ -1,20 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-
+                xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://intact.ebi.ac.uk/miscel /WEB-INF/intact-miscel.tld">
 
-    <div id="cytoscapeweb" style="width:70%;height:60%;">
+    <!-- TODO enhance the handling of the graph div size on screen resize -->
+    <!-- TODO Add on node click, a panel shows the details of a node, edge -->
+    <!-- TODO On right click on a node, allow to expand the network by updating the MIQL query (Q OR node.id) -->
+    <!-- TODO Add a way to run a text search by molecule name that highlights nodes -->
+    <!-- TODO Add a way to color highlight publications, detection methods, species -->
+    <!-- TODO Add a way to filter by confidence score with slider -->
+    <!-- TODO Add a way to filter nodes by count of neighbour -->
+    <!-- TODO Add a way to visualize graphicaly score or count of evidences -->
+    <!-- TODO Add a way to represent spoke expanded interactions -->
 
-        Interaction Graph should show here in a few moment...
+    <div id="graphController" style="float:right; width:19%;">
+        <tr:panelBox text="CytoscapeWeb Controls" inlineStyle="width:98%;">
 
+            <tr:panelHorizontalLayout>
+                <tr:outputText value="Layouts:" />&#160;
+                <tr:goLink destination="#" onclick="selectForceDirectedLayout();"><tr:outputText id="forceDirectedLayout" value="force directed" inlineStyle="font-weight:bold"/></tr:goLink>
+                &#160;|&#160;
+                <tr:goLink destination="#" onclick="selectRadialLayout();"><tr:outputText id="radialLayout" value="radial" inlineStyle="font-weight:normal"/></tr:goLink>
+                &#160;|&#160;
+                <tr:goLink destination="#" onclick="selectCircleLayout();"><tr:outputText id="circleLayout" value="circle" inlineStyle="font-weight:normal"/></tr:goLink>
+            </tr:panelHorizontalLayout>
+
+            <tr:panelHorizontalLayout>
+                <tr:outputText value="Merge edges:" />&#160;
+                <tr:goLink destination="#" onclick="selectMerged();"><tr:outputText id="mergeOn" value="on" inlineStyle="font-weight:bold"/></tr:goLink>
+                &#160;|&#160;
+                <tr:goLink destination="#" onclick="unselectMerged();"><tr:outputText id="mergeOff" value="off" inlineStyle="font-weight:normal"/></tr:goLink>
+            </tr:panelHorizontalLayout>
+
+            <!--<tr:panelHorizontalLayout>-->
+                <!--<tr:outputText value="Download:" />&#160;-->
+                <!--<tr:goLink destination="#" onclick="vis.exportNetwork('xgmml', 'export.php?type=xml');"><tr:outputText id="xgmll" value="xgmll" inlineStyle="font-weight:normal"/></tr:goLink>-->
+                <!--&#160;|&#160;-->
+                <!--<tr:goLink destination="#" onclick="vis.exportNetwork('graphml', 'export.php?type=graphml');"><tr:outputText id="graphml" value="graphml" inlineStyle="font-weight:normal"/></tr:goLink>-->
+                <!--&#160;|&#160;-->
+                <!--<tr:goLink destination="#" onclick="vis.exportNetwork('sif', 'export.php?type=sif');"><tr:outputText id="sif" value="sif" inlineStyle="font-weight:normal"/></tr:goLink>-->
+                <!--&#160;|&#160;-->
+            <!--</tr:panelHorizontalLayout>-->
+
+        </tr:panelBox>
     </div>
+
+    <div id="cytoscapeweb" style="width:80%; height:900px; border:1px solid #d3d3d3;">
+        Interaction Graph should show here in a few moment...
+    </div>
+
+    <!--<div id="note">-->
+    <!--</div>-->
+
 
     <script type="text/javascript">
 
         // network data could alternatively be grabbed via ajax
         var xml ='#{searchBean.graphml}';
+
+        var style = {
+            nodes: {
+                shape: { passthroughMapper: { attrName: "shape" } }
+            }
+        };
+
+        // whether the edges should be merged or not
+        var merged = true;
 
         // init and draw
         var vis = new org.cytoscapeweb.Visualization("cytoscapeweb");
@@ -22,46 +75,66 @@
         // callback when Cytoscape Web has finished drawing
         vis.ready(function() {
 
-            vis.edgesMerged( true );
+            vis.edgesMerged( merged );
 
-            // add a listener for when nodes and edges are clicked
-            vis.addListener("click", "nodes", function(event) {
-                handle_click(event);
-            })
-            .addListener("click", "edges", function(event) {
-                handle_click(event);
-            });
+            vis.addContextMenuItem("Select first neighbors", "nodes",
+                                  function (evt) {
+                                      // Get the right-clicked node:
+                                      var rootNode = evt.target;
 
-            function handle_click(event) {
-                 var target = event.target;
+                                      // Get the first neighbors of that node:
+                                      var fNeighbors = vis.firstNeighbors([rootNode]);
+                                      var neighborNodes = fNeighbors.neighbors;
 
-                 clear();
-                 print("event.group = " + event.group);
-                 for (var i in target.data) {
-                    var variable_name = i;
-                    var variable_value = target.data[i];
-                    print( "event.target.data." + variable_name + " = " + variable_value );
-                 }
-            }
+                                      // Select the root node and its neighbors:
+                                      vis.select([rootNode]).select(neighborNodes);
+                                  }
+                    );
 
-            function clear() {
-                document.getElementById("note").innerHTML = "";
-            }
-
-            function print(msg) {
-                document.getElementById("note").innerHTML += "<p>" + msg + "</p>";
-            }
+//            // add a listener for when nodes and edges are clicked
+//            vis.addListener("click", "nodes", function(event) {
+//                handle_click(event);
+//            })
+//            .addListener("click", "edges", function(event) {
+//                handle_click(event);
+//            });
+//
+//            function handle_click(event) {
+//                 var target = event.target;
+//
+//                 clear();
+//                 print("event.group = " + event.group);
+//                 for (var i in target.data) {
+//                    var variable_name = i;
+//                    var variable_value = target.data[i];
+//                    print( "event.target.data." + variable_name + " = " + variable_value );
+//                 }
+//            }
+//
+//            function clear() {
+//                document.getElementById("note").innerHTML = "";
+//            }
+//
+//            function print(msg) {
+//                document.getElementById("note").innerHTML += "<p>"+msg+"</p>";
+//            }
         });
 
 
         var draw_options = {
+            // set visual style
+            visualStyle: style,
+
             // your data goes here
             network: xml
         };
 
         vis.draw(draw_options);
 
+        graphResize()
+
         showhide('cytoscapeweb');
+        showhide('graphController');
     </script>
 
 </ui:composition>
