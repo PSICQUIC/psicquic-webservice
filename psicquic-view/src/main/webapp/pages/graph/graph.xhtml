@@ -13,53 +13,55 @@
     <!-- TODO Add a way to filter by confidence score with slider -->
     <!-- TODO Add a way to filter nodes by count of neighbour -->
     <!-- TODO Add a way to visualize graphicaly score or count of evidences -->
-    <!-- TODO Add a way to represent spoke expanded interactions -->
+    <!-- TODO Add a way to represent spoke expanded interactions (better wait MITAB 2.6) -->
 
-    <div id="graphController" style="float:right; width:19%;">
-        <tr:panelBox text="CytoscapeWeb Controls" inlineStyle="width:98%;">
+    <div id="rightPanel" style="float:right; width:19%;">
+        <div id="graphController" >
+            <tr:panelBox text="CytoscapeWeb Controls" inlineStyle="width:98%;">
 
-            <tr:panelHorizontalLayout>
-                <tr:outputText value="Layouts:" />&#160;
-                <tr:goLink destination="#" onclick="selectForceDirectedLayout();"><tr:outputText id="forceDirectedLayout" value="force directed" inlineStyle="font-weight:bold"/></tr:goLink>
-                &#160;|&#160;
-                <tr:goLink destination="#" onclick="selectRadialLayout();"><tr:outputText id="radialLayout" value="radial" inlineStyle="font-weight:normal"/></tr:goLink>
-                &#160;|&#160;
-                <tr:goLink destination="#" onclick="selectCircleLayout();"><tr:outputText id="circleLayout" value="circle" inlineStyle="font-weight:normal"/></tr:goLink>
-            </tr:panelHorizontalLayout>
+                <tr:panelHorizontalLayout>
+                    <tr:outputText value="Layouts:" />&#160;
+                    <tr:goLink destination="#" onclick="selectForceDirectedLayout();"><tr:outputText id="forceDirectedLayout" value="force directed" inlineStyle="font-weight:bold"/></tr:goLink>
+                    &#160;|&#160;
+                    <tr:goLink destination="#" onclick="selectRadialLayout();"><tr:outputText id="radialLayout" value="radial" inlineStyle="font-weight:normal"/></tr:goLink>
+                    &#160;|&#160;
+                    <tr:goLink destination="#" onclick="selectCircleLayout();"><tr:outputText id="circleLayout" value="circle" inlineStyle="font-weight:normal"/></tr:goLink>
+                </tr:panelHorizontalLayout>
 
-            <tr:panelHorizontalLayout>
-                <tr:outputText value="Merge edges:" />&#160;
-                <tr:goLink destination="#" onclick="selectMerged();"><tr:outputText id="mergeOn" value="on" inlineStyle="font-weight:bold"/></tr:goLink>
-                &#160;|&#160;
-                <tr:goLink destination="#" onclick="unselectMerged();"><tr:outputText id="mergeOff" value="off" inlineStyle="font-weight:normal"/></tr:goLink>
-            </tr:panelHorizontalLayout>
+                <tr:panelHorizontalLayout>
+                    <tr:outputText value="Merge edges:" />&#160;
+                    <tr:goLink destination="#" onclick="selectMerged();"><tr:outputText id="mergeOn" value="on" inlineStyle="font-weight:bold"/></tr:goLink>
+                    &#160;|&#160;
+                    <tr:goLink destination="#" onclick="unselectMerged();"><tr:outputText id="mergeOff" value="off" inlineStyle="font-weight:normal"/></tr:goLink>
+                </tr:panelHorizontalLayout>
 
-            <!--<tr:panelHorizontalLayout>-->
-                <!--<tr:outputText value="Download:" />&#160;-->
-                <!--<tr:goLink destination="#" onclick="vis.exportNetwork('xgmml', 'export.php?type=xml');"><tr:outputText id="xgmll" value="xgmll" inlineStyle="font-weight:normal"/></tr:goLink>-->
-                <!--&#160;|&#160;-->
-                <!--<tr:goLink destination="#" onclick="vis.exportNetwork('graphml', 'export.php?type=graphml');"><tr:outputText id="graphml" value="graphml" inlineStyle="font-weight:normal"/></tr:goLink>-->
-                <!--&#160;|&#160;-->
-                <!--<tr:goLink destination="#" onclick="vis.exportNetwork('sif', 'export.php?type=sif');"><tr:outputText id="sif" value="sif" inlineStyle="font-weight:normal"/></tr:goLink>-->
-                <!--&#160;|&#160;-->
-            <!--</tr:panelHorizontalLayout>-->
+                <!--<tr:panelHorizontalLayout>-->
+                    <!--<tr:outputText value="Download:" />&#160;-->
+                    <!--<tr:goLink destination="#" onclick="vis.exportNetwork('xgmml', 'export.php?type=xml');"><tr:outputText id="xgmll" value="xgmll" inlineStyle="font-weight:normal"/></tr:goLink>-->
+                    <!--&#160;|&#160;-->
+                    <!--<tr:goLink destination="#" onclick="vis.exportNetwork('graphml', 'export.php?type=graphml');"><tr:outputText id="graphml" value="graphml" inlineStyle="font-weight:normal"/></tr:goLink>-->
+                    <!--&#160;|&#160;-->
+                    <!--<tr:goLink destination="#" onclick="vis.exportNetwork('sif', 'export.php?type=sif');"><tr:outputText id="sif" value="sif" inlineStyle="font-weight:normal"/></tr:goLink>-->
+                    <!--&#160;|&#160;-->
+                <!--</tr:panelHorizontalLayout>-->
 
-        </tr:panelBox>
+            </tr:panelBox>
+        </div>
+
+        <div id="note" style="position:absolute;">
+        </div>
     </div>
 
     <div id="cytoscapeweb" style="width:80%; height:900px; border:1px solid #d3d3d3;">
         Interaction Graph should show here in a few moment...
     </div>
 
-    <!--<div id="note">-->
-    <!--</div>-->
-
-
     <script type="text/javascript">
 
         // network data could alternatively be grabbed via ajax
         var xml ='#{searchBean.graphml}';
 
+        // Enables the shapes present in the GraphML input to be displayed in the Flash panel.
         var style = {
             nodes: {
                 shape: { passthroughMapper: { attrName: "shape" } }
@@ -91,33 +93,46 @@
                                   }
                     );
 
-//            // add a listener for when nodes and edges are clicked
-//            vis.addListener("click", "nodes", function(event) {
-//                handle_click(event);
-//            })
-//            .addListener("click", "edges", function(event) {
-//                handle_click(event);
-//            });
+//            vis.addContextMenuItem("Link out to source web site", "nodes",
+//                                  function (evt) {
+//                                      // Get the right-clicked node:
+//                                      var target = evt.target;
 //
-//            function handle_click(event) {
-//                 var target = event.target;
+//                                      var identifier = target.data[ 'identifier' ];
 //
-//                 clear();
-//                 print("event.group = " + event.group);
-//                 for (var i in target.data) {
-//                    var variable_name = i;
-//                    var variable_value = target.data[i];
-//                    print( "event.target.data." + variable_name + " = " + variable_value );
-//                 }
-//            }
+//                                      // get url template
+//                                      var url='http://www.google.com/q=${ac}}';
 //
-//            function clear() {
-//                document.getElementById("note").innerHTML = "";
-//            }
-//
-//            function print(msg) {
-//                document.getElementById("note").innerHTML += "<p>"+msg+"</p>";
-//            }
+//                                      // open URL for that molecule
+//                                      window.open(url.replace('${ac}}',identifier),'_blank',null);
+//                                  }
+//                    );
+
+            // add a listener for when nodes and edges are clicked
+            vis.addListener("click", "nodes", function(event) {
+                handle_click(event);
+            })
+            .addListener("click", "edges", function(event) {
+                handle_click(event);
+            });
+
+            function handle_click(event) {
+                var target = event.target;
+
+                clear();
+                print( '<b>Interactor</b>: ' + target.data['label'] );
+                print( '<b>Specie</b>: ' + target.data['specie'] );
+                print( '<b>Molecule type</b>: ' + target.data['type'] );
+                print( '<b>Identifier</b>: ' + target.data['identifier'] );
+            }
+
+            function clear() {
+                document.getElementById("note").innerHTML = "";
+            }
+
+            function print(msg) {
+                document.getElementById("note").innerHTML += '<p>' + msg + '</p>';
+            }
         });
 
 

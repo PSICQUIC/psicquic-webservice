@@ -28,9 +28,6 @@ import java.util.*;
  */
 public class GraphmlBuilder {
 
-    // TODO deal with iRefIndex complexes and represent that interactor with a different shape
-    // TODO deal with ChEMBL compounds and represent that interactor with a different shape
-
     private static final Log log = LogFactory.getLog(GraphmlBuilder.class);
 
     public static final String NEW_LINE = "\\\n";
@@ -41,6 +38,7 @@ public class GraphmlBuilder {
             "    xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns" + NEW_LINE +
             "     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">" + NEW_LINE +
             "  <key id=\"label\" for=\"node\" attr.name=\"label\" attr.type=\"string\"/>" + NEW_LINE +
+            "  <key id=\"identifier\" for=\"node\" attr.name=\"identifier\" attr.type=\"string\"/>" + NEW_LINE +
             "  <key id=\"specie\" for=\"node\" attr.name=\"specie\" attr.type=\"string\"/>" + NEW_LINE +
             "  <key id=\"type\" for=\"node\" attr.name=\"type\" attr.type=\"string\"/>" + NEW_LINE +
             "  <key id=\"shape\" for=\"node\" attr.name=\"shape\" attr.type=\"string\">"  + NEW_LINE +
@@ -124,7 +122,7 @@ public class GraphmlBuilder {
         log.trace(graphmlOutput);
 
         final long stop = System.currentTimeMillis();
-        log.debug("GraphML conversion took: " + (stop - start) + "ms");
+        System.out.println("GraphML conversion took: " + (stop - start) + "ms");
 
         return graphmlOutput;
     }
@@ -187,11 +185,12 @@ public class GraphmlBuilder {
             moleculeType = "complex";
         }
 
-        StringBuilder sb = new StringBuilder(128);
+        StringBuilder sb = new StringBuilder(256);
         String label = pickLabel(interactor);
         final int nodeId = getNextNodeId();
-        sb.append("     <node id=\"").append(nodeId).append("\">").append(NEW_LINE)
-                .append("        <data key=\"label\">").append(label).append("</data>").append(NEW_LINE);
+        sb.append("     <node id=\"").append( nodeId ).append("\">").append(NEW_LINE);
+        sb.append("        <data key=\"label\">").append( label ).append("</data>").append(NEW_LINE);
+        sb.append("        <data key=\"identifier\">").append( id ).append("</data>").append(NEW_LINE);
 
         final String specieName = getSpecieName(interactor.getOrganism());
         if( specieName != null ) {
@@ -202,13 +201,12 @@ public class GraphmlBuilder {
 
         if( moleculeType.equals( "compound" ) ) {
             sb.append("        <data key=\"shape\">").append("TRIANGLE").append("</data>").append(NEW_LINE);
-            System.out.println("TRIANGLE");
-        } else if( moleculeType.equals( "compound" ) ) {
+        } else if( moleculeType.equals( "complex" ) ) {
             sb.append("        <data key=\"shape\">").append("VEE").append("</data>").append(NEW_LINE);
-            System.out.println("VEE");
         }
 
         sb.append("     </node>").append(NEW_LINE);
+//        System.out.println("node buffer size: " + sb.length() + "("+(sb.length() > 256 ? "EXPANDED" : "OK")+")");
 
         molecule2node.put(id, nodeId);
         return new Node(nodeId, sb.toString());
@@ -256,7 +254,7 @@ public class GraphmlBuilder {
 
         // get less strict and just pick the first thing available in identifier or alt. identifier.
         if( identifier == null ) {
-            System.out.println( "WARNING - Could not find a relevant identifier for interactor: " + interactor );
+            log.debug("WARNING - Could not find a relevant identifier for interactor: " + interactor);
             if( ! interactor.getIdentifiers().isEmpty() ) {
                 identifier = interactor.getIdentifiers().iterator().next();
             } else if( ! interactor.getAlternativeIdentifiers().isEmpty() ) {
@@ -337,7 +335,7 @@ public class GraphmlBuilder {
         }
 
         if( label == null ) {
-            System.out.println( "WARNING - Could not find a relevant label for interactor: " + interactor );
+            log.debug( "WARNING - Could not find a relevant label for interactor: " + interactor );
             if (!interactor.getAliases().isEmpty()) {
                 label = pickFirstRelevantAlias(interactor.getAliases(), new AliasByIncreasingLengthComparator(), true);
             } else if(!interactor.getIdentifiers().isEmpty()) {
