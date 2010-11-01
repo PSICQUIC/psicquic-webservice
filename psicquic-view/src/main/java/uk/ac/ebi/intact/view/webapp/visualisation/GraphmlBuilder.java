@@ -31,7 +31,7 @@ public class GraphmlBuilder {
 
     private static final Log log = LogFactory.getLog(GraphmlBuilder.class);
 
-    public static final String NEW_LINE = "\\\n";
+    public static final String NEW_LINE = "\n";
 
     public static final String GRAPHML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + NEW_LINE +
             "<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\"  " + NEW_LINE +
@@ -140,9 +140,10 @@ public class GraphmlBuilder {
     }
 
     private String buildEdge(BinaryInteraction interaction, int ida, int idb) {
-        StringBuilder sb = new StringBuilder(64);
+        StringBuilder sb = new StringBuilder(256);
         sb.append("     <edge source=\"" + ida + "\" target=\"" + idb + "\">").append(NEW_LINE);
 
+        // TODO add more details on the edge, tho, how do we deal with multivalued fields ???
 
 //        final String ac = getInteractionAc(interaction);
 //        if( ac != null) {
@@ -155,6 +156,7 @@ public class GraphmlBuilder {
 //        sb.append("     <data key=\"confidence\"></data>").append(NEW_LINE);
 
         sb.append("     </edge>").append(NEW_LINE);
+//        System.out.println("edge buffer size: " + sb.length() + "("+(sb.length() > 256 ? "EXPANDED" : "OK")+")");
         return sb.toString();
     }
 

@@ -331,6 +331,17 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>graphmlDownload</servlet-name>
+        <servlet-class>uk.ac.ebi.intact.view.webapp.visualisation.GraphmlServlet</servlet-class>
+    </servlet>
+
+    <!-- Faces Servlet Mappings -->
+    <servlet-mapping>
+        <servlet-name>graphmlDownload</servlet-name>
+        <url-pattern>graphmlDownload</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>clusterDownload</servlet-name>
         <servlet-class>uk.ac.ebi.intact.view.webapp.controller.clustering.ClusteringDownloadServlet</servlet-class>
     </servlet>

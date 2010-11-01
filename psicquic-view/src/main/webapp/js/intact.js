@@ -116,4 +116,3 @@ function graphResize() {
     var x = document.getElementById('cytoscapeweb');
     x.style.height = heigth + 'px';
 }
-

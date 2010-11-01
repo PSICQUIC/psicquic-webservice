@@ -14,20 +14,19 @@
 
          <trh:head>
 
-            <meta http-equiv="Content-Type"
-                  content="text/html; charset=UTF-8"/>
-
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
             <!-- IntAct dynamic application should not be indexed by search engines -->
             <meta name='robots' content='nofollow'/>
 
-            <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/contents.css" type="text/css"/>
-            <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/userstyles.css" type="text/css"/>
-            <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/sidebars.css" type="text/css"/>
-            <link rel="stylesheet" href="#{requestConfigBean.absoluteContextPath}/skins/ebi/ebi.css" type="text/css"/>
+             <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/contents.css" type="text/css"/>
+             <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/userstyles.css" type="text/css"/>
+             <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/sidebars.css" type="text/css"/>
+             <link rel="stylesheet" href="#{requestConfigBean.absoluteContextPath}/skins/ebi/ebi.css" type="text/css"/>
 
-            <trh:script source="#{ebisf:absoluteEbiUrl()}/inc/js/contents.js" type="text/javascript"/>
+             <trh:script source="#{ebisf:absoluteEbiUrl()}/inc/js/contents.js" type="text/javascript"/>
 
+             <trh:script source="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"/>
              <trh:script source="/js/intact.js"/>
 
              <trh:script source="/js/cytoscape_web/AC_OETags.min.js"/>
@@ -257,7 +256,9 @@
                         <ui:param name="results" value="#{searchBean.resultDataModelMap[searchBean.selectedServiceName]}"/>
                     </ui:include>
 
-                    <ui:include src="/pages/graph/graph.xhtml"/>
+                    <tr:panelGroupLayout rendered="#{searchBean.graphEnabled}">
+                        <ui:include src="/pages/graph/graph.xhtml"/>
+                    </tr:panelGroupLayout>
                 </div>
 
             </tr:panelGroupLayout>

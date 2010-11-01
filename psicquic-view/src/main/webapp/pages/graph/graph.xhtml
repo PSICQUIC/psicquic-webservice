@@ -60,7 +60,10 @@
     <script type="text/javascript">
 
         // network data could alternatively be grabbed via ajax
-        var xml ='#{searchBean.graphml}';
+        var xmlUrl ='#{searchBean.applicationUrl}/graphmlDownload?mitabUrl=#{searchBean.mitabUrl}';
+        alert( 'xmlUrl: ' + xmlUrl );
+
+        var xml = $.ajax({ url: xmlUrl, async: false }).responseText;
 
         // Enables the shapes present in the GraphML input to be displayed in the Flash panel.
         var style = {

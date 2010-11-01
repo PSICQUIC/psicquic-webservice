@@ -27,14 +27,14 @@ public class ClusteringDownloadServlet extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final String jobId = request.getParameter("jobId");
-        System.out.println("jobId = " + jobId);
+//        System.out.println("jobId = " + jobId);
         final String query = request.getParameter("query");
-        System.out.println("query = " + query);
+//        System.out.println("query = " + query);
         String format = request.getParameter("format");
         if( format == null) {
             format = InteractionClusteringService.RETURN_TYPE_MITAB25;
         }
-        System.out.println("format = " + format);
+//        System.out.println("format = " + format);
 
         ServletOutputStream stream = null;
 

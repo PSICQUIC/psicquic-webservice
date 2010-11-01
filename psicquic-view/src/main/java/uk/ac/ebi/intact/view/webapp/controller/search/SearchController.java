@@ -564,63 +564,37 @@ public class SearchController extends BaseController {
         return s.replaceAll( " ", "%20" );
     }
 
-    private String cachedGraphml = null;
-    private String cachedGraphmlQuery = null;
+    public String getMitabUrl() throws IOException, ConverterException {
 
-    public String getGraphml() throws IOException, ConverterException {
+        final String serviceName = getSelectedServiceName();
+        final ServiceType serviceType = getServicesMap().get(serviceName);
+        final String query = encodeUrl(getUserQuery().getFilteredSearchQuery());
+        final String restUrl = serviceType.getRestUrl();
+        final String queryUrl;
 
-        FacesContext context = FacesContext.getCurrentInstance();
-        if( RequestContext.getCurrentInstance().isPartialRequest( context )) {
-            return null;
+        if( ! clusterSelected ) {
+            boolean endWithSlash = restUrl.endsWith( "/" );
+            queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
+        } else {
+            String servletPrefix = getApplicationUrl();
+            queryUrl = servletPrefix + restUrl;
         }
 
-        String output = "";
-//        && ( ! cachedGraphmlQuery.equals( getUserQuery().getFilteredSearchQuery()) || cachedGraphml == null )
+        if(log.isDebugEnabled()) log.debug("Reading data from: " + queryUrl);
 
-        // only fire a conversion if the dataset if no more than 1000 interactions.
-        if( isGraphEnabled() ) {
+        return queryUrl;
+    }
 
-            cachedGraphmlQuery = getUserQuery().getFilteredSearchQuery();
+    public String getApplicationUrl() {
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 
-            final String serviceName = getSelectedServiceName();
-            final ServiceType serviceType = getServicesMap().get(serviceName);
-            final String query = encodeUrl(getUserQuery().getFilteredSearchQuery());
-            final String restUrl = serviceType.getRestUrl();
-            final String queryUrl;
+        final String scheme = request.getScheme();
+        final String serverName = request.getServerName();
+        final int serverport = request.getServerPort();
+        final String contextPath = request.getContextPath();
 
-            if( ! clusterSelected ) {
-                boolean endWithSlash = restUrl.endsWith( "/" );
-                queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
-            } else {
-                final FacesContext facesContext = FacesContext.getCurrentInstance();
-                HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
-
-                final String scheme = request.getScheme();
-                final String serverName = request.getServerName();
-                final int serverport = request.getServerPort();
-                final String contextPath = request.getContextPath();
-
-                String servletPrefix = scheme + "://" + serverName + ":" + serverport + contextPath;
-
-                System.out.println("request.getRequestURL() = " + request.getRequestURL());
-
-                queryUrl = servletPrefix + restUrl;
-            }
-
-            if(log.isDebugEnabled()) log.debug("Reading data from: " + queryUrl);
-
-            final URLConnection connection = new URL(queryUrl).openConnection();
-            InputStream is = connection.getInputStream();
-
-            final GraphmlBuilder builder = new GraphmlBuilder();
-            output = builder.build( is );
-
-            cachedGraphml = output;
-
-            is.close();
-        }
-
-        return cachedGraphml;
+        return scheme + "://" + serverName + ":" + serverport + contextPath;
     }
 
     public boolean isGraphEnabled() {
