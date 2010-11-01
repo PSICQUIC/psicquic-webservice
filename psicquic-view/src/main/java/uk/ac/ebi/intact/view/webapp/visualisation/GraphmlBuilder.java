@@ -1,6 +1,7 @@
 package uk.ac.ebi.intact.view.webapp.visualisation;
 
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -37,11 +38,24 @@ public class GraphmlBuilder {
             "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" + NEW_LINE +
             "    xsi:schemaLocation=\"http://graphml.graphdrawing.org/xmlns" + NEW_LINE +
             "     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd\">" + NEW_LINE +
+
+            /* Node's properties */
+
             "  <key id=\"label\" for=\"node\" attr.name=\"label\" attr.type=\"string\"/>" + NEW_LINE +
             "  <key id=\"identifier\" for=\"node\" attr.name=\"identifier\" attr.type=\"string\"/>" + NEW_LINE +
             "  <key id=\"specie\" for=\"node\" attr.name=\"specie\" attr.type=\"string\"/>" + NEW_LINE +
             "  <key id=\"type\" for=\"node\" attr.name=\"type\" attr.type=\"string\"/>" + NEW_LINE +
             "  <key id=\"shape\" for=\"node\" attr.name=\"shape\" attr.type=\"string\">"  + NEW_LINE +
+
+            /* Edge's properties */
+
+//            "  <key id=\"ac\" for=\"edge\" attr.name=\"ac\" attr.type=\"string\">"  + NEW_LINE +
+//            "  <key id=\"type\" for=\"edge\" attr.name=\"type\" attr.type=\"string\">"  + NEW_LINE +
+//            "  <key id=\"method\" for=\"edge\" attr.name=\"method\" attr.type=\"string\">"  + NEW_LINE +
+//            "  <key id=\"pubId\" for=\"edge\" attr.name=\"pubId\" attr.type=\"string\">"  + NEW_LINE +
+//            "  <key id=\"author\" for=\"edge\" attr.name=\"author\" attr.type=\"string\">"  + NEW_LINE +
+//            "  <key id=\"confidence\" for=\"edge\" attr.name=\"confidence\" attr.type=\"string\">"  + NEW_LINE +
+//
             "    <default>ELLIPSE</default>"  + NEW_LINE +
             "  </key>"  + NEW_LINE +
             "  <graph id=\"G\" edgedefault=\"undirected\">" + NEW_LINE;
@@ -66,8 +80,6 @@ public class GraphmlBuilder {
     }
 
     public String build(InputStream is) throws IOException, ConverterException {
-
-        // TODO Create a download servlet for the clustered datasets so that we can have a graph for them too
 
         final long start = System.currentTimeMillis();
 
@@ -96,7 +108,7 @@ public class GraphmlBuilder {
                     sb.append(nodeB.getXml());
                 }
 
-                sb.append(buildEdge(nodeA.getId(), nodeB.getId()));
+                sb.append(buildEdge(interaction, nodeA.getId(), nodeB.getId()));
 
                 interactionCount++;
             }
@@ -127,11 +139,30 @@ public class GraphmlBuilder {
         return graphmlOutput;
     }
 
-    private String buildEdge(int ida, int idb) {
+    private String buildEdge(BinaryInteraction interaction, int ida, int idb) {
         StringBuilder sb = new StringBuilder(64);
-        sb.append("     <edge source=\"" + ida + "\" target=\"" + idb + "\" />").append(NEW_LINE);
+        sb.append("     <edge source=\"" + ida + "\" target=\"" + idb + "\">").append(NEW_LINE);
+
+
+//        final String ac = getInteractionAc(interaction);
+//        if( ac != null) {
+//            sb.append("     <data key=\"ac\">"+ ac +"</data>").append(NEW_LINE);
+//        }
+//        sb.append("     <data key=\"type\"></data>").append(NEW_LINE);
+//        sb.append("     <data key=\"method\"></data>").append(NEW_LINE);
+//        sb.append("     <data key=\"pmid\"></data>").append(NEW_LINE);
+//        sb.append("     <data key=\"author\"></data>").append(NEW_LINE);
+//        sb.append("     <data key=\"confidence\"></data>").append(NEW_LINE);
+
+        sb.append("     </edge>").append(NEW_LINE);
         return sb.toString();
     }
+
+//    private String getInteractionAc(BinaryInteraction interaction) {
+//        String ac = null;
+//
+//        return ac;
+//    }
 
     private class Node {
         /**
@@ -172,12 +203,12 @@ public class GraphmlBuilder {
     private Node buildNode(Interactor interactor) {
 
         final CrossReference cr = pickIdentifier(interactor);
+        final String db = cr.getDatabase();
         final String id = cr.getIdentifier();
         if (molecule2node.containsKey(id)) {
             return new Node(molecule2node.get(id), null); // the node was already exported, return its id instead
         }
 
-        final String db = cr.getDatabase();
         String moleculeType = "protein";
         if( db.equals( "chebi" ) || db.equals("chembl") ) {
             moleculeType = "compound";
@@ -189,12 +220,12 @@ public class GraphmlBuilder {
         String label = pickLabel(interactor);
         final int nodeId = getNextNodeId();
         sb.append("     <node id=\"").append( nodeId ).append("\">").append(NEW_LINE);
-        sb.append("        <data key=\"label\">").append( label ).append("</data>").append(NEW_LINE);
-        sb.append("        <data key=\"identifier\">").append( id ).append("</data>").append(NEW_LINE);
+        sb.append("        <data key=\"label\">").append( escape(label) ).append("</data>").append(NEW_LINE);
+        sb.append("        <data key=\"identifier\">").append( db+"#"+id ).append("</data>").append(NEW_LINE);
 
         final String specieName = getSpecieName(interactor.getOrganism());
         if( specieName != null ) {
-            sb.append("        <data key=\"specie\">").append(specieName).append("</data>").append(NEW_LINE);
+            sb.append("        <data key=\"specie\">").append(escape(specieName)).append("</data>").append(NEW_LINE);
         }
 
         sb.append("        <data key=\"type\">").append(moleculeType).append("</data>").append(NEW_LINE);
@@ -210,6 +241,15 @@ public class GraphmlBuilder {
 
         molecule2node.put(id, nodeId);
         return new Node(nodeId, sb.toString());
+    }
+
+    /**
+     * Makes sure the data stored in XML don't contain offending characters.
+     * @param s
+     * @return
+     */
+    private String escape( String s ) {
+        return StringEscapeUtils.escapeXml( s );
     }
 
     private String getSpecieName(Organism organism) {
