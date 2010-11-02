@@ -338,7 +338,7 @@
     <!-- Faces Servlet Mappings -->
     <servlet-mapping>
         <servlet-name>graphmlDownload</servlet-name>
-        <url-pattern>graphmlDownload</url-pattern>
+        <url-pattern>/graphmlDownload</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -349,7 +349,7 @@
     <!-- Faces Servlet Mappings -->
     <servlet-mapping>
         <servlet-name>clusterDownload</servlet-name>
-        <url-pattern>download</url-pattern>
+        <url-pattern>/download</url-pattern>
     </servlet-mapping>
 
 
