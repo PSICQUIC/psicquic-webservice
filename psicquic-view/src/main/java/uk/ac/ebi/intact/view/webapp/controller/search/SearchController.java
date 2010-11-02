@@ -97,15 +97,21 @@ public class SearchController extends BaseController {
         refresh(null);
     }
 
+    private boolean isPartialRequest() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        return RequestContext.getCurrentInstance().isPartialRequest( context );
+    }
+
     @PreRenderView
     public void preRender() {
 
-        FacesContext context = FacesContext.getCurrentInstance();
-        if( RequestContext.getCurrentInstance().isPartialRequest( context )) {
+        if( isPartialRequest() ) {
             return;
         }
 
         // TODO add new param 'clusterJobId' that can be combined with parameter 'query'
+
+        FacesContext context = FacesContext.getCurrentInstance();
 
         String jobId = context.getExternalContext().getRequestParameterMap().get("clusterJobId");
         if( jobId != null ) {
@@ -230,16 +236,7 @@ public class SearchController extends BaseController {
         final ServiceType service = new ServiceType();
         service.setName( serviceName );
 
-        // To enable download of data via table, create a servlet and set the URL here
-        FacesContext fc = FacesContext.getCurrentInstance();
-
-        ServletContext sc = (ServletContext) fc.getExternalContext().getContext();
-
-        final String contextPath = sc.getContextPath();
-        System.out.println("contextPath = " + contextPath);
-
-        final String appRoot = sc.getRealPath( "/" );
-        System.out.println("appRoot = " + appRoot);
+        // Enable download of clustered data via table via a servlet
         service.setRestUrl( "/download?jobId="+jobId+"&query=*" );
 
         servicesMap.put( serviceName, service );
@@ -566,6 +563,10 @@ public class SearchController extends BaseController {
 
     public String getMitabUrl() throws IOException, ConverterException {
 
+        if( isPartialRequest() ) {
+            return null;
+        }
+
         final String serviceName = getSelectedServiceName();
         final ServiceType serviceType = getServicesMap().get(serviceName);
         final String query = encodeUrl(getUserQuery().getFilteredSearchQuery());
@@ -576,8 +577,7 @@ public class SearchController extends BaseController {
             boolean endWithSlash = restUrl.endsWith( "/" );
             queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
         } else {
-            String servletPrefix = getApplicationUrl();
-            queryUrl = servletPrefix + restUrl;
+            queryUrl = getApplicationUrl() + restUrl;
         }
 
         if(log.isDebugEnabled()) log.debug("Reading data from: " + queryUrl);
@@ -586,6 +586,11 @@ public class SearchController extends BaseController {
     }
 
     public String getApplicationUrl() {
+
+        if( isPartialRequest() ) {
+            return null;
+        }
+
         final FacesContext facesContext = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
 

@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.view.webapp.controller.clustering;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
 import org.hupo.psi.mi.psicquic.PsicquicServiceException;
 import org.hupo.psi.mi.psicquic.QueryResponse;
@@ -23,18 +25,20 @@ import java.io.IOException;
  */
 public class ClusteringDownloadServlet extends HttpServlet {
 
+    private static final Log log = LogFactory.getLog(ClusteringDownloadServlet.class);
+
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final String jobId = request.getParameter("jobId");
-//        System.out.println("jobId = " + jobId);
-        final String query = request.getParameter("query");
-//        System.out.println("query = " + query);
+        String query = request.getParameter("query");
+        if( query == null) {
+            query = "*";
+        }
         String format = request.getParameter("format");
         if( format == null) {
             format = InteractionClusteringService.RETURN_TYPE_MITAB25;
         }
-//        System.out.println("format = " + format);
 
         ServletOutputStream stream = null;
 
@@ -44,7 +48,7 @@ public class ClusteringDownloadServlet extends HttpServlet {
         final InteractionClusteringService ics = new DefaultInteractionClusteringService();
         try {
 
-            // TODO chunk the data instead of throwing all at once
+            // TODO chunk the data instead of throwing it all at once
 
             final QueryResponse resp = ics.query(jobId,
                                                  query,
@@ -53,9 +57,9 @@ public class ClusteringDownloadServlet extends HttpServlet {
                                                  format);
 
             // convert to a list of BinaryInteraction
-            System.out.println("Total MITAB lines: " + resp.getResultInfo().getTotalResults() );
-            String mitab = resp.getResultSet().getMitab();
+            if( log.isInfoEnabled() ) log.info("Total MITAB lines: " + resp.getResultInfo().getTotalResults() );
 
+            String mitab = resp.getResultSet().getMitab();
             stream.write(mitab.getBytes());
 
         } catch (JobNotCompletedException e) {

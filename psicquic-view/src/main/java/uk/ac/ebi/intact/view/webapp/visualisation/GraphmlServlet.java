@@ -1,5 +1,7 @@
 package uk.ac.ebi.intact.view.webapp.visualisation;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.xml.converter.ConverterException;
 
 import javax.servlet.ServletException;
@@ -20,10 +22,14 @@ import java.net.URL;
  */
 public class GraphmlServlet extends HttpServlet {
 
+    private static final Log log = LogFactory.getLog(GraphmlServlet.class);
+
     @Override
     public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
 
         final String mitabUrl = request.getParameter("mitabUrl");
+        if (log.isDebugEnabled()) log.debug("mitabUrl: " + mitabUrl );
+
         final URL inputUrl = new URL( mitabUrl );
         final InputStream is = inputUrl.openStream();
 

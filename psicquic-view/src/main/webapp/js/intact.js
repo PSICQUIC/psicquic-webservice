@@ -13,7 +13,6 @@ function submitEnter(commandId, e)
         return false;
     } else
         return true;
-
 }
 
 function showhide(id){
@@ -90,7 +89,6 @@ function selectForceDirectedLayout() {
     document.getElementById('forceDirectedLayout').style.fontWeight='bold';
     document.getElementById('radialLayout').style.fontWeight='normal';
     document.getElementById('circleLayout').style.fontWeight='normal';
-
     vis.layout('ForceDirected');
 }
 
@@ -98,7 +96,6 @@ function selectRadialLayout() {
     document.getElementById('forceDirectedLayout').style.fontWeight='normal';
     document.getElementById('radialLayout').style.fontWeight='bold';
     document.getElementById('circleLayout').style.fontWeight='normal';
-
     vis.layout('Radial');
 }
 
@@ -106,13 +103,11 @@ function selectCircleLayout() {
     document.getElementById('forceDirectedLayout').style.fontWeight='normal';
     document.getElementById('radialLayout').style.fontWeight='normal';
     document.getElementById('circleLayout').style.fontWeight='bold';
-
     vis.layout('Circle');
 }
 
 function graphResize() {
-    var heigth = window.outerHeight - 400;
-
+    var heigth = $(window).height() - 290;
     var x = document.getElementById('cytoscapeweb');
     x.style.height = heigth + 'px';
 }

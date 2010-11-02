@@ -134,7 +134,7 @@ public class GraphmlBuilder {
         log.trace(graphmlOutput);
 
         final long stop = System.currentTimeMillis();
-        System.out.println("GraphML conversion took: " + (stop - start) + "ms");
+        log.info("GraphML conversion took: " + (stop - start) + "ms");
 
         return graphmlOutput;
     }

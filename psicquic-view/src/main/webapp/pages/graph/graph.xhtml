@@ -61,8 +61,8 @@
 
         // network data could alternatively be grabbed via ajax
         var xmlUrl ='#{searchBean.applicationUrl}/graphmlDownload?mitabUrl=#{searchBean.mitabUrl}';
-        alert( 'xmlUrl: ' + xmlUrl );
 
+        // wait for the data to be loaded prior, handy for larger network.
         var xml = $.ajax({ url: xmlUrl, async: false }).responseText;
 
         // Enables the shapes present in the GraphML input to be displayed in the Flash panel.
@@ -97,7 +97,6 @@
                                   }
                     );
 
-            // TODO in the information panel, link out to the original molecule dtabase
             // TODO in the node right click, link out to the service database using that molecule id
             // TODO edge > right click, link out to the service database using that interaction AC.
 
