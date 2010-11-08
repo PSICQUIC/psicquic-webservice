@@ -352,6 +352,17 @@
         <url-pattern>/download</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>chart</servlet-name>
+        <servlet-class>uk.ac.ebi.intact.view.webapp.visualisation.statistics.ChartProviderServlet</servlet-class>
+    </servlet>
+
+    <!-- Faces Servlet Mappings -->
+    <servlet-mapping>
+        <servlet-name>chart</servlet-name>
+        <url-pattern>/chart</url-pattern>
+    </servlet-mapping>
+
 
     <!-- PrimeFaces resources -->
     <!--<servlet>-->

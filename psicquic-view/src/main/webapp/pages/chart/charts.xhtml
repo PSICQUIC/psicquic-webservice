@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:tr="http://myfaces.apache.org/trinidad"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://intact.ebi.ac.uk/miscel /WEB-INF/intact-miscel.tld">
+
+        <div id="species" style="float:right">
+             <a href="#{searchBean.applicationUrl}/chart?name=species&amp;url=#{searchBean.mitabUrl}" />
+        </div>
+
+        <div id="types" style="float:right">
+            <a href="#{searchBean.applicationUrl}/chart?name=type&amp;url=#{searchBean.mitabUrl}" />
+        </div>
+
+        <div id="methods">
+            <a href="#{searchBean.applicationUrl}/chart?name=detMethod&amp;url=#{searchBean.mitabUrl}" />
+        </div>
+
+</ui:composition>

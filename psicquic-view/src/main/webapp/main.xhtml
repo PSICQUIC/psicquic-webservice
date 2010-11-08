@@ -109,7 +109,6 @@
                </trh:tableLayout>
            </div>
 
-
            <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
                <div style="padding-left:10px">
                  <b>No results were found for this query.</b>
@@ -248,7 +247,14 @@
                         <tr:image source="/images/graph_grey.png" inlineStyle="width:12px;"/>
                         <a onclick="alert( 'You can only visualize network with up to #{searchBean.maxNetworkSize} interactions.' );"><tr:outputText value="Graph" inlineStyle="color:#d3d3d3"/></a>
                     </tr:panelGroupLayout>
+                    &#160;|&#160;&#160;
+                    <tr:panelGroupLayout>
+                        <tr:image source="/images/piechart.png" inlineStyle="width:20px;" onclick="selectAnalyseTab();"/>
+                        <a href="#" onclick="selectAnalyseTab();"><tr:outputText id="analyseLabel" value="Analise" inlineStyle="font-weight:normal"/></a>
+                    </tr:panelGroupLayout>
                 </div>
+
+                <a href="#{searchBean.applicationUrl}/chart?name=species&amp;url=#{searchBean.mitabUrl}">Analyse this !</a>
 
                 <div style="height:100%; margin-top:10px">
                     <ui:include src="/pages/interactions/interactions_tab.xhtml">
@@ -258,6 +264,10 @@
 
                     <tr:panelGroupLayout rendered="#{searchBean.graphEnabled}">
                         <ui:include src="/pages/graph/graph.xhtml"/>
+                    </tr:panelGroupLayout>
+
+                    <tr:panelGroupLayout rendered="#{searchBean.graphEnabled}">
+                        <ui:include src="/pages/chart/charts.xhtml"/>
                     </tr:panelGroupLayout>
                 </div>
 

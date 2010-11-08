@@ -81,6 +81,8 @@
         // callback when Cytoscape Web has finished drawing
         vis.ready(function() {
 
+            //  TODO check how to get a loader image: http://cytoscapeweb.cytoscape.org/js/content/home.js
+
             vis.edgesMerged( merged );
 
             vis.addContextMenuItem("Select first neighbours", "nodes",

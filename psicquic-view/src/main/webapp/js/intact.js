@@ -47,7 +47,9 @@ function hide(id){
 function selectTableTab() {
     document.getElementById('graphLabel').style.fontWeight='normal';
     document.getElementById('tableLabel').style.fontWeight='bold';
+    document.getElementById('analyseLabel').style.fontWeight='normal';
 
+    hide('queryAnalysis');
     hide('cytoscapeweb');
     hide('graphController');
     show('interactionResults');
@@ -58,12 +60,27 @@ function selectTableTab() {
 function selectGraphTab() {
     document.getElementById('graphLabel').style.fontWeight='bold';
     document.getElementById('tableLabel').style.fontWeight='normal';
+    document.getElementById('analyseLabel').style.fontWeight='normal';
 
     hide('interactionResults');
+    hide('queryAnalysis');
     show('cytoscapeweb');
     show('graphController');
 
     _gaq.push(['_trackEvent', 'Graph', '#{searchBean.selectedServiceName}', '#{searchBean.userQuery.searchQuery}']);
+}
+
+function selectAnalyseTab() {
+    document.getElementById('analyseLabel').style.fontWeight='bold';
+    document.getElementById('graphLabel').style.fontWeight='normal';
+    document.getElementById('tableLabel').style.fontWeight='normal';
+
+    hide('interactionResults');
+    hide('cytoscapeweb');
+    hide('graphController');
+    show('queryAnalysis');
+
+    _gaq.push(['_trackEvent', 'Analyse', '#{searchBean.selectedServiceName}', '#{searchBean.userQuery.searchQuery}']);
 }
 
 ///////////////////////////////
