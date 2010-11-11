@@ -13,6 +13,7 @@
                 xmlns:iam="http://intact.ebi.ac.uk/miscel"
                 xmlns:iax="http://intact.ebi.ac.uk/extlinks"
                 xmlns:iamf="http://intact.ebi.ac.uk/mitabfunctions"
+                xmlns:ox="http://myfaces.apache.org/orchestra"
 
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://intact.ebi.ac.uk/miscel /WEB-INF/intact-miscel.tld">
@@ -36,28 +37,29 @@
             <tr:panelButtonBar rendered="#{service.restUrl != null}">
                 <h:outputText value="Export: "/>
 
-                <tr:group rendered="#{searchBean.clusterSelected}">
-                    <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;"
-                               destination="#{service.restUrl}">
-                        <tr:image source="/images/mitab.png"/>
-                    </tr:goLink>
-                </tr:group>
+                <ox:separateConversationContext>
+                    <tr:group rendered="#{searchBean.clusterSelected}">
+                        <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;"
+                                   destination="#{service.restUrl}">
+                            <tr:image source="/images/mitab.png"/>
+                        </tr:goLink>
+                    </tr:group>
 
-                <tr:group rendered="#{not searchBean.clusterSelected}">
-                    <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;"
-                               destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}">
-                        <tr:image source="/images/mitab.png"/>
-                    </tr:goLink>
-                </tr:group>
+                    <tr:group rendered="#{not searchBean.clusterSelected}">
+                        <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;"
+                                   destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}">
+                            <tr:image source="/images/mitab.png"/>
+                        </tr:goLink>
+                    </tr:group>
 
-                <tr:group rendered="#{not searchBean.clusterSelected}">
-                    <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;" disabled="#{searchBean.resultCountMap[service.name] gt 200}"
-                               destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}?format=xml25">
-                        <tr:image source="/images/psi25#{searchBean.resultCountMap[service.name] gt 200? '_disabled' : ''}.png"
-                                  shortDesc="Exports data to PSI-MI XML 2.5.4 if less that 200 interactions are present"/>
-                    </tr:goLink>
-                </tr:group>
-
+                    <tr:group rendered="#{not searchBean.clusterSelected}">
+                        <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;" disabled="#{searchBean.resultCountMap[service.name] gt 200}"
+                                   destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}?format=xml25">
+                            <tr:image source="/images/psi25#{searchBean.resultCountMap[service.name] gt 200? '_disabled' : ''}.png"
+                                      shortDesc="Exports data to PSI-MI XML 2.5.4 if less that 200 interactions are present"/>
+                        </tr:goLink>
+                    </tr:group>
+                </ox:separateConversationContext>
             </tr:panelButtonBar>
         </tr:panelGroupLayout>
 
