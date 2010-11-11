@@ -23,14 +23,36 @@ import java.io.OutputStream;
  */
 public class ChartProviderServlet extends HttpServlet {
 
+    public static final int DEFAULT_HEIGHT = 400;
+    public static final int DEFAULT_WIDTH = 700;
+
     private static final Log log = LogFactory.getLog(ChartProviderServlet.class);
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final String url = request.getParameter("url"); // REST URL of the data to analyse
+
         final String chartName = request.getParameter("name");
+
         final String height = request.getParameter("height");
+        int h = DEFAULT_HEIGHT;
+        if( height != null ) {
+            try {
+                h = Integer.parseInt( height );
+            } catch (NumberFormatException e) {
+                h = DEFAULT_HEIGHT;
+            }
+        }
+
         final String width = request.getParameter("width");
+        int w = DEFAULT_WIDTH;
+         if( width != null ) {
+            try {
+                w = Integer.parseInt( width );
+            } catch (NumberFormatException e) {
+                w = DEFAULT_WIDTH;
+            }
+        }
 
         PsicquicChartFactory factory = PsicquicChartFactory.createInstance(url);
         try {
@@ -46,7 +68,7 @@ public class ChartProviderServlet extends HttpServlet {
         OutputStream out = response.getOutputStream();
 
         response.setContentType("image/png");
-        ChartUtilities.writeChartAsPNG(out, chart, 500, 400);
+        ChartUtilities.writeChartAsPNG(out, chart, w, h);
 
         out.flush();
         out.close();

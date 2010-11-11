@@ -1,10 +1,11 @@
 package uk.ac.ebi.intact.view.webapp.visualisation.statistics;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
-import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.util.SortOrder;
 import psidev.psi.mi.tab.model.BinaryInteraction;
@@ -13,7 +14,6 @@ import psidev.psi.mi.tab.model.CrossReference;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * A specific ChartBuilder that is based on ontology terms (CrossReference).
@@ -24,7 +24,17 @@ import java.util.StringTokenizer;
  */
 public abstract class AbstractMiTermPieChartBuilder implements ChartBuilder {
 
+    private static final Log log = LogFactory.getLog(AbstractMiTermPieChartBuilder.class);
+
+    /**
+     * Percentage of data above which pie section are collapsed into a section called 'Other'.
+     */
     public static final int DEFAULT_COLLAPSING_THRESHOLD = 95;
+
+    /**
+     * Number of pie section above which others are being collapsed into a section called 'Other'.
+     */
+    private static final int MAX_PIE_SECTION = 16;
 
     /**
      * Chart title.
@@ -40,7 +50,7 @@ public abstract class AbstractMiTermPieChartBuilder implements ChartBuilder {
     private Map<String, String> mi2name = Maps.newHashMap();
 
     public void append(BinaryInteraction interaction) {
-        final Collection<CrossReference> terms = getTerms( interaction );
+        final Collection<CrossReference> terms = getTerms(interaction);
         for (CrossReference term : terms) {
             countTerm(term);
         }
@@ -53,18 +63,18 @@ public abstract class AbstractMiTermPieChartBuilder implements ChartBuilder {
         for (Map.Entry<String, Integer> entry : mi2count.entrySet()) {
             final String taxid = entry.getKey();
             final Integer count = entry.getValue();
-            String termName = mi2name.get( taxid );
+            String termName = mi2name.get(taxid);
 
-            dataset.setValue( termName, count );
+            dataset.setValue(termName, count);
         }
 
-        dataset.sortByValues( SortOrder.DESCENDING );
+        dataset.sortByValues(SortOrder.DESCENDING);
 
         // Attempt to collapse sections above the set collapsingThreshold.
         collapseChartSections(dataset);
 
         final boolean hasLegend = true;
-        final boolean hasTooltips = true;
+        final boolean hasTooltips = false;
         final boolean hasUrls = true;
 
         JFreeChart chart = ChartFactory.createPieChart(
@@ -73,61 +83,73 @@ public abstract class AbstractMiTermPieChartBuilder implements ChartBuilder {
                 hasLegend, hasTooltips, hasUrls
         );
 
-        PiePlot plot = (PiePlot) chart.getPlot();
-        plot.setLabelGenerator( new StandardPieSectionLabelGenerator() );
-
         return chart;
     }
 
+    /**
+     * Looks into the categories and given a set threshold, collapse smaller categories into 'Other'.
+     *
+     * @param dataset
+     */
     private void collapseChartSections(DefaultPieDataset dataset) {
 
-        // TODO FIXME if only 1 category, it falls into 'Other'
-
-        final int sumOfAll = calculateSumOfAll( dataset );
-        System.out.println("sumOfAll = " + sumOfAll);
+        final int sumOfAll = calculateSumOfAll(dataset);
+        if(log.isDebugEnabled()) log.debug("sumOfAll = " + sumOfAll);
         final List<Comparable> keys = dataset.getKeys();
+        final Collection<Comparable> keysToRemove = Lists.newArrayList();
         int sum = 0;
         boolean aboveThreshold = false;
         int otherSum = 0;
         int categoryCount = 0;
-        for (Comparable key : keys) {
-            categoryCount++;
-            final Number value = dataset.getValue( key );
-            int count = value.intValue();
 
-            if( ! aboveThreshold ) {
-                System.out.println( "value = " + value );
-                final int percentage = (int)(((float)(sum + count) / sumOfAll) * 100);
-                System.out.println("percentage = " + percentage);
-                aboveThreshold = percentage > collapsingThreshold;
-                sum += count;
+        final int totalCategoryCount = dataset.getKeys().size();
+        if (totalCategoryCount > MAX_PIE_SECTION) {
+            for (Comparable key : keys) {
+                categoryCount++;
+                final Number value = dataset.getValue(key);
+                int count = value.intValue();
+
+                if (!aboveThreshold) {
+                    final int percentage = (int) (((float) (sum + count) / sumOfAll) * 100);
+                    aboveThreshold = (percentage > collapsingThreshold) || categoryCount >= MAX_PIE_SECTION;
+                    if(log.isDebugEnabled())log.debug("value = " + value + "  --  " + percentage + "%" + "  --  aboveThreshold:" + aboveThreshold);
+                    sum += count;
+                }
+
+                if (aboveThreshold) {
+                    otherSum += value.intValue();
+                    if (categoryCount > 1) { // never remove the first category, even if > collapsingThreshold
+                        keysToRemove.add(key);
+                    }
+                }
             }
 
-            if( aboveThreshold ) {
-                System.out.println("Above threshold, removing item and collapsing it...");
-                otherSum += value.intValue();
-                dataset.remove( key );
-            }
-        }
+            if (aboveThreshold) {
+                // remove other keys
+                if(log.isDebugEnabled()) log.debug("Above threshold, removing " + keysToRemove.size() + " items...");
+                for (Comparable key : keysToRemove) {
+                    dataset.remove(key);
+                }
 
-        if( aboveThreshold && categoryCount > 8 ) {
-            dataset.setValue( "Other", otherSum );
-        }
+                // adding 'Other' category
+                dataset.setValue("Other", otherSum);
+            }
+        } // above MAX_PIE_SECTION
     }
 
     protected int calculateSumOfAll(DefaultPieDataset dataset) {
         int sum = 0;
         final List<Comparable> keys = dataset.getKeys();
         for (Comparable key : keys) {
-            final Number value = dataset.getValue( key );
+            final Number value = dataset.getValue(key);
             sum += value.intValue();
         }
         return sum;
     }
 
-    private void countTerm(final CrossReference term ) {
+    private void countTerm(final CrossReference term) {
 
-        if ( term == null ) {
+        if (term == null) {
             return;
         }
 
@@ -155,13 +177,19 @@ public abstract class AbstractMiTermPieChartBuilder implements ChartBuilder {
         }
     }
 
-    public abstract Collection<CrossReference> getTerms( BinaryInteraction interaction );
+    /**
+     * Method that allows extraction of a collection of cross reference from the given interaction.
+     *
+     * @param interaction
+     * @return a non null collection of <code>CrossReference</code>.
+     */
+    public abstract Collection<CrossReference> getTerms(BinaryInteraction interaction);
 
     public void setChartTitle(String title) {
         this.title = title;
     }
 
-    public void setCollapsingThreshold() {
-
+    public void setCollapsingThreshold(int collapsingThreshold) {
+        this.collapsingThreshold = collapsingThreshold;
     }
 }
