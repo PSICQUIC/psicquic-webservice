@@ -172,6 +172,8 @@ public class ExpressionTree {
 			rootNode = tmpTree.getRootNode();
 			
 		} else {
+            // TODO FIXME if I give a tag that doesn't have an MI identifier, we return all services.
+            // TODO collect these non matching terms and print a warning message on the resulting HTML page.
 			rootNode = new ExpressionTrueNode();
 		}
 		
