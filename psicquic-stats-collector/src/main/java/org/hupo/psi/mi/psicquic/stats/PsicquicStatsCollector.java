@@ -69,7 +69,7 @@ public class PsicquicStatsCollector {
 
     public static final String FILE_SEPARATOR = System.getProperty( "file.separator" );
 
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "dd/MM/yyyy" );
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "yyyy-MM-dd" );
     private static SimpleDateFormat DATE_AS_DIR = new SimpleDateFormat( "yyyy/MM/dd" );
 
     private static final String PSICQUIC_REGISTRY_URL_KEY = "psicquic.registry.url";
