@@ -16,7 +16,7 @@ except IOError:
     print 'Cannot open URL' % urlStr
     content = ''
 
-# create the XML reader
+# Create the XML reader
 reader = Sax2.Reader()
 
 doc = reader.fromString(content)
@@ -27,9 +27,11 @@ totalCount = 0
 serviceCount = 0;
 activeCount = 0;
 
+# getting the service nodes
 serviceNodes = xpath.Evaluate('service', doc.documentElement)
 
 for serviceNode in serviceNodes:
+    # Getting some of the elements for each node
     name = serviceNode.getElementsByTagName('name')[0].firstChild.nodeValue
     active = serviceNode.getElementsByTagName('active')[0].firstChild.nodeValue
     interactionCount = serviceNode.getElementsByTagName('count')[0].firstChild.nodeValue
@@ -48,6 +50,7 @@ for serviceNode in serviceNodes:
     if bool(active):
        activeCount = activeCount + 1
 
+# Print totals
 print '\nTotal evidences: ' + str(totalCount)
 print 'Total services: ' + str(serviceCount)
 print '\tActive: ' + str(serviceCount)
