@@ -13,5 +13,5 @@ lines = content.splitlines()
 
 for line in lines:
     fields = line.split('=')
-    print fields[0] + " ---> " + fields[1]
+    print fields[0] + ' ---> ' + fields[1]
 
