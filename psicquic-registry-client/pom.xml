@@ -131,16 +131,14 @@
     <distributionManagement>
         <repository>
             <id>ebi-repo</id>
-            <name>EBI Repository</name>
-            <url>scp://${repo.local.url}</url>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo</url>
         </repository>
 
         <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
             <id>ebi-repo-snapshots</id>
-            <name>EBI Snapshots Repository</name>
-            <url>scp://${repo.local.snapshots.url}</url>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots</url>
         </snapshotRepository>
+
     </distributionManagement>
 
 
