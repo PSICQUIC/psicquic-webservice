@@ -15,6 +15,9 @@
  */
 package org.hupo.psi.mi.psicquic.ws.config;
 
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.DisposableBean;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +28,7 @@ import java.util.Map;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class PsicquicConfig {
+public class PsicquicConfig implements DisposableBean{
 
     private String groupId;
     private String artifactId;
@@ -35,6 +38,10 @@ public class PsicquicConfig {
     private String propertiesAsStrings;
 
     public PsicquicConfig() {
+    }
+
+    public void destroy() throws Exception {
+        LogFactory.release(Thread.currentThread().getContextClassLoader());
     }
 
     public String getGroupId() {
