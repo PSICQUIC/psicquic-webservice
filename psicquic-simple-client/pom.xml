@@ -45,6 +45,20 @@
             <version>4.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- For the examples -->
+        <dependency>
+            <groupId>psidev.psi.mi</groupId>
+            <artifactId>psimitab</artifactId>
+            <version>1.7.8</version>
+            <scope>test</scope>
+        </dependency>
+         <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
