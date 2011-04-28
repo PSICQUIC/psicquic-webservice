@@ -38,5 +38,7 @@ public interface PsicquicRegistryClient {
 
     List<ServiceType> listServices(String action, boolean restricted, String tagExpression) throws PsicquicRegistryClientException ;
 
+    List<ServiceType> listServicesByTags(String tagExpression) throws PsicquicRegistryClientException;
+
     List<ServiceType> listServices(String action) throws PsicquicRegistryClientException ;
 }

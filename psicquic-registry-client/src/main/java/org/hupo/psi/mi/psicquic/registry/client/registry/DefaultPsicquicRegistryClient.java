@@ -105,6 +105,10 @@ public class DefaultPsicquicRegistryClient implements PsicquicRegistryClient {
         }
     }
 
+    public List<ServiceType> listServicesByTags(String tagExpression) throws PsicquicRegistryClientException {
+        return listServices("STATUS", false, tagExpression);
+    }
+
     private String createServiceUrl(String base, String paramUrl) {
         if (!base.endsWith("/")) {
             base = base + "/";
