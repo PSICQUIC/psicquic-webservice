@@ -25,6 +25,7 @@ import org.hupo.psi.mi.psicquic.registry.util.FreemarkerStreamingOutput;
 import org.hupo.psi.mi.psicquic.registry.util.RawTextStreamingOutput;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -39,6 +40,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,7 +69,8 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     @Autowired
     private SelfDiscoveringOntologyTree miOntologyTree;
 
-
+    @Autowired
+    private PsicquicRegistryStatusChecker statusChecker;
 
 
 
@@ -166,6 +169,15 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
     public String getVersion() {
         return config.getVersion();
+    }
+
+    public String getUpdatedTimestamp() {
+        return statusChecker.getLastRefreshed().toString();
+    }
+
+    public String refresh() {
+        statusChecker.refreshServices();
+        return "OK";
     }
 
     private class NameFilter implements ServiceFilter {

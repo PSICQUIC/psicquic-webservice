@@ -47,4 +47,12 @@ public interface PsicquicRegistryService {
     @Path("/version")
     String getVersion();
 
+    @GET
+    @Path("/timestamp")
+    String getUpdatedTimestamp();
+
+    @GET
+    @Path("/refresh")
+    String refresh();
+
 }

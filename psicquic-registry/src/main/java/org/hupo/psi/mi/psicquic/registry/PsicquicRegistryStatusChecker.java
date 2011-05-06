@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +40,8 @@ public class PsicquicRegistryStatusChecker {
 
     @Autowired
     private PsicquicRegistryConfig config;
+
+    private Date lastRefreshed = new Date();
 
     @Scheduled(fixedDelay = 5 * 60 * 1000) // every 5 mins
     public void refreshServices() {
@@ -60,6 +63,8 @@ public class PsicquicRegistryStatusChecker {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        lastRefreshed = new Date();
     }
 
     private void checkStatus(ServiceType serviceStatus) {
@@ -90,4 +95,7 @@ public class PsicquicRegistryStatusChecker {
 
     }
 
+    public Date getLastRefreshed() {
+        return lastRefreshed;
+    }
 }
