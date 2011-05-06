@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p" 
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <!-- Batch storage -->
+    <!--depends-on="org.h2.tools.Server"-->
+    <bean id="clusteringDataSource" class="org.apache.commons.dbcp.BasicDataSource" depends-on="h2TcpServer" >
+        <!--<property name="driverClassName" value="jdbc:h2:file:lala"/>-->
+        <property name="driverClassName" value="${batch.jdbc.driver}"/>
+        <property name="url" value="${batch.jdbc.url}"/>
+        <property name="username" value="${batch.jdbc.user}"/>
+        <property name="password" value="${batch.jdbc.password}"/>
+    </bean>
+
+    <!-- Auto initialization of the Spring Batch schema in H2 -->
+    <!-- http://static.springsource.org/spring/docs/3.0.4.RELEASE/spring-framework-reference/htmlsingle/spring-framework-reference.html#d0e24245 -->
+    <jdbc:initialize-database data-source="clusteringDataSource" ignore-failures="ALL" enabled="${batch.schema.create}">
+        <jdbc:script location="classpath*:/org/springframework/batch/core/schema-h2.sql"/>
+    </jdbc:initialize-database>
+
+    <bean id="h2TcpServer" class="org.h2.tools.Server"
+          factory-method="createTcpServer"
+          init-method="start"
+          destroy-method="stop">
+        <constructor-arg value="-tcp,-tcpAllowOthers,true,-tcpPort,${batch.db.port}" />
+    </bean>
+
+</beans>
