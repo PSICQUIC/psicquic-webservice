@@ -25,6 +25,7 @@ import org.hupo.psi.mi.psicquic.registry.util.FreemarkerStreamingOutput;
 import org.hupo.psi.mi.psicquic.registry.util.RawTextStreamingOutput;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import psidev.psi.mi.search.SearchResult;
@@ -59,11 +60,15 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
     @Autowired
     private PsicquicRegistryConfig config;
+
     @Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;
     
     @Autowired
     private SelfDiscoveringOntologyTree miOntologyTree;
+
+
+
 
 
     public Object executeAction(String action, String name, String url, String format, String showRestricted, String tags, String excluded) throws IllegalActionException {
@@ -75,24 +80,7 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
             						  new TagsFilter(tags),
                                       new ExclusionFilter(excluded.split(",")));
 
-            final ExecutorService executorService = Executors.newCachedThreadPool();
 
-            for (final ServiceType serviceStatus : registry.getServices()) {
-                Runnable runnable = new Runnable() {
-                    public void run() {
-                        checkStatus(serviceStatus);
-                    }
-                };
-                executorService.submit(runnable);
-
-            }
-            executorService.shutdown();
-
-            try {
-                executorService.awaitTermination(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
         } else if (ACTION_ACTIVE.equalsIgnoreCase(action)) {
             registry = createRegistry(new NameFilter(name),
@@ -168,34 +156,6 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
         return registry;
     }
 
-    private void checkStatus(ServiceType serviceStatus) {
-       try {
-            final URL versionUrl = new URL(serviceStatus.getRestUrl()+"version");
-            final HttpURLConnection urlConnection = (HttpURLConnection) versionUrl.openConnection();
-            int code = urlConnection.getResponseCode();
-
-            urlConnection.connect();
-
-            if (HttpURLConnection.HTTP_OK == code) {
-                serviceStatus.setActive(true);
-                final String version = IOUtils.toString((InputStream)urlConnection.getContent());
-
-                serviceStatus.setVersion(version);
-
-                final URL countURL = new URL(serviceStatus.getRestUrl()+"query/*?format=count");
-                final String strCount = IOUtils.toString(countURL.openStream());
-                serviceStatus.setCount(Long.valueOf(strCount));
-            } else {
-                serviceStatus.setActive(false);
-            }
-
-
-        } catch (Throwable e) {
-            serviceStatus.setActive(false);
-        }
-
-    }
-
     private boolean stringToBoolean(String str) {
         if (YES.equalsIgnoreCase(str)) {
             return true;
@@ -224,7 +184,6 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     private class ActiveFilter implements ServiceFilter {
 
         public boolean accept(ServiceType service) {
-            checkStatus(service);
             return service.isActive();
         }
     }
@@ -232,7 +191,6 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
     private class InactiveFilter implements ServiceFilter {
 
         public boolean accept(ServiceType service) {
-            checkStatus(service);
             return !(service.isActive());
         }
     }
