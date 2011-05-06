@@ -22,9 +22,16 @@ import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,6 +91,25 @@ public class DefaultPsicquicRegistryClient implements PsicquicRegistryClient {
         }
     }
 
+    public Date registryTimestamp() throws PsicquicRegistryClientException {
+        Date timestamp = null;
+
+        try {
+            URL url = new URL(registryBaseUrl+"registry/timestamp");
+
+            InputStream is = url.openStream();
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+
+            String timestampStr = bufferedReader.readLine();
+
+            timestamp = new SimpleDateFormat("E MMM dd HH:mm:ss z yyyy").parse(timestampStr);
+        } catch (Throwable t) {
+            throw new PsicquicRegistryClientException("Problem reading timestamp from Registry", t);
+        }
+
+        return timestamp;
+    }
 
 
     public List<ServiceType> listServices(String action, boolean restricted) throws PsicquicRegistryClientException {
@@ -129,6 +155,8 @@ public class DefaultPsicquicRegistryClient implements PsicquicRegistryClient {
 
     public static void main(String[] args) throws Exception {
         PsicquicRegistryClient client = new DefaultPsicquicRegistryClient();
+
+        System.out.println("Timestamp: "+client.registryTimestamp());
 
         List<ServiceType> services = client.listServices();
         

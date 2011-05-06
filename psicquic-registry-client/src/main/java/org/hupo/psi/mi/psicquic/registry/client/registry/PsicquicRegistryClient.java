@@ -18,6 +18,7 @@ package org.hupo.psi.mi.psicquic.registry.client.registry;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,4 +42,6 @@ public interface PsicquicRegistryClient {
     List<ServiceType> listServicesByTags(String tagExpression) throws PsicquicRegistryClientException;
 
     List<ServiceType> listServices(String action) throws PsicquicRegistryClientException ;
+
+    Date registryTimestamp() throws PsicquicRegistryClientException;
 }
