@@ -128,8 +128,17 @@
                        <tr:panelFormLayout rows="#{config.serviceRows}" maxColumns="4" fieldWidth="200" >
                            <c:forEach var="name" items="#{searchBean.allServiceNames}">
                                <tr:panelHorizontalLayout>
-                                   <h:graphicImage alt="Status" title="#{searchBean.servicesMap[name].active? 'Status: ONLINE' : 'Status: OFFLINE'}"
-                                                   url="#{searchBean.servicesMap[name].active? '/images/status_online.png' : '/images/status_offline.png'}"/>
+
+                                   <h:graphicImage alt="Status" title="Status: ONLINE"
+                                                   url="/images/status_online.png"
+                                           rendered="#{searchBean.servicesMap[name].active and not (searchBean.resultCountMap[name] == '-1')}"/>
+                                   <h:graphicImage alt="Status" title="Status: OFFLINE"
+                                                   url="/images/status_offline.png"
+                                           rendered="#{not searchBean.servicesMap[name].active}"/>
+                                   <h:graphicImage alt="Status" title="Status: WARNING - This service is responding slowly"
+                                                   url="/images/status_warning.png"
+                                           rendered="#{searchBean.servicesMap[name].active and (searchBean.resultCountMap[name] == '-1')}"/>
+
                                    <h:commandLink value="#{name}" styleClass="#{searchBean.selectedServiceName == name? 'resultLink-selected' : ''}"
                                                   onclick="_gaq.push(['_trackEvent', 'Database', '#{name}', '#{searchBean.userQuery.searchQuery}']);"
                                                   disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0}"
@@ -139,9 +148,10 @@
                                    </h:commandLink>
                                    <h:panelGroup rendered="#{searchBean.resultCountMap[name] != null}">
                                        &#160;-&#160;
-                                       <tr:outputText value="#{searchBean.resultCountMap[name]}" styleClass="resultCount">
+                                       <tr:outputText value="#{searchBean.resultCountMap[name]}" styleClass="resultCount" rendered="#{searchBean.resultCountMap[name] != '-1'}">
                                            <tr:convertNumber pattern="#,###"/>
                                        </tr:outputText>
+                                       <tr:outputText value="Timed out" styleClass="resultCount" rendered="#{searchBean.resultCountMap[name] == '-1'}"/>
                                    </h:panelGroup>
                                </tr:panelHorizontalLayout>
                            </c:forEach>

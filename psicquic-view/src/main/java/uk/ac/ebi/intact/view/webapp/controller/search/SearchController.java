@@ -27,18 +27,13 @@ import uk.ac.ebi.intact.view.webapp.controller.clustering.UserJobs;
 import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
 import uk.ac.ebi.intact.view.webapp.model.ClusteringResultDataModel;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
-import uk.ac.ebi.intact.view.webapp.visualisation.GraphmlBuilder;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,6 +64,9 @@ public class SearchController extends BaseController {
     @Autowired
     private UserJobs userJobs;
 
+    @Autowired
+    private SearchCache searchCache;
+
     private List<ServiceType> services;
     private List<ServiceType> allServices;
     private Map<String,ServiceType> servicesMap;
@@ -88,13 +86,17 @@ public class SearchController extends BaseController {
     private boolean clusterSelected;
     private ClusteringJob job;
 
+    private String mitabUrl;
+
+    private Date registryTimestamp;
+
     public SearchController() {
         this.clusterSelected = false;
     }
 
     @PostConstruct
     public void refresh() {
-        refresh(null);
+        doPsicquicBinarySearch("*");
     }
 
     private boolean isPartialRequest() {
@@ -154,6 +156,21 @@ public class SearchController extends BaseController {
     }
 
     public void refresh(ActionEvent evt) {
+        PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
+        try {
+            Date newRegistryTimeStamp = registryClient.registryTimestamp();
+
+            if (registryTimestamp != null && (newRegistryTimeStamp.equals(registryTimestamp) || newRegistryTimeStamp.before(registryTimestamp))) {
+                return;
+            } else {
+                registryTimestamp = newRegistryTimeStamp;
+            }
+        } catch (PsicquicRegistryClientException e) {
+            throw new RuntimeException("Problem checking timestamp from the Registry", e);
+        }
+
+        searchCache.clearCache();
+
         this.resultDataModelMap = Collections.synchronizedMap(new HashMap<String,SortableModel>());
         this.resultCountMap = Collections.synchronizedMap(new HashMap<String,Integer>());
         this.activeServices = Collections.synchronizedMap(new HashMap<String,String>());
@@ -162,7 +179,7 @@ public class SearchController extends BaseController {
         try {
             refreshServices();
         } catch (PsicquicRegistryClientException e) {
-            throw new RuntimeException("Problem loading services from registry", e);
+            throw new RuntimeException("Problem loading services from the Registry", e);
         }
     }
 
@@ -261,7 +278,6 @@ public class SearchController extends BaseController {
     }
 
     public void doPsicquicBinarySearch(String searchQuery) {
-
         try {
             if ( log.isDebugEnabled() ) {log.debug( "\tquery:  "+ searchQuery );}
 
@@ -311,6 +327,27 @@ public class SearchController extends BaseController {
         } catch (PsicquicClientException e) {
             log.error( "Error while building results", e );
         }
+
+        generateMitabUrl();
+    }
+
+    private void generateMitabUrl() {
+        final String serviceName = getSelectedServiceName();
+        final ServiceType serviceType = getServicesMap().get(serviceName);
+        final String query = encodeUrl(getUserQuery().getFilteredSearchQuery());
+        final String restUrl = serviceType.getRestUrl();
+        final String queryUrl;
+
+        if( ! clusterSelected ) {
+            boolean endWithSlash = restUrl.endsWith( "/" );
+            queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
+        } else {
+            queryUrl = getApplicationUrl() + restUrl;
+        }
+
+        if(log.isDebugEnabled()) log.debug("Reading data from: " + queryUrl);
+
+        mitabUrl = queryUrl;
     }
 
     private void refreshServices() throws PsicquicRegistryClientException {
@@ -343,16 +380,27 @@ public class SearchController extends BaseController {
         for (ServiceType service : services) {
             servicesMap.put(service.getName(), service);
         }
-
-        doBinarySearchAction();
     }
 
     private void searchAndCreateResultModels() {
-        resultCountMap.clear();
-        resultDataModelMap.clear();
+        refresh(null);
+
+        resultDataModelMap = new HashMap<String, SortableModel>(32);
+        resultCountMap = new HashMap<String, Integer>(32);
 
         final String filteredSearchQuery = userQuery.getFilteredSearchQuery();
 
+        // check the search cache
+        if (searchCache.contains(filteredSearchQuery)) {
+            Map<String, Integer> resultsInCache = searchCache.get(filteredSearchQuery);
+
+            if (resultsInCache != null) {
+                resultCountMap = resultsInCache;
+                return;
+            }
+        }
+
+        // count the results
         final ExecutorService executorService = Executors.newCachedThreadPool();
 
         for (final ServiceType service : services) {
@@ -374,21 +422,46 @@ public class SearchController extends BaseController {
         } catch (InterruptedException e) {
             log.error( "Error while terminating ExecutorService", e );
         }
+
+        searchCache.put(filteredSearchQuery, resultCountMap);
     }
 
     private int countInPsicquicService(ServiceType service, String query) {
+        if (query == null || query.trim().startsWith("*")) {
+            return Long.valueOf(service.getCount()).intValue();
+        }
+
         int psicquicCount = 0;
+
+            HttpURLConnection connection = null;
 
         try {
             String encoded = URLEncoder.encode(query, "UTF-8");
             encoded = encoded.replaceAll("\\+", "%20");
 
             String separator = (service.getRestUrl().endsWith( "/" ) ? "" : "/" );
-            String url = service.getRestUrl() + separator + "query/" + encoded + "?format=count";
-            String strCount = IOUtils.toString(new URL(url).openStream());
+            String countUrl = service.getRestUrl() + separator + "query/" + encoded + "?format=count";
+
+            URL url = new URL(countUrl);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            connection.connect();
+
+            String strCount = IOUtils.toString(connection.getInputStream());
             psicquicCount = Integer.parseInt(strCount);
+
+        } catch (SocketTimeoutException se) {
+            // happens if timeout
+            psicquicCount = -1;
         } catch (IOException e) {
             e.printStackTrace();
+            service.setActive(false);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
 
         return psicquicCount;
@@ -562,27 +635,7 @@ public class SearchController extends BaseController {
     }
 
     public String getMitabUrl() throws IOException, ConverterException {
-
-        if( isPartialRequest() ) {
-            return null;
-        }
-
-        final String serviceName = getSelectedServiceName();
-        final ServiceType serviceType = getServicesMap().get(serviceName);
-        final String query = encodeUrl(getUserQuery().getFilteredSearchQuery());
-        final String restUrl = serviceType.getRestUrl();
-        final String queryUrl;
-
-        if( ! clusterSelected ) {
-            boolean endWithSlash = restUrl.endsWith( "/" );
-            queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
-        } else {
-            queryUrl = getApplicationUrl() + restUrl;
-        }
-
-        if(log.isDebugEnabled()) log.debug("Reading data from: " + queryUrl);
-
-        return queryUrl;
+        return mitabUrl;
     }
 
     public String getApplicationUrl() {
