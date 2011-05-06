@@ -42,7 +42,6 @@ public class PsicquicRegistryStatusChecker {
 
     @Scheduled(fixedDelay = 5 * 60 * 1000) // every 5 mins
     public void refreshServices() {
-        System.out.println("Refreshing services");
         final ExecutorService executorService = Executors.newCachedThreadPool();
 
         for (final ServiceType serviceStatus : config.getRegisteredServices()) {
@@ -70,8 +69,6 @@ public class PsicquicRegistryStatusChecker {
             int code = urlConnection.getResponseCode();
 
             urlConnection.connect();
-
-            System.out.println(serviceStatus.getName() + " " + code);
 
             if (HttpURLConnection.HTTP_OK == code) {
                 serviceStatus.setActive(true);
