@@ -620,7 +620,12 @@ public class SearchController extends BaseController {
         clusterSelected = false;
         job = null;
 
-        refresh(); // clean up the list of services
+        try {
+            refreshServices(); // clean up the list of services
+        } catch ( PsicquicRegistryClientException e ) {
+            // TODO implement error handling
+            e.printStackTrace();
+        }
         doBinarySearchAction();
 
         return "interactions";
