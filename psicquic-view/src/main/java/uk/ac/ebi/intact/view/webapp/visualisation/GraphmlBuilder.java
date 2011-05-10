@@ -85,7 +85,7 @@ public class GraphmlBuilder {
 
         final long start = System.currentTimeMillis();
 
-        StringBuilder sb = new StringBuilder(4096);
+        StringBuilder sb = new StringBuilder( 8192 );
 
         // get MITAB data from the current service
         final Iterator<BinaryInteraction> iterator;

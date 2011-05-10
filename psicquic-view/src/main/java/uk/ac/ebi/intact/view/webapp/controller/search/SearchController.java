@@ -27,6 +27,7 @@ import uk.ac.ebi.intact.view.webapp.controller.clustering.UserJobs;
 import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
 import uk.ac.ebi.intact.view.webapp.model.ClusteringResultDataModel;
 import uk.ac.ebi.intact.view.webapp.model.PsicquicResultDataModel;
+import uk.ac.ebi.intact.view.webapp.util.UrlUtils;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -337,7 +338,7 @@ public class SearchController extends BaseController {
     private void generateMitabUrl() {
         final String serviceName = getSelectedServiceName();
         final ServiceType serviceType = getServicesMap().get(serviceName);
-        final String query = encodeUrl(getUserQuery().getFilteredSearchQuery());
+        final String query = UrlUtils.encodeUrl( getUserQuery().getFilteredSearchQuery() );
         final String restUrl = serviceType.getRestUrl();
         final String queryUrl;
 
