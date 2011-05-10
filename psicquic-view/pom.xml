@@ -14,9 +14,9 @@
     <name>PSICQUIC :: View</name>
 
     <scm>
-        <connection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/service/trunk/intact-view</connection>
-        <developerConnection>scm:svn:https://intact.svn.sourceforge.net/svnroot/intact/repo/service/trunk/intact-view</developerConnection>
-        <url>https://intact.svn.sourceforge.net/svnroot/intact/repo/service/trunk/intact-view/</url>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-view</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-view</developerConnection>
+        <url>https://psicquic.googlecode.com/svn/trunk/psicquic-view</url>
     </scm>
 
     <properties>
