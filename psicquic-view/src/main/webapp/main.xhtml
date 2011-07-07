@@ -112,15 +112,22 @@
 
            <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
                <div style="padding-left:10px">
-                 <b>No results were found for this query.</b>
+                 <b>
+                     <h:outputText style="color: red" value="No results were found for this query#{searchBean.selectedServicesCount lt fn:length(searchBean.activeServiceNames)? ' for the selected services' : ''}."
+                                   rendered="#{searchBean.selectedServicesCount != 0}"/>
+                     <h:outputText style="color: red" value="Select at least one service from the list below!" rendered="#{searchBean.selectedServicesCount == 0}"/> </b>
                </div>
            </tr:panelGroupLayout>
 
-           <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0 and not searchBean.clusterSelected}">
+           <tr:panelGroupLayout rendered="#{not searchBean.clusterSelected}">
 
+               <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0}">
                <p>Click on the links below to display the results for each selected service
                &#160;(<tr:commandLink text="refresh list" actionListener="#{searchBean.refresh}"/>)
                </p>
+
+                   </tr:panelGroupLayout>
+
                <p>Use the check boxes to include or excludes services from the search and cluster operations
                &#160;-&#160;Select:
                <a href="#" onclick="psicquic_selectAll(#{fn:length(searchBean.allServiceNames)})">All</a>
@@ -218,6 +225,7 @@
                                                  text="Cluster this query"/>   <!-- partialSubmit="true" -->
 
                                <tr:commandLink action="dialog:help.clustering" partialSubmit="true"
+                                               rendered="#{searchBean.totalResults > 0}"
                                                windowWidth="600" windowHeight="500" immediate="true"
                                                useWindow="true">
                                    <tr:image source="/images/question.jpeg"
@@ -284,19 +292,19 @@
             </tr:panelGroupLayout>
 
 
-            <tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">
-                <tr:separator/>
+            <!--<tr:panelGroupLayout rendered="#{searchBean.totalResults == 0}">-->
+                <!--<tr:separator/>-->
 
-                   <div style="padding-left:10px">
-                       It searches these databases: <b>#{searchBean.activeServicesName}</b>
-                       <br/>
-                       There are some inactive services at the moment: <b>#{searchBean.inactiveServicesName}</b>. (
-                       <tr:goLink text="check status" destination="http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS"
-                               targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
-                   </div>
+                   <!--<div style="padding-left:10px">-->
+                       <!--It searches these databases: <b>#{searchBean.activeServicesName}</b>-->
+                       <!--<br/>-->
+                       <!--There are some inactive services at the moment: <b>#{searchBean.inactiveServicesName}</b>. (-->
+                       <!--<tr:goLink text="check status" destination="http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS"-->
+                               <!--targetFrame="_blank"/> |&#160;<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)-->
+                   <!--</div>-->
 
-                <tr:separator/>
-           </tr:panelGroupLayout>
+                <!--<tr:separator/>-->
+           <!--</tr:panelGroupLayout>-->
 
        </tr:form>
           </div>

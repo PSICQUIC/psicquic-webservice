@@ -692,6 +692,16 @@ public class SearchController extends BaseController {
         return MAX_NETWORK_SIZE;
     }
 
+    public int getSelectedServicesCount() {
+        int count = 0;
+
+        for (boolean selected : serviceSelectionMap.values()) {
+            if (selected) count++;
+        }
+
+        return count;
+    }
+
     public Map<String, Boolean> getServiceSelectionMap() {
         return serviceSelectionMap;
     }
