@@ -2,7 +2,6 @@ package uk.ac.ebi.intact.view.webapp.controller.clustering;
 
 import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
-import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
 import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.springframework.context.annotation.Scope;

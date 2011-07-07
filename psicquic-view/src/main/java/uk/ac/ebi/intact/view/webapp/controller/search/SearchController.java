@@ -74,6 +74,7 @@ public class SearchController extends BaseController {
     private List<ServiceType> services;
     private List<ServiceType> allServices;
     private Map<String,ServiceType> servicesMap;
+    private Map<String,Boolean> serviceSelectionMap;
 
     private int totalResults = -1;
 
@@ -96,6 +97,8 @@ public class SearchController extends BaseController {
 
     public SearchController() {
         this.clusterSelected = false;
+
+        this.serviceSelectionMap = Collections.synchronizedMap(new HashMap<String,Boolean>());
     }
 
     @PostConstruct
@@ -380,9 +383,15 @@ public class SearchController extends BaseController {
         populateInactiveServicesMap();
 
         servicesMap = new HashMap<String, ServiceType>(services.size());
+        
+        boolean populateSelectionMap = serviceSelectionMap.isEmpty();
 
         for (ServiceType service : services) {
             servicesMap.put(service.getName(), service);
+            
+            if (populateSelectionMap) {
+                serviceSelectionMap.put(service.getName(), service.isActive());
+            }
         }
     }
 
@@ -394,8 +403,10 @@ public class SearchController extends BaseController {
 
         final String filteredSearchQuery = userQuery.getFilteredSearchQuery();
 
+        String selectedServicesStr = serviceSelectionMap.keySet().toString();
+
         // check the search cache
-        if (searchCache.contains(filteredSearchQuery)) {
+        if (searchCache.contains(filteredSearchQuery+selectedServicesStr)) {
             Map<String, Integer> resultsInCache = searchCache.get(filteredSearchQuery);
 
             if (resultsInCache != null) {
@@ -408,7 +419,7 @@ public class SearchController extends BaseController {
         final ExecutorService executorService = Executors.newCachedThreadPool();
 
         for (final ServiceType service : services) {
-            if (service.isActive()) {
+            if (service.isActive() && serviceSelectionMap.get(service.getName())) {
                 Runnable runnable = new Runnable() {
                     public void run() {
                             int count = countInPsicquicService(service, filteredSearchQuery);
@@ -462,6 +473,7 @@ public class SearchController extends BaseController {
         } catch (IOException e) {
             e.printStackTrace();
             service.setActive(false);
+            serviceSelectionMap.put(service.getName(), false);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -678,5 +690,13 @@ public class SearchController extends BaseController {
 
     public int getMaxNetworkSize() {
         return MAX_NETWORK_SIZE;
+    }
+
+    public Map<String, Boolean> getServiceSelectionMap() {
+        return serviceSelectionMap;
+    }
+
+    public void setServiceSelectionMap(Map<String, Boolean> serviceSelectionMap) {
+        this.serviceSelectionMap = serviceSelectionMap;
     }
 }

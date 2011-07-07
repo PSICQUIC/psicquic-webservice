@@ -118,8 +118,16 @@
 
            <tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0 and not searchBean.clusterSelected}">
 
-               Click on the links below to display the results for each service
-               &#160;(<tr:commandLink text="refresh" actionListener="#{searchBean.refresh}"/>)
+               <p>Click on the links below to display the results for each selected service
+               &#160;(<tr:commandLink text="refresh list" actionListener="#{searchBean.refresh}"/>)
+               </p>
+               <p>Use the check boxes to include or excludes services from the search and cluster operations
+               &#160;-&#160;Select:
+               <a href="#" onclick="psicquic_selectAll(#{fn:length(searchBean.allServiceNames)})">All</a>
+               ,
+               <a href="#" onclick="psicquic_selectNone(#{fn:length(searchBean.allServiceNames)})">None</a>
+
+               </p>
 
                <tr:spacer height="4px"/>
 
@@ -127,7 +135,7 @@
 
                    <div style="float:left; ">
                        <tr:panelFormLayout rows="#{config.serviceRows}" maxColumns="4" fieldWidth="200" >
-                           <c:forEach var="name" items="#{searchBean.allServiceNames}">
+                           <c:forEach var="name" items="#{searchBean.allServiceNames}" varStatus="status">
                                <tr:panelHorizontalLayout>
 
                                    <h:graphicImage alt="Status" title="Status: ONLINE"
@@ -140,9 +148,11 @@
                                                    url="/images/status_warning.png"
                                            rendered="#{searchBean.servicesMap[name].active and (searchBean.resultCountMap[name] == '-1')}"/>
 
+                                   <h:selectBooleanCheckbox id="serviceSel#{status.index}" value="#{searchBean.serviceSelectionMap[name]}" disabled="#{not searchBean.servicesMap[name].active}"/>
+
                                    <h:commandLink value="#{name}" styleClass="#{searchBean.selectedServiceName == name? 'resultLink-selected' : ''}"
                                                   onclick="_gaq.push(['_trackEvent', 'Database', '#{name}', '#{searchBean.userQuery.searchQuery}']);"
-                                                  disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0}"
+                                                  disabled="#{not searchBean.servicesMap[name].active or searchBean.resultCountMap[name] == 0 or not searchBean.serviceSelectionMap[name]}"
                                                   style="#{searchBean.selectedServiceName == name? 'font-weight:bold; text-decoration: none' : ''}">
                                        <f:setPropertyActionListener value="#{name}" target="#{searchBean.selectedServiceName}"/>
                                        <ui:param name="service" value="#{searchBean.servicesMap[name]}"/>

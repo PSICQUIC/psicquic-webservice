@@ -111,3 +111,19 @@ function graphResize() {
     var x = document.getElementById('cytoscapeweb');
     x.style.height = heigth + 'px';
 }
+
+function psicquic_selectAll(serviceCount) {
+    for (i=0; i<serviceCount; i++) {
+        var checkbox = document.getElementById('serviceSel'+i);
+
+        if (!checkbox.disabled) {
+            checkbox.checked = true;
+        }
+    }
+}
+
+function psicquic_selectNone(serviceCount) {
+    for (i=0; i<serviceCount; i++) {
+        document.getElementById('serviceSel'+i).checked = false;
+    }
+}

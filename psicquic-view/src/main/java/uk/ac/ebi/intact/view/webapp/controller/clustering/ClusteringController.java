@@ -3,7 +3,6 @@ package uk.ac.ebi.intact.view.webapp.controller.clustering;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
-import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.hupo.psi.mi.psicquic.clustering.DefaultInteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
@@ -94,7 +93,7 @@ public class ClusteringController extends BaseController {
         for ( Map.Entry<String, Integer> entry : service2count.entrySet() ) {
             final String serviceName = entry.getKey();
             final Integer interactionCount = entry.getValue();
-            if( interactionCount > 0 ) {
+            if( interactionCount > 0 && searchController.getServiceSelectionMap().get(serviceName)) {
                 services.add( new Service( serviceName ) );
             }
         }
