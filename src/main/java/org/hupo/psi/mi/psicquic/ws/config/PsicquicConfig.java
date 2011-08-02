@@ -36,6 +36,7 @@ public class PsicquicConfig implements DisposableBean{
     private String specVersion;
     private String indexDirectory;
     private String propertiesAsStrings;
+    private String queryFilter;
 
     public PsicquicConfig() {
     }
@@ -116,5 +117,13 @@ public class PsicquicConfig implements DisposableBean{
 
     public void setSpecVersion(String specVersion) {
         this.specVersion = specVersion;
+    }
+
+    public String getQueryFilter() {
+        return queryFilter;
+    }
+
+    public void setQueryFilter(String queryFilter) {
+        this.queryFilter = queryFilter;
     }
 }
