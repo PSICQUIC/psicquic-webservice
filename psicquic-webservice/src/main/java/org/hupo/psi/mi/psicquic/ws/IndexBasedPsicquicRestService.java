@@ -76,6 +76,16 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                                                  String maxResultsStr) throws PsicquicServiceException,
                                                                  NotSupportedMethodException,
                                                                  NotSupportedTypeException {
+        // apply any filter
+        if (config.getQueryFilter() != null && !config.getQueryFilter().isEmpty()) {
+            if ("*".equals(query) || query.trim().isEmpty()) {
+                query = config.getQueryFilter();
+            } else {
+                query = query + " "+config.getQueryFilter();
+                query = query.trim();
+            }
+        }
+
         int firstResult;
         int maxResults;
 

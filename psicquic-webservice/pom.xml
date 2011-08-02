@@ -31,6 +31,8 @@
 
         <psicquic.index>${basedir}/target/psicquic-index</psicquic.index>
         <psicquic.properties/>
+
+        <psicquic.filter/>
     </properties>
 
     <build>
@@ -225,7 +227,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.7.9</version>
+            <version>1.7.10-SNAPSHOT</version>
         </dependency>
 
         <!-- BioPAX -->

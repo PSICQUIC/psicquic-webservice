@@ -20,6 +20,7 @@
         <property name="specVersion" value="1.1"/>
         <property name="indexDirectory" value="${psicquic.index}"/>
         <property name="propertiesAsStrings" value="${psicquic.properties}"/>
+        <property name="queryFilter" value="${psicquic.filter}"/>
     </bean>
    
 </beans>
