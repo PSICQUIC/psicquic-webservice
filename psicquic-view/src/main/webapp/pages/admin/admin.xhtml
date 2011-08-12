@@ -10,12 +10,11 @@
                 xmlns:ebi="http://ebi.ac.uk/faces/components"
                 xmlns:ebisf="http://www.ebi.ac.uk/faces/site">
 
-  <tr:document title="PSICQUIC View Admin">
+    <tr:document title="PSICQUIC View Admin">
 
-         <trh:head>
+        <trh:head>
 
-            <meta http-equiv="Content-Type"
-                  content="text/html; charset=UTF-8"/>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
             <meta name="description" content="#{intactView['webapp.name']}"/>
 
@@ -29,63 +28,70 @@
 
             <trh:script source="#{ebisf:absoluteEbiUrl()}/inc/js/contents.js" type="text/javascript"/>
 
-             <!--<script type="text/javascript"-->
-                <!--src="http://o.aolcdn.com/dojo/1.0.0/dojo/dojo.xd.js"></script>-->
+            <!--<script type="text/javascript"-->
+            <!--src="http://o.aolcdn.com/dojo/1.0.0/dojo/dojo.xd.js"></script>-->
 
-             <trh:script source="/js/intact.js"/>
+            <trh:script source="/js/intact.js"/>
 
         </trh:head>
+        <trh:body>
 
-      <tr:messages/>
+            <h:outputLink value="../.."><h:graphicImage value="/images/back_arrow.gif"/><h:outputText value="Back to application"/></h:outputLink>
+            <br/>
+            <br/>
 
-       <tr:form>
+            <tr:messages/>
 
-           <tr:panelHeader text="PSICQUIC View Configuration"/>
+            <tr:form>
 
-           <tr:panelFormLayout>
-               <f:facet name="footer">
-                   <tr:panelButtonBar>
-                       <tr:commandButton text="Load" actionListener="#{config.loadConfigFromFile}"/>
-                       <tr:commandButton text="Save" actionListener="#{config.store}"/>
-                   </tr:panelButtonBar>
-               </f:facet>
-               <tr:inputText label="Config File: " value="#{config.configFile}" columns="100" required="true"/>
-               <tr:inputText label="Title: " value="#{config.title}" columns="100"/>
-               <tr:inputText label="Logo URL: " value="#{config.logoUrl}" columns="100"/>
-               <tr:inputText label="Banner background URL: " value="#{config.bannerBackgroundUrl}" columns="100"/>
-               <tr:panelLabelAndMessage label="Registry tags: ">
-                   <f:facet name="help">
-                       <tr:outputText value="Expression to define the tags to be used"/>
-                     </f:facet>
-                   <tr:inputText value="#{config.registryTagsAsString}" columns="100" simple="true"/>
-               </tr:panelLabelAndMessage>
-               <tr:panelLabelAndMessage label="MIQL query filter: ">
-                   <f:facet name="help">
-                       <tr:outputText value="MIQL added to the end of each query"/>
-                     </f:facet>
-                   <tr:inputText value="#{config.miqlFilterQuery}" columns="100" simple="true"/>
-               </tr:panelLabelAndMessage>
-               <tr:panelLabelAndMessage label="Included services: ">
-                   <f:facet name="help">
-                       <tr:outputText value="Comma-separated list of the services that will be used by default. Don't use the
+                <tr:panelHeader text="PSICQUIC View Configuration"/>
+
+                <tr:panelFormLayout>
+                    <f:facet name="footer">
+                        <tr:panelButtonBar>
+                            <tr:commandButton text="Load" actionListener="#{config.loadConfigFromFile}"/>
+                            <tr:commandButton text="Save" actionListener="#{config.store}"/>
+                        </tr:panelButtonBar>
+                    </f:facet>
+                    <tr:inputText label="Config File: " value="#{config.configFile}" columns="100" required="true"/>
+                    <tr:inputText label="Title: " value="#{config.title}" columns="100"/>
+                    <tr:inputText label="Logo URL: " value="#{config.logoUrl}" columns="100"/>
+                    <tr:inputText label="Banner background URL: " value="#{config.bannerBackgroundUrl}" columns="100"/>
+                    <tr:panelLabelAndMessage label="Registry tags: ">
+                        <f:facet name="help">
+                            <tr:outputText value="Expression to define the tags to be used"/>
+                        </f:facet>
+                        <tr:inputText value="#{config.registryTagsAsString}" columns="100" simple="true"/>
+                    </tr:panelLabelAndMessage>
+                    <tr:panelLabelAndMessage label="MIQL query filter: ">
+                        <f:facet name="help">
+                            <tr:outputText value="MIQL added to the end of each query"/>
+                        </f:facet>
+                        <tr:inputText value="#{config.miqlFilterQuery}" columns="100" simple="true"/>
+                    </tr:panelLabelAndMessage>
+                    <tr:panelLabelAndMessage label="Included services: ">
+                        <f:facet name="help">
+                            <tr:outputText value="Comma-separated list of the services that will be used by default. Don't use the
                         excluded services if this parameter is set"/>
-                     </f:facet>
-                   <tr:inputText value="#{config.includedServices}" columns="100" simple="true"/>
-               </tr:panelLabelAndMessage>
-               <tr:panelLabelAndMessage label="Excluded services: ">
-                   <f:facet name="help">
-                       <tr:outputText value="Comma-separated list of the services that won't be used by default. Don't use the
+                        </f:facet>
+                        <tr:inputText value="#{config.includedServices}" columns="100" simple="true"/>
+                    </tr:panelLabelAndMessage>
+                    <tr:panelLabelAndMessage label="Excluded services: ">
+                        <f:facet name="help">
+                            <tr:outputText value="Comma-separated list of the services that won't be used by default. Don't use the
                         included services if this parameter is set"/>
-                     </f:facet>
-                   <tr:inputText value="#{config.excludedServices}" columns="100" simple="true"/>
-               </tr:panelLabelAndMessage>
-           </tr:panelFormLayout>
+                        </f:facet>
+                        <tr:inputText value="#{config.excludedServices}" columns="100" simple="true"/>
+                    </tr:panelLabelAndMessage>
+                </tr:panelFormLayout>
 
-           <hr/>
+                <hr/>
 
-           <tr:commandButton text="Refresh Application" actionListener="#{searchBean.refresh}"/>
+                <tr:commandButton text="Refresh Application" actionListener="#{searchBean.refresh}"/>
 
-       </tr:form>
-   </tr:document>
+            </tr:form>
+        </trh:body>
+
+    </tr:document>
 
 </ui:composition>

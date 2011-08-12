@@ -20,6 +20,8 @@
     </scm>
 
     <properties>
+        <service.name/>
+
         <debug>false</debug>
 
         <jetty.port>9095</jetty.port>
@@ -35,8 +37,8 @@
         <clustering.limit.count>5000</clustering.limit.count>
 
         <batch.db.port>25043</batch.db.port>
-        <!--<batch.db.path>/ebi/sp/misc1/intact/psicquic-clustering/batchClusteringDB</batch.db.path>-->
-        <batch.db.path>${java.io.tmpdir}${file.separator}batchClusteringDB</batch.db.path>
+        <batch.db.path>/ebi/sp/misc1/intact/psicquic-clustering/batchClusteringDB</batch.db.path>
+        <!--<batch.db.path>${java.io.tmpdir}${file.separator}batchClusteringDB</batch.db.path>-->
 
         <batch.jdbc.driver>org.h2.Driver</batch.jdbc.driver>
         <batch.jdbc.url>jdbc:h2:tcp://localhost:${batch.db.port}/${batch.db.path}</batch.jdbc.url>
@@ -231,7 +233,7 @@
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-client</artifactId>
-            <version>1.3-SNAPSHOT</version>
+            <version>1.3</version>
         </dependency>
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>

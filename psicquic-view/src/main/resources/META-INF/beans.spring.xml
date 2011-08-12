@@ -10,7 +10,7 @@
            http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
     <context:component-scan base-package="uk.ac.ebi.intact.view.webapp"/>
-     <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
 
     <context:property-placeholder location="classpath:/uk/ac/ebi/intact/binarysearch/BuildInfo.properties"/>
 
@@ -19,6 +19,15 @@
         <property name="title" value="PSICQUIC View"/>
         <property name="logoUrl" value="/images/logo_psi.gif"/>
         <property name="serviceRows" value="3"/>
+    </bean>
+
+    <!-- this bean must not be lazily initialized if the exporting is to happen -->
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+        <property name="beans">
+            <map>
+                <entry key="${service.name}_psicquicview:name=configuration" value-ref="config"/>
+            </map>
+        </property>
     </bean>
     
 </beans>
