@@ -122,6 +122,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
                 OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
 
+
                 final RDFReader rdfReader = new JenaReader();
                 rdfReader.read(model, new StringReader(os.toString()), baseUri);
 
@@ -178,15 +179,9 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
         final psidev.psi.mi.xml.model.EntrySet entrySet = converter254.fromJaxb(entrySet254);
 
-        ByteArrayOutputStream psimiData = new ByteArrayOutputStream();
-
-        PsimiXmlWriter psiWriter = new PsimiXmlWriter(PsimiXmlVersion.VERSION_254);
-        psiWriter.write(entrySet, psimiData);
-
-        InputStream is = new ByteArrayInputStream(psimiData.toByteArray());
         PSIMIBioPAXConverter biopaxConverter = new PSIMIBioPAXConverter(biopaxLevel);
 
-        biopaxConverter.convert(is, os);
+        biopaxConverter.convert(entrySet, os);
     }
 
     private String getRdfFormatName(String format) {
