@@ -318,6 +318,8 @@ public class SearchController extends BaseController {
     }
 
     public void loadResults(ServiceType service) {
+        generateMitabUrl();
+
         if (resultDataModelMap.containsKey(service.getName())) {
             return;
         }
@@ -334,8 +336,6 @@ public class SearchController extends BaseController {
         } catch (PsicquicClientException e) {
             log.error( "Error while building results", e );
         }
-
-        generateMitabUrl();
     }
 
     private void generateMitabUrl() {
