@@ -83,6 +83,8 @@ public class BioPaxUriFixer {
                         db = "obo.go";
                     } else if ("psi-mi".equals(db)) {
                         db = "obo.mi";
+                    } else if (db.endsWith("pdb")) {
+                        db = "pdb";
                     }
 
                     final String newUri = "http://identifiers.org/"+db+"/" + id;
@@ -98,17 +100,20 @@ public class BioPaxUriFixer {
         BufferedReader in = new BufferedReader(reader);
         String str;
         while ((str = in.readLine()) != null) {
-            if (str.contains("bp:xref")) {
+            if (str.contains("HTTP://PATHWAYCOMMONS.ORG/")) {
                 for (Map.Entry<String, String> entry : uriMappings.entrySet()) {
                     final String oldUri = entry.getKey();
                     final String newUri = entry.getValue();
 
-                    if (str.contains("HTTP://PATHWAYCOMMONS.ORG/")) {
-                        str = str.replaceAll(oldUri, newUri);
-                    } else {
-                        String uriFromHash = oldUri.substring(oldUri.indexOf("#"));
-                        str = str.replaceAll(uriFromHash, newUri);
-                    }
+                   str = str.replaceAll(oldUri, newUri);
+                }
+            } else if (str.contains("bp:xref")) {
+                for (Map.Entry<String, String> entry : uriMappings.entrySet()) {
+                    final String oldUri = entry.getKey();
+                    final String newUri = entry.getValue();
+
+                    String uriFromHash = oldUri.substring(oldUri.indexOf("#"));
+                    str = str.replaceAll(uriFromHash, newUri);
                 }
             } else if (str.contains("rdf:ID")) {
                 for (Map.Entry<String, String> entry : uriMappings.entrySet()) {
@@ -116,14 +121,11 @@ public class BioPaxUriFixer {
                     final String newUri = entry.getValue();
 
                     String uriFromHashWithout = oldUri.substring(oldUri.indexOf("#") + 1);
-                    str = str.replaceAll(uriFromHashWithout, newUri);
-                }
-            } else if (str.contains("rdf:about")) {
-               for (Map.Entry<String, String> entry : uriMappings.entrySet()) {
-                    final String oldUri = entry.getKey();
-                    final String newUri = entry.getValue();
 
-                   str = str.replaceAll(oldUri, newUri);
+                    if (str.contains(uriFromHashWithout)) {
+                        str = str.replaceAll("rdf:ID", "rdf:about");
+                        str = str.replaceAll(uriFromHashWithout, newUri);
+                    }
                 }
             }
 
