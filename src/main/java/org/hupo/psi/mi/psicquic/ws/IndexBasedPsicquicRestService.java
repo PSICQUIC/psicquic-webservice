@@ -22,9 +22,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFReader;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import org.apache.commons.lang.StringUtils;
+import org.biopax.paxtools.io.jena.JenaIOHandler;
 import org.biopax.paxtools.model.BioPAXLevel;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
+import org.hupo.psi.mi.psicquic.ws.utils.BioPaxUriFixer;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
 import org.mskcc.psibiopax.converter.PSIMIBioPAXConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,22 +122,24 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
                 final String baseUri = "http://www.ebi.ac.uk/intact/";
 
-                OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+                OntModel jenaModel = createJenaModel(new StringReader(os.toString()), baseUri);
 
-
-                final RDFReader rdfReader = new JenaReader();
-                rdfReader.read(model, new StringReader(os.toString()), baseUri);
-
-                final RDFWriter rdfWriter = model.getWriter(rdfFormat);
+                final RDFWriter rdfWriter = jenaModel.getWriter(rdfFormat);
                 rdfWriter.setProperty("xmlbase", baseUri);
-                model.setNsPrefix("", baseUri);
+                jenaModel.setNsPrefix("", baseUri);
 
                 Writer writer = new StringWriter();
-                rdfWriter.write(model, writer, baseUri);
+                rdfWriter.write(jenaModel, writer, baseUri);
 
-                String rdfOutputStr = writer.toString();
+                // fix mappings
+                Reader reader = new StringReader(writer.toString());
+                Writer resultRdfWriter = new StringWriter();
 
-                return Response.status(200).type(mediaType).entity(rdfOutputStr).build();
+                BioPaxUriFixer fixer = new BioPaxUriFixer();
+                Map<String, String> uriMappings = fixer.findMappings(jenaModel);
+                fixer.fixBioPaxUris(reader, resultRdfWriter, uriMappings);
+
+                return Response.status(200).type(mediaType).entity(resultRdfWriter.toString()).build();
 
             } else if (format.startsWith(IndexBasedPsicquicService.RETURN_TYPE_BIOPAX)) {
                 String[] formatElements = format.split("-");
@@ -151,7 +155,18 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 convertToBioPAX(os, bioPAXLevel, query, firstResult, maxResults);
 
-                return Response.status(200).type(MediaType.APPLICATION_XML_TYPE).entity(os.toString()).build();
+                // fix the biopax non-dereferenciable URIs
+                final String baseUri = "http://www.ebi.ac.uk/intact/";
+                OntModel jenaModel = createJenaModel(new StringReader(os.toString()), baseUri);
+
+                Reader reader = new StringReader(os.toString());
+                Writer writer = new StringWriter();
+
+                BioPaxUriFixer fixer = new BioPaxUriFixer();
+                final Map<String, String> mappings = fixer.findMappings(jenaModel);
+                fixer.fixBioPaxUris(reader, writer, mappings);
+
+                return Response.status(200).type(MediaType.APPLICATION_XML_TYPE).entity(writer.toString()).build();
 
             } else if (IndexBasedPsicquicService.RETURN_TYPE_COUNT.equalsIgnoreCase(format)) {
                 return count(query);
@@ -169,6 +184,14 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
         }
 
 
+    }
+
+    private OntModel createJenaModel(Reader reader, String baseUri) {
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+
+        final RDFReader rdfReader = new JenaReader();
+        rdfReader.read(model, reader, baseUri);
+        return model;
     }
 
     protected void convertToBioPAX(OutputStream os, BioPAXLevel biopaxLevel, String query, int firstResult, int maxResults) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException, ConverterException, PsimiXmlWriterException, IOException, PsimiXmlReaderException {
