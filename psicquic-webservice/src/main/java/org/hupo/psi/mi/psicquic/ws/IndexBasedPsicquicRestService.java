@@ -155,18 +155,27 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 convertToBioPAX(os, bioPAXLevel, query, firstResult, maxResults);
 
-                // fix the biopax non-dereferenciable URIs
-                final String baseUri = "http://www.ebi.ac.uk/intact/";
-                OntModel jenaModel = createJenaModel(new StringReader(os.toString()), baseUri);
+                final String biopaxOutput = os.toString();
 
-                Reader reader = new StringReader(os.toString());
-                Writer writer = new StringWriter();
+                String output = "";
 
-                BioPaxUriFixer fixer = new BioPaxUriFixer();
-                final Map<String, String> mappings = fixer.findMappings(jenaModel);
-                fixer.fixBioPaxUris(reader, writer, mappings);
+                if (!biopaxOutput.isEmpty()) {
+                    final String baseUri = "http://www.ebi.ac.uk/intact/";
 
-                return Response.status(200).type(MediaType.APPLICATION_XML_TYPE).entity(writer.toString()).build();
+                    // fix the biopax non-dereferenciable URIs
+                    OntModel jenaModel = createJenaModel(new StringReader(biopaxOutput), baseUri);
+
+                    Reader reader = new StringReader(biopaxOutput);
+                    Writer writer = new StringWriter();
+
+                    BioPaxUriFixer fixer = new BioPaxUriFixer();
+                    final Map<String, String> mappings = fixer.findMappings(jenaModel);
+                    fixer.fixBioPaxUris(reader, writer, mappings);
+
+                    output = writer.toString();
+                }
+
+                return Response.status(200).type(MediaType.APPLICATION_XML_TYPE).entity(output).build();
 
             } else if (IndexBasedPsicquicService.RETURN_TYPE_COUNT.equalsIgnoreCase(format)) {
                 return count(query);
@@ -196,6 +205,10 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
     protected void convertToBioPAX(OutputStream os, BioPAXLevel biopaxLevel, String query, int firstResult, int maxResults) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException, ConverterException, PsimiXmlWriterException, IOException, PsimiXmlReaderException {
         final EntrySet entrySet254 = getByQueryXml(query, firstResult, maxResults);
+
+        if (entrySet254.getEntries().isEmpty()) {
+            return;
+        }
 
         EntrySetConverter converter254 = new EntrySetConverter();
         converter254.setDAOFactory(new InMemoryDAOFactory());
