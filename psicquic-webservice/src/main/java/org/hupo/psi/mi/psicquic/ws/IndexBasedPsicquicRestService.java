@@ -135,7 +135,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 Writer resultRdfWriter = new StringWriter();
 
                 BioPaxUriFixer fixer = new BioPaxUriFixer();
-                Map<String, String> uriMappings = fixer.findMappings(jenaModel);
+                Map<String, String> uriMappings = fixer.findMappings(jenaModel, BioPAXLevel.L3);
                 fixer.fixBioPaxUris(reader, resultRdfWriter, uriMappings);
 
                 return Response.status(200).type(mediaType).entity(resultRdfWriter.toString()).build();
@@ -168,7 +168,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                     Writer writer = new StringWriter();
 
                     BioPaxUriFixer fixer = new BioPaxUriFixer();
-                    final Map<String, String> mappings = fixer.findMappings(jenaModel);
+                    final Map<String, String> mappings = fixer.findMappings(jenaModel, bioPAXLevel);
                     fixer.fixBioPaxUris(reader, writer, mappings);
 
                     output = writer.toString();
