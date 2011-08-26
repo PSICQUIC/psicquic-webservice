@@ -52,6 +52,7 @@ public class BioPaxUriFixer {
     public BioPaxUriFixer() {
 
     }
+
     public String fixBioPaxUris(Model model) throws IOException {
         model.getNameSpacePrefixMap().clear();
 
