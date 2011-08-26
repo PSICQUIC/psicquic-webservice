@@ -22,7 +22,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFReader;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import org.apache.commons.lang.StringUtils;
+import org.biopax.paxtools.io.SimpleIOHandler;
 import org.biopax.paxtools.model.BioPAXLevel;
+import org.biopax.paxtools.model.Model;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.BioPaxUriFixer;
@@ -119,26 +121,32 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 convertToBioPAX(os, BioPAXLevel.L3, query, firstResult, maxResults);
 
-                final String baseUri = "http://www.ebi.ac.uk/intact/";
+                final String biopaxOutput = os.toString();
 
-                OntModel jenaModel = createJenaModel(new StringReader(os.toString()), baseUri);
+                String output = "";
 
-                final RDFWriter rdfWriter = jenaModel.getWriter(rdfFormat);
-                rdfWriter.setProperty("xmlbase", baseUri);
-                jenaModel.setNsPrefix("", baseUri);
+                if (!biopaxOutput.isEmpty()) {
+                    // fix the biopax non-dereferenciable URIs
+                    final Model model = new SimpleIOHandler().convertFromOWL(new ByteArrayInputStream(biopaxOutput.getBytes()));
 
-                Writer writer = new StringWriter();
-                rdfWriter.write(jenaModel, writer, baseUri);
+                    BioPaxUriFixer fixer = new BioPaxUriFixer();
+                    String fixedOutput = fixer.fixBioPaxUris(model);
 
-                // fix mappings
-                Reader reader = new StringReader(writer.toString());
-                Writer resultRdfWriter = new StringWriter();
+                    final String baseUri = "http://org.hupo.psi/psicquic";
 
-                BioPaxUriFixer fixer = new BioPaxUriFixer();
-                Map<String, String> uriMappings = fixer.findMappings(jenaModel, BioPAXLevel.L3);
-                fixer.fixBioPaxUris(reader, resultRdfWriter, uriMappings);
+                    OntModel jenaModel = createJenaModel(new StringReader(fixedOutput), baseUri);
 
-                return Response.status(200).type(mediaType).entity(resultRdfWriter.toString()).build();
+                    final RDFWriter rdfWriter = jenaModel.getWriter(rdfFormat);
+                    rdfWriter.setProperty("xmlbase", baseUri);
+                    jenaModel.setNsPrefix("", baseUri);
+
+                    Writer writer = new StringWriter();
+                    rdfWriter.write(jenaModel, writer, baseUri);
+
+                    output = writer.toString();
+                }
+
+                return Response.status(200).type(mediaType).entity(output).build();
 
             } else if (format.startsWith(IndexBasedPsicquicService.RETURN_TYPE_BIOPAX)) {
                 String[] formatElements = format.split("-");
@@ -159,19 +167,11 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 String output = "";
 
                 if (!biopaxOutput.isEmpty()) {
-                    final String baseUri = "http://www.ebi.ac.uk/intact/";
-
                     // fix the biopax non-dereferenciable URIs
-                    OntModel jenaModel = createJenaModel(new StringReader(biopaxOutput), baseUri);
-
-                    Reader reader = new StringReader(biopaxOutput);
-                    Writer writer = new StringWriter();
+                    final Model model = new SimpleIOHandler().convertFromOWL(new ByteArrayInputStream(biopaxOutput.getBytes()));
 
                     BioPaxUriFixer fixer = new BioPaxUriFixer();
-                    final Map<String, String> mappings = fixer.findMappings(jenaModel, bioPAXLevel);
-                    fixer.fixBioPaxUris(reader, writer, mappings);
-
-                    output = writer.toString();
+                    output = fixer.fixBioPaxUris(model);
                 }
 
                 return Response.status(200).type(MediaType.APPLICATION_XML_TYPE).entity(output).build();
