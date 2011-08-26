@@ -27,10 +27,19 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import org.apache.commons.lang.StringUtils;
+import org.biopax.paxtools.io.SimpleIOHandler;
 import org.biopax.paxtools.model.BioPAXLevel;
+import org.biopax.paxtools.model.Model;
+import org.biopax.paxtools.model.level3.SimplePhysicalEntity;
+import org.biopax.paxtools.model.level3.Xref;
+import org.biopax.validator.utils.Normalizer;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -43,109 +52,83 @@ public class BioPaxUriFixer {
     public BioPaxUriFixer() {
 
     }
+    public String fixBioPaxUris(Model model) throws IOException {
+        model.getNameSpacePrefixMap().clear();
 
-    public Map<String,String> findMappings(OntModel model, BioPAXLevel biopaxLevel) {
-        Map<String,String> uriMappings = Maps.newHashMap();
+        Map<String,String> mappings = Maps.newHashMap();
+        mappings.put("psi-mi", "mi");
+        mappings.put("rcsb pdb", "pdb");
 
+        fixXrefs(model, mappings);
 
-        if (biopaxLevel == BioPAXLevel.L2) {
-            String biopaxUri = "http://www.biopax.org/release/biopax-level2.owl#";
+        Map<String, String> idMappings = calculateIdMapings(model);
 
-//            final Resource unificationXrefRes = model.getOntResource(biopaxUri+"unificationXref");
-//            final Resource relationshipXrefRes = model.getOntResource(biopaxUri+"relationshipXref");
-//            final Resource pubXrefRes = model.getOntResource(biopaxUri+"publicationXref");
-//
-//            uriMappings.putAll(findMappingsForResource(unificationXrefRes, model, biopaxUri));
-//            uriMappings.putAll(findMappingsForResource(relationshipXrefRes, model, biopaxUri));
-//            uriMappings.putAll(findMappingsForResource(pubXrefRes, model, biopaxUri));
+        new Normalizer().normalize(model);
 
-        } else if (biopaxLevel == BioPAXLevel.L3) {
-            String biopaxUri = "http://www.biopax.org/release/biopax-level3.owl#";
+        OutputStream baos = new ByteArrayOutputStream();
 
-            final Resource unificationXrefRes = model.getOntResource(biopaxUri+"UnificationXref");
-           final Resource relationshipXrefRes = model.getOntResource(biopaxUri+"RelationshipXref");
-           final Resource pubXrefRes = model.getOntResource(biopaxUri+"PublicationXref");
+        new SimpleIOHandler().convertToOWL(model, baos);
 
-           uriMappings.putAll(findMappingsForResource(unificationXrefRes, model, biopaxUri));
-           uriMappings.putAll(findMappingsForResource(relationshipXrefRes, model, biopaxUri));
-           uriMappings.putAll(findMappingsForResource(pubXrefRes, model, biopaxUri));
-        }
-
-        return uriMappings;
-
+        return fixURIs(idMappings, baos.toString());
     }
 
-    private Map<String,String> findMappingsForResource(Resource unificationXrefRes, OntModel model, String biopaxUri) {
-        Map<String,String> uriMappings = Maps.newHashMap();
+    private String fixURIs(Map<String, String> idMappings, String output) {
+        String[] lines = output.split("\n");
 
-        final ExtendedIterator<Individual> iterator = model.listIndividuals(unificationXrefRes);
+        List<String> modifiedLines = new ArrayList<String>();
 
-        final Property idProp = model.getProperty(biopaxUri + "id");
-        final Property dbProp = model.getProperty(biopaxUri + "db");
-
-
-        while (iterator.hasNext()) {
-            Individual xrefIndividual = iterator.next();
-            String nodeUri = xrefIndividual.asNode().getURI();
-
-                String id = xrefIndividual.getProperty(idProp).getLiteral().getString();
-                String db = xrefIndividual.getProperty(dbProp).getLiteral().getString();
-
-                if (db.equals("uniprotkb")) {
-                    final String newUri = "http://purl.uniprot.org/uniprot/" + id;
-                    uriMappings.put(nodeUri, newUri);
-                } else {
-                    if ("go".equals(db)) {
-                        db = "obo.go";
-                    } else if ("psi-mi".equals(db)) {
-                        db = "obo.mi";
-                    } else if (db.endsWith("pdb")) {
-                        db = "pdb";
-                    }
-
-                    final String newUri = "http://identifiers.org/"+db+"/" + id;
-                    uriMappings.put(nodeUri, newUri);
-                }
-
-        }
-
-        return uriMappings;
-    }
-
-    public void fixBioPaxUris(Reader reader, Writer writer, Map<String,String> uriMappings) throws IOException {
-        BufferedReader in = new BufferedReader(reader);
-        String str;
-        while ((str = in.readLine()) != null) {
-            if (str.contains("HTTP://PATHWAYCOMMONS.ORG/")) {
-                for (Map.Entry<String, String> entry : uriMappings.entrySet()) {
-                    final String oldUri = entry.getKey();
-                    final String newUri = entry.getValue();
-
-                   str = str.replaceAll(oldUri, newUri);
-                }
-            } else if (str.contains("bp:xref")) {
-                for (Map.Entry<String, String> entry : uriMappings.entrySet()) {
-                    final String oldUri = entry.getKey();
-                    final String newUri = entry.getValue();
-
-                    String uriFromHash = oldUri.substring(oldUri.indexOf("#"));
-                    str = str.replaceAll(uriFromHash, newUri);
-                }
-            } else if (str.contains("rdf:ID")) {
-                for (Map.Entry<String, String> entry : uriMappings.entrySet()) {
-                    final String oldUri = entry.getKey();
-                    final String newUri = entry.getValue();
-
-                    String uriFromHashWithout = oldUri.substring(oldUri.indexOf("#") + 1);
-
-                    if (str.contains(uriFromHashWithout)) {
-                        str = str.replaceAll("rdf:ID", "rdf:about");
-                        str = str.replaceAll(uriFromHashWithout, newUri);
-                    }
-                }
+        for (String line : lines) {
+            if (line.contains("Reference")) {
+               for (Map.Entry<String,String> protMapEntry : idMappings.entrySet()) {
+                   if (line.contains(protMapEntry.getKey())) {
+                       line = line.replaceAll(protMapEntry.getKey(), protMapEntry.getValue());
+                   }
+               }
             }
 
-            writer.write(str + NEW_LINE);
+            if (line.contains("urn:miriam:")) {
+                String[] tokens = line.split("urn:miriam:");
+                tokens[1] = StringUtils.replaceOnce(tokens[1], ":", "/");
+
+                line = StringUtils.join(tokens, "http://identifiers.org/");
+            }
+
+            modifiedLines.add( line );
+        }
+
+        return StringUtils.join(modifiedLines, "\n");
+    }
+
+    private Map<String, String> calculateIdMapings(Model model) {
+        Map<String,String> idMappings = Maps.newHashMap();
+
+        final Set<SimplePhysicalEntity> proteins = model.getObjects(SimplePhysicalEntity.class);
+
+        for (SimplePhysicalEntity protein : proteins) {
+            final String protRefId = protein.getEntityReference().getRDFId();
+
+            for (Xref xref : protein.getXref()) {
+                if ("uniprotkb".equals(xref.getDb())) {
+                    String newId = "http://identifiers.org/uniprot/"+xref.getId();
+                    idMappings.put(protRefId, newId);
+                    break;
+                } else if ("chebi".equals(xref.getDb())) {
+                    String newId = "http://identifiers.org/chebi/"+xref.getId();
+                    idMappings.put(protRefId, newId);
+                    break;
+                }
+            }
+        }
+        return idMappings;
+    }
+
+    private void fixXrefs(Model model, Map<String, String> mappings) {
+        final Set<Xref> xrefs = model.getObjects(Xref.class);
+
+        for (Xref xref : xrefs) {
+            if (mappings.containsKey(xref.getDb())) {
+                xref.setDb(mappings.get(xref.getDb()));
+            }
         }
     }
 
