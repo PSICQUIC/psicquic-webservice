@@ -10,9 +10,9 @@ import java.util.Collection;
  * @since TODO add POM version
  */
 public interface BaseDao<T> {
-    int countAll();
-    Collection<T> getAll();
-    void save( T object );
-    void update( T object );
-    void delete( T object );
+    int countAll() throws DaoException;
+    Collection<T> getAll() throws DaoException;
+    void save( T object ) throws DaoException;
+    void update( T object ) throws DaoException;
+    void delete( T object ) throws DaoException;
 }

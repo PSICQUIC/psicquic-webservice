@@ -1,9 +1,6 @@
 package org.hupo.psi.mi.psicquic.clustering;
 
-import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
-import org.hupo.psi.mi.psicquic.PsicquicServiceException;
 import org.hupo.psi.mi.psicquic.QueryResponse;
-import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
 import org.hupo.psi.mi.psicquic.clustering.job.PollResult;
 
 import java.util.Arrays;
@@ -27,6 +24,10 @@ public interface InteractionClusteringService {
     public static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
 
     public static final List<String> SUPPORTED_RETURN_TYPES = Arrays.asList( RETURN_TYPE_XML25, RETURN_TYPE_MITAB25, RETURN_TYPE_COUNT );
+
+    ClusteringContext getClusteringContext();
+
+    void setClusteringContext( ClusteringContext clusteringContext );
 
     /**
      * Initiate the clustering of a MIQL query based on the given list of services.
@@ -56,11 +57,9 @@ public interface InteractionClusteringService {
      * @param resultType the return type of the data generated.
      * @return  a <code>QueryResponse</code> wrapping the resulting data.
      */
-    public QueryResponse query( String jobId,
-                                String query,
-                                final int from,
-                                final int maxResult,
-                                String resultType ) throws JobNotCompletedException,
-                                                           NotSupportedTypeException,
-                                                           PsicquicServiceException;
+    QueryResponse query( String jobId,
+                         String query,
+                         final int from,
+                         final int maxResult,
+                         String resultType ) throws ClusteringServiceException;
 }

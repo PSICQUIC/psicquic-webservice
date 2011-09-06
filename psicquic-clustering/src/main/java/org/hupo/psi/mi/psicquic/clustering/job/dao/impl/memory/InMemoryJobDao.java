@@ -1,9 +1,15 @@
 package org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory;
 
+import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
+import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,11 +22,30 @@ import java.util.Map;
  * @version $Id$
  * @since 0.1
  */
+@Repository
+@Qualifier(value = "inMemoryJobDao")
 public class InMemoryJobDao implements JobDao {
 
     private Map<String, ClusteringJob> jobid2job = new HashMap<String, ClusteringJob>();
 
-    public void addJob( String jobId, ClusteringJob job ) {
+    @Autowired
+    private ClusteringContext clusteringContext;
+
+    public InMemoryJobDao() {
+    }
+
+    public ClusteringContext getClusteringContext() {
+        return clusteringContext;
+    }
+
+    public void setClusteringContext( ClusteringContext clusteringContext ) {
+        this.clusteringContext = clusteringContext;
+    }
+
+    ///////////////////
+    // JobDao
+
+    public void addJob( String jobId, ClusteringJob job ) throws DaoException {
         if ( jobId == null ) {
             throw new IllegalArgumentException( "You must give a non null jobId" );
         }
@@ -34,11 +59,11 @@ public class InMemoryJobDao implements JobDao {
         jobid2job.put( jobId, job );
     }
 
-    public ClusteringJob getJob( String jobId ) {
+    public ClusteringJob getJob( String jobId ) throws DaoException {
         return jobid2job.get( jobId );
     }
 
-    public ClusteringJob removeJob( String jobId ) {
+    public ClusteringJob removeJob( String jobId ) throws DaoException {
         ClusteringJob job = jobid2job.remove( jobId );
         if ( job == null ) {
             throw new IllegalArgumentException( "This job could not be found: " + jobId );
@@ -51,7 +76,7 @@ public class InMemoryJobDao implements JobDao {
      *
      * @return
      */
-    public ClusteringJob getLastRanJob() {
+    public ClusteringJob getLastRanJob() throws DaoException {
         ClusteringJob lastRanJob = null;
         for ( Map.Entry<String, ClusteringJob> entry : jobid2job.entrySet() ) {
             ClusteringJob job = entry.getValue();
@@ -79,7 +104,7 @@ public class InMemoryJobDao implements JobDao {
      *
      * @return
      */
-    public ClusteringJob getNextJobToRun() {
+    public ClusteringJob getNextJobToRun() throws DaoException {
         ClusteringJob nextJob = null;
         for ( Map.Entry<String, ClusteringJob> entry : jobid2job.entrySet() ) {
             ClusteringJob job = entry.getValue();
@@ -99,23 +124,23 @@ public class InMemoryJobDao implements JobDao {
         return nextJob;
     }
 
-    public int getCompletedJobCount() {
+    public int getCompletedJobCount() throws DaoException {
         return countJobsByStatus( JobStatus.COMPLETED );
     }
 
-    public int getQueuedJobCount() {
+    public int getQueuedJobCount() throws DaoException {
         return countJobsByStatus( JobStatus.QUEUED );
     }
 
-    public int getRunningJobCount() {
+    public int getRunningJobCount() throws DaoException {
         return countJobsByStatus( JobStatus.RUNNING );
     }
 
-    public int getFailedJobCount() {
+    public int getFailedJobCount() throws DaoException {
         return countJobsByStatus( JobStatus.FAILED );
     }
 
-    private int countJobsByStatus( JobStatus status ) {
+    private int countJobsByStatus( JobStatus status ) throws DaoException {
         int count = 0;
         for ( ClusteringJob job : getAll() ) {
             if ( job.getStatus().equals( status ) ) {
@@ -128,23 +153,23 @@ public class InMemoryJobDao implements JobDao {
     //////////////////
     // BaseDao
 
-    public int countAll() {
+    public int countAll() throws DaoException {
         return jobid2job.size();
     }
 
-    public Collection<ClusteringJob> getAll() {
+    public Collection<ClusteringJob> getAll() throws DaoException {
         return new ArrayList( jobid2job.values() );
     }
 
-    public void save( ClusteringJob job ) {
+    public void save( ClusteringJob job ) throws DaoException {
         // nothing to do, all in memory
     }
 
-    public void update( ClusteringJob job ) {
+    public void update( ClusteringJob job ) throws DaoException {
         // nothing to do, all in memory
     }
 
-    public void delete( ClusteringJob job ) {
+    public void delete( ClusteringJob job ) throws DaoException {
         for ( Map.Entry<String, ClusteringJob> entry : jobid2job.entrySet() ) {
             if ( entry.getValue() == job ) {
                 jobid2job.remove( entry.getKey() );

@@ -1,13 +1,17 @@
 package org.hupo.psi.mi.psicquic.clustering;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
-import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
+import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.PollResult;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
+import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.search.engine.SearchEngine;
 import psidev.psi.mi.search.engine.impl.BinaryInteractionSearchEngine;
@@ -31,11 +35,27 @@ import java.util.List;
  * @version $Id$
  * @since 0.1
  */
+@org.springframework.stereotype.Service
 public class DefaultInteractionClusteringService implements InteractionClusteringService {
 
     private static final Log log = LogFactory.getLog( DefaultInteractionClusteringService.class );
 
     private static final String NEW_LINE = System.getProperty( "line.separator" );
+
+    @Autowired
+    private ClusteringContext clusteringContext;
+
+    public DefaultInteractionClusteringService() {
+    }
+
+    public ClusteringContext getClusteringContext() {
+        return clusteringContext;
+    }
+
+//    @Required
+    public void setClusteringContext( ClusteringContext clusteringContext ) {
+        this.clusteringContext = clusteringContext;
+    }
 
     /////////////////////////////////
     // InteractionClusteringService
@@ -49,15 +69,19 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
         final String jobId = job.getJobId();
 
         // detect if this job is already running
-        ClusteringServiceDaoFactory csd = ClusteringContext.getInstance().getDaoFactory();
+        ClusteringServiceDaoFactory csd = clusteringContext.getDaoFactory();
         final JobDao jobDao = csd.getJobDao();
         ClusteringJob existingJob;
-        if ( ( existingJob = jobDao.getJob( jobId ) ) != null ) {
-            // job was already submitted
-            log.info( "This job was already submitted: " + existingJob.toString() );
-        } else {
-            // new job
-            jobDao.addJob( jobId, job );
+        try {
+            if ( ( existingJob = jobDao.getJob( jobId ) ) != null ) {
+                // job was already submitted
+                log.info( "This job was already submitted: " + existingJob.toString() );
+            } else {
+                // new job
+                jobDao.addJob( jobId, job );
+            }
+        } catch ( DaoException e ) {
+            throw new RuntimeException( "Could not get the job: " + jobId, e );
         }
 
         return jobId;
@@ -65,13 +89,27 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
 
     public PollResult poll( String jobId ) {
 
-        ClusteringServiceDaoFactory csd = ClusteringContext.getInstance().getDaoFactory();
+        ClusteringServiceDaoFactory csd = clusteringContext.getDaoFactory();
         final JobDao jobDao = csd.getJobDao();
-        final ClusteringJob job = jobDao.getJob( jobId );
+        final ClusteringJob job;
+        try {
+            job = jobDao.getJob( jobId );
+        } catch ( DaoException e ) {
+            throw new RuntimeException( "Filed to  poll job: " + jobId, e );
+        }
         final PollResult pr = new PollResult( job.getStatus() );
 
         // TODO if status is RUNNING, generate an ETA and store into 'PollResult.message'
-        // TODO if status is FAILED, collect reason and store into 'PollResult.message'
+
+        if( job.getStatus().equals( JobStatus.FAILED ) ) {
+            StringBuilder sb = new StringBuilder( 512 );
+            sb.append( "Clustering failed with message: " + job.getStatusMessage() );
+            if( job.getStatusException() != null ) {
+                sb.append( "\nException was:\n" );
+                sb.append( ExceptionUtils.getFullStackTrace( job.getStatusException() ) );
+            }
+            pr.setMessage( sb.toString() );
+        }
 
         return pr;
     }
@@ -80,52 +118,60 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
                                 String query,
                                 final int from,
                                 final int maxResult,
-                                final String resultType ) throws JobNotCompletedException,
-                                                                 NotSupportedTypeException,
-                                                                 PsicquicServiceException {
-
-        ClusteringServiceDaoFactory csd = ClusteringContext.getInstance().getDaoFactory();
-        final JobDao jobDao = csd.getJobDao();
-        final ClusteringJob job = jobDao.getJob( jobId );
-
-        // get Lucene index location from job
-        final String indexLocation = job.getLuceneIndexLocation();
-        log.debug( "Reading Lucene index from directory: " + indexLocation );
-        // query chunk from Lucene
-        SearchEngine searchEngine;
+                                final String resultType ) throws ClusteringServiceException {
 
         try {
-            searchEngine = new BinaryInteractionSearchEngine( indexLocation );
-        } catch ( IOException e ) {
-            log.error( "Could not initialize Lucene index before querying: " + indexLocation, e );
-            throw new PsicquicServiceException( "Problem creating SearchEngine using directory: " + indexLocation, e );
+            ClusteringServiceDaoFactory csd = clusteringContext.getDaoFactory();
+            final JobDao jobDao = csd.getJobDao();
+            final ClusteringJob job = jobDao.getJob( jobId );
+
+            // get Lucene index location from job
+            final String indexLocation = job.getLuceneIndexLocation();
+            if ( log.isDebugEnabled() ) {
+                log.debug( "Reading Lucene index from directory: " + indexLocation );
+            }
+
+            // query chunk from Lucene
+            SearchEngine searchEngine;
+
+            try {
+                searchEngine = new BinaryInteractionSearchEngine( indexLocation );
+            } catch ( IOException e ) {
+                log.error( "Could not initialize Lucene index before querying: " + indexLocation, e );
+                throw new PsicquicServiceException( "Problem creating SearchEngine using directory: " + indexLocation, e );
+            }
+
+            final int blockSize = Math.min( maxResult, 200 );
+
+            if ( log.isInfoEnabled() ) {
+                log.info( "Lucene search: [query='" + query + "'; from='" + from + "'; blockSize='" + blockSize + "']" );
+            }
+
+            SearchResult searchResult = searchEngine.search( query, from, blockSize );
+
+            // preparing the response (PSICQUIC style response)
+            QueryResponse queryResponse = new QueryResponse();
+            ResultInfo resultInfo = new ResultInfo();
+            resultInfo.setBlockSize( blockSize );
+            resultInfo.setFirstResult( from );
+            resultInfo.setResultType( resultType );
+            resultInfo.setTotalResults( searchResult.getTotalCount() );
+            queryResponse.setResultInfo( resultInfo );
+
+            // Build a RequestInfo to enable reuse of method borrowed from psicquic-ws
+            RequestInfo requestInfo = new RequestInfo();
+            requestInfo.setBlockSize( blockSize );
+            requestInfo.setFirstResult( from );
+            requestInfo.setResultType( resultType );
+
+            ResultSet resultSet = createResultSet( query, searchResult, requestInfo );
+            queryResponse.setResultSet( resultSet );
+
+            // return the data
+            return queryResponse;
+        } catch ( Exception e ) {
+            throw new ClusteringServiceException( "Failed to query local clustered index: jobid="+jobId, e );
         }
-
-        final int blockSize = Math.min( maxResult, 200 );
-
-        log.info( "Lucene search: [query='" + query + "'; from='" + from + "'; blockSize='" + blockSize + "']" );
-        SearchResult searchResult = searchEngine.search( query, from, blockSize );
-
-        // preparing the response (PSICQUIC style response)
-        QueryResponse queryResponse = new QueryResponse();
-        ResultInfo resultInfo = new ResultInfo();
-        resultInfo.setBlockSize( blockSize );
-        resultInfo.setFirstResult( from );
-        resultInfo.setResultType( resultType );
-        resultInfo.setTotalResults( searchResult.getTotalCount() );
-        queryResponse.setResultInfo( resultInfo );
-
-        // Build a RequestInfo to enable reuse of method borrowed from psicquic-ws
-        RequestInfo requestInfo = new RequestInfo();
-        requestInfo.setBlockSize( blockSize );
-        requestInfo.setFirstResult( from );
-        requestInfo.setResultType( resultType );
-
-        ResultSet resultSet = createResultSet( query, searchResult, requestInfo );
-        queryResponse.setResultSet( resultSet );
-
-        // return the data
-        return queryResponse;
     }
 
     ///////////////////////////////

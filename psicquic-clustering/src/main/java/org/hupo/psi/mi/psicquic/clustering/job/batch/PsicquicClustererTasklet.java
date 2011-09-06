@@ -10,6 +10,7 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.search.Searcher;
 import psidev.psi.mi.tab.model.BinaryInteraction;
@@ -38,6 +39,10 @@ public class PsicquicClustererTasklet implements Tasklet {
 
     public static final String NEW_LINE = System.getProperty( "line.separator" );
 
+    @Autowired
+    private ClusteringContext clusteringContext;
+
+
     ////////////////
     // Tasklet
 
@@ -50,7 +55,7 @@ public class PsicquicClustererTasklet implements Tasklet {
             throw new IllegalArgumentException( "You must give a non null jobId" );
         }
 
-        final JobDao jobDao = ClusteringContext.getInstance().getDaoFactory().getJobDao();
+        final JobDao jobDao = clusteringContext.getDaoFactory().getJobDao();
         final ClusteringJob job = jobDao.getJob( jobId );
         if ( job == null ) {
             log.error( "The specified jobId cannot be found in storage: " + jobId );
@@ -58,7 +63,7 @@ public class PsicquicClustererTasklet implements Tasklet {
             return RepeatStatus.FINISHED;
         }
 
-        log.info( "Processing clustering job: " + jobId );
+        if ( log.isInfoEnabled() ) log.info( "Processing clustering job: " + jobId );
 
         job.setStatus( JobStatus.RUNNING );
         jobDao.update( job );
@@ -79,14 +84,14 @@ public class PsicquicClustererTasklet implements Tasklet {
             services.add( servicesStr );
         }
 
-        log.debug( "PsicquicClustererTasklet.execute(MIQL='" + miql + "', " + services + ")" );
+        if ( log.isDebugEnabled() ) log.debug( "PsicquicClustererTasklet.execute(MIQL='" + miql + "', " + services + ")" );
 
-        final File dataLocationFile = ClusteringContext.getInstance().getConfig().getDataLocationFile();
-        final File cacheStorageDirectory = new File( dataLocationFile, "clustering-cache" );
-        boolean created = cacheStorageDirectory.mkdirs();
-        if ( !created ) {
-            // TODO handle error and abort process.
-        }
+        final File dataLocationFile = clusteringContext.getConfig().getDataLocationFile();
+//        final File cacheStorageDirectory = new File( dataLocationFile, "clustering-cache" );
+//        boolean created = cacheStorageDirectory.mkdirs();
+//        if ( !created ) {
+//            // TODO handle error and abort process.
+//        }
 
         ClusterContext.getInstance().setCacheStrategy( CacheStrategy.IN_MEMORY );
 //        ClusterContext.getInstance().setCacheStrategy( CacheStrategy.ON_DISK );
@@ -109,20 +114,19 @@ public class PsicquicClustererTasklet implements Tasklet {
 
         MitabDocumentDefinition documentDefinition = new MitabDocumentDefinition();
 
-        log.debug( "-------- CLUSTERED MITAB (" + interactionMapping.size() + ") --------" );
-
+        if ( log.isDebugEnabled() ) log.debug( "-------- CLUSTERED MITAB (" + interactionMapping.size() + ") --------" );
 
         final File jobDirectory = new File( dataLocationFile, jobId );
-        created = jobDirectory.mkdirs();
+        boolean created = jobDirectory.mkdirs();
         if ( !created ) {
             // TODO handle error
         }
 
-        log.debug( "Using Job directory: " + jobDirectory.getAbsolutePath() );
+        if ( log.isDebugEnabled() ) log.debug( "Using Job directory: " + jobDirectory.getAbsolutePath() );
 
         final String mitabFilename = jobId + ".tsv";
         final File mitabFile = new File( jobDirectory, mitabFilename );
-        log.debug( "MITAB file: " + mitabFile.getAbsolutePath() );
+        if ( log.isDebugEnabled() ) log.debug( "MITAB file: " + mitabFile.getAbsolutePath() );
         BufferedWriter out = new BufferedWriter( new FileWriter( mitabFile ) );
 
         for ( Map.Entry<Integer, EncoreInteraction> entry : interactionMapping.entrySet() ) {
@@ -140,7 +144,7 @@ public class PsicquicClustererTasklet implements Tasklet {
         // Build a Lucene index from MITAB
         final String luceneDirectoryName = "lucene-index";
         final File luceneDirectory = new File( jobDirectory, luceneDirectoryName );
-        log.debug( "Lucene directory: " + luceneDirectory.getAbsolutePath() );
+        if ( log.isDebugEnabled() ) log.debug( "Lucene directory: " + luceneDirectory.getAbsolutePath() );
 
         job.setLuceneIndexLocation( luceneDirectory.getAbsolutePath() );
 
@@ -149,7 +153,7 @@ public class PsicquicClustererTasklet implements Tasklet {
         try {
             Searcher.buildIndex( luceneDirectory.getAbsolutePath(), mitabFile.getAbsolutePath(), true, hasHeader );
             final SearchResult<BinaryInteraction> result = Searcher.search( "*", luceneDirectory.getAbsolutePath(), 0, 200 );
-            log.info( "Indexed " + result.getTotalCount() + " MITAB documents." );
+            if ( log.isInfoEnabled() ) log.info( "Indexed " + result.getTotalCount() + " MITAB documents." );
             job.setClusteredInteractionCount( result.getTotalCount() );
         } catch ( Exception e ) {
             final String msg = "An error occured while performing the indexing of MITAB data clustered for job [miql='" +

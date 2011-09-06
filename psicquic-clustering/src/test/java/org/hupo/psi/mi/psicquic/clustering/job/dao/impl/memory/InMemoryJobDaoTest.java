@@ -5,10 +5,10 @@ import org.hupo.psi.mi.psicquic.clustering.ClusteringTestCase;
 import org.hupo.psi.mi.psicquic.clustering.Service;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
-import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 
@@ -21,8 +21,14 @@ import java.util.Arrays;
  */
 public class InMemoryJobDaoTest extends ClusteringTestCase {
 
+    @Autowired
+    private ClusteringContext clusteringContext;
+
     @Test
     public void getNextJobToRun() throws Exception {
+
+        Assert.assertNotNull( clusteringContext );
+
         final JobDao jobDao = getDaoFactory().getJobDao();
 
         // create a job

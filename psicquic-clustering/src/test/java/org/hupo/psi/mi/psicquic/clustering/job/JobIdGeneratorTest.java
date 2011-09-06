@@ -16,6 +16,7 @@ import java.util.Set;
  * @since 0.1
  */
 public class JobIdGeneratorTest {
+
     @Test
     public void getNextJobId() throws Exception {
 

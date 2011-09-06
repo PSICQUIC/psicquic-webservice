@@ -5,6 +5,7 @@ import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.PollResult;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,39 +20,47 @@ import java.util.List;
 
 public class DefaultInteractionClusteringServiceTest extends ClusteringTestCase {
 
+    @Autowired
+    private InteractionClusteringService clusteringService;
+
     @Test
     public void submit_poll_query() throws Exception {
-        final InteractionClusteringService ics = new DefaultInteractionClusteringService();
-        final String jobId = ics.submitJob( "brca2", Arrays.asList( new Service( "IntAct" ) ) );
-        PollResult pollResult = ics.poll( jobId );
+
+        final String jobId = clusteringService.submitJob( "brca2", Arrays.asList( new Service( "IntAct" ) ) );
+        PollResult pollResult = clusteringService.poll( jobId );
         Assert.assertNotNull( pollResult.getStatus() );
-        Assert.assertTrue( JobStatus.QUEUED.equals( pollResult.getStatus() ) );
+        Assert.assertEquals( JobStatus.QUEUED, pollResult.getStatus() );
 
+        final int maxTry = 10;
+        int tryCount = maxTry;
         while ( !( JobStatus.COMPLETED.equals( pollResult.getStatus() ) || JobStatus.FAILED.equals( pollResult.getStatus() ) ) ) {
+            tryCount--;
+            Assert.assertTrue( "Failed to complete job after "+  maxTry + " attempt.", tryCount >= 0 );
+
             Thread.sleep( 1000 );
-            pollResult = ics.poll( jobId );
+            pollResult = clusteringService.poll( jobId );
         }
 
-        if ( JobStatus.COMPLETED.equals( pollResult.getStatus() ) ) {
-            final String format = InteractionClusteringService.RETURN_TYPE_MITAB25;
-            final QueryResponse response = ics.query( jobId, "*:*", 0, 200, format );
+        Assert.assertEquals( JobStatus.COMPLETED, pollResult.getStatus() );
 
-            Assert.assertNotNull( response );
+        final String format = InteractionClusteringService.RETURN_TYPE_MITAB25;
+        final QueryResponse response = clusteringService.query( jobId, "*:*", 0, 200, format );
 
-            Assert.assertNotNull( response.getResultInfo() );
-            Assert.assertEquals( 200, response.getResultInfo().getBlockSize() );
-            Assert.assertEquals( 0, response.getResultInfo().getFirstResult() );
-            Assert.assertNotNull( response.getResultInfo().getResultType() );
-            Assert.assertEquals( InteractionClusteringService.RETURN_TYPE_MITAB25, response.getResultInfo().getResultType() );
+        Assert.assertNotNull( response );
 
-            Assert.assertEquals( 27, response.getResultInfo().getTotalResults() );
+        Assert.assertNotNull( response.getResultInfo() );
+        Assert.assertEquals( 200, response.getResultInfo().getBlockSize() );
+        Assert.assertEquals( 0, response.getResultInfo().getFirstResult() );
+        Assert.assertNotNull( response.getResultInfo().getResultType() );
+        Assert.assertEquals( InteractionClusteringService.RETURN_TYPE_MITAB25, response.getResultInfo().getResultType() );
 
-            Assert.assertNotNull( response.getResultSet() );
-            Assert.assertNull( response.getResultSet().getEntrySet() );
-            final String mitab = response.getResultSet().getMitab();
-            Assert.assertNotNull( mitab );
+        Assert.assertEquals( 32, response.getResultInfo().getTotalResults() );
 
-            Assert.assertEquals( 27, mitab.split( "\n" ).length );
-        }
+        Assert.assertNotNull( response.getResultSet() );
+        Assert.assertNull( response.getResultSet().getEntrySet() );
+        final String mitab = response.getResultSet().getMitab();
+        Assert.assertNotNull( mitab );
+
+        Assert.assertEquals( 32, mitab.split( "\n" ).length );
     }
 }

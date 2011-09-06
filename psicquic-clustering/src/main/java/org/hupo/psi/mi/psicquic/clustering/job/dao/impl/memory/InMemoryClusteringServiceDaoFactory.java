@@ -2,6 +2,8 @@ package org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory;
 
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * TODO document this !
@@ -12,7 +14,9 @@ import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
  */
 public class InMemoryClusteringServiceDaoFactory implements ClusteringServiceDaoFactory {
 
-    private final JobDao jobDao = new InMemoryJobDao();
+    @Autowired
+    @Qualifier( "fileBasedJobDao" )
+    private JobDao jobDao;
 
     public InMemoryClusteringServiceDaoFactory() {
     }

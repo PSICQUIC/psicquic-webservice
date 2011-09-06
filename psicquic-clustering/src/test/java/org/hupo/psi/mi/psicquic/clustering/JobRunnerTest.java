@@ -4,6 +4,7 @@ import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
+import org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory.InMemoryClusteringServiceDaoFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -22,34 +23,27 @@ import java.util.Arrays;
  */
 public class JobRunnerTest extends ClusteringTestCase {
 
-    @Autowired
-    private JobRepository jobRepository;
-
-    @Autowired
-    private JobLauncher launcher;
-
-    @Autowired
-    @Qualifier( "clusteringJob" )
-    private org.springframework.batch.core.Job job;
-
     @Test
     public void runJob() throws Exception {
+
+        Assert.assertTrue( getDaoFactory() instanceof InMemoryClusteringServiceDaoFactory );
+
         final JobDao jobDao = getDaoFactory().getJobDao();
 
         // create a job
-        ClusteringJob job1 = new ClusteringJob( "brca2", Arrays.asList( new Service( "IntAct" ) ) ); // , new Service( "MINT" )
-        jobDao.addJob( new JobIdGenerator().generateJobId( job1 ), job1 );
+        ClusteringJob job1 = new ClusteringJob( "brca2", Arrays.asList( new Service( "IntAct" ) ) );
+        jobDao.addJob( job1.getJobId(), job1 );
+
+        // increase time difference between job creation timestamp
+        Thread.sleep( 2000 );
 
         ClusteringJob job2 = new ClusteringJob( "brca2", Arrays.asList( new Service( "MINT" ), new Service( "IntAct" ) ) );
-        jobDao.addJob( new JobIdGenerator().generateJobId( job2 ), job2 );
+        jobDao.addJob( job2.getJobId(), job2 );
 
         // run the next available job
         ClusteringJob nextJob = jobDao.getNextJobToRun();
         Assert.assertNotNull( nextJob );
 
         Assert.assertSame( job1, nextJob );
-
-        // get the test to hang in there to let Quartz fire some jobs ...
-//        for ( ;; ) { }
     }
 }

@@ -134,9 +134,9 @@
         <!-- Quartz -->
 
         <dependency>
-            <groupId>opensymphony</groupId>
+            <groupId>org.opensymphony.quartz</groupId>
             <artifactId>quartz</artifactId>
-            <version>1.6.3</version>
+            <version>1.6.5</version>
         </dependency>
 
         <!--Testing-->
@@ -217,6 +217,17 @@
             </releases>
             <snapshots>
                 <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.com/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>
