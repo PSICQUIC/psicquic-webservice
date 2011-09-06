@@ -9,8 +9,11 @@ import org.apache.myfaces.orchestra.viewController.annotations.ViewController;
 import org.apache.myfaces.trinidad.context.RequestContext;
 import org.apache.myfaces.trinidad.model.SortableModel;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
+import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.Service;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
+import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
+import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
@@ -58,12 +61,22 @@ public class SearchController extends BaseController {
 
     private static final Log log = LogFactory.getLog(SearchController.class);
     private static final int MAX_NETWORK_SIZE = 1000;
+    private static final String CLUSTER_JOB_ID = "clusterJobId";
+    private static final String QUERY = "query";
+    private static final String INCLUDED = "included";
+    private static final String EXCLUDED = "excluded";
 
     @Autowired
     private UserQuery userQuery;
 
     @Autowired
     private PsicquicViewConfig config;
+
+    @Autowired
+    private ClusteringContext clusteringContext;
+
+    @Autowired
+    private InteractionClusteringService clusteringService;
 
     @Autowired
     private UserJobs userJobs;
@@ -103,6 +116,7 @@ public class SearchController extends BaseController {
 
     @PostConstruct
     public void refresh() {
+        System.out.println( "SearchController.refresh" );
         doPsicquicBinarySearch("*");
     }
 
@@ -113,6 +127,7 @@ public class SearchController extends BaseController {
 
     @PreRenderView
     public void preRender() {
+        System.out.println( "SearchController.preRender" );
 
         if( isPartialRequest() ) {
             return;
@@ -122,20 +137,27 @@ public class SearchController extends BaseController {
 
         FacesContext context = FacesContext.getCurrentInstance();
 
-        String jobId = context.getExternalContext().getRequestParameterMap().get("clusterJobId");
+        String jobId = context.getExternalContext().getRequestParameterMap().get( CLUSTER_JOB_ID );
         if( jobId != null ) {
-            final JobDao jobDao = ClusteringContext.getInstance().getDaoFactory().getJobDao();
-            final ClusteringJob job = jobDao.getJob( jobId );
-            if( job == null ) {
+            final JobDao jobDao = clusteringContext.getDaoFactory().getJobDao();
+            final ClusteringJob job;
+            try {
+                job = jobDao.getJob( jobId );
+                if( job == null ) {
                 log.error( "Could not find job by id: " + jobId );
             } else {
                 this.userJobs.getCurrentJobs().add( job );
                 this.job = job;
                 this.clusterSelected = true;
             }
-        } 
+            } catch ( DaoException e ) {
+                final String msg = "Failed to retrieve requested clustered query";
+                addErrorMessage( "Error", msg );
+                log.error( msg + ": " + jobId, e );
+            }
+        }
 
-        final String queryParam = context.getExternalContext().getRequestParameterMap().get("query");
+        final String queryParam = context.getExternalContext().getRequestParameterMap().get( QUERY );
         if (queryParam != null && queryParam.length()>0) {
             userQuery.reset();
             userQuery.setSearchQuery( queryParam );
@@ -144,13 +166,13 @@ public class SearchController extends BaseController {
         services = new ArrayList<ServiceType>(allServices);
 
         // included/excluded services
-        final String includedServicesParam = context.getExternalContext().getRequestParameterMap().get("included");
+        final String includedServicesParam = context.getExternalContext().getRequestParameterMap().get( INCLUDED );
 
         if (includedServicesParam != null && includedServicesParam.length()>0) {
             processIncludedServices(includedServicesParam);
         }
 
-        final String excludedServicesParam = context.getExternalContext().getRequestParameterMap().get("excluded");
+        final String excludedServicesParam = context.getExternalContext().getRequestParameterMap().get( EXCLUDED );
 
         if (excludedServicesParam != null && excludedServicesParam.length()>0) {
             processExcludedServices(excludedServicesParam);
@@ -163,6 +185,7 @@ public class SearchController extends BaseController {
     }
 
     public void refresh(ActionEvent evt) {
+        System.out.println( "SearchController.refresh(evt)" );
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
         try {
             Date newRegistryTimeStamp = registryClient.registryTimestamp();
@@ -191,6 +214,7 @@ public class SearchController extends BaseController {
     }
 
     public String doBinarySearchAction() {
+        System.out.println( "SearchController.doBinarySearchAction" );
         String searchQuery = userQuery.getSearchQuery();
 
         if( ! clusterSelected ) {
@@ -203,6 +227,7 @@ public class SearchController extends BaseController {
     }
 
     public String doNewBinarySearch() {
+        System.out.println( "SearchController.doNewBinarySearch" );
         try {
             // TODO don't need that when querying the clustered job
             // TODO this method is calling doBinarySearchAction ... when it's going to be called here too ?!!!
@@ -215,6 +240,7 @@ public class SearchController extends BaseController {
     }
 
     public void doBinarySearch(ActionEvent evt) {
+        System.out.println( "SearchController.doBinarySearch" );
         refreshComponent("mainPanels");
         doBinarySearchAction();
     }
@@ -285,6 +311,7 @@ public class SearchController extends BaseController {
     }
 
     public void doPsicquicBinarySearch(String searchQuery) {
+        System.out.println( "SearchController.doPsicquicBinarySearch" );
         try {
             if ( log.isDebugEnabled() ) {log.debug( "\tquery:  "+ searchQuery );}
 
@@ -297,11 +324,11 @@ public class SearchController extends BaseController {
             }
 
             if ( totalResults == 0 ) {
-                addErrorMessage( "Your query didn't return any results", "Use a different query" );
+                addWarningMessage( "Your query didn't return any results", "Use a different query" );
             }
 
+            setSelectedServiceName(null);
         } catch ( Throwable t ) {
-
             if ( searchQuery != null && ( searchQuery.startsWith( "*" ) || searchQuery.startsWith( "?" ) ) ) {
                 userQuery.setSearchQuery( "*:*" );
                 addErrorMessage( "Your query '"+ searchQuery +"' is not correctly formatted",
@@ -313,11 +340,10 @@ public class SearchController extends BaseController {
                 log.error( "Error while building results based on your query: '" + searchQuery + "'", t );
             }
         }
-
-        setSelectedServiceName(null);
     }
 
     public void loadResults(ServiceType service) {
+        System.out.println( "SearchController.loadResults" );
         generateMitabUrl();
 
         if (resultDataModelMap.containsKey(service.getName())) {
@@ -330,7 +356,7 @@ public class SearchController extends BaseController {
                 results = new PsicquicResultDataModel(new UniversalPsicquicClient(service.getSoapUrl()), userQuery.getFilteredSearchQuery());
             } else {
                 // TODO for the time being we load ALL clustered data, later we could allow further filtering
-                results = new ClusteringResultDataModel( job, "*" );
+                results = new ClusteringResultDataModel( clusteringService, job, "*" );
             }
             resultDataModelMap.put(service.getName(), results);
         } catch (PsicquicClientException e) {
@@ -358,6 +384,7 @@ public class SearchController extends BaseController {
     }
 
     private void refreshServices() throws PsicquicRegistryClientException {
+        System.out.println( "SearchController.refreshServices" );
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
 
         if (allServices == null) {
@@ -396,6 +423,7 @@ public class SearchController extends BaseController {
     }
 
     private void searchAndCreateResultModels() {
+        System.out.println( "SearchController.searchAndCreateResultModels" );
         refresh(null);
 
         resultDataModelMap = new HashMap<String, SortableModel>(32);

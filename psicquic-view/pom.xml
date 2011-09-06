@@ -24,21 +24,20 @@
 
         <debug>false</debug>
 
-        <jetty.port>9095</jetty.port>
+        <jetty.port>19095</jetty.port>
         <jetty.context>view</jetty.context>
 
         <appRoot>/psicquic</appRoot>
 
         <!-- configurable -->
         <config.file>/tmp/psicquic-view.config.properties</config.file>
-        <openid.admin>http://intact.myopenid.com/</openid.admin>
 
         <clustering.storage.directory>cluster-store</clustering.storage.directory>
         <clustering.limit.count>5000</clustering.limit.count>
 
         <batch.db.port>25043</batch.db.port>
-        <batch.db.path>/ebi/sp/misc1/intact/psicquic-clustering/batchClusteringDB</batch.db.path>
-        <!--<batch.db.path>${java.io.tmpdir}${file.separator}batchClusteringDB</batch.db.path>-->
+        <!--<batch.db.path>/ebi/sp/misc1/intact/psicquic-clustering/batchClusteringDB</batch.db.path>-->
+        <batch.db.path>${java.io.tmpdir}${file.separator}batchClusteringDB</batch.db.path>
 
         <batch.jdbc.driver>org.h2.Driver</batch.jdbc.driver>
         <batch.jdbc.url>jdbc:h2:tcp://localhost:${batch.db.port}/${batch.db.path}</batch.jdbc.url>

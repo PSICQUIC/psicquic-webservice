@@ -22,10 +22,12 @@ import org.apache.myfaces.trinidad.model.SortableModel;
 import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
 import org.hupo.psi.mi.psicquic.PsicquicServiceException;
 import org.hupo.psi.mi.psicquic.QueryResponse;
+import org.hupo.psi.mi.psicquic.clustering.ClusteringServiceException;
 import org.hupo.psi.mi.psicquic.clustering.DefaultInteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.model.BinaryInteraction;
@@ -66,14 +68,20 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
 
     private Map<String,Boolean> columnSorts;
 
-    public ClusteringResultDataModel(ClusteringJob job, String query) {
+    private InteractionClusteringService clusteringService;
+
+    public ClusteringResultDataModel(InteractionClusteringService clusteringService, ClusteringJob job, String query) {
         if (job == null) {
             throw new IllegalArgumentException("Trying to create data model with a null job");
         }
         if (query == null) {
             throw new IllegalArgumentException("Trying to create data model with a null query");
         }
+        if ( clusteringService == null ) {
+            throw new IllegalArgumentException( "You must give a non null clusteringService" );
+        }
 
+        this.clusteringService = clusteringService;
         this.job = job;
         this.query = query;
 
@@ -87,7 +95,7 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
 
     protected void fetchResults() {
         if (query == null) {
-            throw new IllegalStateException("Trying to fetch results for a null query");
+            throw new IllegalArgumentException("Trying to fetch results for a null query");
         }
 
         if (log.isDebugEnabled()) log.debug("Fetching results: "+ query);
@@ -95,14 +103,11 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
         // search Lucene index and wrap the data
         final InteractionClusteringService ics = new DefaultInteractionClusteringService();
         try {
-
-            // TODO more straight forward to query the Lucene index directly here
-
-            final QueryResponse response = ics.query( job.getJobId(),
-                                                      query,
-                                                      firstResult,
-                                                      maxResults,
-                                                      InteractionClusteringService.RETURN_TYPE_MITAB25 );
+            final QueryResponse response = clusteringService.query( job.getJobId(),
+                                                                    query,
+                                                                    firstResult,
+                                                                    maxResults,
+                                                                    InteractionClusteringService.RETURN_TYPE_MITAB25 );
 
             // convert to a list of BinaryInteraction
             String mitab = response.getResultSet().getMitab();
@@ -116,16 +121,12 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
                                                           firstResult,
                                                           maxResults,
                                                           null );
-        } catch ( JobNotCompletedException e ) {
-            throw new IllegalStateException("Problem querying localy indexed data", e);
-        } catch ( NotSupportedTypeException e ) {
-            throw new IllegalStateException("Problem querying localy indexed data", e);
-        } catch ( PsicquicServiceException e ) {
-            throw new IllegalStateException("Problem querying localy indexed data", e);
         } catch ( IOException e ) {
             throw new IllegalStateException( "Could not parse clustered MITAB data", e );
         } catch ( ConverterException e ) {
             throw new IllegalStateException( "Could not parse clustered MITAB data", e );
+        } catch ( ClusteringServiceException e ) {
+            throw new IllegalStateException( "Could not query clustered service", e );
         }
     }
 

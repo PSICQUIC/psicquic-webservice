@@ -5,10 +5,16 @@ import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
 import org.hupo.psi.mi.psicquic.PsicquicServiceException;
 import org.hupo.psi.mi.psicquic.QueryResponse;
+import org.hupo.psi.mi.psicquic.clustering.ClusteringServiceException;
 import org.hupo.psi.mi.psicquic.clustering.DefaultInteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -23,9 +29,19 @@ import java.io.IOException;
  * @version $Id$
  * @since 1.2
  */
+@Controller
 public class ClusteringDownloadServlet extends HttpServlet {
 
     private static final Log log = LogFactory.getLog(ClusteringDownloadServlet.class);
+
+    private InteractionClusteringService clusteringService;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+        clusteringService = (InteractionClusteringService) ctx.getBean( "defaultInteractionClusteringService" );
+    }
 
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -45,16 +61,15 @@ public class ClusteringDownloadServlet extends HttpServlet {
         stream = response.getOutputStream();
         response.setContentType("text/plain");
 
-        final InteractionClusteringService ics = new DefaultInteractionClusteringService();
         try {
 
             // TODO chunk the data instead of throwing it all at once
 
-            final QueryResponse resp = ics.query(jobId,
-                                                 query,
-                                                 0,
-                                                 Integer.MAX_VALUE,
-                                                 format);
+            final QueryResponse resp = clusteringService.query(jobId,
+                                                               query,
+                                                               0,
+                                                               Integer.MAX_VALUE,
+                                                               format);
 
             // convert to a list of BinaryInteraction
             if( log.isInfoEnabled() ) log.info("Total MITAB lines: " + resp.getResultInfo().getTotalResults() );
@@ -62,14 +77,8 @@ public class ClusteringDownloadServlet extends HttpServlet {
             String mitab = resp.getResultSet().getMitab();
             stream.write(mitab.getBytes());
 
-        } catch (JobNotCompletedException e) {
-            throw new IllegalStateException("Clustering not completed yet, please wait...", e);
-        } catch (NotSupportedTypeException e) {
-            throw new IllegalStateException("Specified format not supported: " + format, e);
-        } catch (PsicquicServiceException e) {
-            throw new IllegalStateException("Problem querying localy indexed data", e);
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not parse clustered MITAB data", e);
+        } catch ( ClusteringServiceException e ) {
+            throw new RuntimeException( "Failed to query local clustered data", e );
         }
 
         stream.flush();

@@ -9,13 +9,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.h2.tools.Server;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.ServletContextEvent;
 
 /**
  * Initializes the application.
@@ -31,18 +28,23 @@ public class ApplicationInitializer implements InitializingBean {
     @Autowired
     private ApplicationContext springContext;
 
+    @Autowired
+    private ClusteringContext clusteringContext;
+
     public ApplicationInitializer() {
     }
 
     public void afterPropertiesSet() throws Exception {
 
         if( springContext != null ) {
-            Server server = ( Server ) (( BeanFactory )springContext).getBean( "h2TcpServer" );
+            Server server = ( Server ) springContext.getBean( "h2TcpServer" );
             log.info( "************************************************************************************************" );
             log.info( "Clustering Batch H2 Server Status: " + server.getStatus() );
             log.info( "************************************************************************************************" );
 
-            if( ClusteringContext.getInstance().getSpringContext() == null ) {
+            System.out.println("Location (clusteringContext.getConfig().getDataLocation()): " + clusteringContext.getConfig().getDataLocation());
+
+            if( clusteringContext.getSpringContext() == null ) {
                 log.error( "Failed to initialize ClusteringContext: springContext is null." );
             }
         } else {

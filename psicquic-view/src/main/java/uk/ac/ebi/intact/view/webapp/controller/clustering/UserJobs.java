@@ -1,9 +1,13 @@
 package uk.ac.ebi.intact.view.webapp.controller.clustering;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
+import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -22,13 +26,15 @@ import java.util.List;
 @Scope( "session" )
 public class UserJobs implements Serializable {
 
+    private static final Log log = LogFactory.getLog( UserJobs.class );
+
     private List<ClusteringJob> currentJobs;
 
-    private transient JobDao jobDao;
+    @Autowired
+    private ClusteringContext clusteringContext;
 
     public UserJobs() {
         currentJobs = new ArrayList<ClusteringJob>( );
-        jobDao = ClusteringContext.getInstance().getDaoFactory().getJobDao();
     }
 
 //    public String clearJobs() {
@@ -39,7 +45,12 @@ public class UserJobs implements Serializable {
     public List<ClusteringJob> getRefreshedJobs() {
         List<ClusteringJob> refreshedJobs = new ArrayList<ClusteringJob>( currentJobs.size() );
         for ( ClusteringJob currentJob : currentJobs ) {
-            final ClusteringJob job = jobDao.getJob( currentJob.getJobId() );
+            ClusteringJob job = null;
+            try {
+                job = clusteringContext.getDaoFactory().getJobDao().getJob( currentJob.getJobId() );
+            } catch ( DaoException e ) {
+                log.error( "Failed to fetch a job by jobId: " + currentJob.getJobId(), e );
+            }
             refreshedJobs.add( job );
         }
         currentJobs = refreshedJobs;

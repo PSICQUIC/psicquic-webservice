@@ -62,6 +62,7 @@
         // network data could alternatively be grabbed via ajax
         var xmlUrl ='#{searchBean.applicationUrl}/graphmlDownload?mitabUrl=#{searchBean.mitabUrl}';
 
+
         // wait for the data to be loaded prior, handy for larger network.
         var xml = $.ajax({ url: xmlUrl, async: false }).responseText;
 
