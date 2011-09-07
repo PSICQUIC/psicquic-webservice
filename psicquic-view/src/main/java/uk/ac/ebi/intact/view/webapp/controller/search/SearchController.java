@@ -116,7 +116,6 @@ public class SearchController extends BaseController {
 
     @PostConstruct
     public void refresh() {
-        System.out.println( "SearchController.refresh" );
         doPsicquicBinarySearch("*");
     }
 
@@ -127,7 +126,6 @@ public class SearchController extends BaseController {
 
     @PreRenderView
     public void preRender() {
-        System.out.println( "SearchController.preRender" );
 
         if( isPartialRequest() ) {
             return;
@@ -185,7 +183,6 @@ public class SearchController extends BaseController {
     }
 
     public void refresh(ActionEvent evt) {
-        System.out.println( "SearchController.refresh(evt)" );
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
         try {
             Date newRegistryTimeStamp = registryClient.registryTimestamp();
@@ -214,7 +211,6 @@ public class SearchController extends BaseController {
     }
 
     public String doBinarySearchAction() {
-        System.out.println( "SearchController.doBinarySearchAction" );
         String searchQuery = userQuery.getSearchQuery();
 
         if( ! clusterSelected ) {
@@ -227,7 +223,6 @@ public class SearchController extends BaseController {
     }
 
     public String doNewBinarySearch() {
-        System.out.println( "SearchController.doNewBinarySearch" );
         try {
             // TODO don't need that when querying the clustered job
             // TODO this method is calling doBinarySearchAction ... when it's going to be called here too ?!!!
@@ -240,7 +235,6 @@ public class SearchController extends BaseController {
     }
 
     public void doBinarySearch(ActionEvent evt) {
-        System.out.println( "SearchController.doBinarySearch" );
         refreshComponent("mainPanels");
         doBinarySearchAction();
     }
@@ -311,7 +305,6 @@ public class SearchController extends BaseController {
     }
 
     public void doPsicquicBinarySearch(String searchQuery) {
-        System.out.println( "SearchController.doPsicquicBinarySearch" );
         try {
             if ( log.isDebugEnabled() ) {log.debug( "\tquery:  "+ searchQuery );}
 
@@ -343,7 +336,6 @@ public class SearchController extends BaseController {
     }
 
     public void loadResults(ServiceType service) {
-        System.out.println( "SearchController.loadResults" );
         generateMitabUrl();
 
         if (resultDataModelMap.containsKey(service.getName())) {
@@ -384,7 +376,6 @@ public class SearchController extends BaseController {
     }
 
     private void refreshServices() throws PsicquicRegistryClientException {
-        System.out.println( "SearchController.refreshServices" );
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
 
         if (allServices == null) {
@@ -423,7 +414,6 @@ public class SearchController extends BaseController {
     }
 
     private void searchAndCreateResultModels() {
-        System.out.println( "SearchController.searchAndCreateResultModels" );
         refresh(null);
 
         resultDataModelMap = new HashMap<String, SortableModel>(32);

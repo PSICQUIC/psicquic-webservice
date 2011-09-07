@@ -37,6 +37,11 @@
                 </tr:panelHorizontalLayout>
 
                 <!--<tr:panelHorizontalLayout>-->
+                    <!--<tr:outputText value="Highlight:" />&#160;-->
+                    <!--<tr:goLink destination="#" onclick="highlightSpecies( vis );"><tr:outputText id="species" value="species" inlineStyle="font-weight:normal"/></tr:goLink>-->
+                <!--</tr:panelHorizontalLayout>-->
+
+                <!--<tr:panelHorizontalLayout>-->
                     <!--<tr:outputText value="Download:" />&#160;-->
                     <!--<tr:goLink destination="#" onclick="vis.exportNetwork('xgmml', 'export.php?type=xml');"><tr:outputText id="xgmll" value="xgmll" inlineStyle="font-weight:normal"/></tr:goLink>-->
                     <!--&#160;|&#160;-->
@@ -65,13 +70,6 @@
 
         // wait for the data to be loaded prior, handy for larger network.
         var xml = $.ajax({ url: xmlUrl, async: false }).responseText;
-
-        // Enables the shapes present in the GraphML input to be displayed in the Flash panel.
-        var style = {
-            nodes: {
-                shape: { passthroughMapper: { attrName: "shape" } }
-            }
-        };
 
         // whether the edges should be merged or not
         var merged = true;
@@ -189,6 +187,13 @@
             }
         });
 
+
+        // Enables the shapes present in the GraphML input to be displayed in the Flash panel.
+        var style = {
+            nodes: {
+                shape: { passthroughMapper: { attrName: "shape" } }
+            }
+        };
 
         var draw_options = {
             // set visual style

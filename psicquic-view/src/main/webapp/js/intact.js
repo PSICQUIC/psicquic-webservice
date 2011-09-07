@@ -107,7 +107,7 @@ function selectCircleLayout() {
 }
 
 function graphResize() {
-    var heigth = $(window).height() - 290;
+    var heigth = $(window).height() - 330;
     var x = document.getElementById('cytoscapeweb');
     x.style.height = heigth + 'px';
 }
@@ -125,5 +125,50 @@ function psicquic_selectAll(serviceCount) {
 function psicquic_selectNone(serviceCount) {
     for (i=0; i<serviceCount; i++) {
         document.getElementById('serviceSel'+i).checked = false;
+    }
+}
+
+function highlightSpecies( vis ) {
+    if( document.getElementById('species').style.fontWeight == 'normal' ) {
+        document.getElementById('species').style.fontWeight = 'bold';
+
+        // Create the mapper:
+        var colorMapper = {
+            attrName: "species",
+            entries: [
+                { attrValue: "Human", value: "#ff0000" },
+                { attrValue: "Rat", value: "#00ff00" },
+                { attrValue: "Mouse", value: "#0000ff" }
+            ]
+        };
+
+        // Set the mapper to a Visual Style;
+        var style = {
+            nodes: {
+                color: { discreteMapper: colorMapper }
+            }
+        };
+
+        // Set the new style to the Visualization:
+        vis.visualStyle( style );
+
+    } else {
+
+        document.getElementById('species').style.fontWeight = 'normal';
+
+        var colorMapper = {
+            attrName: "species",
+            entries: [{ attrValue: "Human", value: "#000000" }]
+        };
+
+        // Set the mapper to a Visual Style;
+        var style = {
+            nodes: {
+                color: { discreteMapper: colorMapper }
+            }
+        };
+
+        // Set the new style to the Visualization:
+        vis.visualStyle( style );
     }
 }
