@@ -17,11 +17,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClusteringContext {
 
-    /**
-     * Singleton instance.
-     */
-//    private static ClusteringContext ourInstance = new ClusteringContext();
-
     @Autowired
     @Qualifier( value = "inMemory")
     private ClusteringServiceDaoFactory daoFactory;
@@ -32,14 +27,7 @@ public class ClusteringContext {
     @Autowired
     private ClusteringConfig config;
 
-//    public static ClusteringContext getInstance() {
-//        return null;
-//    }
-
     public ClusteringContext() {
-        System.out.println("+++ Creating clustering context");
-//        config = new ClusteringConfig();
-//        daoFactory = new InMemoryClusteringServiceDaoFactory();
     }
 
     ///////////////////////////
@@ -49,7 +37,6 @@ public class ClusteringContext {
         return daoFactory;
     }
 
-//    @Required
     public void setDaoFactory( ClusteringServiceDaoFactory daoFactory ) {
         this.daoFactory = daoFactory;
     }
@@ -58,7 +45,6 @@ public class ClusteringContext {
         return config;
     }
 
-//    @Required
     public void setConfig( ClusteringConfig config ) {
         this.config = config;
     }
@@ -67,7 +53,6 @@ public class ClusteringContext {
         return springContext;
     }
 
-//    @Required
     public void setSpringContext( ApplicationContext springContext ) {
         this.springContext = springContext;
     }
