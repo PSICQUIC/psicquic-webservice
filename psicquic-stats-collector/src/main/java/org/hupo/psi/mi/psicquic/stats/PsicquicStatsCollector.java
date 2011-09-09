@@ -308,7 +308,9 @@ public class PsicquicStatsCollector {
                 if( previousCell != null ) {
                     log.info( "Adding " + previousCell.getCell().getInputValue() + " to total sum (previous cell)" );
                     // keep track of current total
-                    currentTotalSum += Integer.parseInt( previousCell.getCell().getValue() );
+                    if(previousCell.getCell().getValue() != null ) {
+                        currentTotalSum += Integer.parseInt( previousCell.getCell().getValue() );
+                    }
                 }
             }
 
