@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
+
 /**
  * Application context.
  *
@@ -15,14 +17,14 @@ import org.springframework.stereotype.Component;
  * @since 0.1
  */
 @Component
-public class ClusteringContext {
+public class ClusteringContext implements Serializable {
 
     @Autowired
     @Qualifier( value = "inMemory")
-    private ClusteringServiceDaoFactory daoFactory;
+    private transient ClusteringServiceDaoFactory daoFactory;
 
     @Autowired
-    private ApplicationContext springContext;
+    private transient ApplicationContext springContext;
 
     @Autowired
     private ClusteringConfig config;

@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * Clustering config.
@@ -14,7 +15,7 @@ import java.io.File;
  * @since 1.0
  */
 @Component
-public class ClusteringConfig {
+public class ClusteringConfig implements Serializable {
 
     private static final Log log = LogFactory.getLog( ClusteringConfig.class );
 
