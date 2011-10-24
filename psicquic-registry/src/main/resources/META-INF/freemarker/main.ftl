@@ -91,12 +91,14 @@
   </#list>
   </table>
 
-   <p>Total: <strong>${totalCount}</strong>&#160;Interactions</p>
+   <p>Total: <strong>${totalCount}</strong>&#160;Interactions from <strong>${serviceCount}</strong> PSICQUIC Services.</p>
 
   <h2>How to use the Registry</h2>
 
-  Check the documentation <a href="http://code.google.com/p/psicquic/wiki/Registry">here</a>
-  on how to use this registry.
+  <p>Check the documentation <a href="http://code.google.com/p/psicquic/wiki/Registry">here</a>
+  on how to use this registry.</p>
+
+  <p>Want to add your PSICQUIC service here? Check <a href="http://code.google.com/p/psicquic/wiki/HowToInstall">this</a>.</p>
 
 </body>
 </html>

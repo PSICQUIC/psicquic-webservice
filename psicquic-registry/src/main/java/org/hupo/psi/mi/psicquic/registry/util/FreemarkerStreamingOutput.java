@@ -59,6 +59,7 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
         Map root = new HashMap();
 
         long totalCount = 0L;
+        int serviceCount = registry.getServices().size();
 
         for (ServiceType service : registry.getServices()) {
             totalCount += service.getCount();
@@ -66,6 +67,7 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
 
         root.put("registry",registry);
         root.put("totalCount", totalCount);
+        root.put("serviceCount", serviceCount);
         root.put("termName", new TermName(miOntologyTree));
         
         try {
