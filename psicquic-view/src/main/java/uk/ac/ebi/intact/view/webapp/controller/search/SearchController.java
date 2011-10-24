@@ -20,6 +20,7 @@ import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
 import org.hupo.psi.mi.psicquic.registry.client.registry.DefaultPsicquicRegistryClient;
 import org.hupo.psi.mi.psicquic.registry.client.registry.PsicquicRegistryClient;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
+import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -345,13 +346,13 @@ public class SearchController extends BaseController {
         SortableModel results = null;
         try {
             if( ! clusterSelected ) {
-                results = new PsicquicResultDataModel(new UniversalPsicquicClient(service.getSoapUrl()), userQuery.getFilteredSearchQuery());
+                results = new PsicquicResultDataModel(new PsicquicSimpleClient(service.getRestUrl()), userQuery.getFilteredSearchQuery());
             } else {
                 // TODO for the time being we load ALL clustered data, later we could allow further filtering
                 results = new ClusteringResultDataModel( clusteringService, job, "*" );
             }
             resultDataModelMap.put(service.getName(), results);
-        } catch (PsicquicClientException e) {
+        } catch (IOException e) {
             log.error( "Error while building results", e );
         }
     }

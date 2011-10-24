@@ -20,16 +20,21 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.trinidad.model.SortCriterion;
 import org.apache.myfaces.trinidad.model.SortableModel;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
+import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.tab.model.BinaryInteraction;
+import psidev.psi.mi.tab.model.builder.DocumentDefinition;
+import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
 
 import javax.faces.model.DataModelEvent;
 import javax.faces.model.DataModelListener;
-import java.io.Serializable;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * DataModel for dar retreived from PSICQUIC services.
@@ -44,7 +49,7 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
     private static String DEFAULT_SORT_COLUMN = "rigid";
 
     private String query;
-    private UniversalPsicquicClient psicquicClient;
+    private PsicquicSimpleClient psicquicClient;
 
     private SearchResult<BinaryInteraction> result;
     private int rowIndex = -1;
@@ -55,10 +60,10 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
     private Boolean ascending = true;
 
     private Map<String,Boolean> columnSorts;
+    
+    private DocumentDefinition mitabDocumentDefinition;
 
-    // TODO get the services
-
-    public PsicquicResultDataModel(UniversalPsicquicClient psicquicClient, String query) throws PsicquicClientException {
+    public PsicquicResultDataModel(PsicquicSimpleClient psicquicClient, String query) throws IOException {
         if (psicquicClient == null) {
             throw new IllegalArgumentException("Trying to create data model with a null Psicquic client");
         }
@@ -68,6 +73,7 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
 
         this.psicquicClient = psicquicClient;
         this.query = query;
+        this.mitabDocumentDefinition = new MitabDocumentDefinition();
 
         columnSorts = new HashMap<String, Boolean>(16);
 
@@ -77,14 +83,33 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
         setWrappedData(result);
     }
 
-    protected void fetchResults() throws PsicquicClientException {
+    protected void fetchResults() throws IOException {
         if (query == null) {
             throw new IllegalStateException("Trying to fetch results for a null query");
         }
 
+
         if (log.isDebugEnabled()) log.debug("Fetching results: "+ query);
 
-        result = psicquicClient.getByQuery(query, firstResult, maxResults);
+        int totalCount = Long.valueOf(psicquicClient.countByQuery(query)).intValue();
+
+        List<BinaryInteraction> binaryInteractions = new ArrayList<BinaryInteraction>(maxResults);
+
+        InputStream gzippedStream = psicquicClient.getByQuery(query, PsicquicSimpleClient.MITAB25_COMPRESSED, firstResult, maxResults);
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(gzippedStream)));
+        String str;
+        while ((str = in.readLine()) != null) {
+            BinaryInteraction interaction = toBinaryInteraction(str);
+            binaryInteractions.add(interaction);
+        }
+        in.close();
+        
+        result = new SearchResult<BinaryInteraction>(binaryInteractions, totalCount, firstResult, maxResults, null);
+    }
+
+    private BinaryInteraction toBinaryInteraction(String str) {
+        return mitabDocumentDefinition.interactionFromString(str);
     }
 
     public int getRowCount() {
@@ -100,7 +125,7 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
             firstResult = getRowIndex();
             try {
                 fetchResults();
-            } catch (PsicquicClientException e) {
+            } catch (IOException e) {
                 throw new IllegalStateException("Problem running psicquic", e);
             }
         }
@@ -174,7 +199,7 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
 
         try {
             fetchResults();
-        } catch (PsicquicClientException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Problem fetching results using psicquic", e);
         }
     }
