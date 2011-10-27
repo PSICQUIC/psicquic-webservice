@@ -63,7 +63,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
     private static final int BLOCKSIZE_MAX = 200;
     private static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
 
-    public static final List<String> SUPPORTED_RETURN_TYPES = Arrays.asList(RETURN_TYPE_XML25, RETURN_TYPE_MITAB25, RETURN_TYPE_BIOPAX, RETURN_TYPE_COUNT);
+    public static final List<String> SUPPORTED_RETURN_TYPES = Arrays.asList(RETURN_TYPE_XML25, RETURN_TYPE_MITAB25, RETURN_TYPE_BIOPAX, RETURN_TYPE_XGMML, RETURN_TYPE_COUNT);
 
     @Autowired
     private PsicquicConfig config;
