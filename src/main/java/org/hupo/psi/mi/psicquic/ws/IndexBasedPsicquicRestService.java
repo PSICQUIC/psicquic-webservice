@@ -16,6 +16,11 @@
 package org.hupo.psi.mi.psicquic.ws;
 
 import org.apache.commons.lang.StringUtils;
+import org.hupo.psi.calimocho.io.DocumentConverter;
+import org.hupo.psi.calimocho.model.DocumentDefinition;
+import org.hupo.psi.calimocho.tab.model.ColumnBasedDocumentDefinition;
+import org.hupo.psi.calimocho.tab.util.MitabDocumentDefinitionFactory;
+import org.hupo.psi.calimocho.xgmml.XGMMLDocumentDefinition;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
@@ -30,7 +35,7 @@ import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +124,31 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
             } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25_BIN).equalsIgnoreCase(format)) {
                 PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults, true);
                 return Response.status(200).type("application/x-gzip").entity(result).build();
+            } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_XGMML).equalsIgnoreCase(format)) {
+                PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, 5000);
+
+                ByteArrayOutputStream mitabOs = new ByteArrayOutputStream();
+                result.write(mitabOs);
+                
+                boolean tooManyResults = false;
+                
+                if (count(query) > 5000) {
+                    tooManyResults = true;
+                }
+                
+                ColumnBasedDocumentDefinition mitabDefinition = MitabDocumentDefinitionFactory.mitab25();
+                DocumentDefinition definition = new XGMMLDocumentDefinition("PSICQUIC", "Query: "+query+((tooManyResults? " / MORE THAN 5000 RESULTS WERE RETURNED. FILE LIMITED TO THE FIRST 5000" : "")), "http://psicquic.googlecode.com");
+                
+                Reader mitabReader = new StringReader(mitabOs.toString());
+                Writer xgmmlWriter = new StringWriter();
+                
+                DocumentConverter converter = new DocumentConverter( mitabDefinition, definition );
+                converter.convert( mitabReader, xgmmlWriter );
+
+                mitabReader.close();
+                xgmmlWriter.close();
+                
+                return Response.status(200).type(MediaType.APPLICATION_XML).entity(xgmmlWriter.toString()).build();
             } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25).equalsIgnoreCase(format) || format == null) {
                 PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
                 return Response.status(200).type(MediaType.TEXT_PLAIN).entity(result).build();

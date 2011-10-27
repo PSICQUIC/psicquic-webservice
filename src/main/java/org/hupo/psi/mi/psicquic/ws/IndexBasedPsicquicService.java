@@ -55,6 +55,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
     public static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
     public static final String RETURN_TYPE_MITAB25_BIN = "psi-mi/tab25-bin";
     public static final String RETURN_TYPE_BIOPAX = "biopax";
+    public static final String RETURN_TYPE_XGMML = "xgmml";
     public static final String RETURN_TYPE_COUNT = "count";
 
     private static final String NEW_LINE = System.getProperty("line.separator");
