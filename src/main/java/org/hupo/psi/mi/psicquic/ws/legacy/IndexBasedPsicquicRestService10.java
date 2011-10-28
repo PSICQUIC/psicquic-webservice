@@ -17,6 +17,7 @@ package org.hupo.psi.mi.psicquic.ws.legacy;
 
 import org.apache.commons.lang.StringUtils;
 import org.hupo.psi.mi.psicquic.*;
+import org.hupo.psi.mi.psicquic.ws.IndexBasedPsicquicRestService;
 import org.hupo.psi.mi.psicquic.ws.IndexBasedPsicquicService;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
@@ -79,14 +80,14 @@ public class IndexBasedPsicquicRestService10 implements PsicquicRestService10 {
             throw new PsicquicServiceException("maxResults parameter is not a number: "+maxResultsStr);
         }
 
-        if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_XML25).equals(format)) {
+        if (strippedMime(IndexBasedPsicquicRestService.RETURN_TYPE_XML25).equals(format)) {
             return getByQueryXml(query, firstResult, maxResults);
-        } else if (IndexBasedPsicquicService.RETURN_TYPE_COUNT.equals(format)) {
+        } else if (IndexBasedPsicquicRestService.RETURN_TYPE_COUNT.equals(format)) {
             return count(query);
-        } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25_BIN).equals(format)) {
+        } else if (strippedMime(IndexBasedPsicquicRestService.RETURN_TYPE_MITAB25_BIN).equals(format)) {
             PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults, true);
             return Response.status(200).type("application/x-gzip").entity(result).build();
-        } else if (strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25).equals(format) || format == null) {
+        } else if (strippedMime(IndexBasedPsicquicRestService.RETURN_TYPE_MITAB25).equals(format) || format == null) {
             PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
             return Response.status(200).type(MediaType.TEXT_PLAIN).entity(result).build();
         } else {
@@ -97,10 +98,10 @@ public class IndexBasedPsicquicRestService10 implements PsicquicRestService10 {
     }
 
     public Object getSupportedFormats() throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
-        List<String> formats = new ArrayList<String>(IndexBasedPsicquicService.SUPPORTED_RETURN_TYPES.size()+1);
-        formats.add(strippedMime(IndexBasedPsicquicService.RETURN_TYPE_MITAB25_BIN));
+        List<String> formats = new ArrayList<String>(IndexBasedPsicquicService.SUPPORTED_SOAP_RETURN_TYPES.size()+1);
+        formats.add(strippedMime(IndexBasedPsicquicRestService.RETURN_TYPE_MITAB25_BIN));
 
-        for (String mime : IndexBasedPsicquicService.SUPPORTED_RETURN_TYPES) {
+        for (String mime : IndexBasedPsicquicService.SUPPORTED_SOAP_RETURN_TYPES) {
             formats.add(strippedMime(mime));
         }
 

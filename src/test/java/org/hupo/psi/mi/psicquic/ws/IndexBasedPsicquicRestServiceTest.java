@@ -61,7 +61,7 @@ public class IndexBasedPsicquicRestServiceTest {
 
     @Test
     public void testGetByQuery() throws Exception {
-        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", "200");
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", "200", "n");
 
         System.out.println(response.getEntity());
         PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
@@ -74,7 +74,7 @@ public class IndexBasedPsicquicRestServiceTest {
 
     @Test
     public void testGetByQuery_maxResults() throws Exception {
-        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", "3");
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", "3", "n");
 
         PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
 
@@ -86,7 +86,7 @@ public class IndexBasedPsicquicRestServiceTest {
 
     @Test
     public void testGetByQuery_maxResults_nolimit() throws Exception {
-        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", String.valueOf(Integer.MAX_VALUE));
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", String.valueOf(Integer.MAX_VALUE), "n");
 
         PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
 
@@ -98,7 +98,7 @@ public class IndexBasedPsicquicRestServiceTest {
 
     @Test
     public void testGetByQuery_bin() throws Exception {
-        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25-bin", "0", String.valueOf(Integer.MAX_VALUE));
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25-bin", "0", String.valueOf(Integer.MAX_VALUE), "n");
 
         PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
 
@@ -124,7 +124,7 @@ public class IndexBasedPsicquicRestServiceTest {
 
     @Test
     public void testGetByQuery_biopax() throws Exception {
-        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "biopax", "0", "5");
+        ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "biopax", "0", "5", "n");
 
         final String output = (String) response.getEntity();
         Assert.assertEquals(5, StringUtils.countMatches(output, "<bp:MolecularInteraction "));

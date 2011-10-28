@@ -29,7 +29,8 @@
 	<!--</cxf:bus>-->
 
     <bean name="restService10" class="org.hupo.psi.mi.psicquic.ws.legacy.IndexBasedPsicquicRestService10"/>
-    <bean name="restService11" class="org.hupo.psi.mi.psicquic.ws.IndexBasedPsicquicRestService"/>
+    <bean name="restService11" class="org.hupo.psi.mi.psicquic.ws.legacy.IndexBasedPsicquicRestService11"/>
+    <bean name="restService12" class="org.hupo.psi.mi.psicquic.ws.IndexBasedPsicquicRestService"/>
 
 	<!-- Service endpoint -->
 	<!-- See http://incubator.apache.org/cxf/faq.html regarding CXF + Spring AOP -->
@@ -51,9 +52,15 @@
         </jaxrs:serviceBeans>
     </jaxrs:server>
 
+    <jaxrs:server id="psicquicRestService12" address="/v1.2">
+            <jaxrs:serviceBeans>
+                <ref bean="restService12"/>
+            </jaxrs:serviceBeans>
+        </jaxrs:server>
+
     <jaxrs:server id="psicquicRestServiceCurrent" address="/current">
         <jaxrs:serviceBeans>
-            <ref bean="restService11"/>
+            <ref bean="restService12"/>
         </jaxrs:serviceBeans>
     </jaxrs:server>
 
