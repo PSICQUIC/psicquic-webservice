@@ -20,7 +20,7 @@
     </scm>
 
     <properties>
-        <service.name/>
+        <service.name>psicquic</service.name>
 
         <debug>false</debug>
 
@@ -47,7 +47,7 @@
     </properties>
 
     <build>
-        <finalName>psicquic-view-${pom.version}-${buildNumber}</finalName>
+        <finalName>${service.name}-view-${pom.version}-${buildNumber}</finalName>
 
         <resources>
             <resource>
