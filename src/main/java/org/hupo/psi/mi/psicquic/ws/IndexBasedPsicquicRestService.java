@@ -194,7 +194,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                     mitabReader.close();
                     xgmmlWriter.close();
                     
-                    return prepareResponse(Response.status(200).type(MediaType.APPLICATION_XML),
+                    return prepareResponse(Response.status(200).type("application/xgmml"),
                             xgmmlWriter.toString(), count, isCompressed)
                             .build();
                 } else if (RETURN_TYPE_MITAB25.equalsIgnoreCase(format) || format == null) {
