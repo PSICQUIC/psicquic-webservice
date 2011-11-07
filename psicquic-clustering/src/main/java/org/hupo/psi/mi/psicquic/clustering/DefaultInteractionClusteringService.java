@@ -199,25 +199,25 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
             resultSet.setEntrySet( jEntrySet );
 
             // add some annotations
-            if ( !jEntrySet.getEntry().isEmpty() ) {
+            if ( !jEntrySet.getEntries().isEmpty() ) {
                 AttributeList attrList = new AttributeList();
 
-                Entry entry = jEntrySet.getEntry().iterator().next();
+                Entry entry = jEntrySet.getEntries().iterator().next();
 
                 Attribute attr = new Attribute();
                 attr.setValue( "Data retrieved using the PSICQUIC service. Query: " + query );
-                attrList.getAttribute().add( attr );
+                attrList.getAttributes().add( attr );
 
                 Attribute attr2 = new Attribute();
                 attr2.setValue( "Total results found: " + searchResult.getTotalCount() );
-                attrList.getAttribute().add( attr2 );
+                attrList.getAttributes().add( attr2 );
 
                 // add warning if the batch size requested is higher than the maximum allowed
                 if ( requestInfo.getBlockSize() > BLOCKSIZE_MAX && BLOCKSIZE_MAX < searchResult.getTotalCount() ) {
                     Attribute attrWarning = new Attribute();
                     attrWarning.setValue( "Warning: The requested block size (" + requestInfo.getBlockSize() + ") was higher than the maximum allowed (" + BLOCKSIZE_MAX + ") by PSICQUIC the service. " +
                                           BLOCKSIZE_MAX + " results were returned from a total found of " + searchResult.getTotalCount() );
-                    attrList.getAttribute().add( attrWarning );
+                    attrList.getAttributes().add( attrWarning );
                 }
 
                 entry.setAttributeList( attrList );

@@ -13,7 +13,7 @@
     <name>PSI :: PSICQUIC Clustering</name>
 
     <properties>
-        <spring.version>3.0.4.RELEASE</spring.version>
+        <spring.version>3.0.6.RELEASE</spring.version>
         <spring.batch.version>2.1.3.RELEASE</spring.batch.version>
     </properties>
 
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>uk.ac.ebi.enfin.mi.cluster</groupId>
             <artifactId>micluster</artifactId>
-            <version>1.3-SNAPSHOT</version>
+            <version>1.6-SNAPSHOT</version>
         </dependency>
 
         <!-- PSICQUIC -->
@@ -64,6 +64,11 @@
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-simple-client</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hupo.psi.mi.psicquic</groupId>
+            <artifactId>psicquic-client</artifactId>
+            <version>1.3</version>
         </dependency>
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
@@ -76,12 +81,12 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
-            <version>1.7.8-SNAPSHOT</version>
+            <version>1.7.9</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.7.8-SNAPSHOT</version>
+            <version>1.7.9</version>
         </dependency>
 
         <!-- Spring batch -->
@@ -116,6 +121,11 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${spring.version}</version>
         </dependency>
@@ -134,10 +144,10 @@
         <!-- Quartz -->
 
         <dependency>
-            <groupId>org.opensymphony.quartz</groupId>
+            <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>1.6.5</version>
-       </dependency>
+            <version>1.8.3</version>
+        </dependency>
 
         <!--Testing-->
 
