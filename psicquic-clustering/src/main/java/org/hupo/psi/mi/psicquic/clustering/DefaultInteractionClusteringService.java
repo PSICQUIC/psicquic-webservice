@@ -141,7 +141,7 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
                 throw new PsicquicServiceException( "Problem creating SearchEngine using directory: " + indexLocation, e );
             }
 
-            final int blockSize = Math.min( maxResult, 200 );
+            final int blockSize = Math.min( maxResult, maxResult );
 
             if ( log.isInfoEnabled() ) {
                 log.info( "Lucene search: [query='" + query + "'; from='" + from + "'; blockSize='" + blockSize + "']" );
