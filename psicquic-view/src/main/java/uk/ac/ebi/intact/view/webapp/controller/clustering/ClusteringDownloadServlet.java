@@ -46,42 +46,43 @@ public class ClusteringDownloadServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final String jobId = request.getParameter("jobId");
-        String query = request.getParameter("query");
+        final String jobId = request.getParameter( "jobId" );
+        String query = request.getParameter( "query" );
         if( query == null) {
             query = "*";
         }
-        String format = request.getParameter("format");
+        String format = request.getParameter( "format" );
         if( format == null) {
             format = InteractionClusteringService.RETURN_TYPE_MITAB25;
         }
 
-        ServletOutputStream stream = null;
-
-        stream = response.getOutputStream();
-        response.setContentType("text/plain");
+        response.setContentType( "text/plain" );
+        final ServletOutputStream stream = response.getOutputStream();
 
         try {
+            int current = 0;
+            final int batchSize = 200;
+            QueryResponse resp;
+            do {
+                // query local data
+                resp = clusteringService.query(jobId, query, current, batchSize, format );
 
-            // TODO chunk the data instead of throwing it all at once
+                // Write MITAB on the output stream
+                String mitab = resp.getResultSet().getMitab();
+                stream.write(mitab.getBytes());
+                stream.flush();
 
-            final QueryResponse resp = clusteringService.query(jobId,
-                                                               query,
-                                                               0,
-                                                               Integer.MAX_VALUE,
-                                                               format);
+                current += batchSize;
+            } while ( current < resp.getResultInfo().getTotalResults() );
 
             // convert to a list of BinaryInteraction
             if( log.isInfoEnabled() ) log.info("Total MITAB lines: " + resp.getResultInfo().getTotalResults() );
 
-            String mitab = resp.getResultSet().getMitab();
-            stream.write(mitab.getBytes());
-
         } catch ( ClusteringServiceException e ) {
             throw new RuntimeException( "Failed to query local clustered data", e );
+        } finally {
+            stream.flush();
+            stream.close();
         }
-
-        stream.flush();
-        stream.close();
     }
 }
