@@ -37,11 +37,6 @@ public class ApplicationInitializer implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
 
         if( springContext != null ) {
-            Server server = ( Server ) springContext.getBean( "h2TcpServer" );
-            log.info( "************************************************************************************************" );
-            log.info( "Clustering Batch H2 Server Status: " + server.getStatus() );
-            log.info( "************************************************************************************************" );
-
             System.out.println("Location (clusteringContext.getConfig().getDataLocation()): " + clusteringContext.getConfig().getDataLocation());
 
             if( clusteringContext.getSpringContext() == null ) {

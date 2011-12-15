@@ -30,20 +30,11 @@
         <appRoot>/psicquic</appRoot>
 
         <!-- configurable -->
-        <config.file>/tmp/psicquic-view.config.properties</config.file>
+        <config.file>psicquic-view.config.properties</config.file>
 
-        <clustering.storage.directory>cluster-store</clustering.storage.directory>
+        <clustering.storage.directory>/ebi/sp/misc1/intact/psicquic-clustering/cluster-cache</clustering.storage.directory>
+        <!--<clustering.storage.directory>cluster-cache</clustering.storage.directory>-->
         <clustering.limit.count>5000</clustering.limit.count>
-
-        <batch.db.port>25043</batch.db.port>
-        <!--<batch.db.path>/ebi/sp/misc1/intact/psicquic-clustering/batchClusteringDB</batch.db.path>-->
-        <batch.db.path>${java.io.tmpdir}${file.separator}batchClusteringDB</batch.db.path>
-
-        <batch.jdbc.driver>org.h2.Driver</batch.jdbc.driver>
-        <batch.jdbc.url>jdbc:h2:tcp://localhost:${batch.db.port}/${batch.db.path}</batch.jdbc.url>
-        <batch.jdbc.user>sa</batch.jdbc.user>
-        <batch.jdbc.password></batch.jdbc.password>
-        <batch.schema.create>true</batch.schema.create>
     </properties>
 
     <build>
@@ -105,25 +96,7 @@
             </plugin>
 
         </plugins>
-        
-
-        <!--<plugins> -->
-            <!--<plugin>-->
-               <!--<groupId>org.codehaus.mojo</groupId>-->
-               <!--<artifactId>maven-buildnumber-plugin</artifactId>-->
-            <!--</plugin>-->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-compiler-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<source>1.5</source>-->
-                    <!--<target>1.5</target>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-        <!--</plugins>-->
-
     </build>
-
 
     <!-- Project dependencies -->
     <dependencies>
@@ -222,14 +195,6 @@
             <artifactId>myfaces-orchestra-core</artifactId>
             <version>1.3-SNAPSHOT</version>
         </dependency>
-
-        <!-- PrimeFaces -->
-        <!--<dependency>-->
-            <!--<groupId>org.primefaces</groupId>-->
-            <!--<artifactId>primefaces-ui</artifactId>-->
-            <!--<version>0.8.2</version>-->
-        <!--</dependency>-->
-
 
         <dependency>
             <groupId>commons-el</groupId>
