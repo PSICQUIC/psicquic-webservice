@@ -33,9 +33,9 @@ public class DefaultInteractionClusteringServiceTest extends ClusteringTestCase 
 
         final int maxTry = 10;
         int tryCount = maxTry;
-        while ( !( JobStatus.COMPLETED.equals( pollResult.getStatus() ) || JobStatus.FAILED.equals( pollResult.getStatus() ) ) ) {
+        while ( ( JobStatus.QUEUED.equals( pollResult.getStatus() ) || JobStatus.RUNNING.equals( pollResult.getStatus() ) ) ) {
             tryCount--;
-            Assert.assertTrue( "Failed to complete job after "+  maxTry + " attempt.", tryCount >= 0 );
+            Assert.assertTrue( "Failed to complete job after "+  maxTry + " attempts.", tryCount >= 0 );
 
             Thread.sleep( 1000 );
             pollResult = clusteringService.poll( jobId );

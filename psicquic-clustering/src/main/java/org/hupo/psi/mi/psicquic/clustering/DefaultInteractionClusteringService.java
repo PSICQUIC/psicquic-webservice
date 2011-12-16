@@ -12,6 +12,7 @@ import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.annotation.Scope;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.search.engine.SearchEngine;
 import psidev.psi.mi.search.engine.impl.BinaryInteractionSearchEngine;
@@ -36,6 +37,7 @@ import java.util.List;
  * @since 0.1
  */
 @org.springframework.stereotype.Service
+@Scope("prototype")
 public class DefaultInteractionClusteringService implements InteractionClusteringService {
 
     private static final Log log = LogFactory.getLog( DefaultInteractionClusteringService.class );
