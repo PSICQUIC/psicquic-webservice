@@ -78,7 +78,7 @@ public class PsicquicClustererTasklet implements Tasklet {
             throw new IllegalArgumentException( "You must give a non null servicesStr" );
         }
         final List<String> services = new ArrayList<String>();
-        if ( servicesStr.indexOf( "|" ) != -1 ) {
+        if (servicesStr.contains("|")) {
             services.addAll( Arrays.asList( servicesStr.split( "\\|" ) ) );
         } else {
             services.add( servicesStr );

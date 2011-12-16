@@ -31,15 +31,15 @@ public class DefaultInteractionClusteringServiceTest extends ClusteringTestCase 
         Assert.assertNotNull( pollResult.getStatus() );
         Assert.assertEquals( JobStatus.QUEUED, pollResult.getStatus() );
 
-        final int maxTry = 10;
+        final int maxTry = 20;
         int tryCount = maxTry;
-        while ( ( JobStatus.QUEUED.equals( pollResult.getStatus() ) || JobStatus.RUNNING.equals( pollResult.getStatus() ) ) ) {
+        do {
             tryCount--;
-            Assert.assertTrue( "Failed to complete job after "+  maxTry + " attempts.", tryCount >= 0 );
+            Assert.assertTrue( "Failed to complete job after "+  maxTry + " attempts. Job status is: "+pollResult.getStatus(), tryCount >= 0 );
 
             Thread.sleep( 1000 );
             pollResult = clusteringService.poll( jobId );
-        }
+        } while ( ( JobStatus.QUEUED.equals( pollResult.getStatus() ) || JobStatus.RUNNING.equals( pollResult.getStatus() ) ) );
 
         Assert.assertEquals( JobStatus.COMPLETED, pollResult.getStatus() );
 
