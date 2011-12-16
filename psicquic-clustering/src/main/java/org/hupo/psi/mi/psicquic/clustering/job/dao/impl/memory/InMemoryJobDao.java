@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * In memory job dao.
@@ -89,7 +86,7 @@ public class InMemoryJobDao implements JobDao {
                     lastRanJob = job;
                 } else {
                     // take the one with the most recent completion date.
-                    if ( job.getCompleted().after( lastRanJob.getCompleted() ) ) {
+                    if ( job.getCompleted().after(lastRanJob.getCompleted()) ) {
                         lastRanJob = job;
                     }
                 }
@@ -106,22 +103,31 @@ public class InMemoryJobDao implements JobDao {
      */
     public ClusteringJob getNextJobToRun() throws DaoException {
         ClusteringJob nextJob = null;
-        for ( Map.Entry<String, ClusteringJob> entry : jobid2job.entrySet() ) {
-            ClusteringJob job = entry.getValue();
-            final JobStatus jobStatus = job.getStatus();
-            if ( JobStatus.QUEUED.equals( jobStatus ) ) {
-                if ( nextJob == null ) {
-                    nextJob = job;
-                } else {
-                    // take the one with the most recent completion date.
-                    if ( job.getCreated().before( nextJob.getCreated() ) ) {
-                        nextJob = job;
-                    }
-                }
+
+        List<ClusteringJob> jobs = new ArrayList<ClusteringJob>(jobid2job.values());
+        removeNonQueued(jobs);
+        Collections.sort(jobs, new Comparator<ClusteringJob>() {
+            public int compare(ClusteringJob o1, ClusteringJob o2) {
+                return o1.getCreated().compareTo(o2.getCreated());
             }
+        });
+
+        if (!jobs.isEmpty()) {
+            nextJob = jobs.get(0);
         }
 
         return nextJob;
+    }
+
+    private void removeNonQueued(List<ClusteringJob> jobs) {
+        final Iterator<ClusteringJob> iterator = jobs.iterator();
+
+        while (iterator.hasNext()) {
+            ClusteringJob clusteringJob = iterator.next();
+            if (JobStatus.QUEUED != clusteringJob.getStatus()) {
+                iterator.remove();
+            }
+        }
     }
 
     public int getCompletedJobCount() throws DaoException {

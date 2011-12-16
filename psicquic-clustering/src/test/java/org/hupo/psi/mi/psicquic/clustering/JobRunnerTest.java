@@ -2,6 +2,7 @@ package org.hupo.psi.mi.psicquic.clustering;
 
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
+import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory.InMemoryClusteringServiceDaoFactory;
@@ -34,11 +35,12 @@ public class JobRunnerTest extends ClusteringTestCase {
         ClusteringJob job1 = new ClusteringJob( "brca2", Arrays.asList( new Service( "IntAct" ) ) );
         jobDao.addJob( job1.getJobId(), job1 );
 
-        // increase time difference between job creation timestamp
-        Thread.sleep( 2000 );
 
         ClusteringJob job2 = new ClusteringJob( "brca2", Arrays.asList( new Service( "MINT" ), new Service( "IntAct" ) ) );
         jobDao.addJob( job2.getJobId(), job2 );
+
+        Assert.assertEquals(JobStatus.QUEUED, job1.getStatus());
+        Assert.assertEquals(JobStatus.QUEUED, job2.getStatus());
 
         // run the next available job
         ClusteringJob nextJob = jobDao.getNextJobToRun();
