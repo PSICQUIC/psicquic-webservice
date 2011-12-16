@@ -171,6 +171,12 @@
             <groupId>uk.ac.ebi.enfin.mi.cluster</groupId>
             <artifactId>micluster</artifactId>
             <version>1.3-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                     <groupId>org.apache.commons</groupId>
+                     <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--Psicquic Registry Client-->
