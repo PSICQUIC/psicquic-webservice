@@ -32,8 +32,8 @@
         <!-- configurable -->
         <config.file>psicquic-view.config.properties</config.file>
 
-        <clustering.storage.directory>/ebi/sp/misc1/intact/psicquic-clustering/cluster-cache</clustering.storage.directory>
-        <!--<clustering.storage.directory>cluster-cache</clustering.storage.directory>-->
+        <!-- Stores cache in local directory unless overriden at build time using -Dclustering.storage.directory=... -->
+        <clustering.storage.directory>cluster-cache</clustering.storage.directory>
         <clustering.limit.count>5000</clustering.limit.count>
     </properties>
 
