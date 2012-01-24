@@ -9,10 +9,16 @@ import com.google.gdata.util.ServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hupo.psi.mi.psicquic.registry.ServiceType;
+import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
+import org.hupo.psi.mi.psicquic.registry.client.registry.DefaultPsicquicRegistryClient;
+import org.hupo.psi.mi.psicquic.registry.client.registry.PsicquicRegistryClient;
+import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import psidev.psi.mi.tab.PsimiTabReader;
 import uk.ac.ebi.intact.google.spreadsheet.SpreadsheetFacade;
 import uk.ac.ebi.intact.google.spreadsheet.WorksheetFacade;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -77,7 +83,7 @@ public class PsicquicStatsCollector {
     private static final String SMTP_CONFIG_FILE_KEY = "smtp.config.file";
 
     private static final int PSICQUIC_DEFAULT_TIMEOUT = 60000;
-    private static final int PSICQUIC_BATCH_SIZE = 200;
+    private static final int PSICQUIC_BATCH_SIZE = 500;
 
     private static final String TOTAL_COLUMN = "Total";
     private static final String DATE_COLUMN = "Date";
@@ -434,7 +440,18 @@ public class PsicquicStatsCollector {
     //////////////////////////////////////
     // PSICQUIC/Registry related methods
 
-    private List<PsicquicService> collectPsicquicServiceNames() throws IOException {
+    public List<PsicquicService> collectPsicquicServiceNames() throws IOException {
+        /* Get list of services with metadata information from the PSICQUIC registry */
+        PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient();
+        List<ServiceType> registryServices = null;
+        try {
+            registryServices = registryClient.listServices();
+        } catch (PsicquicRegistryClientException e) {
+            e.printStackTrace();
+        }
+
+
+
         final String registryUrl = config.getPsicquicRegistryUrl();
 
         if ( log.isInfoEnabled() ) log.info( "Reading PSICQUIC services list from: " + registryUrl );
@@ -451,6 +468,12 @@ public class PsicquicStatsCollector {
         for ( Map.Entry<Object, Object> service : props.entrySet() ) {
             final PsicquicService s = new PsicquicService( ( String ) service.getKey(),
                                                            ( String ) service.getValue() );
+            //todo: Refactor. This code is a bit redundant. Included because the way it was done before it was impossible to retrieve the REST url. Now the are two call to the registry
+            for(ServiceType registryService: registryServices){
+                if(registryService.getName().equalsIgnoreCase(s.getName())){
+                    s.setRestUrl(registryService.getRestUrl());
+                }
+            }
             services.add( s );
             log.info( s );
         }
@@ -465,7 +488,7 @@ public class PsicquicStatsCollector {
      * @param psicquicServices the list of services to update.
      * @throws PsicquicClientException
      */
-    private Map<String, Long> updatePsicquicInteractionsStats( List<PsicquicService> psicquicServices ) {
+    public Map<String, Long> updatePsicquicInteractionsStats(List<PsicquicService> psicquicServices) {
         Map<String, Long> db2interactionCount = Maps.newHashMap();
         for ( PsicquicService service : psicquicServices ) {
             log.info( service.getName() + " -> " + service.getSoapUrl() );
@@ -491,40 +514,70 @@ public class PsicquicStatsCollector {
         return db2interactionCount;
     }
 
-    private Map<String, Long> collectPsicquicPublicationsStats( List<PsicquicService> psicquicServices,
+    public Map<String, Long> collectPsicquicPublicationsStats(List<PsicquicService> psicquicServices) throws IOException {
+        return collectPsicquicPublicationsStats( psicquicServices, null );
+    }
+
+    public Map<String, Long> collectPsicquicPublicationsStats( List<PsicquicService> psicquicServices,
                                                                 List<String> psicquicWhiteList ) throws IOException {
         Map<String, Long> db2publicationsCount = Maps.newHashMap();
 
         for ( PsicquicService service : psicquicServices ) {
-            if ( !psicquicWhiteList.contains( service.getName() ) ) {
-                // skip this resource.
-                if ( log.isInfoEnabled() ) log.info( "Skipping the count of pudmed for PSICQUIC sercice: " + service.getName() );
-                continue;
+            if ( psicquicWhiteList != null) {
+                if ( !psicquicWhiteList.contains( service.getName() ) ) {
+                    // skip this resource.
+                    if ( log.isInfoEnabled() ) log.info( "Skipping the count of pudmed for PSICQUIC sercice: " + service.getName() );
+                    continue;
+                }
             }
+
 
             final long totalInteractionCount = service.getInteractionCount();
             int current = 0;
-            UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), PSICQUIC_DEFAULT_TIMEOUT );
 
-            if ( log.isInfoEnabled() ) log.info( "Querying PSICQUIC service: " + service.getSoapUrl() );
+
+            if ( log.isInfoEnabled() ) log.info( "Querying PSICQUIC service: " + service.getRestUrl() );
             Set<String> pmids = Sets.newHashSet();
             boolean error = false;
-
+            PsicquicSimpleClient simpleClient = new PsicquicSimpleClient(service.getRestUrl());
             try {
                 do {
-                    final SearchResult<BinaryInteraction> query = client.getByQuery( config.getMiqlQuery(), current, PSICQUIC_BATCH_SIZE );
-                    for ( BinaryInteraction interaction : query.getData() ) {
-                        for ( Object o : interaction.getPublications() ) {
-                            CrossReference cr = ( CrossReference ) o;
-                            if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
-                                 ||
-                                 "pmid".equalsIgnoreCase( cr.getDatabase() )) {
-                                pmids.add( cr.getIdentifier() );
+                    /* Query PSICQUIC and get publications. PSICQUIC client using SOAP.*/
+//                    UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), PSICQUIC_DEFAULT_TIMEOUT );
+//                    final SearchResult<BinaryInteraction> query = client.getByQuery( config.getMiqlQuery(), current, PSICQUIC_BATCH_SIZE );
+//                    for ( BinaryInteraction interaction : query.getData() ) {
+//                        for ( Object o : interaction.getPublications() ) {
+//                            CrossReference cr = ( CrossReference ) o;
+//                            if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
+//                                 ||
+//                                 "pmid".equalsIgnoreCase( cr.getDatabase() )) {
+//                                pmids.add( cr.getIdentifier() );
+//                            }
+//                        }
+//                    } // interactions
+//                    current += query.getData().size();
+
+
+
+                    PsimiTabReader mitabReader = new PsimiTabReader(false);
+                    try {
+                        InputStream result = simpleClient.getByQuery(config.getMiqlQuery(),"tab25", current, PSICQUIC_BATCH_SIZE);
+                        System.out.println(config.getMiqlQuery() + " / " + "tab25" + " / " + current + " / " + PSICQUIC_BATCH_SIZE);
+                        Collection<BinaryInteraction> binaryInteractions = mitabReader.read(result);
+                        for(BinaryInteraction binaryInteraction:binaryInteractions){
+                            for ( Object o : binaryInteraction.getPublications() ) {
+                                CrossReference cr = ( CrossReference ) o;
+                                if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
+                                     ||
+                                     "pmid".equalsIgnoreCase( cr.getDatabase() )) {
+                                    pmids.add( cr.getIdentifier() );
+                                }
                             }
                         }
-                    } // interactions
-
-                    current += query.getData().size();
+                        current += binaryInteractions.size();
+                    } catch (IOException e) {
+                        log.error( "An error occured while retrieving interactions from " + service.getName(), e );
+                    }
 
                     // show progress
                     if ( ( current % 1000 ) == 0 ) {
@@ -592,24 +645,36 @@ public class PsicquicStatsCollector {
         return sb.toString();
     }
 
-    private void updateSpreadsheet( String email, String password, String spreadsheetKey ) throws Exception {
+    //todo:separate spreedsheet update from data to be able to test data
+    private void updateSpreadsheet( String email, String password, String spreadsheetKey) throws Exception {
+        updateSpreadsheet(email, password, spreadsheetKey, null, null, null);
+    }
+
+    private void updateSpreadsheet( String email, String password, String spreadsheetKey, List<PsicquicService> psicquicServices,
+                                    Map<String, Long> db2interactionCount, Map<String, Long> db2publicationsCount ) throws Exception {
         SpreadsheetService service = new SpreadsheetService( "PSICQUIC-stats-collector-1" );
         // 2010-02: necessary or batch update fail with error like: "If-Match or If-None-Match header required"
         service.setProtocolVersion( SpreadsheetService.Versions.V1 );
         service.setUserCredentials( email, password );
 
         final SpreadsheetEntry spreadsheetEntry = SpreadsheetFacade.getSpreadsheetWithKey( service, spreadsheetKey );
-        List<PsicquicService> psicquicServices = collectPsicquicServiceNames();
+        if(psicquicServices == null){
+            psicquicServices = collectPsicquicServiceNames();
+        }
 
         // Update interaction counts
-        Map<String, Long> db2interactionCount = updatePsicquicInteractionsStats( psicquicServices );
-        final List<String> updatedServices = updateInteractionWorksheet( service, spreadsheetEntry, db2interactionCount );
+        if(db2interactionCount == null){
+            db2interactionCount = updatePsicquicInteractionsStats( psicquicServices ); //data
+        }
+        List<String> updatedServices = updateInteractionWorksheet( service, spreadsheetEntry, db2interactionCount ); //spreadsheet
         if ( log.isInfoEnabled() ) log.info( updatedServices.size() + " services updated: " + updatedServices );
 
         // Update publication for those services that have a different count of interactions
-        if( ! updatedServices.isEmpty() ) {
-            Map<String, Long> db2publicationsCount = collectPsicquicPublicationsStats( psicquicServices, updatedServices );
-            updatePublicationWorksheet( service, spreadsheetEntry, db2publicationsCount );
+        if( ! updatedServices.isEmpty()) {
+            if(db2publicationsCount == null){
+                db2publicationsCount = collectPsicquicPublicationsStats( psicquicServices, updatedServices); //data
+            }
+            updatedServices.addAll(updatePublicationWorksheet(service, spreadsheetEntry, db2publicationsCount)); //spreadsheet
         } else {
             log.info( "No services with interaction count update, skipping publication update." );
         }
@@ -643,4 +708,8 @@ public class PsicquicStatsCollector {
         PsicquicStatsCollector collector = new PsicquicStatsCollector();
         collector.updateSpreadsheet( email, password, spreadsheetKey );
     }
+
+
+
+
 }

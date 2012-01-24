@@ -12,6 +12,7 @@ public class PsicquicService {
     final private String name;
     final private String soapUrl;
 
+    private String restUrl;
     private int interactionCount;
 
     public PsicquicService( String name, String soapUrl ) {
@@ -23,6 +24,14 @@ public class PsicquicService {
         }
         this.name = name;
         this.soapUrl = soapUrl;
+    }
+
+    public String getRestUrl() {
+        return restUrl;
+    }
+
+    public void setRestUrl(String restUrl) {
+        this.restUrl = restUrl;
     }
 
     public String getName() {
