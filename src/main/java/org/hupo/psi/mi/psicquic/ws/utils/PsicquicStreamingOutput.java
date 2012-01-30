@@ -88,13 +88,14 @@ public class PsicquicStreamingOutput implements StreamingOutput {
         PrintWriter out = new PrintWriter(os);
 
         int totalResults = -1;
+        int max = firstResult + maxResults;
         int blockSize = Math.min(IndexBasedPsicquicService.BLOCKSIZE_MAX, maxResults);
 
         do {
             reqInfo.setFirstResult(firstResult);
 
-            if (totalResults > 0 && maxResults < firstResult+blockSize) {
-                blockSize = maxResults - firstResult;
+            if (totalResults > 0 && max < firstResult+blockSize) {
+                blockSize = max - firstResult;
             }
 
             reqInfo.setBlockSize(blockSize);
@@ -112,7 +113,7 @@ public class PsicquicStreamingOutput implements StreamingOutput {
 
             firstResult = firstResult + response.getResultInfo().getBlockSize();
 
-        } while (firstResult < totalResults && firstResult < maxResults);
+        } while (firstResult < totalResults && firstResult < max);
 
         out.close();
     }
