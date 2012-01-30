@@ -57,7 +57,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
 
     private static final String NEW_LINE = System.getProperty("line.separator");
 
-    private static final int BLOCKSIZE_MAX = 200;
+    public static final int BLOCKSIZE_MAX = 200;
     private static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
 
     public static final List<String> SUPPORTED_SOAP_RETURN_TYPES = Arrays.asList(RETURN_TYPE_XML25,
