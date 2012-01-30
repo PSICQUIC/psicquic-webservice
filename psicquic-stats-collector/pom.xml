@@ -18,7 +18,7 @@
 
     <properties>
         <psicquic.registry.url>http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS&amp;format=txt</psicquic.registry.url>
-        <smtp.config.file>/Users/samuel/projects/psicquic/psicquic-stats-collector/src/main/resources/META-INF/smtp.properties</smtp.config.file>
+        <smtp.config.file>${project.basedir}/src/main/resources/META-INF/smtp.properties</smtp.config.file>
         <psicquic.miql.query>*:*</psicquic.miql.query>
     </properties>
 
@@ -193,18 +193,11 @@
             <version>1.0</version>
         </dependency>
 
-        <!-- Psicquic Service Client -->
-        <dependency>
-            <groupId>org.hupo.psi.mi.psicquic</groupId>
-            <artifactId>psicquic-client</artifactId>
-            <version>1.3</version>
-        </dependency>
-
         <!-- Simple Psicquic Service Client -->
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-simple-client</artifactId>
-            <version>1.0</version>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
 
 

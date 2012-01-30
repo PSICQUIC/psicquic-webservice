@@ -23,8 +23,6 @@ import uk.ac.ebi.intact.google.spreadsheet.SpreadsheetFacade;
 import uk.ac.ebi.intact.google.spreadsheet.WorksheetFacade;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
-import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
-import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.tab.model.CrossReference;
 
@@ -490,14 +488,15 @@ public class PsicquicStatsCollector {
      */
     public Map<String, Long> updatePsicquicInteractionsStats(List<PsicquicService> psicquicServices) {
         Map<String, Long> db2interactionCount = Maps.newHashMap();
+        
         for ( PsicquicService service : psicquicServices ) {
             log.info( service.getName() + " -> " + service.getSoapUrl() );
-            UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), PSICQUIC_DEFAULT_TIMEOUT );
-            final SearchResult<BinaryInteraction> result;
+            PsicquicSimpleClient client = new PsicquicSimpleClient(service.getRestUrl());
+            
             try {
-                result = client.getByQuery( config.getMiqlQuery(), 0, 0 );
-                service.setInteractionCount( result.getTotalCount() );
-                db2interactionCount.put( service.getName(), result.getTotalCount().longValue() );
+                long count = client.countByQuery( config.getMiqlQuery() );
+                service.setInteractionCount( Long.valueOf(count).intValue() );
+                db2interactionCount.put( service.getName(), count );
             } catch ( Throwable t ) {
                 log.error( "An error occured while querying PSICQUIC service: " + service.getName(), t );
                 sendEmail( "Failed to query " + service.getName(), ExceptionUtils.getFullStackTrace( t ) );
@@ -539,30 +538,17 @@ public class PsicquicStatsCollector {
             if ( log.isInfoEnabled() ) log.info( "Querying PSICQUIC service: " + service.getRestUrl() );
             Set<String> pmids = Sets.newHashSet();
             boolean error = false;
+
             PsicquicSimpleClient simpleClient = new PsicquicSimpleClient(service.getRestUrl());
+
             try {
                 do {
-                    /* Query PSICQUIC and get publications. PSICQUIC client using SOAP.*/
-//                    UniversalPsicquicClient client = new UniversalPsicquicClient( service.getSoapUrl(), PSICQUIC_DEFAULT_TIMEOUT );
-//                    final SearchResult<BinaryInteraction> query = client.getByQuery( config.getMiqlQuery(), current, PSICQUIC_BATCH_SIZE );
-//                    for ( BinaryInteraction interaction : query.getData() ) {
-//                        for ( Object o : interaction.getPublications() ) {
-//                            CrossReference cr = ( CrossReference ) o;
-//                            if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
-//                                 ||
-//                                 "pmid".equalsIgnoreCase( cr.getDatabase() )) {
-//                                pmids.add( cr.getIdentifier() );
-//                            }
-//                        }
-//                    } // interactions
-//                    current += query.getData().size();
-
-
-
                     PsimiTabReader mitabReader = new PsimiTabReader(false);
                     try {
                         InputStream result = simpleClient.getByQuery(config.getMiqlQuery(),"tab25", current, PSICQUIC_BATCH_SIZE);
+
                         System.out.println(config.getMiqlQuery() + " / " + "tab25" + " / " + current + " / " + PSICQUIC_BATCH_SIZE);
+
                         Collection<BinaryInteraction> binaryInteractions = mitabReader.read(result);
                         for(BinaryInteraction binaryInteraction:binaryInteractions){
                             for ( Object o : binaryInteraction.getPublications() ) {
@@ -641,7 +627,7 @@ public class PsicquicStatsCollector {
                 sb.append( ", " );
             }
         }
-        sb.append( ']' );
+        sb.append(']');
         return sb.toString();
     }
 
