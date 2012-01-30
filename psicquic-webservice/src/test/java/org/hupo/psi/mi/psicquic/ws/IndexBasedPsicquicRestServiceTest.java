@@ -109,6 +109,42 @@ public class IndexBasedPsicquicRestServiceTest {
     }
 
     @Test
+    public void testGetByQuery_maxResults_above400() throws Exception {
+        ResponseImpl response = (ResponseImpl) service.getByQuery("*", "tab25", "0", "405", "n");
+
+        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        pso.write(baos);
+
+        Assert.assertEquals(405, baos.toString().split("\n").length);
+    }
+
+    @Test
+    public void testGetByQuery_firstResult_above200() throws Exception {
+        ResponseImpl response = (ResponseImpl) service.getByQuery("*", "tab25", "150", "255", "n");
+
+        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        pso.write(baos);
+
+        Assert.assertEquals(255, baos.toString().split("\n").length);
+    }
+
+    @Test
+    public void testGetByQuery_firstResult_above200_max() throws Exception {
+        ResponseImpl response = (ResponseImpl) service.getByQuery("*", "tab25", "250", "500", "n");
+
+        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        pso.write(baos);
+
+        Assert.assertEquals(163, baos.toString().split("\n").length);
+    }
+
+    @Test
     public void testGetByQuery_bin() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25-bin", "0", String.valueOf(Integer.MAX_VALUE), "n");
 
