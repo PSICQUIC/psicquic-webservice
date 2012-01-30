@@ -42,10 +42,10 @@ public class IndexBasedPsicquicRestServiceTest {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        InputStream mitabStream = IndexBasedPsicquicServiceTest.class.getResourceAsStream("/META-INF/brca2.mitab.txt");
         File indexDir = new File("target", "brca-mitab.index");
 
-        Searcher.buildIndex(indexDir, mitabStream, true, true);
+        Searcher.buildIndex(indexDir, IndexBasedPsicquicServiceTest.class.getResourceAsStream("/META-INF/brca2.mitab.txt"), true, true);
+        Searcher.buildIndex(indexDir, IndexBasedPsicquicServiceTest.class.getResourceAsStream("/META-INF/400.mitab.txt"), false, true);
 
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"/META-INF/beans.spring.test.xml"});
         PsicquicConfig config = (PsicquicConfig) context.getBean("psicquicConfig");
@@ -94,6 +94,18 @@ public class IndexBasedPsicquicRestServiceTest {
         pso.write(baos);
 
         Assert.assertEquals(12, baos.toString().split("\n").length);
+    }
+
+    @Test
+    public void testGetByQuery_maxResults_above200() throws Exception {
+        ResponseImpl response = (ResponseImpl) service.getByQuery("*", "tab25", "0", "305", "n");
+
+        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        pso.write(baos);
+
+        Assert.assertEquals(305, baos.toString().split("\n").length);
     }
 
     @Test

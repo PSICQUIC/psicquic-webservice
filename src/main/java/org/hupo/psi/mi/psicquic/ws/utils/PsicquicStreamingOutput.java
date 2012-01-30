@@ -16,6 +16,7 @@
 package org.hupo.psi.mi.psicquic.ws.utils;
 
 import org.hupo.psi.mi.psicquic.*;
+import org.hupo.psi.mi.psicquic.ws.IndexBasedPsicquicService;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
@@ -86,16 +87,20 @@ public class PsicquicStreamingOutput implements StreamingOutput {
 
         PrintWriter out = new PrintWriter(os);
 
-        int max = firstResult+maxResults;
-
-        reqInfo.setBlockSize(maxResults);
+        int totalResults = -1;
+        int blockSize = Math.min(IndexBasedPsicquicService.BLOCKSIZE_MAX, maxResults);
 
         do {
             reqInfo.setFirstResult(firstResult);
 
+            if (totalResults > 0 && maxResults < firstResult+blockSize) {
+                blockSize = maxResults - firstResult;
+            }
+
+            reqInfo.setBlockSize(blockSize);
+
             try {
                 response = psicquicService.getByQuery(query, reqInfo);
-
                 out.write(response.getResultSet().getMitab());
             } catch (Exception e) {
                 throw new WebApplicationException(e);
@@ -103,9 +108,11 @@ public class PsicquicStreamingOutput implements StreamingOutput {
 
             out.flush();
 
+            totalResults = response.getResultInfo().getTotalResults();
+
             firstResult = firstResult + response.getResultInfo().getBlockSize();
 
-        } while (firstResult < max && firstResult < response.getResultInfo().getTotalResults());
+        } while (firstResult < totalResults && firstResult < maxResults);
 
         out.close();
     }
