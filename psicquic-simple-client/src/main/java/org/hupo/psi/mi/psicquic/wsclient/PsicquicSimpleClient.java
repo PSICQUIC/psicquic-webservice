@@ -15,10 +15,10 @@
  */
 package org.hupo.psi.mi.psicquic.wsclient;
 
+import sun.net.www.protocol.http.HttpURLConnection;
+
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -33,9 +33,17 @@ public class PsicquicSimpleClient {
 
 
     private String serviceRestUrl;
+    private int connectionTimeout = 5000;
+    private int readTimeout = 5000;
+    private Proxy proxy;
 
     public PsicquicSimpleClient(String serviceRestUrl) {
         this.serviceRestUrl = serviceRestUrl;
+    }
+
+    public PsicquicSimpleClient(String serviceRestUrl, Proxy proxy) {
+        this(serviceRestUrl);
+        this.proxy = proxy;
     }
 
     public InputStream getByQuery(String query) throws IOException {
@@ -90,8 +98,21 @@ public class PsicquicSimpleClient {
         final String encodedQuery = encodeQuery(query);
 
         URL url = createUrl(queryType, encodedQuery, format, firstResult, maxResults);
+
+        final URLConnection urlConnection;
         
-        return url.openStream();
+        if (proxy == null) {
+        urlConnection = url.openConnection();
+        } else {
+            urlConnection = url.openConnection(proxy);
+        }
+        
+        urlConnection.setReadTimeout(readTimeout);
+        urlConnection.setConnectTimeout(connectionTimeout);
+
+        urlConnection.connect();
+
+        return urlConnection.getInputStream();
     }
 
     private long countBy(String queryType, String query) throws IOException {
