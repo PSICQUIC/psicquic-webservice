@@ -26,7 +26,7 @@ public class TestPsicquicStatsCollector {
     public void testData(){
         try {
             List<String> sourcesToQuery = new ArrayList<String>();
-            String sourceTest = "IntAct";
+            String sourceTest = "MatrixDB";
             sourcesToQuery.add(sourceTest);
 
             PsicquicStatsCollector collector = new PsicquicStatsCollector();
@@ -38,8 +38,8 @@ public class TestPsicquicStatsCollector {
 
 //            System.out.println("db2interactionCount MatrixDB: " + db2interactionCount.get(sourceTest));
 
-//            Assert.assertTrue(db2interactionCount.containsKey(sourceTest));
-//            Assert.assertTrue(db2interactionCount.get(sourceTest) > 220 );
+            Assert.assertTrue(db2interactionCount.containsKey(sourceTest));
+            Assert.assertTrue(db2interactionCount.get(sourceTest) > 220 );
             Assert.assertTrue(db2publicationsCount.containsKey(sourceTest));
             Assert.assertTrue(db2publicationsCount.get(sourceTest) > 35 );
         } catch (IOException e) {
