@@ -499,10 +499,49 @@ public class PsicquicStatsCollector {
             PsicquicSimpleClient client = new PsicquicSimpleClient(service.getRestUrl());
 
             try {
-                long count = client.countByQuery( config.getInteractionMiqlQuery() );
-                service.setInteractionCount( Long.valueOf(count).intValue() );
-                db2interactionCount.put( service.getName(), count );
-            } catch ( Throwable t ) {
+                boolean error = false;
+
+                try{
+                    long count = client.countByQuery( config.getInteractionMiqlQuery() );
+                    service.setInteractionCount( Long.valueOf(count).intValue() );
+                    db2interactionCount.put( service.getName(), count );
+                }
+                catch (IOException e) {
+
+                    int number = 1;
+                    error = true;
+
+                    while (number < numberOfTests && error == true){
+                        number ++;
+                        System.out.println("Failed to connect to service, try number " + number);
+
+                        try {
+                            // wait for 10 secondes and try again
+                            Thread thisThread = Thread.currentThread();
+
+                            thisThread.sleep(10000);
+
+                            // try again
+
+                            long count = client.countByQuery( config.getInteractionMiqlQuery() );
+                            service.setInteractionCount( Long.valueOf(count).intValue() );
+                            db2interactionCount.put( service.getName(), count );
+
+                            error = false;
+                        } catch (IOException e2) {
+                            log.error( "An error occured while retrieving interactions from " + service.getName()+ ", test number " + number, e );
+                            error = true;
+
+                            if (number == numberOfTests){
+                                log.error( "An error occured while querying PSICQUIC service: " + service.getName(), e2 );
+                                sendEmail( "Failed to query " + service.getName(), ExceptionUtils.getFullStackTrace( e2 ) );
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch ( Throwable t ) {
                 log.error( "An error occured while querying PSICQUIC service: " + service.getName(), t );
                 sendEmail( "Failed to query " + service.getName(), ExceptionUtils.getFullStackTrace( t ) );
             }
@@ -553,7 +592,7 @@ public class PsicquicStatsCollector {
                         Collection<BinaryInteraction> binaryInteractions = processCountPublications(current, pmids, simpleClient, mitabReader);
                         current += binaryInteractions.size();
                     } catch (IOException e) {
-                        
+
                         int number = 1;
                         error = true;
 
@@ -638,14 +677,14 @@ public class PsicquicStatsCollector {
 
         Collection<BinaryInteraction> binaryInteractions = mitabReader.read(result);
         boolean hasPubmed = false;
-        
+
         for(BinaryInteraction binaryInteraction:binaryInteractions){
             for ( Object o : binaryInteraction.getPublications() ) {
                 CrossReference cr = ( CrossReference ) o;
                 if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
                         ||
                         "pmid".equalsIgnoreCase( cr.getDatabase() )) {
-                    
+
                     if (pmids.add( cr.getIdentifier() )){
                         System.out.println(cr.getIdentifier());
                     }
@@ -653,7 +692,7 @@ public class PsicquicStatsCollector {
                     hasPubmed = true;
                 }
             }
-            
+
             if (!hasPubmed){
                 log.error("Binary interaction without pubmed : " + binaryInteraction.toString());
             }
