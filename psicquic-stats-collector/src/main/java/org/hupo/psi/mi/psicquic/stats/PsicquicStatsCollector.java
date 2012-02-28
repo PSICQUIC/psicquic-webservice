@@ -536,7 +536,6 @@ public class PsicquicStatsCollector {
             }
 
 
-            final long totalInteractionCount = service.getInteractionCount();
             int current = 0;
 
 
@@ -545,6 +544,7 @@ public class PsicquicStatsCollector {
             boolean error = false;
 
             PsicquicSimpleClient simpleClient = new PsicquicSimpleClient(service.getRestUrl());
+            final long totalInteractionCount = simpleClient.countByQuery( config.getPublicationMiqlQuery() );
 
             try {
                 do {
