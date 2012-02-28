@@ -563,6 +563,11 @@ public class PsicquicStatsCollector {
                         current += binaryInteractions.size();
                     } catch (IOException e) {
                         log.error( "An error occured while retrieving interactions from " + service.getName(), e );
+                        // email error
+                        sendEmail( "An error occured while collecting PMIDs from: " + service.getName(),
+                                ExceptionUtils.getFullStackTrace( e ) );
+                        error = true;
+                        break;
                     }
 
                     // show progress
