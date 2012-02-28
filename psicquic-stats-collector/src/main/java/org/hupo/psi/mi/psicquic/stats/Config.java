@@ -15,7 +15,8 @@ public class Config {
 
     private String smtpConfigFile;
 
-    private String miqlQuery;
+    private String interactionMiqlQuery;
+    private String publicationMiqlQuery;
 
     public Config() {
     }
@@ -40,12 +41,20 @@ public class Config {
         return smtpConfigFile != null;
     }
 
-    public String getMiqlQuery() {
-        return miqlQuery;
+    public String getInteractionMiqlQuery() {
+        return interactionMiqlQuery;
     }
 
-    public void setMiqlQuery( String miqlQuery ) {
-        this.miqlQuery = miqlQuery;
+    public void setInteractionMiqlQuery(String interactionMiqlQuery) {
+        this.interactionMiqlQuery = interactionMiqlQuery;
+    }
+
+    public String getPublicationMiqlQuery() {
+        return publicationMiqlQuery;
+    }
+
+    public void setPublicationMiqlQuery(String publicationMiqlQuery) {
+        this.publicationMiqlQuery = publicationMiqlQuery;
     }
 
     @Override
@@ -54,7 +63,8 @@ public class Config {
         sb.append( "Config" );
         sb.append( "{psicquicRegistryUrl='" ).append( psicquicRegistryUrl ).append( '\'' );
         sb.append( ", smtpConfigFile='" ).append( smtpConfigFile ).append( '\'' );
-        sb.append( ", miqlQuery='" ).append( miqlQuery ).append( '\'' );
+        sb.append( ", interaction miqlQuery='" ).append( interactionMiqlQuery ).append( '\'' );
+        sb.append( ", publication miqlQuery='" ).append( publicationMiqlQuery ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

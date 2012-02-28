@@ -19,7 +19,8 @@
     <properties>
         <psicquic.registry.url>http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS&amp;format=txt</psicquic.registry.url>
         <smtp.config.file>${project.basedir}/src/main/resources/META-INF/smtp.properties</smtp.config.file>
-        <psicquic.miql.query>*:*</psicquic.miql.query>
+        <psicquic.interaction.miql.query>*:*</psicquic.interaction.miql.query>
+        <psicquic.publication.miql.query>*:*</psicquic.publication.miql.query>
     </properties>
 
     <build>
@@ -90,7 +91,8 @@
                                 <!-- automatically creates the classpath using all project dependencies, also adding the project build directory -->
                                 <classpath/>
                                 <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
-                                <argument>-Dpsicquic.miql.query="(interaction_id:imex OR pubid:imex)"</argument>
+                                <argument>-Dpsicquic.interaction.miql.query="(interaction_id:imex)"</argument>
+                                <argument>-Dpsicquic.publication.miql.query="(pubid:imex)"</argument>
                             </arguments>
                         </configuration>
                     </plugin>

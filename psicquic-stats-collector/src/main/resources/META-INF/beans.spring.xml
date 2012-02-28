@@ -31,7 +31,8 @@
             <value><![CDATA[${psicquic.registry.url}]]></value>
         </property>
          <property name="smtpConfigFile" value="${smtp.config.file}" />
-         <property name="miqlQuery" value="${psicquic.miql.query}" />
+         <property name="interactionMiqlQuery" value="${psicquic.interaction.miql.query}" />
+        <property name="publicationMiqlQuery" value="${psicquic.publication.miql.query}" />
     </bean>
 
 </beans>

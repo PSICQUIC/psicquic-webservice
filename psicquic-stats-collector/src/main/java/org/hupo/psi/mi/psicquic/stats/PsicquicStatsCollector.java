@@ -494,7 +494,7 @@ public class PsicquicStatsCollector {
             PsicquicSimpleClient client = new PsicquicSimpleClient(service.getRestUrl());
             
             try {
-                long count = client.countByQuery( config.getMiqlQuery() );
+                long count = client.countByQuery( config.getInteractionMiqlQuery() );
                 service.setInteractionCount( Long.valueOf(count).intValue() );
                 db2interactionCount.put( service.getName(), count );
             } catch ( Throwable t ) {
@@ -545,9 +545,9 @@ public class PsicquicStatsCollector {
                 do {
                     PsimiTabReader mitabReader = new PsimiTabReader(false);
                     try {
-                        InputStream result = simpleClient.getByQuery(config.getMiqlQuery(),"tab25", current, PSICQUIC_BATCH_SIZE);
+                        InputStream result = simpleClient.getByQuery(config.getPublicationMiqlQuery(),"tab25", current, PSICQUIC_BATCH_SIZE);
 
-                        System.out.println(config.getMiqlQuery() + " / " + "tab25" + " / " + current + " / " + PSICQUIC_BATCH_SIZE);
+                        System.out.println(config.getPublicationMiqlQuery() + " / " + "tab25" + " / " + current + " / " + PSICQUIC_BATCH_SIZE);
 
                         Collection<BinaryInteraction> binaryInteractions = mitabReader.read(result);
                         for(BinaryInteraction binaryInteraction:binaryInteractions){
