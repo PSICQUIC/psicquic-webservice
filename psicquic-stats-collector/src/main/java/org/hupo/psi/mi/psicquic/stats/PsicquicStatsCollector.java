@@ -4,27 +4,35 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.data.spreadsheet.*;
+import com.google.gdata.data.spreadsheet.Cell;
+import com.google.gdata.data.spreadsheet.CellEntry;
+import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.util.ServiceException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
 import org.hupo.psi.mi.psicquic.registry.client.registry.DefaultPsicquicRegistryClient;
 import org.hupo.psi.mi.psicquic.registry.client.registry.PsicquicRegistryClient;
+import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import psidev.psi.mi.tab.PsimiTabReader;
-import uk.ac.ebi.intact.google.spreadsheet.SpreadsheetFacade;
-import uk.ac.ebi.intact.google.spreadsheet.WorksheetFacade;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.tab.model.CrossReference;
+import psidev.psi.mi.xml.converter.ConverterException;
+import uk.ac.ebi.intact.google.spreadsheet.SpreadsheetFacade;
+import uk.ac.ebi.intact.google.spreadsheet.WorksheetFacade;
+
+import java.io.*;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // How to install the Gdata libs locally ?
@@ -43,11 +51,6 @@ import psidev.psi.mi.tab.model.CrossReference;
 //        mvn install:install-file -Dfile=gdata-core-1.0.jar -DgroupId=com.google.gdata.data \
 //                                 -DartifactId=gdata-core -Dversion=1.0 -Dpackaging=jar
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-import java.io.*;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Utility that collect PSICQUIC statistics from existing services and publishes it into a Google Spreadsheet.
@@ -93,6 +96,8 @@ public class PsicquicStatsCollector {
     private List<String> recipients;
     private Config config;
 
+    private int numberOfTests = 10;
+
     public PsicquicStatsCollector() throws IOException {
         // Initialize Spring for emails
         log.info("Initializing Spring ...");
@@ -124,7 +129,7 @@ public class PsicquicStatsCollector {
         mailSubjectPrefix = properties.getProperty( "email.subject.prefix" );
         log.info( "mailSubjectPrefix = " + mailSubjectPrefix );
         String recipientList = properties.getProperty( "email.recipients" );
-        
+
         recipients = new ArrayList( Arrays.asList( recipientList.split( "," ) ) );
         log.info( "recipients = " + recipients );
 
@@ -244,8 +249,8 @@ public class PsicquicStatsCollector {
                         log.info( "No previous cell available." );
                         if ( ! "0".equals( count ) ) {
                             if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " +
-                                                                  db + " has changed since " +
-                                                                  previousDateCell.getCell().getValue() );
+                                    db + " has changed since " +
+                                    previousDateCell.getCell().getValue() );
                             // the service has a positive count so we record it in the stats
                             cell.changeInputValueLocal( count );
                             updatedServices.add( db );
@@ -289,15 +294,15 @@ public class PsicquicStatsCollector {
                     final String previousValue = previousCell.getCell().getValue();
                     if( ! "0".equals( previousValue ) ) {
                         if ( log.isDebugEnabled() ) log.info( worksheetName + ": statistics for " + db +
-                                                              " has NOT changed since " +
-                                                              previousDateCell.getCell().getValue() +
-                                                              " copying previous one instead: " + previousValue );
+                                " has NOT changed since " +
+                                previousDateCell.getCell().getValue() +
+                                " copying previous one instead: " + previousValue );
 
                         cell = myWorksheet.getCell( nextEmptyRow, colIndex.intValue() );
                         cell.changeInputValueLocal( previousCell.getCell().getValue() );
                         updatedCells.add( cell );
                     }
-                    
+
                 } else {
                     log.info( "Previous cell is null :(" );
                 }
@@ -351,7 +356,7 @@ public class PsicquicStatsCollector {
                             } catch ( NumberFormatException e ) {
                                 // report cell format issue by email, and skip
                                 sendEmail( "Cell format error in worksheet: " + worksheetName,
-                                           "Cell["+row+","+col+"]='"+value + "' when an integer was expected" );
+                                        "Cell["+row+","+col+"]='"+value + "' when an integer was expected" );
                                 abortRow = true;
                                 continue; // exit column loop
                             }
@@ -389,8 +394,8 @@ public class PsicquicStatsCollector {
             final Integer colIndex = columnName2Index.get( db );
             if( colIndex == null ) {
                 sendEmail( "Missing DB name in header of worksheet '" + worksheetName + "'",
-                           "Please add " + db + " in the header of the spreadsheet - please visit "
-                           + spreadsheetEntry.getSpreadsheetLink().getHref() );
+                        "Please add " + db + " in the header of the spreadsheet - please visit "
+                                + spreadsheetEntry.getSpreadsheetLink().getHref() );
             }
         }
 
@@ -410,7 +415,7 @@ public class PsicquicStatsCollector {
                 cell.changeInputValueLocal( today() );
                 updatedCells.add( cell );
             }
-            
+
             // upload update
             myWorksheet.batchUpdate( updatedCells );
         }
@@ -431,7 +436,7 @@ public class PsicquicStatsCollector {
     private List<String> updatePublicationWorksheet( SpreadsheetService service,
                                                      SpreadsheetEntry spreadsheet,
                                                      Map<String, Long> db2publicationsCount ) throws IOException,
-                                                                                                     ServiceException {
+            ServiceException {
         return updateSheet( service, spreadsheet, "Publications", db2publicationsCount );
     }
 
@@ -465,7 +470,7 @@ public class PsicquicStatsCollector {
 
         for ( Map.Entry<Object, Object> service : props.entrySet() ) {
             final PsicquicService s = new PsicquicService( ( String ) service.getKey(),
-                                                           ( String ) service.getValue() );
+                    ( String ) service.getValue() );
             //todo: Refactor. This code is a bit redundant. Included because the way it was done before it was impossible to retrieve the REST url. Now the are two call to the registry
             for(ServiceType registryService: registryServices){
                 if(registryService.getName().equalsIgnoreCase(s.getName())){
@@ -488,11 +493,11 @@ public class PsicquicStatsCollector {
      */
     public Map<String, Long> updatePsicquicInteractionsStats(List<PsicquicService> psicquicServices) {
         Map<String, Long> db2interactionCount = Maps.newHashMap();
-        
+
         for ( PsicquicService service : psicquicServices ) {
             log.info( service.getName() + " -> " + service.getSoapUrl() );
             PsicquicSimpleClient client = new PsicquicSimpleClient(service.getRestUrl());
-            
+
             try {
                 long count = client.countByQuery( config.getInteractionMiqlQuery() );
                 service.setInteractionCount( Long.valueOf(count).intValue() );
@@ -518,7 +523,7 @@ public class PsicquicStatsCollector {
     }
 
     public Map<String, Long> collectPsicquicPublicationsStats( List<PsicquicService> psicquicServices,
-                                                                List<String> psicquicWhiteList ) throws IOException {
+                                                               List<String> psicquicWhiteList ) throws IOException {
         Map<String, Long> db2publicationsCount = Maps.newHashMap();
 
         for ( PsicquicService service : psicquicServices ) {
@@ -545,29 +550,40 @@ public class PsicquicStatsCollector {
                 do {
                     PsimiTabReader mitabReader = new PsimiTabReader(false);
                     try {
-                        InputStream result = simpleClient.getByQuery(config.getPublicationMiqlQuery(),"tab25", current, PSICQUIC_BATCH_SIZE);
+                        Collection<BinaryInteraction> binaryInteractions = processCountPublications(current, pmids, simpleClient, mitabReader);
+                        current += binaryInteractions.size();
+                    } catch (IOException e) {
+                        int number = 1;
+                        error = true;
 
-                        System.out.println(config.getPublicationMiqlQuery() + " / " + "tab25" + " / " + current + " / " + PSICQUIC_BATCH_SIZE);
+                        while (number < numberOfTests && error == true){
+                            number ++;
 
-                        Collection<BinaryInteraction> binaryInteractions = mitabReader.read(result);
-                        for(BinaryInteraction binaryInteraction:binaryInteractions){
-                            for ( Object o : binaryInteraction.getPublications() ) {
-                                CrossReference cr = ( CrossReference ) o;
-                                if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
-                                     ||
-                                     "pmid".equalsIgnoreCase( cr.getDatabase() )) {
-                                    pmids.add( cr.getIdentifier() );
+                            try {
+                                // wait for 10 secondes and try again
+                                Thread thisThread = Thread.currentThread();
+
+                                thisThread.sleep(10000);
+
+                                // try again
+
+                                Collection<BinaryInteraction> binaryInteractions = processCountPublications(current, pmids, simpleClient, mitabReader);
+                                current += binaryInteractions.size();
+
+                                error = false;
+                            } catch (IOException e2) {
+                                log.error( "An error occured while retrieving interactions from " + service.getName()+ ", test number " + number, e );
+                                error = true;
+
+                                if (number == numberOfTests){
+                                    log.error( "An error occured while retrieving interactions from " + service.getName(), e );
+                                    // email error
+                                    sendEmail( "An error occured while collecting PMIDs from: " + service.getName(),
+                                            ExceptionUtils.getFullStackTrace( e ) );
+                                    break;
                                 }
                             }
                         }
-                        current += binaryInteractions.size();
-                    } catch (IOException e) {
-                        log.error( "An error occured while retrieving interactions from " + service.getName(), e );
-                        // email error
-                        sendEmail( "An error occured while collecting PMIDs from: " + service.getName(),
-                                ExceptionUtils.getFullStackTrace( e ) );
-                        error = true;
-                        break;
                     }
 
                     // show progress
@@ -580,13 +596,13 @@ public class PsicquicStatsCollector {
                 error = true;
 
                 // email error
-                sendEmail( "An error occured while collecting PMIDs from: " + service.getName(), 
-                           ExceptionUtils.getFullStackTrace( t ) );
+                sendEmail( "An error occured while collecting PMIDs from: " + service.getName(),
+                        ExceptionUtils.getFullStackTrace( t ) );
             }
 
             if ( log.isInfoEnabled() )
                 log.info( "\n" + service.getName() + " -> " + pmids.size() + " publication(s)." +
-                          ( error ? " However the PMID collection may have been interrupted." : "" ) );
+                        ( error ? " However the PMID collection may have been interrupted." : "" ) );
 
             if ( !error ) {
                 db2publicationsCount.put( service.getName(), ( long ) pmids.size() );
@@ -611,6 +627,25 @@ public class PsicquicStatsCollector {
         } // psicquic services
 
         return db2publicationsCount;
+    }
+
+    private Collection<BinaryInteraction> processCountPublications(int current, Set<String> pmids, PsicquicSimpleClient simpleClient, PsimiTabReader mitabReader) throws IOException, ConverterException {
+        InputStream result = simpleClient.getByQuery(config.getPublicationMiqlQuery(),"tab25", current, PSICQUIC_BATCH_SIZE);
+
+        System.out.println(config.getPublicationMiqlQuery() + " / " + "tab25" + " / " + current + " / " + PSICQUIC_BATCH_SIZE);
+
+        Collection<BinaryInteraction> binaryInteractions = mitabReader.read(result);
+        for(BinaryInteraction binaryInteraction:binaryInteractions){
+            for ( Object o : binaryInteraction.getPublications() ) {
+                CrossReference cr = ( CrossReference ) o;
+                if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
+                        ||
+                        "pmid".equalsIgnoreCase( cr.getDatabase() )) {
+                    pmids.add( cr.getIdentifier() );
+                }
+            }
+        }
+        return binaryInteractions;
     }
 
     private void writeListToDisk( Set<String> list, File file ) throws IOException {
@@ -686,8 +721,8 @@ public class PsicquicStatsCollector {
 
         if ( args.length < 3 ) {
             System.err.println( "usage: PsicquicStatsCollector <gmail.account> <password> <spreadsheet.key> " +
-                                "[-D"+PSICQUIC_REGISTRY_URL_KEY+"=pathToFile] " +
-                                "[-D"+SMTP_CONFIG_FILE_KEY+"=pathToFile]" );
+                    "[-D"+PSICQUIC_REGISTRY_URL_KEY+"=pathToFile] " +
+                    "[-D"+SMTP_CONFIG_FILE_KEY+"=pathToFile]" );
             System.exit( 1 );
         }
 
