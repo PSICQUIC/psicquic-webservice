@@ -637,14 +637,25 @@ public class PsicquicStatsCollector {
         System.out.println(config.getPublicationMiqlQuery() + " / " + "tab25" + " / " + current + " / " + PSICQUIC_BATCH_SIZE);
 
         Collection<BinaryInteraction> binaryInteractions = mitabReader.read(result);
+        boolean hasPubmed = false;
+        
         for(BinaryInteraction binaryInteraction:binaryInteractions){
             for ( Object o : binaryInteraction.getPublications() ) {
                 CrossReference cr = ( CrossReference ) o;
                 if ( "pubmed".equalsIgnoreCase( cr.getDatabase() )
                         ||
                         "pmid".equalsIgnoreCase( cr.getDatabase() )) {
-                    pmids.add( cr.getIdentifier() );
+                    
+                    if (pmids.add( cr.getIdentifier() )){
+                        System.out.println(cr.getIdentifier());
+                    }
+
+                    hasPubmed = true;
                 }
+            }
+            
+            if (!hasPubmed){
+                log.error("Binary interaction without pubmed : " + binaryInteraction.toString());
             }
         }
         return binaryInteractions;
