@@ -91,8 +91,8 @@
                                 <!-- automatically creates the classpath using all project dependencies, also adding the project build directory -->
                                 <classpath/>
                                 <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
-                                <argument>-Dpsicquic.interaction.miql.query="(interaction_id:imex)"</argument>
-                                <argument>-Dpsicquic.publication.miql.query="(pubid:imex)"</argument>
+                                <argument>-Dpsicquic.interaction.miql.query="interaction_id:imex"</argument>
+                                <argument>-Dpsicquic.publication.miql.query="pubid:imex"</argument>
                             </arguments>
                         </configuration>
                     </plugin>
