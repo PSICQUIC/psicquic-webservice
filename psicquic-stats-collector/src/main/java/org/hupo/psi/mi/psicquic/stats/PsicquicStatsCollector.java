@@ -553,11 +553,13 @@ public class PsicquicStatsCollector {
                         Collection<BinaryInteraction> binaryInteractions = processCountPublications(current, pmids, simpleClient, mitabReader);
                         current += binaryInteractions.size();
                     } catch (IOException e) {
+                        
                         int number = 1;
                         error = true;
 
                         while (number < numberOfTests && error == true){
                             number ++;
+                            System.out.println("Failed to connect to service, try number " + number);
 
                             try {
                                 // wait for 10 secondes and try again
