@@ -21,6 +21,12 @@
       </resource-bundle>
   </application>
 
+    <managed-bean>
+        <managed-bean-name>psicquicThreadConfig</managed-bean-name>
+        <managed-bean-class>uk.ac.ebi.intact.view.webapp.application.PsicquicThreadConfig</managed-bean-class>
+        <managed-bean-scope>application</managed-bean-scope>
+    </managed-bean>
+
     <lifecycle>
         <!--<phase-listener>uk.ac.ebi.intact.view.webapp.application.SearchConfigCheckPhaseListener</phase-listener>-->
         <phase-listener>uk.ac.ebi.intact.view.webapp.application.CacheControlPhaseListener</phase-listener>

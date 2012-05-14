@@ -12,20 +12,19 @@ import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.Service;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
-import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
 import org.hupo.psi.mi.psicquic.registry.client.registry.DefaultPsicquicRegistryClient;
 import org.hupo.psi.mi.psicquic.registry.client.registry.PsicquicRegistryClient;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
-import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import psidev.psi.mi.xml.converter.ConverterException;
+import uk.ac.ebi.intact.view.webapp.application.PsicquicThreadConfig;
 import uk.ac.ebi.intact.view.webapp.controller.BaseController;
 import uk.ac.ebi.intact.view.webapp.controller.clustering.UserJobs;
 import uk.ac.ebi.intact.view.webapp.controller.config.PsicquicViewConfig;
@@ -43,9 +42,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Search controller.
@@ -66,6 +63,10 @@ public class SearchController extends BaseController {
     private static final String QUERY = "query";
     private static final String INCLUDED = "included";
     private static final String EXCLUDED = "excluded";
+    private int threadTimeOut = 5;
+
+    @Autowired
+    private transient ApplicationContext applicationContext;
 
     @Autowired
     private UserQuery userQuery;
@@ -109,6 +110,8 @@ public class SearchController extends BaseController {
 
     private Date registryTimestamp;
 
+    private List<Future> runningTasks;
+
     public SearchController() {
         this.clusterSelected = false;
 
@@ -143,12 +146,12 @@ public class SearchController extends BaseController {
             try {
                 job = jobDao.getJob( jobId );
                 if( job == null ) {
-                log.error( "Could not find job by id: " + jobId );
-            } else {
-                this.userJobs.getCurrentJobs().add( job );
-                this.job = job;
-                this.clusterSelected = true;
-            }
+                    log.error( "Could not find job by id: " + jobId );
+                } else {
+                    this.userJobs.getCurrentJobs().add( job );
+                    this.job = job;
+                    this.clusterSelected = true;
+                }
             } catch ( DaoException e ) {
                 final String msg = "Failed to retrieve requested clustered query";
                 addErrorMessage( "Error", msg );
@@ -326,9 +329,9 @@ public class SearchController extends BaseController {
             if ( searchQuery != null && ( searchQuery.startsWith( "*" ) || searchQuery.startsWith( "?" ) ) ) {
                 userQuery.setSearchQuery( "*:*" );
                 addErrorMessage( "Your query '"+ searchQuery +"' is not correctly formatted",
-                                 "Currently we do not support queries prefixed with wildcard characters such as '*' or '?'. " +
-                                 "However, wildcard characters can be used anywhere else in a query (eg. g?vin or gav* for gavin). " +
-                                 "Please do reformat your query." );
+                        "Currently we do not support queries prefixed with wildcard characters such as '*' or '?'. " +
+                                "However, wildcard characters can be used anywhere else in a query (eg. g?vin or gav* for gavin). " +
+                                "Please do reformat your query." );
             } else {
                 addErrorMessage("Psicquic problem", t.getMessage());
                 log.error( "Error while building results based on your query: '" + searchQuery + "'", t );
@@ -396,18 +399,18 @@ public class SearchController extends BaseController {
             processIncludedServices(included);
         } else if (excluded != null && excluded.length() > 0) {
             processExcludedServices(excluded);
-        } 
+        }
 
         populateActiveServicesMap();
         populateInactiveServicesMap();
 
         servicesMap = new HashMap<String, ServiceType>(services.size());
-        
+
         boolean populateSelectionMap = serviceSelectionMap.isEmpty();
 
         for (ServiceType service : services) {
             servicesMap.put(service.getName(), service);
-            
+
             if (populateSelectionMap) {
                 serviceSelectionMap.put(service.getName(), service.isActive());
             }
@@ -416,9 +419,6 @@ public class SearchController extends BaseController {
 
     private void searchAndCreateResultModels() {
         refresh(null);
-
-        resultDataModelMap = new HashMap<String, SortableModel>(32);
-        resultCountMap = new HashMap<String, Integer>(32);
 
         final String filteredSearchQuery = userQuery.getFilteredSearchQuery();
 
@@ -435,29 +435,59 @@ public class SearchController extends BaseController {
         }
 
         // count the results
-        final ExecutorService executorService = Executors.newCachedThreadPool();
+        PsicquicThreadConfig threadConfig = (PsicquicThreadConfig) applicationContext.getBean("psicquicThreadConfig");
+
+        ExecutorService executorService = threadConfig.getExecutorService();
+
+        if (runningTasks == null){
+            runningTasks = new ArrayList<Future>();
+        }
+        else {
+            runningTasks.clear();
+        }
 
         for (final ServiceType service : services) {
             if (service.isActive() && serviceSelectionMap.get(service.getName())) {
                 Runnable runnable = new Runnable() {
                     public void run() {
-                            int count = countInPsicquicService(service, filteredSearchQuery);
-                            resultCountMap.put(service.getName(), count);
+                        int count = countInPsicquicService(service, filteredSearchQuery);
+                        resultCountMap.put(service.getName(), count);
                     }
                 };
-                executorService.submit(runnable);
+                runningTasks.add(executorService.submit(runnable));
             }
         }
 
-        executorService.shutdown();
-
-        try {
-            executorService.awaitTermination(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            log.error( "Error while terminating ExecutorService", e );
-        }
+        checkAndResumePsicquicTasks();
 
         searchCache.put(filteredSearchQuery, resultCountMap);
+    }
+
+    private void checkAndResumePsicquicTasks() {
+
+        for (Future f : runningTasks){
+            try {
+                f.get(threadTimeOut, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                log.error("The psicquic task was interrupted, we cancel the task.", e);
+                if (!f.isCancelled()){
+                    f.cancel(true);
+                }
+            } catch (ExecutionException e) {
+                log.error("The psicquic task could not be executed, we cancel the task.", e);
+                if (!f.isCancelled()){
+                    f.cancel(true);
+                }
+            } catch (TimeoutException e) {
+                log.error("Service task stopped because of time out " + threadTimeOut + "seconds.", e);
+
+                if (!f.isCancelled()){
+                    f.cancel(true);
+                }
+            }
+        }
+
+        runningTasks.clear();
     }
 
     private int countInPsicquicService(ServiceType service, String query) {
@@ -467,7 +497,7 @@ public class SearchController extends BaseController {
 
         int psicquicCount = 0;
 
-            HttpURLConnection connection = null;
+        HttpURLConnection connection = null;
 
         try {
             String encoded = URLEncoder.encode(query, "UTF-8");
@@ -727,5 +757,13 @@ public class SearchController extends BaseController {
 
     public void setServiceSelectionMap(Map<String, Boolean> serviceSelectionMap) {
         this.serviceSelectionMap = serviceSelectionMap;
+    }
+
+    public int getThreadTimeOut() {
+        return threadTimeOut;
+    }
+
+    public void setThreadTimeOut(int threadTimeOut) {
+        this.threadTimeOut = threadTimeOut;
     }
 }
