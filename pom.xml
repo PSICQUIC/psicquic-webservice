@@ -160,7 +160,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psi25-xml-rdf</artifactId>
-            <version>1.7.10</version>
+            <version>1.7.11-SNAPSHOT</version>
         </dependency>
 
         <dependency>
