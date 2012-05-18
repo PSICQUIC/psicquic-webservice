@@ -79,6 +79,7 @@ public class PsicquicDownloader {
                 }
 
                 in.close();
+                result.close();
             } catch ( IOException e ) {
                 e.printStackTrace();
             }

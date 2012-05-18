@@ -1,17 +1,11 @@
 package org.hupo.psi.mi.psicquic.clustering;
 
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
-import org.hupo.psi.mi.psicquic.clustering.job.JobIdGenerator;
 import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
-import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory.InMemoryClusteringServiceDaoFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Arrays;
 

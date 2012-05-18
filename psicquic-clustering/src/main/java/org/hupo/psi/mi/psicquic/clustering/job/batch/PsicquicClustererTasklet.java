@@ -18,10 +18,9 @@ import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
 import uk.ac.ebi.enfin.mi.cluster.ClusterContext;
 import uk.ac.ebi.enfin.mi.cluster.Encore2Binary;
 import uk.ac.ebi.enfin.mi.cluster.EncoreInteraction;
-import uk.ac.ebi.enfin.mi.cluster.InteractionClusterAdv;
+import uk.ac.ebi.enfin.mi.cluster.InteractionCluster;
 import uk.ac.ebi.enfin.mi.cluster.cache.CacheStrategy;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
@@ -98,7 +97,7 @@ public class PsicquicClustererTasklet implements Tasklet {
 //        ClusterContext.getInstance().getCacheManager().setCacheStorage( cacheStorageDirectory );
 
         // Setup up enfin clustering
-        InteractionClusterAdv iC = new InteractionClusterAdv();
+        InteractionCluster iC = new InteractionCluster();
         iC.addQueryAcc( miql );
         for ( String service : services ) {
             iC.addQuerySource( service );
@@ -118,16 +117,20 @@ public class PsicquicClustererTasklet implements Tasklet {
 
         final File jobDirectory = new File( dataLocationFile, jobId );
         boolean created = jobDirectory.mkdirs();
+
         if ( !created ) {
-            // TODO handle error
+            final String msg = "Impossible to create the job directory to cluster binary interactions [miql='" +
+                    miql + "', services='" + servicesStr + "', jobId='" + jobId + "']";
+            log.error( msg);
         }
 
         if ( log.isDebugEnabled() ) log.debug( "Using Job directory: " + jobDirectory.getAbsolutePath() );
 
         final String mitabFilename = jobId + ".tsv";
         final File mitabFile = new File( jobDirectory, mitabFilename );
+
         if ( log.isDebugEnabled() ) log.debug( "MITAB file: " + mitabFile.getAbsolutePath() );
-        BufferedWriter out = new BufferedWriter( new FileWriter( mitabFile ) );
+        FileWriter out = new FileWriter( mitabFile );
 
         for ( Map.Entry<Integer, EncoreInteraction> entry : interactionMapping.entrySet() ) {
             final EncoreInteraction ei = entry.getValue();
@@ -136,9 +139,9 @@ public class PsicquicClustererTasklet implements Tasklet {
 
             log.trace( mitab );
             out.write( mitab + NEW_LINE );
+            out.flush();
         }
 
-        out.flush();
         out.close();
 
         // Build a Lucene index from MITAB
