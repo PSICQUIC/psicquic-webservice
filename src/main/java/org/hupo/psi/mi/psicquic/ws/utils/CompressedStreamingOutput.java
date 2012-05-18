@@ -19,8 +19,10 @@ import org.apache.commons.io.IOUtils;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.*;
-import java.util.zip.GZIPInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -43,9 +45,9 @@ public class CompressedStreamingOutput implements StreamingOutput {
 
         IOUtils.copy(is, gzipOs);
 
+        output.write(baos.toByteArray());
+
         baos.close();
         gzipOs.close();
-
-        output.write(baos.toByteArray());
     }
 }
