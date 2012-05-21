@@ -19,9 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.trinidad.model.SortCriterion;
 import org.apache.myfaces.trinidad.model.SortableModel;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
-import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.tab.model.builder.DocumentDefinition;
@@ -104,6 +102,7 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
             binaryInteractions.add(interaction);
         }
         in.close();
+        gzippedStream.close();
         
         result = new SearchResult<BinaryInteraction>(binaryInteractions, totalCount, firstResult, maxResults, null);
     }

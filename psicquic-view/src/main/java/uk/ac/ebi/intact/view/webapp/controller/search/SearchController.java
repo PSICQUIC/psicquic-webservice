@@ -37,6 +37,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -513,8 +514,10 @@ public class SearchController extends BaseController {
 
             connection.connect();
 
-            String strCount = IOUtils.toString(connection.getInputStream());
+            InputStream inputStream = connection.getInputStream();
+            String strCount = IOUtils.toString(inputStream);
             psicquicCount = Integer.parseInt(strCount);
+            inputStream.close();
 
         } catch (SocketTimeoutException se) {
             // happens if timeout

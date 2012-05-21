@@ -71,7 +71,9 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
     public void loadConfigFromFile(ActionEvent evt) throws IOException {
         Properties properties = new Properties();
-        properties.load(new FileInputStream(configFile));
+        FileInputStream configInput = new FileInputStream(configFile);
+        properties.load(configInput);
+        configInput.close();
 
         title = properties.getProperty("title");
         logoUrl = properties.getProperty("logo.url");
