@@ -175,7 +175,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 if (RETURN_TYPE_COUNT.equalsIgnoreCase(format)) {
                     return count(query);
                 } else if (RETURN_TYPE_XGMML.equalsIgnoreCase(format)) {
-                    PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, MAX_XGMML_INTERACTIONS);
+                    PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, Math.min(MAX_XGMML_INTERACTIONS, maxResults));
 
                     count = result.countResults();
 
