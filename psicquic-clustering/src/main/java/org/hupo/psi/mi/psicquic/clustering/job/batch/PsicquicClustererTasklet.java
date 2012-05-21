@@ -21,6 +21,7 @@ import uk.ac.ebi.enfin.mi.cluster.EncoreInteraction;
 import uk.ac.ebi.enfin.mi.cluster.InteractionCluster;
 import uk.ac.ebi.enfin.mi.cluster.cache.CacheStrategy;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
@@ -130,7 +131,7 @@ public class PsicquicClustererTasklet implements Tasklet {
         final File mitabFile = new File( jobDirectory, mitabFilename );
 
         if ( log.isDebugEnabled() ) log.debug( "MITAB file: " + mitabFile.getAbsolutePath() );
-        FileWriter out = new FileWriter( mitabFile );
+        BufferedWriter out = new BufferedWriter(new FileWriter( mitabFile ));
 
         for ( Map.Entry<Integer, EncoreInteraction> entry : interactionMapping.entrySet() ) {
             final EncoreInteraction ei = entry.getValue();
@@ -139,9 +140,8 @@ public class PsicquicClustererTasklet implements Tasklet {
 
             log.trace( mitab );
             out.write( mitab + NEW_LINE );
-            out.flush();
         }
-
+        out.flush();
         out.close();
 
         // Build a Lucene index from MITAB
