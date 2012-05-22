@@ -2,14 +2,9 @@ package uk.ac.ebi.intact.view.webapp.controller.clustering;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
-import org.hupo.psi.mi.psicquic.PsicquicServiceException;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringServiceException;
-import org.hupo.psi.mi.psicquic.clustering.DefaultInteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
-import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -69,8 +64,12 @@ public class ClusteringDownloadServlet extends HttpServlet {
 
                 // Write MITAB on the output stream
                 String mitab = resp.getResultSet().getMitab();
-                stream.write(mitab.getBytes());
-                stream.flush();
+
+                // the job could be found/and and some results could be found associated with this job.
+                if (mitab != null){
+                    stream.write(mitab.getBytes());
+                    stream.flush();
+                }
 
                 current += batchSize;
             } while ( current < resp.getResultInfo().getTotalResults() );

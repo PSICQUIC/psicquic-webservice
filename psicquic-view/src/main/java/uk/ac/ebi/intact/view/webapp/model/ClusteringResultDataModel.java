@@ -19,15 +19,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.trinidad.model.SortCriterion;
 import org.apache.myfaces.trinidad.model.SortableModel;
-import org.hupo.psi.mi.psicquic.NotSupportedTypeException;
-import org.hupo.psi.mi.psicquic.PsicquicServiceException;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringServiceException;
 import org.hupo.psi.mi.psicquic.clustering.DefaultInteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
-import org.hupo.psi.mi.psicquic.clustering.job.JobNotCompletedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.model.BinaryInteraction;
@@ -111,16 +107,26 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
 
             // convert to a list of BinaryInteraction
             String mitab = response.getResultSet().getMitab();
+            
+            // job exists and some data are associated with it
+            if (mitab != null){
+                PsimiTabReader reader = new PsimiTabReader( false );
+                final List<BinaryInteraction> interactions;
+                interactions = new ArrayList<BinaryInteraction>( reader.read( mitab ) );
 
-            PsimiTabReader reader = new PsimiTabReader( false );
-            final List<BinaryInteraction> interactions;
-            interactions = new ArrayList<BinaryInteraction>( reader.read( mitab ) );
-
-            result = new SearchResult<BinaryInteraction>( interactions,
-                                                          response.getResultInfo().getTotalResults(),
-                                                          firstResult,
-                                                          maxResults,
-                                                          null );
+                result = new SearchResult<BinaryInteraction>( interactions,
+                        response.getResultInfo().getTotalResults(),
+                        firstResult,
+                        maxResults,
+                        null ); 
+            }
+            else {
+                result = new SearchResult<BinaryInteraction>( Collections.EMPTY_LIST,
+                        response.getResultInfo().getTotalResults(),
+                        firstResult,
+                        maxResults,
+                        null );
+            }
         } catch ( IOException e ) {
             throw new IllegalStateException( "Could not parse clustered MITAB data", e );
         } catch ( ConverterException e ) {
