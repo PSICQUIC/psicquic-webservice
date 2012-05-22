@@ -11,7 +11,6 @@ import org.hupo.psi.mi.psicquic.clustering.job.dao.ClusteringServiceDaoFactory;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.annotation.Scope;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.search.engine.SearchEngine;
@@ -127,29 +126,7 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
             final JobDao jobDao = csd.getJobDao();
             final ClusteringJob job = jobDao.getJob( jobId );
 
-            // get Lucene index location from job
-            final String indexLocation = job.getLuceneIndexLocation();
-            if ( log.isDebugEnabled() ) {
-                log.debug( "Reading Lucene index from directory: " + indexLocation );
-            }
-
-            // query chunk from Lucene
-            SearchEngine searchEngine;
-
-            try {
-                searchEngine = new BinaryInteractionSearchEngine( indexLocation );
-            } catch ( IOException e ) {
-                log.error( "Could not initialize Lucene index before querying: " + indexLocation, e );
-                throw new PsicquicServiceException( "Problem creating SearchEngine using directory: " + indexLocation, e );
-            }
-
             final int blockSize = Math.min( maxResult, maxResult );
-
-            if ( log.isInfoEnabled() ) {
-                log.info( "Lucene search: [query='" + query + "'; from='" + from + "'; blockSize='" + blockSize + "']" );
-            }
-
-            SearchResult searchResult = searchEngine.search( query, from, blockSize );
 
             // preparing the response (PSICQUIC style response)
             QueryResponse queryResponse = new QueryResponse();
@@ -157,7 +134,6 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
             resultInfo.setBlockSize( blockSize );
             resultInfo.setFirstResult( from );
             resultInfo.setResultType( resultType );
-            resultInfo.setTotalResults( searchResult.getTotalCount() );
             queryResponse.setResultInfo( resultInfo );
 
             // Build a RequestInfo to enable reuse of method borrowed from psicquic-ws
@@ -166,8 +142,38 @@ public class DefaultInteractionClusteringService implements InteractionClusterin
             requestInfo.setFirstResult( from );
             requestInfo.setResultType( resultType );
 
-            ResultSet resultSet = createResultSet( query, searchResult, requestInfo );
-            queryResponse.setResultSet( resultSet );
+            // check job not null
+            if (job != null) {
+                // get Lucene index location from job
+                final String indexLocation = job.getLuceneIndexLocation();
+                if ( log.isDebugEnabled() ) {
+                    log.debug( "Reading Lucene index from directory: " + indexLocation );
+                }
+
+                // query chunk from Lucene
+                SearchEngine searchEngine;
+
+                try {
+                    searchEngine = new BinaryInteractionSearchEngine( indexLocation );
+                } catch ( IOException e ) {
+                    log.error( "Could not initialize Lucene index before querying: " + indexLocation, e );
+                    throw new PsicquicServiceException( "Problem creating SearchEngine using directory: " + indexLocation, e );
+                }
+
+                if ( log.isInfoEnabled() ) {
+                    log.info( "Lucene search: [query='" + query + "'; from='" + from + "'; blockSize='" + blockSize + "']" );
+                }
+
+                SearchResult searchResult = searchEngine.search( query, from, blockSize );
+                resultInfo.setTotalResults( searchResult.getTotalCount() );
+                ResultSet resultSet = createResultSet( query, searchResult, requestInfo );
+                queryResponse.setResultSet( resultSet );
+            }
+            else {
+                resultInfo.setTotalResults( 0 );
+                ResultSet resultSet = new ResultSet();
+                queryResponse.setResultSet(resultSet);
+            }
 
             // return the data
             return queryResponse;
