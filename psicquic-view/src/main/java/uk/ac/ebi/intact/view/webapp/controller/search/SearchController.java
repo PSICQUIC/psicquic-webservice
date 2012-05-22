@@ -423,7 +423,7 @@ public class SearchController extends BaseController {
 
         final String filteredSearchQuery = userQuery.getFilteredSearchQuery();
 
-        String selectedServicesStr = serviceSelectionMap.keySet().toString();
+        String selectedServicesStr = collectSelectedServices();
 
         // check the search cache
         if (searchCache.contains(filteredSearchQuery+selectedServicesStr)) {
@@ -433,6 +433,10 @@ public class SearchController extends BaseController {
                 resultCountMap = resultsInCache;
                 return;
             }
+        }
+        // clear the resultCountMap because we do a new query
+        else {
+            resultCountMap.clear();
         }
 
         // count the results
@@ -462,6 +466,17 @@ public class SearchController extends BaseController {
         checkAndResumePsicquicTasks();
 
         searchCache.put(filteredSearchQuery, resultCountMap);
+    }
+
+    private String collectSelectedServices() {
+        StringBuffer buffer = new StringBuffer(1064);
+        
+        for (Map.Entry<String, Boolean> entry : serviceSelectionMap.entrySet()){
+            if (entry.getValue()){
+                buffer.append(entry.getKey());
+            }
+        }
+        return buffer.toString();
     }
 
     private void checkAndResumePsicquicTasks() {
