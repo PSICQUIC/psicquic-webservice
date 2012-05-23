@@ -15,18 +15,12 @@
  */
 package org.hupo.psi.mi.psicquic.registry.util;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import org.hupo.psi.mi.psicquic.registry.Registry;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -41,13 +35,12 @@ public class RawTextStreamingOutput implements StreamingOutput {
     }
 
     public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-        Writer writer = new OutputStreamWriter(outputStream);
+        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
         for (ServiceType service : registry.getServices()) {
             writer.write(service.getName()+"="+service.getSoapUrl()+"\n");
         }
 
         writer.close();
-        outputStream.close();
     }
 }

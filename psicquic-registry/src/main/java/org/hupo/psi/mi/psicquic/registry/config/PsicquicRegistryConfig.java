@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -55,7 +56,9 @@ public class PsicquicRegistryConfig {
             final URL url;
             try {
                 url = new URL(registryXmlUrl);
-                registry = RegistryUtil.readRegistry(url.openStream());
+                InputStream input = url.openStream();
+                registry = RegistryUtil.readRegistry(input);
+                input.close();
             } catch (Throwable e) {
                 throw new RuntimeException("Problem reading registry XML file: "+registryXmlUrl, e);
             }

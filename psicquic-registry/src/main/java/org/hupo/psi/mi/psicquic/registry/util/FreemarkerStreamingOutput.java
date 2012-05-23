@@ -15,25 +15,19 @@
  */
 package org.hupo.psi.mi.psicquic.registry.util;
 
-import org.hupo.psi.mi.psicquic.PsicquicService;
-import org.hupo.psi.mi.psicquic.QueryResponse;
-import org.hupo.psi.mi.psicquic.RequestInfo;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.hupo.psi.mi.psicquic.freemarker.method.TermName;
 import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
 import org.hupo.psi.mi.psicquic.registry.Registry;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -55,7 +49,7 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
     public void write(OutputStream outputStream) throws IOException, WebApplicationException {
         final Template template = configuration.getTemplate("main.ftl");
         
-        Writer writer = new OutputStreamWriter(outputStream);
+        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
         Map root = new HashMap();
 
         long totalCount = 0L;
@@ -77,6 +71,5 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
         }
 
         writer.close();
-        outputStream.close();
     }
 }
