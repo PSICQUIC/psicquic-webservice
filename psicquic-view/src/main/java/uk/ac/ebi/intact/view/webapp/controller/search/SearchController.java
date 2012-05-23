@@ -166,7 +166,7 @@ public class SearchController extends BaseController {
             userQuery.setSearchQuery( queryParam );
         }
 
-        services = new ArrayList<ServiceType>(allServices);
+        services = Collections.synchronizedList(new ArrayList<ServiceType>(allServices));
 
         // included/excluded services
         final String includedServicesParam = context.getExternalContext().getRequestParameterMap().get( INCLUDED );
@@ -452,7 +452,7 @@ public class SearchController extends BaseController {
         }
 
         for (final ServiceType service : services) {
-            if (service.isActive() && serviceSelectionMap.get(service.getName())) {
+            if (service.isActive() && serviceSelectionMap.get(service.getName()) != null && serviceSelectionMap.get(service.getName())) {
                 Runnable runnable = new Runnable() {
                     public void run() {
                         int count = countInPsicquicService(service, filteredSearchQuery);
