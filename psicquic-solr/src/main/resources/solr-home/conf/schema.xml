@@ -101,8 +101,7 @@
        will increase storage costs.
      default: a value that should be used if no value is specified
        when adding a document.
-   -->
-   
+   -->  
    <field name="idA" type="string" indexed="true" stored="true" required="true" />
    <field name="idB" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="id" type="string" indexed="true" stored="true" omitNorms="true"/>
