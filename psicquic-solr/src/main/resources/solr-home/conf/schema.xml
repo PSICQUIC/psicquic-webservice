@@ -74,6 +74,7 @@
     <fieldType name="pfloat" class="solr.FloatField"/>
     <fieldType name="pdouble" class="solr.DoubleField"/>
     <fieldType name="pdate" class="solr.DateField" sortMissingLast="true"/>
+    <fieldType name="uuid" class="solr.UUIDField" indexed="true" />
 
     </types>
 
@@ -101,7 +102,7 @@
      default: a value that should be used if no value is specified
        when adding a document.
    -->
-
+   
    <field name="idA" type="string" indexed="true" stored="true" required="true" />
    <field name="idB" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="id" type="string" indexed="true" stored="true" omitNorms="true"/>
@@ -125,23 +126,36 @@
    <field name="pxrefB" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="pxref" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="xref" type="string" indexed="true" stored="true" omitNorms="true"/>
-
-   
-   
+   <field name="annot" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="udate" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="negative" type="boolean" indexed="true" stored="true" omitNorms="true"/>
+   <field name="complex" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="ftypeA" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="ftypeB" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="ftype" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pmethodA" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pmethodB" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="stc" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="param" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="recId" type="string" indexed="true" stored="true" omitNorms="true"/>
  </fields>
 
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
    -->
- <uniqueKey>id</uniqueKey>
-
-
-   <copyField source="cat" dest="text"/>
-   <copyField source="name" dest="text"/>
-   <copyField source="manu" dest="text"/>
-   <copyField source="features" dest="text"/>
-   <copyField source="includes" dest="text"/>
-   <copyField source="manu" dest="manu_exact"/>
-
-
+ <uniqueKey>uuid</uniqueKey>
+   <copyField source="uniqIdA" dest="idA"/>
+   <copyField source="uniqIdB" dest="idB"/>
+   <copyField source="altIdA" dest="idA"/> 
+   <copyField source="altIdB" dest="idB"/>
+   <copyField source="uniqIdA" dest="id"/>
+   <copyField source="uniqIdB" dest="id"/>
+   <copyField source="altIdA" dest="id"/> 
+   <copyField source="altIdB" dest="id"/>      
+   <copyField source="aliIdA" dest="alias"/> 
+   <copyField source="aliIdB" dest="alias"/>
+   <copyField source="taxIdA" dest="species"/> 
+   <copyField source="taxIdB" dest="species"/>
+   <copyField source="pbioroleA" dest="pbiorole"/>
+   <copyField source="pbioroleB" dest="pbiorole"/>
 </schema>
