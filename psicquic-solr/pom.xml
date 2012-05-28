@@ -1,0 +1,83 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.hupo.psi.mi.psicquic</groupId>
+  <artifactId>psicquic-solr</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>psicquic-solr</name>
+
+    <scm>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr</developerConnection>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-solr</url>
+    </scm>
+
+    <build>
+
+         <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+        <!-- Apache Solr -->
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>3.6.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-core</artifactId>
+            <version>3.6.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+
+    <repositories>
+        <repository>
+           <id>intact.nexus</id>
+           <name>IntAct Nexus</name>
+           <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+                <id>intact.nexus</id>
+            <name>IntAct Nexus</name>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public</url>
+        </pluginRepository>
+   </pluginRepositories>
+
+   <distributionManagement>
+       <repository>
+           <id>ebi-repo</id>
+           <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo</url>
+       </repository>
+
+       <snapshotRepository>
+           <id>ebi-repo-snapshots</id>
+           <url>http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo-snapshots</url>
+       </snapshotRepository>
+   </distributionManagement>
+
+</project>
