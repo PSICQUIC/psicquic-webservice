@@ -75,8 +75,7 @@
     <fieldType name="pdouble" class="solr.DoubleField"/>
     <fieldType name="pdate" class="solr.DateField" sortMissingLast="true"/>
 
- 
-
+    </types>
 
  <fields>
    <!-- Valid attributes for fields:
@@ -103,14 +102,14 @@
        when adding a document.
    -->
 
-   <field name="id" type="string" indexed="true" stored="true" required="true" /> 
-   <field name="sku" type="text_en_splitting_tight" indexed="true" stored="true" omitNorms="true"/>
-   <field name="name" type="text_general" indexed="true" stored="true"/>
-   <field name="alphaNameSort" type="alphaOnlySort" indexed="true" stored="false"/>
-   <field name="manu" type="text_general" indexed="true" stored="true" omitNorms="true"/>
-   <field name="cat" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="features" type="text_general" indexed="true" stored="true" multiValued="true"/>
-   <field name="includes" type="text_general" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true" />
+   <field name="idA" type="string" indexed="true" stored="true" required="true" />
+   <field name="idB" type="text_en_splitting_tight" indexed="true" stored="true" omitNorms="true"/>
+   <field name="id" type="text_general" indexed="true" stored="true"/>
+   <field name="alias" type="alphaOnlySort" indexed="true" stored="false"/>
+   <field name="identifier" type="text_general" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pubauth" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="pubid" type="text_general" indexed="true" stored="true" multiValued="true"/>
+   <field name="taxidA" type="text_general" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true" />
 
    
    
