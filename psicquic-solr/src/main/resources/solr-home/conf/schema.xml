@@ -103,13 +103,28 @@
    -->
 
    <field name="idA" type="string" indexed="true" stored="true" required="true" />
-   <field name="idB" type="text_en_splitting_tight" indexed="true" stored="true" omitNorms="true"/>
-   <field name="id" type="text_general" indexed="true" stored="true"/>
-   <field name="alias" type="alphaOnlySort" indexed="true" stored="false"/>
-   <field name="identifier" type="text_general" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pubauth" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="pubid" type="text_general" indexed="true" stored="true" multiValued="true"/>
-   <field name="taxidA" type="text_general" indexed="true" stored="true" termVectors="true" termPositions="true" termOffsets="true" />
+   <field name="idB" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="id" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="alias" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="identifier" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pubauth" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pubid" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="taxidA" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="taxidB" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="species" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="type" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="detmethod" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="interaction_id" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pbioroleA" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pbioroleB" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pbiorole" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="ptypeA" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="ptypeB" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="ptype" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pxrefA" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pxrefB" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="pxref" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="xref" type="string" indexed="true" stored="true" omitNorms="true"/>
 
    
    
