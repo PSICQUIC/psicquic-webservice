@@ -48,113 +48,78 @@
 <schema name="psiquic-schema-2.7" version="1.5">
 
   <types>
-    <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
-    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
-    <!-- boolean type: "true" or "false" -->
-    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
-    <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
-    <fieldtype name="binary" class="solr.BinaryField"/>
-    
-<!--
-      Default numeric field types. For faster range queries, consider the tint/tfloat/tlong/tdouble types.
-    -->
-    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
-    <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" positionIncrementGap="0"/>
-    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
-    <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" positionIncrementGap="0"/>
+  	<fieldType name="miqlUuid" class="solr.UUIDField" indexed="false" stored="true" default="NEW"/> 	
+  	   
+    <fieldType name="miqlString" 	class="solr.StrField"  sortMissingLast="true" />
+    <fieldType name="miqlBoolean" 	class="solr.BoolField" sortMissingLast="true" default="false"/>
+    <fieldType name="miqlPdate" 	class="solr.DateField" sortMissingLast="true"/>
 
-    <fieldType name="tint" class="solr.TrieIntField" precisionStep="8" positionIncrementGap="0"/>
-    <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" positionIncrementGap="0"/>
-    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
-    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="8" positionIncrementGap="0"/>
+  	<fieldType name="miqlIndexedString" 	class="solr.StrField" sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>   
+	<fieldType name="miqlIndexedFacet" 		class="solr.StrField" sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
+	<fieldType name="miqlStoredVerbat" 	class="solr.StrField" sortMissingLast="true" indexed="false" stored="true" omitNorms="true" required="true" default="-"/> 
+  	     
+     <!-- Less flexible matching, even less than the text tight below, as we are not stemming. -->  
+    <fieldType name="miqlIndexedText" class="solr.TextField" positionIncrementGap="100" >
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+    </fieldType>   
+  </types>    
 
-
-    <fieldType name="pint" class="solr.IntField"/>
-    <fieldType name="plong" class="solr.LongField"/>
-    <fieldType name="pfloat" class="solr.FloatField"/>
-    <fieldType name="pdouble" class="solr.DoubleField"/>
-    <fieldType name="pdate" class="solr.DateField" sortMissingLast="true"/>
-    <fieldType name="uuid" class="solr.UUIDField" indexed="true" />
-
-    </types>
-
- <fields>
-   <!-- Valid attributes for fields:
-     name: mandatory - the name for the field
-     type: mandatory - the name of a previously defined type from the 
-       <types> section
-     indexed: true if this field should be indexed (searchable or sortable)
-     stored: true if this field should be retrievable
-     multiValued: true if this field may contain multiple values per document
-     omitNorms: (expert) set to true to omit the norms associated with
-       this field (this disables length normalization and index-time
-       boosting for the field, and saves some memory).  Only full-text
-       fields or fields that need an index-time boost need norms.
-       Norms are omitted for primitive (non-analyzed) types by default.
-     termVectors: [false] set to true to store the term vector for a
-       given field.
-       When using MoreLikeThis, fields used for similarity should be
-       stored for best performance.
-     termPositions: Store position information with the term vector.  
-       This will increase storage costs.
-     termOffsets: Store offset information with the term vector. This 
-       will increase storage costs.
-     default: a value that should be used if no value is specified
-       when adding a document.
-   -->  
-   <field name="idA" type="string" indexed="true" stored="true" required="true" />
-   <field name="idB" type="string" indexed="true" stored="true" omitNorms="true" />
-   <field name="id" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="alias" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="identifier" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pubauth" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pubid" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="taxidA" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="taxidB" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="species" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="type" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="detmethod" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="interaction_id" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pbioroleA" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pbioroleB" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pbiorole" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="ptypeA" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="ptypeB" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="ptype" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pxrefA" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pxrefB" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pxref" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="xref" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="annot" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="udate" type="pdate" indexed="true" stored="true" omitNorms="true"/>
-   <field name="negative" type="boolean" indexed="true" stored="true" omitNorms="true"/>
-   <field name="complex" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="ftypeA" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="ftypeB" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="ftype" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pmethodA" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="pmethodB" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="stc" type="boolean" indexed="true" stored="true" omitNorms="true"/>
-   <field name="param" type="boolean" indexed="true" stored="true" omitNorms="true"/>
-   <field name="recId" type="string" indexed="true" stored="true" omitNorms="true"/>
+  <fields>
+ 	<field name="uuId" type="miqlUuid"/>
+ 	
+ 	<!-- MIQL 2.5 field specification http://code.google.com/p/psicquic/wiki/MiqlReference27-->    
+   <field name="idA"			type="miqlIndexedString"/> <!-- idA = idA+altA -->
+   <field name="idB"			type="miqlIndexedString"/> <!-- idB = idB+altB --> 
+   <field name="id" 			type="miqlIndexedString"/> <!-- id = idA+altA+idB+altB --> 
+   <field name="alias" 			type="miqlIndexedString"/> <!-- alias = aliasA+aliasB --> 
+   <field name="identifier" 	type="miqlIndexedString"/> <!-- identifier = id + alias -->     
+   <field name="pubauth"		type="miqlIndexedString"/>
+   <field name="pubid"			type="miqlIndexedString"/>
+   <field name="taxidA"			type="miqlIndexedText"/>
+   <field name="taxidB"			type="miqlIndexedText"/> 
+   <field name="species" 		type="miqlIndexedText"/> <!-- species = taxidA + taxidB -->   
+   <field name="type" 			type="miqlIndexedText"/> 
+   <field name="detmethod"		type="miqlIndexedText"/>
+   <field name="interaction_id"	type="miqlIndexedText"/> 
+  
+   <!-- MIQL 2.7 http://code.google.com/p/psicquic/wiki/MiqlReference-->
+   <field name="pbioroleA" 		type="miqlIndexedText"/>
+   <field name="pbioroleB" 		type="miqlIndexedText"/>
+   <field name="pbiorole" 		type="miqlIndexedText"/> <!-- pbiorole = pbioroleA + pbioroleB -->   
+   <field name="ptypeA" 		type="miqlIndexedText"/>
+   <field name="ptypeB" 		type="miqlIndexedText"/>
+   <field name="pxrefA" 		type="miqlIndexedText"/>
+   <field name="pxrefB" 		type="miqlIndexedText"/>
+   <field name="xref" 			type="miqlIndexedString"/> <!-- xref = xrefA + xrefB -->
+   <field name="ptype" 			type="miqlIndexedString"/> <!-- ptype = ptypeA + ptypeB -->
+   <field name="pxref" 			type="miqlIndexedText"/> <!-- pxref = pxrefA + pxrefB -->   
+   <field name="annot" 			type="miqlIndexedText"/> <!-- annot = annotA + annotB --> 
+   <field name="udate" 			type="miqlPdate"/>
+   <field name="negative" 		type="miqlBoolean"/>
+   <field name="complex" 		type="miqlIndexedText"/>
+   <field name="ftypeA" 		type="miqlIndexedText"/>
+   <field name="ftypeB" 		type="miqlIndexedText"/> 
+   <field name="ftype" 			type="miqlIndexedText"/> <!-- ftype = ftypeA + ftypeB -->
+   <field name="pmethodA"		type="miqlIndexedText"/>
+   <field name="pmethodB" 		type="miqlIndexedText"/>
+   <field name="pmethod" 		type="miqlIndexedString"/>  <!-- pmethod = pmethodA + pmethod -->
+   <field name="stc" 			type="miqlBoolean"/>
+   <field name="param" 			type="miqlBoolean"/>
+ 
+   <!-- Dynamic Field  -->
+   <dynamicField name="*_s"  type="miqlStoredVerbat"/>
+   <dynamicField name="*_f"  type="miqlIndexedFacet"/>
+     
+   <!-- MIQL 2.7 Data/View Hooks  -->
+   <field name="mitabRow" 		type="string" indexed="false" stored="true" required="true" multiValued="false"/>   
  </fields>
 
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
    -->
  <uniqueKey>uuid</uniqueKey>
-   <copyField source="uniqIdA" dest="idA"/>
-   <copyField source="uniqIdB" dest="idB"/>
-   <copyField source="altIdA" dest="idA"/> 
-   <copyField source="altIdB" dest="idB"/>
-   <copyField source="uniqIdA" dest="id"/>
-   <copyField source="uniqIdB" dest="id"/>
-   <copyField source="altIdA" dest="id"/> 
-   <copyField source="altIdB" dest="id"/>      
-   <copyField source="aliIdA" dest="alias"/> 
-   <copyField source="aliIdB" dest="alias"/>
-   <copyField source="taxIdA" dest="species"/> 
-   <copyField source="taxIdB" dest="species"/>
-   <copyField source="pbioroleA" dest="pbiorole"/>
-   <copyField source="pbioroleB" dest="pbiorole"/>
 </schema>
