@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psq.server;
+package org.hupo.psi.mi.psicquic.server;
 
 /* =============================================================================
  # $Id::                                                                       $
@@ -20,6 +20,8 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.bind.util.JAXBResult;
+
+import org.apache.solr.common.SolrInputDocument;
 
 public class XsltTransformer implements PsqTransformer{
     
@@ -91,12 +93,12 @@ public class XsltTransformer implements PsqTransformer{
 	}
     }
 
-    boolean hasNext(){
+    public boolean hasNext(){
 	if( domList == null | domPos >= domList.getLength() ) return false;
 	return true;
     }
     
-    SolrInputDocument next(){
+    public SolrInputDocument next(){
 	
 	if( domList != null ){
 	    domPos++;

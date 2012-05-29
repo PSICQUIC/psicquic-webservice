@@ -13,26 +13,27 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
+import org.apache.solr.common.SolrInputDocument;
 
 public class MitabTransformer implements PsqTransformer{
     
-    public MitabTransformer( .... ){
+    public MitabTransformer( String xxx ){
 		    
     }
 
-    public void start( String fileName ){};
+    public void start( String fileName ){}
+    public void start( String fileName, InputStream is ){}
+	
 
     boolean hasNext(){
-	if( ... ) return false;
+	if( false ) return false;
 	
 	return true;
     }
 
     SolrInputDocument next(){
-	return ...;
+	return null;
     }
    
-    public void start( String fileName, InputStream is ){
-	
-
+ 
 }

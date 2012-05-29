@@ -17,7 +17,7 @@ public interface PsqTransformer{
     public void start( String fileName, InputStream is );
     public void start( String fileName );
 
-    boolean hasNext();
-    SolrInputDocument next();
+    public boolean hasNext();
+    public SolrInputDocument next();
 
 }

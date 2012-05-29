@@ -5,14 +5,9 @@ package org.hupo.psi.mi.psicquic.server.index.solr;
  # Version: $Rev::                                                             $
  #==============================================================================
  #
- # PsqPortImpl: implementation of PSICQUIC 1.1 SOAP service
+ # SolrIndex: access to solr-based index
  #
  #=========================================================================== */
-
-//import org.apache.solr.client.solrj.SolrServer;
-//import org.apache.solr.client.solrj.SolrServerException;
-//import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-//import org.apache.solr.client.solrj.response.QueryResponse;
 
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.SolrDocumentList;
@@ -23,21 +18,16 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.CRC32;
 
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
-
 import org.apache.solr.core.*;
 import org.apache.solr.common.*;
 import org.apache.solr.client.solrj.*;
 import org.apache.solr.client.solrj.impl.*;
 import org.apache.solr.client.solrj.response.*;
 
+import org.hupo.psi.mi.psicquic.util.JsonContext;
 
-import org.hupo.psi.mi.psq.server.index.*;
-//import org.hupo.psi.mi.psq.server.data.*;
-import org.hupo.psi.mi.psq.server.*;
-
-import edu.ucla.mbi.util.JsonContext;
+import org.hupo.psi.mi.psicquic.server.index.*;
+import org.hupo.psi.mi.psicquic.server.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -128,7 +118,7 @@ public class SolrIndex implements Index{
     public ResultSet query( String query ){
 
         ResultSet rs = new ResultSet();
-
+	
         try{
             if( baseUrl == null ){ initialize(); }
             if( baseUrl != null ){
@@ -140,7 +130,6 @@ public class SolrIndex implements Index{
                 // set shards if needed ?
                 //-----------------------
                 
-
                 try{            
                     QueryResponse response = solr.query( params );
                     System.out.println( "response = " + response );
@@ -207,7 +196,9 @@ public class SolrIndex implements Index{
             baseSolr.commit();
         }    
     }
+
     
+    //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
 
     public void addFile( String format, String fileName, InputStream is ){
@@ -229,50 +220,32 @@ public class SolrIndex implements Index{
             }
             
             RecTransformer rt = (RecTransformer) rtr.get( "transformer" );
-
-            Node  rnode = rt.transform( fileName, is );
+            rt.start( fileName, is );
             
-            NodeList dl = rnode.getFirstChild().getChildNodes();
-            for( int i = 0; i< dl.getLength() ;i++ ){
-                if(dl.item(i).getNodeName().equals("doc")){
+	    while( rt.hasNext() ){
 
-                    String pid = fileName;
-                    
-                    SolrInputDocument doc =  new SolrInputDocument();
-                    NodeList field = dl.item(i).getChildNodes();
-                    for( int j = 0; j< field.getLength() ;j++ ){
-                        if( field.item(j).getNodeName().equals("field") ){
-                            Element fe = (Element) field.item(j);
-                            String name = fe.getAttribute("name");
-                            String value = fe.getFirstChild().getNodeValue();
-                            doc.addField( name,value );
-
-                            if( name.equals( "pid" ) ){
-                                pid = value;
-                            }
-                        }
-                    }
-
-                    try{
-                        if( shSolr.size() > 1 ){
-                            
-                            int shard = this.shardSelect( pid );
-
-                            Log log = LogFactory.getLog( this.getClass() );
-                            int shMax = shSolr.size() - 1;
-                            log.info( " SolrIndex(add): pid=" + pid 
-                                      + " shard= " + shard 
-                                      + " (max= " + shMax +")" );
-                                  
-                            this.add( shard, doc );
-                        } else {
-                            this.add( doc );
-                        }
-                    } catch(Exception ex){
-                        ex.printStackTrace();
-                    }                    
-                }
-            }
+		SolrInputDocument doc = rt.next();
+		SolrInputField pidf = doc.getField("pid");
+		String pid = pidf.getFirstValue();
+		
+		try{
+		    if( shSolr.size() > 1 ){
+			
+			int shard = this.shardSelect( pid );
+			Log log = LogFactory.getLog( this.getClass() );
+			int shMax = shSolr.size() - 1;
+			log.info( " SolrIndex(add): pid=" + pid 
+				  + " shard= " + shard 
+				  + " (max= " + shMax +")" );
+			
+			this.add( shard, doc );
+		    } else {
+			this.add( doc );
+		    }
+		} catch(Exception ex){
+		    ex.printStackTrace();
+		}                    
+	    }
             
             try{
                 this.commit();   

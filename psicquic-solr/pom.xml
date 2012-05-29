@@ -94,8 +94,17 @@
             <artifactId>calimocho-tab</artifactId>
             <version>2.2-SNAPSHOT</version>
         </dependency>
-    </dependencies>
 
+
+        <!-- json parser -->
+
+        <dependency>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+          <version>20090211</version>
+        </dependency>
+
+    </dependencies>
 
     <repositories>
         <repository>
