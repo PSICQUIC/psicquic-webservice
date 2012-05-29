@@ -70,6 +70,7 @@ public class JsonContext {
     // read JSON definition
     //---------------------
 
+    /*  temporarily commented out: LS
     public void readJsonConfigDef() throws IOException{
 
         String jsonPath = null;
@@ -82,7 +83,7 @@ public class JsonContext {
             ApplicationContextProvider.getResourceAsStream( jsonPath );
         readJsonConfigDef( is );
     }
-
+    */
 
     public void readJsonConfigDef( InputStream is ) {
 

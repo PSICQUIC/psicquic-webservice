@@ -214,19 +214,19 @@ public class SolrIndex implements Index{
                 log.info( " Initializing transformer: format=" + format
                           + " type=XSLT config=" + rtr.get("config") );
 
-                RecTransformer rt = 
-                    new RecTransformer( "XSLT", (String) rtr.get("config") );
+                PsqTransformer rt = 
+                    new XsltTransformer( (String) rtr.get("config") );
                 rtr.put( "transformer",rt );
             }
             
-            RecTransformer rt = (RecTransformer) rtr.get( "transformer" );
+            PsqTransformer rt = (PsqTransformer) rtr.get( "transformer" );
             rt.start( fileName, is );
             
 	    while( rt.hasNext() ){
 
 		SolrInputDocument doc = rt.next();
 		SolrInputField pidf = doc.getField("pid");
-		String pid = pidf.getFirstValue();
+		String pid = (String) pidf.getFirstValue();
 		
 		try{
 		    if( shSolr.size() > 1 ){

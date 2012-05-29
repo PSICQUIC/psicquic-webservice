@@ -45,7 +45,7 @@ public class XsltTransformer implements PsqTransformer{
 	    
 	    if( !xslFile.canRead() ){
 		xslIStr = this.getClass().getClassLoader()
-		    .getResourceAsStream( conf );
+		    .getResourceAsStream( xslt );
 	    } else {
 		xslIStr = new FileInputStream( xslt );
 	    }
@@ -122,10 +122,10 @@ public class XsltTransformer implements PsqTransformer{
                                 pid = value;
                             }
                         }
-                    }
-		}		
-	    }
-	    return doc;                                    
+                    }	    			      
+		    return doc;
+		}
+	    }                                    
 	}
        	return null;
     }

@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psq.server;
+package org.hupo.psi.mi.psicquic.server;
 
 /* =============================================================================
  # $Id::                                                                       $
@@ -25,13 +25,12 @@ public class MitabTransformer implements PsqTransformer{
     public void start( String fileName, InputStream is ){}
 	
 
-    boolean hasNext(){
+    public boolean hasNext(){
 	if( false ) return false;
-	
 	return true;
     }
 
-    SolrInputDocument next(){
+    public SolrInputDocument next(){
 	return null;
     }
    
