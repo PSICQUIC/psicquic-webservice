@@ -80,12 +80,12 @@ public class XsltTransformer implements PsqTransformer{
             psqtr.setParameter( "file", fileName );
             psqtr.transform( ssNative, domResult );
             
-	    Node domNode=domResult.getNode();
+	    Node domNode = domResult.getNode();
 	    
 	    if( domNode != null ){
 	        domList = domNode.getFirstChild().getChildNodes();
 	    }    
-
+	    
 	} catch( Exception ex ) {
 	    ex.printStackTrace();
 	}
