@@ -57,16 +57,50 @@ public class XsltTransformer implements PsqTransformer{
 	}
     }
 
-    public void start( String fileName ){};
+    String fileName = "";
 
-    boolean hasNext(){
-	if( domNode == null) return false;
-	
-	return false;
+    public void start( String fileName ){
+	this.fileName = fileName;	
     }
 
+    private NodeList domList = null;
+    private int domPos = -1;
+
+    boolean hasNext(){
+	if( domPos = -1 | domPos >= domNode.getLength() ) return false;
+	return true;
+    }
+    
     SolrInputDocument next(){
-	return null;
+
+	if( domList != null ){
+	    domPos++;
+	    
+	    if( domList < dl.getLength() ){
+
+                if( domList.item( domPos ).getNodeName().equals("doc") ){
+		    
+                    String pid = fileName;
+
+                    SolrInputDocument doc =  new SolrInputDocument();
+                    NodeList field = domList.item( domPos ).getChildNodes();
+                    for( int j = 0; j< field.getLength() ;j++ ){
+                        if( field.item(j).getNodeName().equals("field") ){
+                            Element fe = (Element) field.item(j);
+                            String name = fe.getAttribute("name");
+                            String value = fe.getFirstChild().getNodeValue();
+                            doc.addField( name,value );
+			    
+                            if( name.equals( "pid" ) ){
+                                pid = value;
+                            }
+                        }
+                    }
+		}		
+	    }
+	    return doc;                                    
+	}
+       	return null;
     }
 
     Node domNode = null;
@@ -74,7 +108,8 @@ public class XsltTransformer implements PsqTransformer{
     public void start( String fileName, InputStream is ){
 	
 	try {
-
+	    this.fileName = fileName;
+	    
             StreamSource ssNative = new StreamSource( is );
             DOMResult domResult = new DOMResult();
 	    
@@ -85,8 +120,12 @@ public class XsltTransformer implements PsqTransformer{
             psqtr.setParameter( "file", fileName );
             psqtr.transform( ssNative, domResult );
             
-	    domNode=domResult.getNode();
+	    Node domNode=domResult.getNode();
 	    
+	    if( domNode != null ){
+	        domList = domNode.getFirstChild().getChildNodes();
+	    }    
+
 	} catch( Exception ex ) {
 	    ex.printStackTrace();
 	}

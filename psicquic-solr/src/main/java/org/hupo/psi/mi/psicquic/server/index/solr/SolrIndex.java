@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psq.server.index.solr;
+package org.hupo.psi.mi.psicquic.server.index.solr;
 
 /* =============================================================================
  # $Id::                                                                       $
@@ -13,6 +13,7 @@ package org.hupo.psi.mi.psq.server.index.solr;
 //import org.apache.solr.client.solrj.SolrServerException;
 //import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 //import org.apache.solr.client.solrj.response.QueryResponse;
+
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.SolrDocumentList;
 
