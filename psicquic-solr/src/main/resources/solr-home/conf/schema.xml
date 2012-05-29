@@ -110,7 +110,7 @@
    <field name="stc" 			type="miqlBoolean"/>
    <field name="param" 			type="miqlBoolean"/>
     
-   <!-- Facet Field  -->
+   <!-- Facet Fields  -->
    <dynamicField name="species_f"   type="miqlIndexedFacet"/>
    <dynamicField name="type_f"  	type="miqlIndexedFacet"/>
    <dynamicField name="detmethod_f" type="miqlIndexedFacet"/>
@@ -121,7 +121,7 @@
    <dynamicField name="ftype_f"  	type="miqlIndexedFacet"/>
    <dynamicField name="pmethod_f"   type="miqlIndexedFacet"/>
 
-   <!-- Dynamic Stored Field  -->
+   <!-- Dynamic Stored Fields  -->
    <dynamicField name="*_s"  type="miqlStoredVerbat"/>    
  </fields>
 
