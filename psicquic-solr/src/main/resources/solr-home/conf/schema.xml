@@ -50,13 +50,12 @@
   <types>
   	<fieldType name="miqlUuid" class="solr.UUIDField" indexed="false" stored="true" default="NEW"/> 	
   	   
-    <fieldType name="miqlString" 	class="solr.StrField"  sortMissingLast="true" />
-    <fieldType name="miqlBoolean" 	class="solr.BoolField" sortMissingLast="true" default="false"/>
-    <fieldType name="miqlPdate" 	class="solr.DateField" sortMissingLast="true"/>
-
-  	<fieldType name="miqlIndexedString" class="solr.StrField" sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>   
-	<fieldType name="miqlIndexedFacet" 	class="solr.StrField" sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
-	<fieldType name="miqlStoredVerbat" 	class="solr.StrField" sortMissingLast="true" indexed="false" stored="true" omitNorms="true" required="true" default="-"/> 
+    <fieldType name="miqlString" 		class="solr.StrField"  sortMissingLast="true" />
+    <fieldType name="miqlBoolean" 		class="solr.BoolField" sortMissingLast="true" default="false"/>
+    <fieldType name="myqlInt"			class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
+  	<fieldType name="miqlIndexedString" class="solr.StrField"  sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>   
+	<fieldType name="miqlIndexedFacet" 	class="solr.StrField"  sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
+	<fieldType name="miqlStoredVerbat" 	class="solr.StrField"  sortMissingLast="true" indexed="false" stored="true" omitNorms="true" required="true" default="-"/> 
   	     
      <!-- Less flexible matching, even less than the text tight below, as we are not stemming. -->  
     <fieldType name="miqlIndexedText" class="solr.TextField" positionIncrementGap="100" >
@@ -81,7 +80,7 @@
    <field name="pubid"			type="miqlIndexedString"/>
    <field name="taxidA"			type="miqlIndexedText"/>
    <field name="taxidB"			type="miqlIndexedText"/> 
-   <field name="species" 		type="miqlIndexedText"/> <!-- species = taxidA + taxidB -->   
+   <field name="species" 		type="miqlIndexedText"/> 	<!-- species = taxidA + taxidB -->   
    <field name="type" 			type="miqlIndexedText"/> 
    <field name="detmethod"		type="miqlIndexedText"/>
    <field name="interaction_id"	type="miqlIndexedText"/> 
@@ -89,25 +88,25 @@
    <!-- MIQL 2.7 http://code.google.com/p/psicquic/wiki/MiqlReference-->
    <field name="pbioroleA" 		type="miqlIndexedText"/>
    <field name="pbioroleB" 		type="miqlIndexedText"/>
-   <field name="pbiorole" 		type="miqlIndexedText"/> <!-- pbiorole = pbioroleA + pbioroleB -->   
+   <field name="pbiorole" 		type="miqlIndexedText"/> 	<!-- pbiorole = pbioroleA + pbioroleB -->   
    <field name="ptypeA" 		type="miqlIndexedText"/>
    <field name="ptypeB" 		type="miqlIndexedText"/>
-   <field name="ptype" 			type="miqlIndexedText"/> <!-- ptype = ptypeA + ptypeB -->   
+   <field name="ptype" 			type="miqlIndexedText"/> 	<!-- ptype = ptypeA + ptypeB -->   
    <field name="pxrefA" 		type="miqlIndexedText"/>
    <field name="pxrefB" 		type="miqlIndexedText"/>
-   <field name="xref" 			type="miqlIndexedString"/> <!-- xref = xrefA + xrefB -->
-   <field name="ptype" 			type="miqlIndexedString"/> <!-- ptype = ptypeA + ptypeB -->
-   <field name="pxref" 			type="miqlIndexedText"/> <!-- pxref = pxrefA + pxrefB -->   
-   <field name="annot" 			type="miqlIndexedText"/> <!-- annot = annotA + annotB --> 
-   <field name="udate" 			type="miqlPdate"/>
+   <field name="xref" 			type="miqlIndexedString"/> 	<!-- xref = xrefA + xrefB -->
+   <field name="ptype" 			type="miqlIndexedString"/> 	<!-- ptype = ptypeA + ptypeB -->
+   <field name="pxref" 			type="miqlIndexedText"/> 	<!-- pxref = pxrefA + pxrefB -->   
+   <field name="annot" 			type="miqlIndexedText"/> 	<!-- annot = annotA + annotB --> 
+   <field name="udate" 			type="myqlInt"/>
    <field name="negative" 		type="miqlBoolean"/>
    <field name="complex" 		type="miqlIndexedText"/>
    <field name="ftypeA" 		type="miqlIndexedText"/>
    <field name="ftypeB" 		type="miqlIndexedText"/> 
-   <field name="ftype" 			type="miqlIndexedText"/> <!-- ftype = ftypeA + ftypeB -->
+   <field name="ftype" 			type="miqlIndexedText"/> 	<!-- ftype = ftypeA + ftypeB -->
    <field name="pmethodA"		type="miqlIndexedText"/>
    <field name="pmethodB" 		type="miqlIndexedText"/>
-   <field name="pmethod" 		type="miqlIndexedString"/>  <!-- pmethod = pmethodA + pmethod -->
+   <field name="pmethod" 		type="miqlIndexedString"/>  <!-- pmethod = pmethodA + pmethodB -->
    <field name="stc" 			type="miqlBoolean"/>
    <field name="param" 			type="miqlBoolean"/>
     
