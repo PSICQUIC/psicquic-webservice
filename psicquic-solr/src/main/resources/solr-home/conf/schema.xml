@@ -103,7 +103,7 @@
        when adding a document.
    -->  
    <field name="idA" type="string" indexed="true" stored="true" required="true" />
-   <field name="idB" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="idB" type="string" indexed="true" stored="true" omitNorms="true" />
    <field name="id" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="alias" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="identifier" type="string" indexed="true" stored="true" omitNorms="true"/>
@@ -126,7 +126,7 @@
    <field name="pxref" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="xref" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="annot" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="udate" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="udate" type="pdate" indexed="true" stored="true" omitNorms="true"/>
    <field name="negative" type="boolean" indexed="true" stored="true" omitNorms="true"/>
    <field name="complex" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="ftypeA" type="string" indexed="true" stored="true" omitNorms="true"/>
@@ -134,8 +134,8 @@
    <field name="ftype" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="pmethodA" type="string" indexed="true" stored="true" omitNorms="true"/>
    <field name="pmethodB" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="stc" type="string" indexed="true" stored="true" omitNorms="true"/>
-   <field name="param" type="string" indexed="true" stored="true" omitNorms="true"/>
+   <field name="stc" type="boolean" indexed="true" stored="true" omitNorms="true"/>
+   <field name="param" type="boolean" indexed="true" stored="true" omitNorms="true"/>
    <field name="recId" type="string" indexed="true" stored="true" omitNorms="true"/>
  </fields>
 
