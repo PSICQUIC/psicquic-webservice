@@ -54,8 +54,8 @@
     <fieldType name="miqlBoolean" 	class="solr.BoolField" sortMissingLast="true" default="false"/>
     <fieldType name="miqlPdate" 	class="solr.DateField" sortMissingLast="true"/>
 
-  	<fieldType name="miqlIndexedString" 	class="solr.StrField" sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>   
-	<fieldType name="miqlIndexedFacet" 		class="solr.StrField" sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
+  	<fieldType name="miqlIndexedString" class="solr.StrField" sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>   
+	<fieldType name="miqlIndexedFacet" 	class="solr.StrField" sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
 	<fieldType name="miqlStoredVerbat" 	class="solr.StrField" sortMissingLast="true" indexed="false" stored="true" omitNorms="true" required="true" default="-"/> 
   	     
      <!-- Less flexible matching, even less than the text tight below, as we are not stemming. -->  
@@ -92,6 +92,7 @@
    <field name="pbiorole" 		type="miqlIndexedText"/> <!-- pbiorole = pbioroleA + pbioroleB -->   
    <field name="ptypeA" 		type="miqlIndexedText"/>
    <field name="ptypeB" 		type="miqlIndexedText"/>
+   <field name="ptype" 			type="miqlIndexedText"/> <!-- ptype = ptypeA + ptypeB -->   
    <field name="pxrefA" 		type="miqlIndexedText"/>
    <field name="pxrefB" 		type="miqlIndexedText"/>
    <field name="xref" 			type="miqlIndexedString"/> <!-- xref = xrefA + xrefB -->
@@ -109,13 +110,20 @@
    <field name="pmethod" 		type="miqlIndexedString"/>  <!-- pmethod = pmethodA + pmethod -->
    <field name="stc" 			type="miqlBoolean"/>
    <field name="param" 			type="miqlBoolean"/>
- 
-   <!-- Dynamic Field  -->
-   <dynamicField name="*_s"  type="miqlStoredVerbat"/>
-   <dynamicField name="*_f"  type="miqlIndexedFacet"/>
-     
-   <!-- MIQL 2.7 Data/View Hooks  -->
-   <field name="mitabRow" 		type="string" indexed="false" stored="true" required="true" multiValued="false"/>   
+    
+   <!-- Facet Field  -->
+   <dynamicField name="species_f"   type="miqlIndexedFacet"/>
+   <dynamicField name="type_f"  	type="miqlIndexedFacet"/>
+   <dynamicField name="detmethod_f" type="miqlIndexedFacet"/>
+   <dynamicField name="pbiorole_f"  type="miqlIndexedFacet"/>
+   <dynamicField name="ptype_f"  	type="miqlIndexedFacet"/>
+   <dynamicField name="xref_f"  	type="miqlIndexedFacet"/>
+   <dynamicField name="annot_f"  	type="miqlIndexedFacet"/>
+   <dynamicField name="ftype_f"  	type="miqlIndexedFacet"/>
+   <dynamicField name="pmethod_f"   type="miqlIndexedFacet"/>
+
+   <!-- Dynamic Stored Field  -->
+   <dynamicField name="*_s"  type="miqlStoredVerbat"/>    
  </fields>
 
  <!-- Field to use to determine and enforce document uniqueness. 
