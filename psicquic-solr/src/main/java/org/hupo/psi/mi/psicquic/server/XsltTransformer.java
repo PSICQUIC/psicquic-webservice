@@ -23,10 +23,14 @@ import javax.xml.bind.util.JAXBResult;
 
 public class XsltTransformer implements PsqTransformer{
     
-    Transformer psqtr = null;
+    private Transformer psqtr = null;
+
+    private String fileName = "";
+    private NodeList domList = null;
+    private int domPos = -1;
     
     public XsltTransformer( String xslt ){
-		    
+	
 	try {
 	    DocumentBuilderFactory
 		dbf = DocumentBuilderFactory.newInstance();
@@ -57,53 +61,9 @@ public class XsltTransformer implements PsqTransformer{
 	}
     }
 
-    String fileName = "";
-
     public void start( String fileName ){
 	this.fileName = fileName;	
     }
-
-    private NodeList domList = null;
-    private int domPos = -1;
-
-    boolean hasNext(){
-	if( domPos = -1 | domPos >= domNode.getLength() ) return false;
-	return true;
-    }
-    
-    SolrInputDocument next(){
-
-	if( domList != null ){
-	    domPos++;
-	    
-	    if( domList < dl.getLength() ){
-
-                if( domList.item( domPos ).getNodeName().equals("doc") ){
-		    
-                    String pid = fileName;
-
-                    SolrInputDocument doc =  new SolrInputDocument();
-                    NodeList field = domList.item( domPos ).getChildNodes();
-                    for( int j = 0; j< field.getLength() ;j++ ){
-                        if( field.item(j).getNodeName().equals("field") ){
-                            Element fe = (Element) field.item(j);
-                            String name = fe.getAttribute("name");
-                            String value = fe.getFirstChild().getNodeValue();
-                            doc.addField( name,value );
-			    
-                            if( name.equals( "pid" ) ){
-                                pid = value;
-                            }
-                        }
-                    }
-		}		
-	    }
-	    return doc;                                    
-	}
-       	return null;
-    }
-
-    Node domNode = null;
     
     public void start( String fileName, InputStream is ){
 	
@@ -130,6 +90,41 @@ public class XsltTransformer implements PsqTransformer{
 	    ex.printStackTrace();
 	}
     }
-        return null;
+
+    boolean hasNext(){
+	if( domList == null | domPos >= domList.getLength() ) return false;
+	return true;
+    }
+    
+    SolrInputDocument next(){
+	
+	if( domList != null ){
+	    domPos++;
+	    
+	    if( domPos < domList.getLength() ){
+		
+                if( domList.item( domPos ).getNodeName().equals("doc") ){
+		    
+                    String pid = fileName;
+
+                    SolrInputDocument doc =  new SolrInputDocument();
+                    NodeList field = domList.item( domPos ).getChildNodes();
+                    for( int j = 0; j< field.getLength() ;j++ ){
+                        if( field.item(j).getNodeName().equals("field") ){
+                            Element fe = (Element) field.item(j);
+                            String name = fe.getAttribute("name");
+                            String value = fe.getFirstChild().getNodeValue();
+                            doc.addField( name,value );
+			    
+                            if( name.equals( "pid" ) ){
+                                pid = value;
+                            }
+                        }
+                    }
+		}		
+	    }
+	    return doc;                                    
+	}
+       	return null;
     }
 }
