@@ -21,7 +21,6 @@ public class MitabLineMapper implements LineMapper<Row>{
     private RowReader rowReader;
 
     public MitabLineMapper(MitabVersion mitabVersion) {
-        System.out.println("create line mapper");
         if (mitabVersion == null){
            mitabVersion = MitabVersion.MITAB25;
         }
@@ -45,11 +44,7 @@ public class MitabLineMapper implements LineMapper<Row>{
                return null;
             }
 
-            System.out.println("Mapped line " + line);
-
             Row row = rowReader.readLine(line);
-
-            System.out.println("Created line");
 
             return row;
         } catch (Exception e) {

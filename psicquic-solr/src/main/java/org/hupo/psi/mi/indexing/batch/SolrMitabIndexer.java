@@ -48,7 +48,6 @@ public class SolrMitabIndexer {
     }
 
     public static void main(String[] args) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, NoSuchJobExecutionException, NoSuchJobException, NoSuchJobInstanceException {
-        System.out.println("start indexing");
 
         ApplicationContext context = new ClassPathXmlApplicationContext(
                 new String[] {"/META-INF/psicquic-spring.xml", "/META-INF/jobs/psicquic-indexing-spring.xml"});
@@ -58,9 +57,11 @@ public class SolrMitabIndexer {
         
         if (rm.getIndexingId() != null){
             rm.resumeIndexing();
+            System.exit(0);
         }
         else {
             rm.startIndexing();
+            System.exit(0);
         }
     }
 

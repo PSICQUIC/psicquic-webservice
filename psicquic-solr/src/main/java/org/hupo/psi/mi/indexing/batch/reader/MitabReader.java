@@ -17,7 +17,6 @@ public class MitabReader extends FlatFileItemReader<Row> {
 
     @Override
     protected void doOpen() throws Exception {
-        System.out.print("open file");
 
         super.doOpen();
     }

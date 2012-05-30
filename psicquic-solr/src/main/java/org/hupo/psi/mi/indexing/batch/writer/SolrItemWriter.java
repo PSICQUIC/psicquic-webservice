@@ -31,7 +31,6 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     private SolrServer solrServer;
 
     public void write(List<? extends Row> items) throws Exception {
-        System.out.print("convert binary");
 
         if (solrPath == null) {
             throw new NullPointerException("No 'solrURL' configured for SolrItemWriter");
@@ -44,7 +43,6 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
         Converter solrDocumentConverter = new Converter();
 
         for (Row binaryInteraction : items) {
-            System.out.print("convert row " + binaryInteraction.toString());
 
             SolrInputDocument solrInputDoc = solrDocumentConverter.toSolrDocument(binaryInteraction);
             solrServer.add(solrInputDoc);
@@ -74,7 +72,6 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
         try {
             solrServer.optimize();
             solrServer.commit();
-            System.out.println("close solr server");
 
         } catch (Exception e) {
             throw new ItemStreamException("Problem closing solr server", e);

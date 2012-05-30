@@ -39,7 +39,11 @@
 
     <!-- steps -->
     <batch:step id="cleanSolrStep" parent="batchStep">
-        <batch:tasklet ref="solrCleanerTasklet" />
+        <batch:tasklet ref="solrCleanerTasklet">
+            <batch:listeners>
+                <batch:listener ref="simpleChunkListener" />
+            </batch:listeners>
+        </batch:tasklet>
     </batch:step>
     <batch:step id="solrIndexingStep" parent="batchStep">
         <batch:tasklet>
@@ -49,7 +53,7 @@
 
             <batch:chunk reader="mitabReader"
                          writer="solrWriter"
-                         retry-limit="10" commit-interval="1000">
+                         retry-limit="10" commit-interval="10">
                 <batch:streams>
                     <batch:stream ref="mitabReader"/>
                     <batch:stream ref="solrWriter"/>
