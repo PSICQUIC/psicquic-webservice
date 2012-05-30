@@ -19,7 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration( locations = {"classpath*:/META-INF/psicquic-spring.xml",
-        "classpath*:/META-INF/jobs/psicquic-indexing-spring-test.xml"})
+        "classpath*:/jobs/psicquic-indexing-spring-test.xml"})
 public class SolrMitabIndexerTest {
 
     @Autowired
