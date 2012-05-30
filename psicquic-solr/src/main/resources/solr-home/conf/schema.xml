@@ -53,7 +53,7 @@
     <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="true" />  
     <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" />
   	<fieldType name="miqlIndexedStoredString" 	class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="true" omitNorms="true" required="true" />   
-  	 	     
+   	  	     
      <!-- to garantee backwards-compatability with psiquic reference implementation  1.2.1 which uses the default lucene 2.3.2 analyzer-->  
     <fieldType name="miqlIndexedStoredText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" >
       <analyzer>
@@ -81,6 +81,7 @@
 
   <fields>
  	<field name="uuId" type="miqlUuid"/>
+ 	
  	
  	<!-- MIQL 2.5 field specification http://code.google.com/p/psicquic/wiki/MiqlReference27-->    
    <field name="idA"			type="miqlIndexedStoredText"/> <!-- idA = idA+altA -->
@@ -126,8 +127,6 @@
    <!-- Dynamic Stored Fields that can be used for faceting/sorting -->
    <dynamicField name="*_s"  type="miqlIndexedUnstoredString"/>    
  </fields>
-
- <defaultSearchField>identifier</defaultSearchField>
 
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
