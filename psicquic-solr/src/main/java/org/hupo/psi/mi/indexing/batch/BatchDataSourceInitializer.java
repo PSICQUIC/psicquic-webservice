@@ -26,7 +26,7 @@ import java.util.List;
  * @since <pre>29/05/12</pre>
  */
 
-public class BatchDataSourceInitializer {
+public class BatchDataSourceInitializer implements org.springframework.beans.factory.InitializingBean, org.springframework.beans.factory.DisposableBean{
 
     private static final Log logger = LogFactory.getLog(BatchDataSourceInitializer.class);
 

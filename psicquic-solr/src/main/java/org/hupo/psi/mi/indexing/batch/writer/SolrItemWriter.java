@@ -6,6 +6,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
 import org.hupo.psi.calimocho.model.Row;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
 import org.springframework.batch.item.ItemWriter;
 import org.xml.sax.SAXException;
@@ -24,7 +25,7 @@ import java.util.List;
  * @since <pre>29/05/12</pre>
  */
 
-public class SolrItemWriter implements ItemWriter<Row>{
+public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     private String solrPath;
     private SolrServer solrServer;
@@ -41,6 +42,7 @@ public class SolrItemWriter implements ItemWriter<Row>{
         Converter solrDocumentConverter = new Converter();
 
         for (Row binaryInteraction : items) {
+            System.out.print("convert binary");
             SolrInputDocument solrInputDoc = solrDocumentConverter.toSolrDocument(binaryInteraction);
             solrServer.add(solrInputDoc);
         }

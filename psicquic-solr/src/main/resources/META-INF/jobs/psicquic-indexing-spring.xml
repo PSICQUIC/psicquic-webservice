@@ -38,7 +38,10 @@
     </bean>
 
     <!-- steps -->
-    <batch:step id="solrIndexingStep">
+    <batch:step id="cleanSolrStep" parent="batchStep">
+        <batch:tasklet ref="solrCleanerTasklet" />
+    </batch:step>
+    <batch:step id="solrIndexingStep" parent="batchStep">
         <batch:tasklet>
             <batch:listeners>
                 <batch:listener ref="simpleChunkListener" />
@@ -46,7 +49,7 @@
 
             <batch:chunk reader="mitabReader"
                          writer="solrWriter"
-                         skip-limit="10000" retry-limit="10" commit-interval="1000">
+                         retry-limit="10" commit-interval="1000">
                 <batch:streams>
                     <batch:stream ref="mitabReader"/>
                     <batch:stream ref="solrWriter"/>
@@ -60,7 +63,7 @@
     </batch:step>
 
     <!-- final job which will export binary interactions, cluster and score them and index in solr -->
-    <batch:job id="mitabIndexJob" job-repository="jobRepository">
+    <batch:job id="mitabIndexJob" job-repository="jobRepository" parent="batchJob">
 
         <batch:listeners>
             <batch:listener>
@@ -68,11 +71,10 @@
             </batch:listener>
         </batch:listeners>
 
-        <batch:step id="cleanSolr">
-            <batch:tasklet ref="solrCleanerTasklet"/>
+        <batch:step id="cleanSolr" parent="cleanSolrStep">
             <batch:end on="FAILED"/>
             <batch:next on="*" to="indexSolrStep"/>
         </batch:step>
-        <batch:step id="indexSolrStep" parent="solrIndexingStepol"/>
+        <batch:step id="indexSolrStep" parent="solrIndexingStep"/>
     </batch:job>
 </beans>

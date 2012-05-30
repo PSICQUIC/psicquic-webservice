@@ -45,14 +45,15 @@
                         <configuration>
                             <executable>java</executable>
                             <arguments>
-                                <argument>-Xmx4096m</argument>
+                                <argument>-Xmx2024m</argument>
+                                <argument>-Xms256m</argument>
 
                                 <argument>-classpath</argument>
                                 <classpath/>
 
                                 <argument>org.hupo.psi.mi.indexing.batch.SolrMitabIndexer</argument>
                                 <argument>${mitab.file}</argument>
-                                <argument>${solr.path}</argument>
+                                <argument>${solr.home.path}</argument>
                                 <argument>${mitab.version}</argument>
                             </arguments>
                         </configuration>

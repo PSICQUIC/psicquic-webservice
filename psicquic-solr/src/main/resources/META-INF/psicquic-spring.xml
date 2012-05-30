@@ -14,6 +14,7 @@
            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
            http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
 
+    <context:component-scan base-package="org.hupo.psi.mi.indexing.batch" />
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations" value="classpath*:/psicquic.properties"/>
     </bean>
@@ -70,7 +71,7 @@
 
     <bean id="batchDataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="org.h2.Driver"/>
-        <property name="url" value="jdbc:h2:mem:psicquicbatch"/>
+        <property name="url" value="jdbc:h2:file:psicquicbatch"/>
         <property name="username" value="sa"/>
         <property name="password" value=""/>
     </bean>
