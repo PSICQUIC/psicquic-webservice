@@ -40,11 +40,9 @@
     <!-- steps -->
     <batch:step id="solrIndexingStep">
         <batch:tasklet>
-            <!--<batch:listeners>
-                <batch:listener ref="mailStepListener" />
-                <batch:listener ref="interactionLoggingSkipListener" />
-                <batch:listener ref="interactionChunkListener" />
-            </batch:listeners> -->
+            <batch:listeners>
+                <batch:listener ref="simpleChunkListener" />
+            </batch:listeners>
 
             <batch:chunk reader="mitabReader"
                          writer="solrWriter"
@@ -64,11 +62,11 @@
     <!-- final job which will export binary interactions, cluster and score them and index in solr -->
     <batch:job id="mitabIndexJob" job-repository="jobRepository">
 
-        <!--<batch:listeners>
+        <batch:listeners>
             <batch:listener>
-                <bean class="uk.ac.ebi.intact.release.listener.ConsoleJobExecutionListener"/>
+                <bean class="org.hupo.psi.mi.indexing.batch.listener.PsicquicJobExecutionListener"/>
             </batch:listener>
-        </batch:listeners> -->
+        </batch:listeners>
 
         <batch:step id="cleanSolr">
             <batch:tasklet ref="solrCleanerTasklet"/>

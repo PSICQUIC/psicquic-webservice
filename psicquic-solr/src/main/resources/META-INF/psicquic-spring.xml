@@ -73,4 +73,5 @@
 
     <bean id="solrMitabIndexer" class="org.hupo.psi.mi.indexing.batch.SolrMitabIndexer"/>
 
+    <bean id="simpleChunkListener" class="org.hupo.psi.mi.indexing.batch.listener.SimpleChunkListener"/>
 </beans>
