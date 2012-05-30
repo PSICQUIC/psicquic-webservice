@@ -48,13 +48,13 @@
 <schema name="psiquic-schema-2.7" version="1.5">
 
   <types>
-  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="false" stored="true" default="NEW"/> 	
-    <fieldType name="myqlInt"					class="solr.TrieIntField" 	precisionStep="0" positionIncrementGap="0"/>
-    <fieldType name="miqlBoolean" 				class="solr.BoolField" 		sortMissingLast="true" default="false"/>  
+  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="false" stored="false" default="NEW"/> 	
+    <fieldType name="myqlInt"					class="solr.TrieIntField" 	indexed="true" stored="true" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="true" default="false"/>  
     <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
   	<fieldType name="miqlIndexedStroredString" 	class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="true" omitNorms="true" required="true" default="-"/>   
   	 	     
-     <!-- Less flexible matching, even less than the text tight below, as we are not stemming. -->  
+     <!-- to garantee backwards-compatability with psiquic reference implementation  1.2.1 which uses the default lucene 2.3.2 analyzer-->  
     <fieldType name="miqlIndexedStoredText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" default="-">
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/> 	<!-- Good general purpose tokenizer, sets meaning for values: "I.B.M. cat's can't" ==> ACRONYM: "I.B.M.", APOSTROPHE:"cat's", APOSTROPHE:"can't" -->       
@@ -66,6 +66,19 @@
       </analyzer>
     </fieldType>   
   </types>    
+
+     <!-- new psiquic reference implementation -->  
+    <fieldType name="miqlIndexedStoredText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" default="-">
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/> 	<!-- Good general purpose tokenizer, sets meaning for values: "I.B.M. cat's can't" ==> ACRONYM: "I.B.M.", APOSTROPHE:"cat's", APOSTROPHE:"can't" -->       
+        <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
+        <filter class="solr.LowerCaseFilterFactory"/> 		<!-- "I.B.M.", "Solr" ==> "i.b.m.", "solr" -->      	
+        <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true" enablePositionIncrements="false"/> <!--  Discards common words: "a", "an", "and", "are", "as", "at", "be", "but", "by" -->
+        <!--  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/> -->
+        <!--  <filter class="solr.SynonymFilterFactory" synonyms="syn.txt" ignoreCase="true" expand="false"/> -->
+      </analyzer>
+    </fieldType>   
+  </types>  
 
   <fields>
  	<field name="uuId" type="miqlUuid"/>
