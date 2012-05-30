@@ -48,21 +48,21 @@
 <schema name="psiquic-schema-2.7" version="1.5">
 
   <types>
-  	<fieldType name="miqlUuid" class="solr.UUIDField" indexed="false" stored="true" default="NEW"/> 	
-  	   
-    <fieldType name="miqlString" 		class="solr.StrField"  sortMissingLast="true" />
-    <fieldType name="miqlBoolean" 		class="solr.BoolField" sortMissingLast="true" default="false"/>
-    <fieldType name="myqlInt"			class="solr.TrieIntField" precisionStep="0" positionIncrementGap="0"/>
-  	<fieldType name="miqlIndexedString" class="solr.StrField"  sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>   
-	<fieldType name="miqlIndexedFacet" 	class="solr.StrField"  sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
-	<fieldType name="miqlStoredVerbat" 	class="solr.StrField"  sortMissingLast="true" indexed="false" stored="true" omitNorms="true" required="true" default="-"/> 
-  	     
+  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="false" stored="true" default="NEW"/> 	
+    <fieldType name="myqlInt"					class="solr.TrieIntField" 	precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="miqlBoolean" 				class="solr.BoolField" 		sortMissingLast="true" default="false"/>  
+    <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
+  	<fieldType name="miqlIndexedStroredString" 	class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="true" omitNorms="true" required="true" default="-"/>   
+  	 	     
      <!-- Less flexible matching, even less than the text tight below, as we are not stemming. -->  
-    <fieldType name="miqlIndexedText" class="solr.TextField" positionIncrementGap="100" >
+    <fieldType name="miqlIndexedStoredText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" default="-">
       <analyzer>
-        <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+        <tokenizer class="solr.StandardTokenizerFactory"/> 	<!-- Good general purpose tokenizer, sets meaning for values: "I.B.M. cat's can't" ==> ACRONYM: "I.B.M.", APOSTROPHE:"cat's", APOSTROPHE:"can't" -->       
+        <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
+        <filter class="solr.LowerCaseFilterFactory"/> 		<!-- "I.B.M.", "Solr" ==> "i.b.m.", "solr" -->      	
+        <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true" enablePositionIncrements="false"/> <!--  Discards common words: "a", "an", "and", "are", "as", "at", "be", "but", "by" -->
+        <!--  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/> -->
+        <!--  <filter class="solr.SynonymFilterFactory" synonyms="syn.txt" ignoreCase="true" expand="false"/> -->
       </analyzer>
     </fieldType>   
   </types>    
@@ -71,57 +71,48 @@
  	<field name="uuId" type="miqlUuid"/>
  	
  	<!-- MIQL 2.5 field specification http://code.google.com/p/psicquic/wiki/MiqlReference27-->    
-   <field name="idA"			type="miqlIndexedString"/> <!-- idA = idA+altA -->
-   <field name="idB"			type="miqlIndexedString"/> <!-- idB = idB+altB --> 
-   <field name="id" 			type="miqlIndexedString"/> <!-- id = idA+altA+idB+altB --> 
-   <field name="alias" 			type="miqlIndexedString"/> <!-- alias = aliasA+aliasB --> 
-   <field name="identifier" 	type="miqlIndexedString"/> <!-- identifier = id + alias -->     
-   <field name="pubauth"		type="miqlIndexedString"/>
-   <field name="pubid"			type="miqlIndexedString"/>
-   <field name="taxidA"			type="miqlIndexedText"/>
-   <field name="taxidB"			type="miqlIndexedText"/> 
-   <field name="species" 		type="miqlIndexedText"/>   <!-- species = taxidA + taxidB -->   
-   <field name="type" 			type="miqlIndexedText"/> 
-   <field name="detmethod"		type="miqlIndexedText"/>
-   <field name="interaction_id"	type="miqlIndexedText"/> 
+   <field name="idA"			type="miqlIndexedStoredText"/> <!-- idA = idA+altA -->
+   <field name="idB"			type="miqlIndexedStoredText"/> <!-- idB = idB+altB --> 
+   <field name="id" 			type="miqlIndexedStoredText"/> <!-- id = idA+altA+idB+altB --> 
+   <field name="alias" 			type="miqlIndexedStoredText"/> <!-- alias = aliasA+aliasB --> 
+   <field name="identifier" 	type="miqlIndexedStoredText"/> <!-- identifier = id + alias -->     
+   <field name="pubauth"		type="miqlIndexedStoredText"/>
+   <field name="pubid"			type="miqlIndexedStoredText"/>
+   <field name="taxidA"			type="miqlIndexedStoredText"/>
+   <field name="taxidB"			type="miqlIndexedStoredText"/> 
+   <field name="species" 		type="miqlIndexedStoredText"/>   <!-- species = taxidA + taxidB -->   
+   <field name="type" 			type="miqlIndexedStoredText"/> 
+   <field name="detmethod"		type="miqlIndexedStoredText"/>
+   <field name="interaction_id"	type="miqlIndexedStoredText"/> 
+   <field name="confidence"		type="miqlIndexedStroredString"/> 
   
    <!-- MIQL 2.7 http://code.google.com/p/psicquic/wiki/MiqlReference-->
-   <field name="pbioroleA" 		type="miqlIndexedText"/>
-   <field name="pbioroleB" 		type="miqlIndexedText"/>
-   <field name="pbiorole" 		type="miqlIndexedText"/> 	<!-- pbiorole = pbioroleA + pbioroleB -->   
-   <field name="ptypeA" 		type="miqlIndexedText"/>
-   <field name="ptypeB" 		type="miqlIndexedText"/>
-   <field name="ptype" 			type="miqlIndexedText"/> 	<!-- ptype = ptypeA + ptypeB -->   
-   <field name="pxrefA" 		type="miqlIndexedText"/>
-   <field name="pxrefB" 		type="miqlIndexedText"/>
-   <field name="xref" 			type="miqlIndexedString"/> 	<!-- xref = xrefA + xrefB -->
-   <field name="ptype" 			type="miqlIndexedString"/> 	<!-- ptype = ptypeA + ptypeB -->
-   <field name="pxref" 			type="miqlIndexedText"/> 	<!-- pxref = pxrefA + pxrefB -->   
-   <field name="annot" 			type="miqlIndexedText"/> 	<!-- annot = annotA + annotB --> 
-   <field name="udate" 			type="myqlInt"/>
+   <field name="pbioroleA" 		type="miqlIndexedStoredText"/>
+   <field name="pbioroleB" 		type="miqlIndexedStoredText"/>
+   <field name="pbiorole" 		type="miqlIndexedStoredText"/> 	<!-- pbiorole = pbioroleA + pbioroleB -->   
+   <field name="ptypeA" 		type="miqlIndexedStoredText"/>
+   <field name="ptypeB" 		type="miqlIndexedStoredText"/>
+   <field name="ptype" 			type="miqlIndexedStoredText"/> 	<!-- ptype = ptypeA + ptypeB -->   
+   <field name="pxrefA" 		type="miqlIndexedStoredText"/>
+   <field name="pxrefB" 		type="miqlIndexedStoredText"/>
+   <field name="xref" 			type="miqlIndexedStoredText"/> 	<!-- xref = xrefA + xrefB -->
+   <field name="ptype" 			type="miqlIndexedStoredText"/> 	<!-- ptype = ptypeA + ptypeB -->
+   <field name="pxref" 			type="miqlIndexedStoredText"/> 	<!-- pxref = pxrefA + pxrefB -->   
+   <field name="annot" 			type="miqlIndexedStoredText"/> 	<!-- annot = annotA + annotB --> 
+   <field name="udate" 			type="miqlInt"/>
    <field name="negative" 		type="miqlBoolean"/>
-   <field name="complex" 		type="miqlIndexedText"/>
-   <field name="ftypeA" 		type="miqlIndexedText"/>
-   <field name="ftypeB" 		type="miqlIndexedText"/> 
-   <field name="ftype" 			type="miqlIndexedText"/> 	<!-- ftype = ftypeA + ftypeB -->
-   <field name="pmethodA"		type="miqlIndexedText"/>
-   <field name="pmethodB" 		type="miqlIndexedText"/>
-   <field name="pmethod" 		type="miqlIndexedString"/>  <!-- pmethod = pmethodA + pmethodB -->
+   <field name="complex" 		type="miqlIndexedStoredText"/>
+   <field name="ftypeA" 		type="miqlIndexedStoredText"/>
+   <field name="ftypeB" 		type="miqlIndexedStoredText"/> 
+   <field name="ftype" 			type="miqlIndexedStoredText"/> 	<!-- ftype = ftypeA + ftypeB -->
+   <field name="pmethodA"		type="miqlIndexedStoredText"/>
+   <field name="pmethodB" 		type="miqlIndexedStoredText"/>
+   <field name="pmethod" 		type="miqlIndexedStoredText"/>  <!-- pmethod = pmethodA + pmethodB -->
    <field name="stc" 			type="miqlBoolean"/>
    <field name="param" 			type="miqlBoolean"/>
-    
-   <!-- Facet Fields  -->
-   <dynamicField name="species_f"   type="miqlIndexedFacet"/>
-   <dynamicField name="type_f"  	type="miqlIndexedFacet"/>
-   <dynamicField name="detmethod_f" type="miqlIndexedFacet"/>
-   <dynamicField name="pbiorole_f"  type="miqlIndexedFacet"/>
-   <dynamicField name="ptype_f"  	type="miqlIndexedFacet"/>
-   <dynamicField name="xref_f"  	type="miqlIndexedFacet"/>
-   <dynamicField name="ftype_f"  	type="miqlIndexedFacet"/>
-   <dynamicField name="pmethod_f"   type="miqlIndexedFacet"/>
 
-   <!-- Dynamic Stored Fields  -->
-   <dynamicField name="*_s"  type="miqlStoredVerbat"/>    
+   <!-- Dynamic Stored Fields that can be used for faceting/sorting -->
+   <dynamicField name="*_s"  type="miqlIndexedUnstoredString"/>    
  </fields>
 
  <!-- Field to use to determine and enforce document uniqueness. 
