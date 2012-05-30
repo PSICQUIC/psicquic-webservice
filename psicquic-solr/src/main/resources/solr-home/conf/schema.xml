@@ -80,34 +80,34 @@
    <field name="pubid"			type="miqlIndexedStoredText"/>
    <field name="taxidA"			type="miqlIndexedStoredText"/>
    <field name="taxidB"			type="miqlIndexedStoredText"/> 
-   <field name="species" 		type="miqlIndexedStoredText"/>   <!-- species = taxidA + taxidB -->   
+   <field name="species" 		type="miqlIndexedStoredText"/> <!-- species = taxidA + taxidB -->   
    <field name="type" 			type="miqlIndexedStoredText"/> 
    <field name="detmethod"		type="miqlIndexedStoredText"/>
+   <field name="source"			type="miqlIndexedStoredText"/> 
    <field name="interaction_id"	type="miqlIndexedStoredText"/> 
-   <field name="confidence"		type="miqlIndexedStroredString"/> 
-  
+   
    <!-- MIQL 2.7 http://code.google.com/p/psicquic/wiki/MiqlReference-->
    <field name="pbioroleA" 		type="miqlIndexedStoredText"/>
    <field name="pbioroleB" 		type="miqlIndexedStoredText"/>
-   <field name="pbiorole" 		type="miqlIndexedStoredText"/> 	<!-- pbiorole = pbioroleA + pbioroleB -->   
+   <field name="pbiorole" 		type="miqlIndexedStoredText"/> <!-- pbiorole = pbioroleA + pbioroleB -->   
    <field name="ptypeA" 		type="miqlIndexedStoredText"/>
    <field name="ptypeB" 		type="miqlIndexedStoredText"/>
-   <field name="ptype" 			type="miqlIndexedStoredText"/> 	<!-- ptype = ptypeA + ptypeB -->   
+   <field name="ptype" 			type="miqlIndexedStoredText"/> <!-- ptype = ptypeA + ptypeB -->   
    <field name="pxrefA" 		type="miqlIndexedStoredText"/>
    <field name="pxrefB" 		type="miqlIndexedStoredText"/>
-   <field name="xref" 			type="miqlIndexedStoredText"/> 	<!-- xref = xrefA + xrefB -->
-   <field name="ptype" 			type="miqlIndexedStoredText"/> 	<!-- ptype = ptypeA + ptypeB -->
-   <field name="pxref" 			type="miqlIndexedStoredText"/> 	<!-- pxref = pxrefA + pxrefB -->   
-   <field name="annot" 			type="miqlIndexedStoredText"/> 	<!-- annot = annotA + annotB --> 
+   <field name="xref" 			type="miqlIndexedStoredText"/> <!-- xref = xrefA + xrefB -->
+   <field name="ptype" 			type="miqlIndexedStoredText"/> <!-- ptype = ptypeA + ptypeB -->
+   <field name="pxref" 			type="miqlIndexedStoredText"/> <!-- pxref = pxrefA + pxrefB -->   
+   <field name="annot" 			type="miqlIndexedStoredText"/> <!-- annot = annotA + annotB --> 
    <field name="udate" 			type="miqlInt"/>
    <field name="negative" 		type="miqlBoolean"/>
    <field name="complex" 		type="miqlIndexedStoredText"/>
    <field name="ftypeA" 		type="miqlIndexedStoredText"/>
    <field name="ftypeB" 		type="miqlIndexedStoredText"/> 
-   <field name="ftype" 			type="miqlIndexedStoredText"/> 	<!-- ftype = ftypeA + ftypeB -->
+   <field name="ftype" 			type="miqlIndexedStoredText"/> <!-- ftype = ftypeA + ftypeB -->
    <field name="pmethodA"		type="miqlIndexedStoredText"/>
    <field name="pmethodB" 		type="miqlIndexedStoredText"/>
-   <field name="pmethod" 		type="miqlIndexedStoredText"/>  <!-- pmethod = pmethodA + pmethodB -->
+   <field name="pmethod" 		type="miqlIndexedStoredText"/> <!-- pmethod = pmethodA + pmethodB -->
    <field name="stc" 			type="miqlBoolean"/>
    <field name="param" 			type="miqlBoolean"/>
 
