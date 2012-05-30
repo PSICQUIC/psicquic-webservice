@@ -26,8 +26,10 @@ public class SolrCleanerTasklet implements Tasklet {
     }
 
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-
+        System.out.println("clean solr");
         if (solrPath != null){
+            System.out.println("clean solr started");
+
             File home = new File(solrPath);
             File f = new File( home, "solr.xml" );
             CoreContainer container = new CoreContainer();
@@ -40,6 +42,7 @@ public class SolrCleanerTasklet implements Tasklet {
             solrServer.commit();
 
             contribution.getExitStatus().addExitDescription("Cleared: " + solrPath);
+            System.out.println("clean solr finished");
         }
         else {
             contribution.getExitStatus().addExitDescription("no SOLR server url found.");

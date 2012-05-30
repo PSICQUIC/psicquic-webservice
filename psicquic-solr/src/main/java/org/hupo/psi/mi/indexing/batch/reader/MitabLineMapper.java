@@ -21,7 +21,7 @@ public class MitabLineMapper implements LineMapper<Row>{
     private RowReader rowReader;
 
     public MitabLineMapper(MitabVersion mitabVersion) {
-
+        System.out.println("create line mapper");
         if (mitabVersion == null){
            mitabVersion = MitabVersion.MITAB25;
         }
@@ -39,14 +39,19 @@ public class MitabLineMapper implements LineMapper<Row>{
     }
 
     public Row mapLine(String line, int lineNumber) throws Exception {
-
         try {
 
             if (line == null){
                return null;
             }
 
-            return rowReader.readLine(line);
+            System.out.println("Mapped line " + line);
+
+            Row row = rowReader.readLine(line);
+
+            System.out.println("Created line");
+
+            return row;
         } catch (Exception e) {
             throw new Exception("Problem converting to binary interaction line "+lineNumber+": "+line);
         }

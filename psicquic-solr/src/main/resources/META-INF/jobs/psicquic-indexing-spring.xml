@@ -17,7 +17,7 @@
     <!-- reader -->
 
     <bean id="mitabFile" class="org.springframework.core.io.FileSystemResource">
-        <constructor-arg value="${mitab.file}}"/>
+        <constructor-arg value="${mitab.file}"/>
     </bean>
 
     <bean id="mitabReader" class="org.hupo.psi.mi.indexing.batch.reader.MitabReader">
@@ -75,6 +75,8 @@
             <batch:end on="FAILED"/>
             <batch:next on="*" to="indexSolrStep"/>
         </batch:step>
-        <batch:step id="indexSolrStep" parent="solrIndexingStep"/>
+        <batch:step id="indexSolrStep" parent="solrIndexingStep">
+            <batch:end on="FAILED"/>
+        </batch:step>
     </batch:job>
 </beans>
