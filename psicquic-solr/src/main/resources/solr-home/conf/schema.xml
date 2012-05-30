@@ -67,7 +67,7 @@
     </fieldType>      
 
      <!-- new psiquic reference implementation -->  
-    <fieldType name="miqlIndexedStoredText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" default="-">
+    <fieldType name="miqlIndexedStoredTextNew" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" default="-">
       <analyzer>
         <tokenizer class="solr.StandardTokenizerFactory"/> 	<!-- Good general purpose tokenizer, sets meaning for values: "I.B.M. cat's can't" ==> ACRONYM: "I.B.M.", APOSTROPHE:"cat's", APOSTROPHE:"can't" -->       
         <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
