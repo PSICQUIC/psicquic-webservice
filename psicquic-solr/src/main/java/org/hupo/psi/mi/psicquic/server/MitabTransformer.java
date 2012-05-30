@@ -10,28 +10,57 @@ package org.hupo.psi.mi.psicquic.server;
  #=========================================================================== */
 
 import java.util.*;
-import java.net.*;
 import java.io.*;
-
 import org.apache.solr.common.SolrInputDocument;
 
+import org.hupo.psi.calimocho.model.Row;
+import org.hupo.psi.calimocho.tab.io.DefaultRowReader;
+import org.hupo.psi.calimocho.tab.model.ColumnBasedDocumentDefinition;
+import org.hupo.psi.calimocho.tab.util.MitabDocumentDefinitionFactory;
+import psidev.psi.mi.calimocho.solr.converter.Converter;
+
 public class MitabTransformer implements PsqTransformer{
+
+    private List<? extends Row> rows;
+    int currIndex;
     
-    public MitabTransformer( String xxx ){
-		    
+    public MitabTransformer( List<? extends Row> items ){
+        this.rows = items;
     }
 
-    public void start( String fileName ){}
-    public void start( String fileName, InputStream is ){}
-	
+    public void start( String fileName ){
+        try {
+            start (fileName, new FileInputStream(new File(fileName)));
+        } catch (Exception ex) {
+            //TODO - do whatever you want to do with this exception
+        }    
+    }
+
+    public void start( String fileName, InputStream is ){
+        try {
+            //TODO - check for mitab version
+            ColumnBasedDocumentDefinition docDef = MitabDocumentDefinitionFactory.mitab25(); 
+            DefaultRowReader reader = new DefaultRowReader(docDef);
+            rows = reader.read( is );
+        } catch (Exception ex) {
+            //TODO - do whatever you want to do with this exception
+        }
+    }	
 
     public boolean hasNext(){
-	if( false ) return false;
-	return true;
+	return ( currIndex < rows.size() );
     }
 
     public SolrInputDocument next(){
-	return null;
+        SolrInputDocument doc = null;
+        currIndex++;
+        try {
+            Converter solrDocumentConverter = new Converter();
+            doc =  solrDocumentConverter.toSolrDocument(rows.get(currIndex));
+        } catch (Exception ex) {
+            //do whatever you want to do with this exception
+        }
+        return doc;
     }
    
  
