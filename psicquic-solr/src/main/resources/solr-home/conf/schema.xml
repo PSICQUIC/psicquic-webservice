@@ -52,7 +52,7 @@
     <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="true" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="true" default="false"/>  
     <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
-  	<fieldType name="miqlIndexedStroredString" 	class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="true" omitNorms="true" required="true" default="-"/>   
+  	<fieldType name="miqlIndexedStoredString" 	class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="true" omitNorms="true" required="true" default="-"/>   
   	 	     
      <!-- to garantee backwards-compatability with psiquic reference implementation  1.2.1 which uses the default lucene 2.3.2 analyzer-->  
     <fieldType name="miqlIndexedStoredText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" default="-">
@@ -97,6 +97,7 @@
    <field name="detmethod"		type="miqlIndexedStoredText"/>
    <field name="source"			type="miqlIndexedStoredText"/> 
    <field name="interaction_id"	type="miqlIndexedStoredText"/> 
+   <field name="confidence"		type="miqlIndexedStoredString"/>
    
    <!-- MIQL 2.7 http://code.google.com/p/psicquic/wiki/MiqlReference-->
    <field name="pbioroleA" 		type="miqlIndexedStoredText"/>
