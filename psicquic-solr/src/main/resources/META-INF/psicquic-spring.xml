@@ -70,7 +70,7 @@
         <property name="username" value="sa"/>
         <property name="password" value=""/>
     </bean>
-    
-    <!-- reader -->
+
+    <bean id="solrMitabIndexer" class="org.hupo.psi.mi.indexing.batch.SolrMitabIndexer"/>
 
 </beans>
