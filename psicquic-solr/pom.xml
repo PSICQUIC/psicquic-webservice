@@ -101,7 +101,11 @@
             <artifactId>calimocho-tab</artifactId>
             <version>2.2-SNAPSHOT</version>
         </dependency>
-
+        <dependency>
+            <groupId>psidev.psi.mi</groupId>
+            <artifactId>calimocho-solr</artifactId>
+            <version>2.2-SNAPSHOT</version>
+        </dependency>
 
         <!-- json parser -->
 
