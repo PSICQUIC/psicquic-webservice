@@ -80,7 +80,7 @@
    <field name="pubid"			type="miqlIndexedString"/>
    <field name="taxidA"			type="miqlIndexedText"/>
    <field name="taxidB"			type="miqlIndexedText"/> 
-   <field name="species" 		type="miqlIndexedText"/> 	<!-- species = taxidA + taxidB -->   
+   <field name="species" 		type="miqlIndexedText"/>   <!-- species = taxidA + taxidB -->   
    <field name="type" 			type="miqlIndexedText"/> 
    <field name="detmethod"		type="miqlIndexedText"/>
    <field name="interaction_id"	type="miqlIndexedText"/> 
@@ -117,7 +117,6 @@
    <dynamicField name="pbiorole_f"  type="miqlIndexedFacet"/>
    <dynamicField name="ptype_f"  	type="miqlIndexedFacet"/>
    <dynamicField name="xref_f"  	type="miqlIndexedFacet"/>
-   <dynamicField name="annot_f"  	type="miqlIndexedFacet"/>
    <dynamicField name="ftype_f"  	type="miqlIndexedFacet"/>
    <dynamicField name="pmethod_f"   type="miqlIndexedFacet"/>
 
