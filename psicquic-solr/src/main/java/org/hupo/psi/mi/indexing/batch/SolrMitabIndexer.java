@@ -42,7 +42,6 @@ public class SolrMitabIndexer {
     @Autowired
     private ApplicationContext applicationContext;
     
-    private boolean restart;
     private String indexingId;
 
     public SolrMitabIndexer() {
@@ -56,7 +55,7 @@ public class SolrMitabIndexer {
         SolrMitabIndexer rm = (SolrMitabIndexer)
                 context.getBean("solrMitabIndexer");
         
-        if (rm.restart && rm.getIndexingId() != null){
+        if (rm.getIndexingId() != null){
             rm.resumeIndexing();
         }
         else {
@@ -109,14 +108,6 @@ public class SolrMitabIndexer {
         jobParamBuilder.addString("indexingId", indexingId).toJobParameters();
 
         return jobLauncher.run(job, jobParamBuilder.toJobParameters());
-    }
-
-    public boolean isRestart() {
-        return restart;
-    }
-
-    public void setRestart(boolean restart) {
-        this.restart = restart;
     }
 
     public String getIndexingId() {
