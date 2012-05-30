@@ -64,8 +64,7 @@
         <!--  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/> -->
         <!--  <filter class="solr.SynonymFilterFactory" synonyms="syn.txt" ignoreCase="true" expand="false"/> -->
       </analyzer>
-    </fieldType>   
-  </types>    
+    </fieldType>      
 
      <!-- new psiquic reference implementation -->  
     <fieldType name="miqlIndexedStoredText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" default="-">
