@@ -49,7 +49,7 @@
 
   <types>
   	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="false" stored="false" default="NEW"/> 	
-    <fieldType name="myqlInt"					class="solr.TrieIntField" 	indexed="true" stored="true" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="true" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="true" default="false"/>  
     <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" default="-"/>
   	<fieldType name="miqlIndexedStroredString" 	class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="true" omitNorms="true" required="true" default="-"/>   
@@ -108,7 +108,6 @@
    <field name="pxrefA" 		type="miqlIndexedStoredText"/>
    <field name="pxrefB" 		type="miqlIndexedStoredText"/>
    <field name="xref" 			type="miqlIndexedStoredText"/> <!-- xref = xrefA + xrefB -->
-   <field name="ptype" 			type="miqlIndexedStoredText"/> <!-- ptype = ptypeA + ptypeB -->
    <field name="pxref" 			type="miqlIndexedStoredText"/> <!-- pxref = pxrefA + pxrefB -->   
    <field name="annot" 			type="miqlIndexedStoredText"/> <!-- annot = annotA + annotB --> 
    <field name="udate" 			type="miqlInt"/>
