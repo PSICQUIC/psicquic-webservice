@@ -26,6 +26,7 @@ public class MitabTransformer implements PsqTransformer{
     
     public MitabTransformer( List<? extends Row> items ){
         this.rows = items;
+        currIndex = -1;
     }
 
     public void start( String fileName ){
