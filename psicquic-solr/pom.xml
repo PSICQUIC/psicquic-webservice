@@ -25,6 +25,105 @@
         </resources>
     </build>
 
+    <profiles>
+        <profile>
+            <id>exec</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-Xmx4096m</argument>
+
+                                <argument>-classpath</argument>
+                                <classpath/>
+
+                                <argument>org.hupo.psi.mi.indexing.batch.SolrMitabIndexer</argument>
+                                <argument>${mitab.file}</argument>
+                                <argument>${solr.path}</argument>
+                                <argument>${mitab.version}</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>resume</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-Xmx4096m</argument>
+
+                                <argument>-classpath</argument>
+                                <classpath/>
+
+                                <argument>uk.ac.ebi.intact.release.ReleaseManager</argument>
+                                <argument>${releaseId}</argument>
+                                <argument>${mitabJob}</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>start-job</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>java</executable>
+                            <arguments>
+                                <argument>-Xmx4096m</argument>
+
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>uk.ac.ebi.intact.release.ReleaseManager</argument>
+                                <argument>${jobName}</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
