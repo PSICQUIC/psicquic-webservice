@@ -128,27 +128,48 @@
    <field name="stc" 			type="miqlBoolean"/>
    <field name="param" 			type="miqlBoolean"/>
    
-   <!-- MIQL 2.7 unindexed and stored fields http://code.google.com/p/psicquic/wiki/MITAB27Format -->
-   
+   <!-- MIQL 2.7 unindexed and stored fields http://code.google.com/p/psicquic/wiki/MITAB27Format --> 
    <field name="pexproleA"		type="miqlUnindexedStoredString"/> 	
    <field name="pexproleB"		type="miqlUnindexedStoredString"/>  
    <field name="annotA" 		type="miqlUnindexedStoredString"/>
    <field name="annotB" 		type="miqlUnindexedStoredString"/> 
    <field name="taxidHost" 		type="miqlUnindexedStoredString"/>	   
-   <field name="paramA"	 		type="miqlUnindexedStoredString"/>
-   <field name="paramB"	 		type="miqlUnindexedStoredString"/>
+   <field name="paramText"	 	type="miqlUnindexedStoredString"/>
    <field name="cdate"	 		type="miqlUnindexedStoredString"/>
    <field name="stcA"	 		type="miqlUnindexedStoredString"/>
    <field name="stcB"	 		type="miqlUnindexedStoredString"/>
-    	
-   
-   	
-   
-
+   <field name="checksumA"	 	type="miqlUnindexedStoredString"/>
+   <field name="checksumB"	 	type="miqlUnindexedStoredString"/>
+   <field name="checksumI"	 	type="miqlUnindexedStoredString"/>
+       	
    <!-- Dynamic Stored Fields that can be used for faceting/sorting -->
    <dynamicField name="*_s"  type="miqlIndexedUnstoredString"/>    
  </fields>
-
+ 
+ <copyField source="idA" 		dest="id"/>
+ <copyField source="idB" 		dest="id"/>
+ <copyField source="aliasA" 	dest="alias"/>
+ <copyField source="aliasB" 	dest="alias"/>
+ <copyField source="idA" 		dest="identifier"/>
+ <copyField source="idB" 		dest="identifier"/>	
+ <copyField source="altidA" 	dest="identifier"/>
+ <copyField source="altidB" 	dest="identifier"/>	
+ <copyField source="aliasA" 	dest="identifier"/>
+ <copyField source="aliasB" 	dest="identifier"/>
+ <copyField source="taxidA" 	dest="species"/>
+ <copyField source="taxidB" 	dest="species"/>
+ <copyField source="pbioroleA" 	dest="pbiorole"/>	
+ <copyField source="pbioroleB" 	dest="pbiorole"/>
+ <copyField source="ptypeA" 	dest="ptype"/>	
+ <copyField source="ptypeB" 	dest="ptype"/>	
+ <copyField source="pxrefA" 	dest="pxref"/>	
+ <copyField source="pxrefB" 	dest="pxref"/>	
+ <copyField source="annotA" 	dest="annot"/>	
+ <copyField source="annotB" 	dest="annot"/>		
+ <copyField source="ftypeA" 	dest="ftype"/>	
+ <copyField source="ftypeB" 	dest="ftype"/>
+ <copyField source="pmethodA" 	dest="pmethod"/>
+<copyField source="pmethodB" 	dest="pmethod"/>						
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
    -->
