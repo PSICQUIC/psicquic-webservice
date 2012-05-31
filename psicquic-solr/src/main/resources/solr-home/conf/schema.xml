@@ -53,7 +53,7 @@
     <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="true" multiValued="false" required="true"/>  
     <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true"  multiValued="true" required="true"/>
     <fieldType name="miqlUnindexedStoredString" class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="true" omitNorms="true" multiValued="true" required="true"/>
-    <fieldType name="miqlDummyField" 			class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="false" />
+    <fieldType name="miqlDummyField" 			class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="false" multiValued="true"/>
    	  	    
      <!-- new psiquic reference implementation -->  
     <fieldType name="miqlText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="false" omitNorms="true" termVectors="true" required="true" multiValued="true">
