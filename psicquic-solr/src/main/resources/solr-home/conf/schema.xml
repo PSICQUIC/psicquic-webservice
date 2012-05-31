@@ -81,66 +81,45 @@
  	<field name="uuId" type="miqlUuid" default="NEW"/>	
  	
  	<!-- MIQL 2.5 indexed and stored fields specification http://code.google.com/p/psicquic/wiki/MiqlReference-->    
-   <field name="idA"			type="miqlText" stored="true"  default="-"/> 
-   <field name="idB"			type="miqlText" stored="true"  default="-"/>  
-   <field name="id" 			type="miqlText" stored="false" default=""/> <!-- id = idA+altA+idB+altB -->        
-   <field name="alias" 			type="miqlText" stored="false" default=""/> <!-- alias = aliasA+aliasB --> 
-   <field name="identifier" 	type="miqlText" stored="false" default=""/> <!-- identifier = id + alias -->     
-   <field name="pubauth"		type="miqlText" stored="true"  default="-"/>
-   <field name="pubid"			type="miqlText" stored="true"  default="-"/>
-   <field name="taxidA"			type="miqlText" stored="true"  default="-"/>
-   <field name="taxidB"			type="miqlText" stored="true"  default="-"/> 
-   <field name="species" 		type="miqlText" stored="false" default=""/> <!-- species = taxidA + taxidB -->   
-   <field name="type" 			type="miqlText" stored="true"  default="-"/> 
-   <field name="detmethod"		type="miqlText" stored="true"  default="-"/>  
-   <field name="interaction_id"	type="miqlText" stored="true"  default="-"/> 
-   
-   <!-- MITAB 2.5 unindexed and stored fields http://code.google.com/p/psicquic/wiki/MITAB25Format -->
-   <field name="altidA"			type="miqlUnindexedStoredString" default="-"/> 	 
-   <field name="altidB"			type="miqlUnindexedStoredString" default="-"/>     
-   <field name="aliasA"			type="miqlUnindexedStoredString" default="-"/> 	 
-   <field name="aliasB"			type="miqlUnindexedStoredString" default="-"/> 	 
-   <field name="source"			type="miqlUnindexedStoredString" default="-"/> 	
-   <field name="confidence"		type="miqlUnindexedStoredString" default="-"/> 
+   <field name="idA"			type="miqlText" default="-"/> 
+   <field name="idB"			type="miqlText" default="-"/>  
+   <field name="id" 			type="miqlText" default=""/> <!-- id = idA+altA+idB+altB -->        
+   <field name="alias" 			type="miqlText" default=""/> <!-- alias = aliasA+aliasB --> 
+   <field name="identifier" 	type="miqlText" default=""/> <!-- identifier = id + alias -->     
+   <field name="pubauth"		type="miqlText" default="-"/>
+   <field name="pubid"			type="miqlText" default="-"/>
+   <field name="taxidA"			type="miqlText" default="-"/>
+   <field name="taxidB"			type="miqlText" default="-"/> 
+   <field name="species" 		type="miqlText" default=""/> <!-- species = taxidA + taxidB -->   
+   <field name="type" 			type="miqlText" default="-"/> 
+   <field name="detmethod"		type="miqlText" default="-"/>  
+   <field name="interaction_id"	type="miqlText" default="-"/> 
    
    <!-- MIQL 2.7 indexed and stored fields http://code.google.com/p/psicquic/wiki/MiqlReference27 -->
-   <field name="complex" 		type="miqlText" stored="true"  default="-"/>
-   <field name="pbioroleA" 		type="miqlText" stored="true"  default="-"/>
-   <field name="pbioroleB" 		type="miqlText"	stored="true"  default="-"/>
-   <field name="pbiorole" 		type="miqlText" stored="false" default=""/> <!-- pbiorole = pbioroleA + pbioroleB -->   
-   <field name="ptypeA" 		type="miqlText" stored="true"  default="-"/>
-   <field name="ptypeB" 		type="miqlText" stored="true"  default="-"/>
-   <field name="ptype" 			type="miqlText" stored="false" default=""/> <!-- ptype = ptypeA + ptypeB -->   
-   <field name="pxrefA" 		type="miqlText" stored="true"  default="-"/>
-   <field name="pxrefB" 		type="miqlText" stored="true"  default="-"/>
-   <field name="pxref" 			type="miqlText" stored="false" default=""/> <!-- pxref = pxrefA + pxrefB -->   
-   <field name="xref" 			type="miqlText" stored="true"  default="-"/> 
-   <field name="annot" 			type="miqlText" stored="false" default=""/> <!-- annot = annotA + annotB --> 
+   <field name="complex" 		type="miqlText" default="-"/>
+   <field name="pbioroleA" 		type="miqlText" default="-"/>
+   <field name="pbioroleB" 		type="miqlText"	default="-"/>
+   <field name="pbiorole" 		type="miqlText" default=""/> <!-- pbiorole = pbioroleA + pbioroleB -->   
+   <field name="ptypeA" 		type="miqlText" default="-"/>
+   <field name="ptypeB" 		type="miqlText" default="-"/>
+   <field name="ptype" 			type="miqlText" default=""/> <!-- ptype = ptypeA + ptypeB -->   
+   <field name="pxrefA" 		type="miqlText" default="-"/>
+   <field name="pxrefB" 		type="miqlText" default="-"/>
+   <field name="pxref" 			type="miqlText" default=""/> <!-- pxref = pxrefA + pxrefB -->   
+   <field name="xref" 			type="miqlText" default="-"/> 
+   <field name="annot" 			type="miqlText" default=""/> <!-- annot = annotA + annotB --> 
    <field name="udate" 			type="miqlInt"  default="0"/>
    <field name="negative" 		type="miqlBoolean" default="false"/>
   
-   <field name="ftypeA" 		type="miqlText" stored="true"  default="-"/>
-   <field name="ftypeB" 		type="miqlText" stored="true"  default="-"/> 
-   <field name="ftype" 			type="miqlText" stored="false" default=""/> <!-- ftype = ftypeA + ftypeB -->
-   <field name="pmethodA"		type="miqlText" stored="true"  default="-"/>
-   <field name="pmethodB" 		type="miqlText" stored="true"  default="-"/>
-   <field name="pmethod" 		type="miqlText" stored="false" default=""/> <!-- pmethod = pmethodA + pmethodB -->
+   <field name="ftypeA" 		type="miqlText" default="-"/>
+   <field name="ftypeB" 		type="miqlText" default="-"/> 
+   <field name="ftype" 			type="miqlText" default=""/> <!-- ftype = ftypeA + ftypeB -->
+   <field name="pmethodA"		type="miqlText" default="-"/>
+   <field name="pmethodB" 		type="miqlText" default="-"/>
+   <field name="pmethod" 		type="miqlText" default=""/> <!-- pmethod = pmethodA + pmethodB -->
    <field name="stc" 			type="miqlBoolean" default="false"/>
    <field name="param" 			type="miqlBoolean" default="false"/>
-   
-   <!-- MIQL 2.7 unindexed and stored fields http://code.google.com/p/psicquic/wiki/MITAB27Format --> 
-   <field name="pexproleA"		type="miqlUnindexedStoredString" default="-"/> 	
-   <field name="pexproleB"		type="miqlUnindexedStoredString" default="-"/>  
-   <field name="annotA" 		type="miqlUnindexedStoredString" default="-"/>
-   <field name="annotB" 		type="miqlUnindexedStoredString" default="-"/> 
-   <field name="taxidHost" 		type="miqlUnindexedStoredString" default="-"/>	   
-   <field name="paramText"	 	type="miqlUnindexedStoredString" default="-"/>
-   <field name="cdate"	 		type="miqlUnindexedStoredString" default="-"/>
-   <field name="stcA"	 		type="miqlUnindexedStoredString" default="-"/>
-   <field name="stcB"	 		type="miqlUnindexedStoredString" default="-"/>
-   <field name="checksumA"	 	type="miqlUnindexedStoredString" default="-"/>
-   <field name="checksumB"	 	type="miqlUnindexedStoredString" default="-"/>
-   <field name="checksumI"	 	type="miqlUnindexedStoredString" default=""/>
+
        	
    <!-- Dynamic Stored Fields that can be used for faceting/sorting -->
    <dynamicField name="*_s"  type="miqlIndexedUnstoredString" default="-"/> 
