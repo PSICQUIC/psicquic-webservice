@@ -55,7 +55,7 @@
     <fieldType name="miqlUnindexedStoredString" class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="true" omitNorms="true" multiValued="true" required="true"/>
    	  	    
      <!-- new psiquic reference implementation -->  
-    <fieldType name="miqlText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" multiValued="true">
+    <fieldType name="miqlText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="false" omitNorms="true" termVectors="true" required="true" multiValued="true">
       <analyzer>
 		<tokenizer 	class="solr.KeywordTokenizerFactory"/>
         <filter class="solr.WordDelimiterFilterFactory" splitOnCaseChange="0" splitOnNumerics="0" stemEnglishPossessive="1" generateWordParts="0" catenateWords="0" catenateNumbers="0" catenateAll="0" preserveOriginal="0"/> 
