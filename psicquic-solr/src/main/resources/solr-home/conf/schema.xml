@@ -48,7 +48,7 @@
 <schema name="psiquic-schema-2.7" version="1.5">
 
   <types>
-  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="false" /> 	
+  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="true" /> 	
     <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="true" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="true" />  
     <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" />
@@ -70,16 +70,15 @@
     <fieldType name="miqlIndexedStoredTextNew" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" >
       <analyzer>
 		<tokenizer 	class="solr.WhitespaceTokenizerFactory"/>
-        <filter 	class="solr.WordDelimiterFilterFactory" splitOnCaseChange="0" splitOnNumerics="0" stemEnglishPossessive="1" generateWordParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" preserveOriginal="1"/> 
-        <filter 	class="solr.LowerCaseFilterFactory"/>  
-        <filter 	class="solr.RemoveDuplicatesTokenFilter"/>     
+        <filter class="solr.WordDelimiterFilterFactory" splitOnCaseChange="0" splitOnNumerics="0" stemEnglishPossessive="1" generateWordParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" preserveOriginal="1"/> 
+        <filter	class="solr.LowerCaseFilterFactory"/>  
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>    
       </analyzer>
     </fieldType>   
   </types>  
 
   <fields>
- 	<field name="uuId" type="miqlUuid"/>
- 	
+ 	<field name="uuId" type="miqlUuid"/>	
  	
  	<!-- MIQL 2.5 field specification http://code.google.com/p/psicquic/wiki/MiqlReference27-->    
    <field name="idA"			type="miqlIndexedStoredText"/> <!-- idA = idA+altA -->
