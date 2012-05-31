@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!DOCTYPE struts PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+          "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<!-- ===========================================================================
+ ! $Id:: struts.xml 234 2012-02-14 16:40:33Z lukasz                            $
+ ! Version: $Rev:: 234                                                         $
+ !==============================================================================
+ !                                                                             $
+ ! struts: global configuration                                                $
+ !                                                                             $
+ !========================================================================== -->
+
+<struts>
+  <constant name="struts.objectFactory" value="spring" />
+  <constant name="struts.devMode" value="false" />
+
+  <package name="psq" extends="json-default" namespace="">
+
+   <!-- ============================================================ Results -->
+<!--
+    <result-types>
+      <result-type name="tiles"
+        class="org.apache.struts2.views.tiles.TilesResult"/>
+      <result-type name="redirect-action"
+        class="org.apache.struts2.dispatcher.ServletActionRedirectResult" />
+    </result-types>
+-->
+   <!-- ======================================================= Interceptors -->
+   
+    <interceptors>
+
+<!--
+     <interceptor name="menu"
+         class="edu.ucla.mbi.util.struts2.interceptor.MenuInterceptor"/>
+
+     <interceptor name="acl" class="aclInterceptor"/>
+-->
+     <interceptor-stack name="mgrStack">
+       <interceptor-ref name="exception"/>
+       <interceptor-ref name="alias"/>
+       <interceptor-ref name="servletConfig"/>
+       <interceptor-ref name="prepare"/>
+       <interceptor-ref name="i18n"/>
+       <interceptor-ref name="chain"/>
+       <interceptor-ref name="debugging"/>
+       <interceptor-ref name="profiling"/>
+       <interceptor-ref name="scopedModelDriven"/>
+       <interceptor-ref name="modelDriven"/>
+       <interceptor-ref name="fileUpload">
+         <param name="maximumSize">5000000</param>
+         <param name="allowedTypes"> image/jpeg,image/gif,image/png</param>
+       </interceptor-ref>
+       <interceptor-ref name="checkbox"/>
+       <interceptor-ref name="staticParams"/>
+       <interceptor-ref name="params">
+        <param name="excludeParams">dojo\..*</param>
+       </interceptor-ref>
+       <interceptor-ref name="conversionError"/>
+<!--
+       <interceptor-ref name="menu"/>
+       <interceptor-ref name="acl"/>
+-->
+       <interceptor-ref name="validation">
+         <param name="excludeMethods">input,back,cancel,browse</param>
+       </interceptor-ref>
+       <interceptor-ref name="workflow">
+         <param name="excludeMethods">input,back,cancel,browse</param>
+       </interceptor-ref>
+     </interceptor-stack>
+
+    </interceptors>
+   
+   <!-- ============================================================ Actions -->
+
+   <!-- welcome page -->
+
+    <action name="">
+      <result>/index.jsp</result>
+    </action>
+
+  <!-- stats -->
+
+   <action name="recordmgr" class="recordMgrAction" >
+    <interceptor-ref name="defaultStack"/>
+    <interceptor-ref name="timer"/>
+<!--     <interceptor-ref name="menu"/> -->
+
+    <result name="success" type="json">
+       <param name="includeProperties">
+        pid,vt,vv
+       </param>
+       <param name="noCache">true</param>
+    </result>
+     
+   </action>
+
+ </package>
+
+</struts>

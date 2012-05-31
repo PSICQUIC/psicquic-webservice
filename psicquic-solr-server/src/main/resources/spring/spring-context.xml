@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ===========================================================================
+ ! $HeadURL:: https://lukasz@imex.mbi.ucla.edu/svn/central/trunk/etc/icentral/#$
+ ! $Id:: applicationContext.xml 217 2011-06-30 14:11:44Z lukasz                $
+ ! Version: $Rev:: 217                                                         $
+ !==============================================================================
+ !
+ ! IMEx Central: application context
+ !
+ !========================================================================== -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+        http://www.springframework.org/schema/aop 
+        http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+<!-- ========================================================== CONFIGUATION -->
+  
+  <bean id="psqContext" class="org.hupo.psi.mi.psicquic.util.JsonContext">
+    <property name="config">
+      <map>
+        <entry key="json-config" value="etc/psq-context-default.json"/>
+      </map>
+    </property>
+  </bean>
+<!--
+ <bean id="applicationContextProvider" 
+       class="edu.ucla.mbi.util.ApplicationContextProvider" />
+-->
+<!-- ================================================================= INDEX -->
+
+  <bean id="solrIndex" 
+        class="org.hupo.psi.mi.psicquic.server.index.solr.SolrIndex">
+    <property name="context" ref="psqContext"/>
+  </bean>
+ 
+<!-- ============================================================ DATA STORE -->
+  
+  <bean id="derbyDao" destroy-method="shutdown" 
+        class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordDao">
+    <property name="context" ref="psqContext"/>     
+  </bean>
+  
+<!-- ======================================================== STRUTS ACTIONS -->
+  
+  <bean id="recordMgrAction" scope="prototype"
+        class="org.hupo.psi.mi.psicquic.server.struts.action.RecordMgrAction">
+    <property name="recordDao" ref="derbyDao"/>
+    <property name="psqContext" ref="psqContext"/>     
+  </bean>
+ 
+<!-- ========================================================== WEB SERVICES -->
+<!-- ver 1.1 -->
+
+
+  <bean id="psq-ws-imp"   class="org.hupo.psi.mi.psicquic.server.PsicquicPortImpl"
+        scope="prototype" init-method="initialize">
+
+    <property name="psqContext" ref="psqContext"/>
+    <property name="index" ref="solrIndex"/>
+    <property name="recordDao" ref="derbyDao"/>
+
+  </bean>  
+
+<!--   <import resource="cxf.xml" /> -->
+
+
+<!--
+  <bean id="psq-ws-1.1-imp" scope="prototype" init-method="initialize"
+        class="org.hupo.psi.mi.psicquic.server.PsicquicPortImpl">
+
+
+    <property name="psqContext" ref="psqContext"/>
+    <property name="index" ref="solrIndex"/> 
+    <property name="recordDao" ref="derbyDao"/> 
+
+  </bean>
+-->
+<!--
+  <ws:service  id="psq-ws-1.1" bean="#psq-ws-1.1-imp"/>
+  <wss:binding url="/ws" service="#psq-ws-1.1" />
+  <wss:binding url="/ws-v11" service="#psq-ws-1.1" />
+-->
+
+
+<!--
+  <sws:annotation-driven/>
+-->
+
+</beans>

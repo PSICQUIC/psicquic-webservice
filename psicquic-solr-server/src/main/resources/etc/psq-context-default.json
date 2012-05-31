@@ -1,0 +1,75 @@
+{
+  "index":{
+     "solr":{ 
+        "url":"http://127.0.0.1:8080/psicquic-solr/solr/psq-01",
+        "shard":[
+            "127.0.0.1:8080/psicquic-solr/solr/psq-01",
+            "127.0.0.1:8080/psicquic-solr/solr/psq-02"
+        ]
+       },
+      "transform":{
+          "mif254":{
+             "type":"xslt", 
+             "config":"etc/xsl/mif2index2-xpsq.xml"
+          }
+      }
+  },
+  "store":{
+     "derby":{
+        "derby-db":"derby/psq-store",
+        "record-mgr": "http://127.0.0.1:8080/psicquic-solr/recordmgr"
+     },
+     "psq":{
+        "url": "http://127.0.0.1:8080/psicquic-solr/recordmgr"
+     },
+     "transform":{
+        "mif254":[
+            {  "type":"xslt", 
+               "view":"psi-mi/tab25", 
+               "config":"etc/xsl/mif2mitab25view2-xpsq.xml",
+               "active":true
+            },
+            {  "type":"xslt",
+               "view":"psi-mi/tab27", 
+               "config":"etc/xsl/mif2mitab25view2-xpsq.xml",
+               "active":false
+            },
+            {  "type":"xslt",
+               "format":"psi-mi/xml25", 
+               "config":"etc/xsl/mif2mitab25view2-xpsq.xml",
+               "active":false
+            }
+        ]
+     }
+  },
+  "service":{
+     "soap":{
+        "version":"1.1",
+        "properties":{
+           "implementation":"ic-psq-0.01",
+           "last-protein-update":"01-Jan-12"
+          },
+        "supported-return-type":[
+           "psi-mi/tab25",
+           "psi-mi/tab27",
+           "psi-mi/xml25" ],
+        "supported-db-ac":[ 
+           "MI:0670", 
+           "MI:0481", 
+           "MI:0486" ]
+     },
+     "rest":{
+        "version":"1.1",
+        "properties":{},
+        "supported-return-type":[
+           "psi-mi/tab25",
+           "psi-mi/tab27",
+           "psi-mi/xml25" ],
+        "supported-db-ac":[
+           "MI:0670",
+           "MI:0481",
+           "MI:0486" ]
+     }
+  }
+}
+
