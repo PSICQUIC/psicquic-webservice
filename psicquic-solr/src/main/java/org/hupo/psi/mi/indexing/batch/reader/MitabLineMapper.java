@@ -22,16 +22,22 @@ public class MitabLineMapper implements LineMapper<Row>{
 
     public MitabLineMapper(MitabVersion mitabVersion) {
         if (mitabVersion == null){
-           mitabVersion = MitabVersion.MITAB25;
+            mitabVersion = MitabVersion.MITAB25;
         }
 
         switch (mitabVersion){
             case MITAB25:
                 documentDefinition = MitabDocumentDefinitionFactory.mitab25();
+                break;
             case MITAB26:
                 documentDefinition = MitabDocumentDefinitionFactory.mitab26();
+                break;
             case MITAB27:
                 documentDefinition = MitabDocumentDefinitionFactory.mitab27();
+                break;
+            default:
+                documentDefinition = MitabDocumentDefinitionFactory.mitab25();
+                break;
         }
 
         this.rowReader = new DefaultRowReader( documentDefinition );
@@ -41,14 +47,14 @@ public class MitabLineMapper implements LineMapper<Row>{
         try {
 
             if (line == null){
-               return null;
+                return null;
             }
 
             Row row = rowReader.readLine(line);
 
             return row;
         } catch (Exception e) {
-            throw new Exception("Problem converting to binary interaction line "+lineNumber+": "+line);
+            throw new Exception("Problem converting to binary interaction line "+lineNumber+": "+line, e);
         }
     }
 }
