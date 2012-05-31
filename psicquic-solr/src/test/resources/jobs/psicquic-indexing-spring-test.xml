@@ -16,24 +16,36 @@
 
     <!-- reader -->
 
+    <bean id="mitabFileTest" class="org.springframework.core.io.FileSystemResource">
+        <constructor-arg value="/home/marine/Desktop/PSICQUIC/psicquic-solr/src/test/resources/samples/sampleFileParameter.txt"/>
+    </bean>
+
     <bean id="mitabReaderTest" class="org.hupo.psi.mi.indexing.batch.reader.MitabReader">
         <property name="mitabVersion">
             <value type="org.hupo.psi.mi.indexing.batch.reader.MitabVersion">MITAB27</value>
         </property>
+        <property name="resource" ref="mitabFileTest"/>
     </bean>
 
     <!-- writer -->
 
     <bean id="solrWriterTest" class="org.hupo.psi.mi.indexing.batch.writer.SolrItemWriter">
-        <property name="solrPath" value="${solr.home.path}"/>
+        <property name="solrPath" value="/home/marine/Desktop/PSICQUIC/psicquic-solr/src/main/resources/solr-home"/>
     </bean>
 
     <bean id="solrCleanerTaskletTest" class="org.hupo.psi.mi.indexing.batch.tasklet.SolrCleanerTasklet">
-        <property name="solrPath" value="${solr.home.path}"/>
+        <property name="solrPath" value="/home/marine/Desktop/PSICQUIC/psicquic-solr/src/main/resources/solr-home"/>
     </bean>
 
     <!-- steps -->
-    <batch:step id="solrIndexingStepTest">
+    <batch:step id="cleanSolrStepTest" parent="batchStep">
+        <batch:tasklet ref="solrCleanerTaskletTest">
+            <batch:listeners>
+                <batch:listener ref="simpleChunkListener" />
+            </batch:listeners>
+        </batch:tasklet>
+    </batch:step>
+    <batch:step id="solrIndexingStepTest" parent="batchStep">
         <batch:tasklet>
             <batch:listeners>
                 <batch:listener ref="simpleChunkListener" />
@@ -41,7 +53,7 @@
 
             <batch:chunk reader="mitabReaderTest"
                          writer="solrWriterTest"
-                         skip-limit="10000" retry-limit="10" commit-interval="1000">
+                         retry-limit="10" commit-interval="1000">
                 <batch:streams>
                     <batch:stream ref="mitabReaderTest"/>
                     <batch:stream ref="solrWriterTest"/>
@@ -55,7 +67,7 @@
     </batch:step>
 
     <!-- final job which will export binary interactions, cluster and score them and index in solr -->
-    <batch:job id="mitabIndexJob" job-repository="jobRepository">
+    <batch:job id="mitabIndexJob" job-repository="jobRepository" parent="batchJob">
 
         <batch:listeners>
             <batch:listener>
@@ -63,8 +75,7 @@
             </batch:listener>
         </batch:listeners>
 
-        <batch:step id="cleanSolrTest">
-            <batch:tasklet ref="solrCleanerTaskletTest"/>
+        <batch:step id="cleanSolrTest"  parent="cleanSolrStepTest">
             <batch:end on="FAILED"/>
             <batch:next on="*" to="indexSolrStepTest"/>
         </batch:step>

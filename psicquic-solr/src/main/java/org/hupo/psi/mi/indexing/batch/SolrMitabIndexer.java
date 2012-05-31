@@ -57,11 +57,9 @@ public class SolrMitabIndexer {
         
         if (rm.getIndexingId() != null){
             rm.resumeIndexing();
-            System.exit(0);
         }
         else {
             rm.startIndexing();
-            System.exit(0);
         }
     }
 
@@ -103,7 +101,6 @@ public class SolrMitabIndexer {
 
     protected JobExecution runJob(String jobName, String indexingId) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
         if (log.isInfoEnabled()) log.info("Starting job: "+jobName);
-        System.out.println("Starting job: "+jobName);
         Job job = (Job) applicationContext.getBean(jobName);
 
         JobParametersBuilder jobParamBuilder = new JobParametersBuilder();

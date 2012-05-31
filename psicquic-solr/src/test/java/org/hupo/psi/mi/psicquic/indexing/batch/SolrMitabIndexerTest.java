@@ -1,12 +1,14 @@
 package org.hupo.psi.mi.psicquic.indexing.batch;
 
 import org.hupo.psi.mi.indexing.batch.SolrMitabIndexer;
-import org.hupo.psi.mi.indexing.batch.reader.MitabReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -31,12 +33,16 @@ public class SolrMitabIndexerTest {
     @Test
     public void test_indexing_mitab27(){
 
-        MitabReader mitabReaderTest = (MitabReader) applicationContext.getBean("mitabReaderTest");
-
-        if (mitabReaderTest != null){
-            mitabReaderTest.setResource(new FileSystemResource(SolrMitabIndexerTest.class.getResource("/samples/sampleFileConfidence.txt").getPath()));
-
-            //solrMitabIndexer.startIndexing();
+        try {
+            solrMitabIndexer.startIndexing();
+        } catch (JobInstanceAlreadyCompleteException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (JobParametersInvalidException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (JobRestartException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (JobExecutionAlreadyRunningException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 }
