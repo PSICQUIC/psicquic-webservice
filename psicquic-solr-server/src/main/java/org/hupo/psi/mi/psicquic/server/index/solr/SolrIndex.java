@@ -48,6 +48,7 @@ public class SolrIndex implements Index{
     
     public void setContext( JsonContext context ){
         this.context = context;
+	initialize( true );
     }
 
     public SolrIndex(){}
@@ -66,8 +67,11 @@ public class SolrIndex implements Index{
         if( force || baseUrl == null ){
             
             Log log = LogFactory.getLog( this.getClass() );
-            log.info( " initilizing SolrIndex" );
-            
+            log.info( " initilizing SolrIndex: context=" + context );
+	    if( context != null ){
+		log.info( "                        "
+			  + "JsonConfig=" + context.getJsonConfig() );
+            }
             if( context != null && context.getJsonConfig() != null ){
 
                 // SOLR URLs
@@ -117,10 +121,14 @@ public class SolrIndex implements Index{
     
     public ResultSet query( String query ){
 
+	Log log = LogFactory.getLog( this.getClass() );
+
         ResultSet rs = new ResultSet();
 	
         try{
             if( baseUrl == null ){ initialize(); }
+	    log.debug( "   SolrIndex: baseUrl="+ baseUrl );
+
             if( baseUrl != null ){
 
                 SolrServer solr = new CommonsHttpSolrServer( baseUrl );
@@ -132,7 +140,7 @@ public class SolrIndex implements Index{
                 
                 try{            
                     QueryResponse response = solr.query( params );
-                    System.out.println( "response = " + response );
+                    log.debug( "response = " + response );
 
                     SolrDocumentList res = response.getResults();
                     rs.setResultList( res );
@@ -223,10 +231,12 @@ public class SolrIndex implements Index{
             rt.start( fileName, is );
             
 	    while( rt.hasNext() ){
-
-		SolrInputDocument doc = rt.next();
-		SolrInputField pidf = doc.getField("pid");
-		String pid = (String) pidf.getFirstValue();
+		
+		Map cdoc= rt.next();
+		
+		String pid = (String) cdoc.get("pid");;
+		SolrInputDocument doc 
+		    = (SolrInputDocument) cdoc.get("solr");
 		
 		try{
 		    if( shSolr.size() > 1 ){
