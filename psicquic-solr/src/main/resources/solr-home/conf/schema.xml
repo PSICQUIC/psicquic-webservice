@@ -48,7 +48,7 @@
 <schema name="psiquic-schema-2.7" version="1.5">
 
   <types>
-  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="true" multiValued="false" /> 	
+  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="true" /> 	
     <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="true" precisionStep="0" positionIncrementGap="0" multiValued="false" required="true"/>
     <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="true" multiValued="false" required="true"/>  
     <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true"  multiValued="true" required="true"/>
