@@ -79,8 +79,6 @@
             <batch:end on="FAILED"/>
             <batch:next on="*" to="indexSolrStep"/>
         </batch:step>
-        <batch:step id="indexSolrStep" parent="solrIndexingStep">
-            <batch:end on="FAILED"/>
-        </batch:step>
+        <batch:step id="indexSolrStep" parent="solrIndexingStep"/>
     </batch:job>
 </beans>

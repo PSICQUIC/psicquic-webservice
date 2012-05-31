@@ -39,6 +39,12 @@ public class SolrCleanerTasklet implements Tasklet {
             solrServer.optimize();
             solrServer.commit();
 
+            // shutdown
+            java.lang.reflect.Field field = EmbeddedSolrServer.class.getDeclaredField("coreContainer");
+            field.setAccessible(true);
+            container = (CoreContainer) field.get(solrServer);
+            container.shutdown();
+
             contribution.getExitStatus().addExitDescription("Cleared: " + solrPath);
         }
         else {

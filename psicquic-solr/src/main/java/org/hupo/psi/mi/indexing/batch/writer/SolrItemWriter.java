@@ -73,6 +73,11 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             solrServer.optimize();
             solrServer.commit();
 
+            java.lang.reflect.Field field = EmbeddedSolrServer.class.getDeclaredField("coreContainer");
+            field.setAccessible(true);
+            CoreContainer container = (CoreContainer) field.get(solrServer);
+            container.shutdown();
+
         } catch (Exception e) {
             throw new ItemStreamException("Problem closing solr server", e);
         }
