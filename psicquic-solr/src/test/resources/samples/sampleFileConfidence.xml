@@ -5,8 +5,8 @@
    <field name="idB">intact:EBI-1579103</field>
    <field name="id">intact:EBI-1607518</field>
    <field name="id">intact:EBI-1579103</field>
-   <field name="altA">intact:EBI-1607518</field>
-   <field name="altB">intact:EBI-1607516</field>
+   <field name="altidA">intact:EBI-1607518</field>
+   <field name="altidB">intact:EBI-1607516</field>
    <field name="aliasA">uniprotkb:slr1767(locus name)</field>
    <field name="aliasB">-</field>
    <field name="alias">uniprotkb:slr1767(locus name)</field>
