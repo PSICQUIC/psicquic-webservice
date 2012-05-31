@@ -1,6 +1,5 @@
 package org.hupo.psi.mi.indexing.batch.tasklet;
 
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.core.CoreContainer;
 import org.springframework.batch.core.StepContribution;
@@ -33,17 +32,14 @@ public class SolrCleanerTasklet implements Tasklet {
             CoreContainer container = new CoreContainer();
             container.load( solrPath, f );
 
-            SolrServer solrServer = new EmbeddedSolrServer( container, "" );
+            EmbeddedSolrServer solrServer = new EmbeddedSolrServer( container, "" );
             solrServer.deleteByQuery("*:*");
 
             solrServer.optimize();
             solrServer.commit();
 
             // shutdown
-            java.lang.reflect.Field field = EmbeddedSolrServer.class.getDeclaredField("coreContainer");
-            field.setAccessible(true);
-            container = (CoreContainer) field.get(solrServer);
-            container.shutdown();
+            solrServer.shutdown();
 
             contribution.getExitStatus().addExitDescription("Cleared: " + solrPath);
         }
