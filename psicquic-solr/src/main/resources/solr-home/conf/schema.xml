@@ -57,7 +57,7 @@
      <!-- to garantee backwards-compatability with psiquic reference implementation  1.2.1 which uses the default lucene 2.3.2 analyzer-->  
     <fieldType name="miqlText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" multiValued="true">
       <analyzer>
-        <tokenizer class="solr.StandardTokenizerFactory"/> 	<!-- Good general purpose tokenizer, sets meaning for values: "I.B.M. cat's can't" ==> ACRONYM: "I.B.M.", APOSTROPHE:"cat's", APOSTROPHE:"can't" -->       
+        <tokenizer class="solr.ClassicTokenizerFactory"/> 	<!-- StandardTokenizer's behavior pre-Solr 3.1" -->       
         <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
         <filter class="solr.LowerCaseFilterFactory"/> 		<!-- "I.B.M.", "Solr" ==> "i.b.m.", "solr" -->      	
         <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true" enablePositionIncrements="false"/> <!--  Discards common words: "a", "an", "and", "are", "as", "at", "be", "but", "by" -->
