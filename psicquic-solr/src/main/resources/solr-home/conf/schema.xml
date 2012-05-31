@@ -116,7 +116,7 @@
    <field name="pxref" 			type="miqlText" stored="false" default=""/> <!-- pxref = pxrefA + pxrefB -->   
    <field name="xref" 			type="miqlText" stored="true"  default="-"/> 
    <field name="annot" 			type="miqlText" stored="false" default=""/> <!-- annot = annotA + annotB --> 
-   <field name="udate" 			type="miqlInt"  default=""/>
+   <field name="udate" 			type="miqlInt"  default="0"/>
    <field name="negative" 		type="miqlBoolean" default="false"/>
   
    <field name="ftypeA" 		type="miqlText" stored="true"  default="-"/>
