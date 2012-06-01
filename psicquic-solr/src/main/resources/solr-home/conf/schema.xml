@@ -61,7 +61,7 @@
 		<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="[\(\)]" replacement=""/> <!-- replace brakets -->
 		<tokenizer 	class="solr.WhitespaceTokenizerFactory"/>
 		<filter	class="solr.TrimFilterFactory"/> <!--  trim white spaces at the beginning and end of the words -->		
-		<!--   <filter class="solr.LengthFilterFactory" min="2" max="1000"/>  --> <!-- remove words with length 1 -->
+		<filter class="solr.LengthFilterFactory" min="2" max="1000"/>  --> <!-- remove words with length 1 -->
         <filter	class="solr.LowerCaseFilterFactory"/>   
         <filter class="solr.StopFilterFactory"/> <!--  discards common english stop words: "a", "an", ... -->
       </analyzer>
