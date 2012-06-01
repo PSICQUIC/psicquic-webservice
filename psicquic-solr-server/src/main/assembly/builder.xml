@@ -1,0 +1,54 @@
+<assembly>
+  <id>builder</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+
+  <fileSets>
+
+<!--
+    <fileSet>    
+      <directory>../etc/psq/xsl</directory>
+      <outputDirectory>/etc/xsl</outputDirectory>
+      <includes>
+        <include>*.xml</include>
+      </includes>      
+    </fileSet>
+-->
+    <fileSet>
+      <directory>${project.build.directory}/classes</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>**/*.class</include>
+      </includes>      
+    </fileSet>
+
+
+  </fileSets>
+<!--
+  <files>
+    <file>
+      <source>../etc/psq/server/psq-context-default.json</source>
+      <outputDirectory>/etc</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+    <file>
+      <source>../etc/psq/server/log4j.properties</source>
+      <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+ </files>
+-->
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <unpack>true</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+  </dependencySets>
+
+</assembly>
+
