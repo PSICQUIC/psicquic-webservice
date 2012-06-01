@@ -71,7 +71,7 @@
 
     <bean id="batchDataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="org.h2.Driver"/>
-        <property name="url" value="jdbc:h2:file:psicquicbatch"/>
+        <property name="url" value="jdbc:h2:file:target/psicquicbatch"/>
         <property name="username" value="sa"/>
         <property name="password" value=""/>
     </bean>
