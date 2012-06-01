@@ -3,8 +3,8 @@ use SOAP::Lite;
 use XML::XPath;
 use XML::XPath::XMLParser;
 
-my $URL = "http://127.0.0.1:8080/psicquic-solr/ws";
-my $PURL= "http://%%%:8080/psicquic-solr/ws";
+my $URL = "http://127.0.0.1:8080/psicquic-solr/ws/psq";
+my $PURL= "http://%%%:8080/psicquic-solr/ws/psq";
 
 my $ip="";
 my $op="getByQuery";
