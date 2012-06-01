@@ -78,7 +78,8 @@
   
 
   <fields>
- 	<field name="uuId" type="miqlUuid" default="NEW"/>	
+ 	<field name="uuId"  type="miqlUuid" default="NEW"/>
+ 	<field name="recId" type="miqlUnindexedStoredString"/>	
  	
  	<!-- MIQL 2.5 indexed and stored fields specification http://code.google.com/p/psicquic/wiki/MiqlReference-->    
    <field name="idA"			type="miqlText" default="-"/> 
