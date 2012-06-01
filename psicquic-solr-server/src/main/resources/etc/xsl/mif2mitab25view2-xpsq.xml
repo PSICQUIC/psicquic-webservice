@@ -240,7 +240,7 @@
 
     <xsl:element name="doc">
       <xsl:element name="field">
-        <xsl:attribute name="name">pid</xsl:attribute>
+        <xsl:attribute name="name">recId</xsl:attribute>
         <xsl:value-of select="concat($fep,':',$evd/@id,':cx')"/>
       </xsl:element>
         
@@ -300,7 +300,7 @@
 
           <xsl:element name="doc">
            <xsl:element name="field">
-             <xsl:attribute name="name">pid</xsl:attribute>
+             <xsl:attribute name="name">recId</xsl:attribute>
              <xsl:if test="$epid = 'false'">
               <xsl:value-of select="concat($fep,':',$evd/@id)"/>
              </xsl:if>

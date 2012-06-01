@@ -234,17 +234,17 @@ public class SolrIndex implements Index{
 		
 		Map cdoc= rt.next();
 		
-		String pid = (String) cdoc.get("pid");;
+		String recId = (String) cdoc.get("recId");;
 		SolrInputDocument doc 
 		    = (SolrInputDocument) cdoc.get("solr");
 		
 		try{
 		    if( shSolr.size() > 1 ){
 			
-			int shard = this.shardSelect( pid );
+			int shard = this.shardSelect( recId );
 			Log log = LogFactory.getLog( this.getClass() );
 			int shMax = shSolr.size() - 1;
-			log.info( " SolrIndex(add): pid=" + pid 
+			log.info( " SolrIndex(add): recId=" + recId 
 				  + " shard= " + shard 
 				  + " (max= " + shMax +")" );
 			

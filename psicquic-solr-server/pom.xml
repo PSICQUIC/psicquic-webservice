@@ -272,7 +272,7 @@
             <finalName>psicquic-index</finalName>
             <archive>
               <manifest>
-                <mainClass>org.hupo.psi.mi.psq.builder.buildindex</mainClass>
+                <mainClass>org.hupo.psi.mi.psicquic.server.builder.buildindex</mainClass>
               </manifest>
             </archive>
 

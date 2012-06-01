@@ -48,89 +48,132 @@
 <schema name="psiquic-schema-2.7" version="1.5">
 
   <types>
-  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="false" /> 	
-    <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="true" precisionStep="0" positionIncrementGap="0"/>
-    <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="true" />  
-    <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true" required="true" />
-  	<fieldType name="miqlIndexedStoredString" 	class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="true" omitNorms="true" required="true" />   
-  	 	     
-     <!-- to garantee backwards-compatability with psiquic reference implementation  1.2.1 which uses the default lucene 2.3.2 analyzer-->  
-    <fieldType name="miqlIndexedStoredText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" >
-      <analyzer>
-        <tokenizer class="solr.StandardTokenizerFactory"/> 	<!-- Good general purpose tokenizer, sets meaning for values: "I.B.M. cat's can't" ==> ACRONYM: "I.B.M.", APOSTROPHE:"cat's", APOSTROPHE:"can't" -->       
-        <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
-        <filter class="solr.LowerCaseFilterFactory"/> 		<!-- "I.B.M.", "Solr" ==> "i.b.m.", "solr" -->      	
-        <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true" enablePositionIncrements="false"/> <!--  Discards common words: "a", "an", "and", "are", "as", "at", "be", "but", "by" -->
-        <!--  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/> -->
-        <!--  <filter class="solr.SynonymFilterFactory" synonyms="syn.txt" ignoreCase="true" expand="false"/> -->
-      </analyzer>
-    </fieldType>      
-
+  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="true" required="true"/> 	
+    <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="false" precisionStep="0" positionIncrementGap="0" multiValued="false" required="true"/>
+    <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="false" multiValued="false" required="true"/>  
+    <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true"  multiValued="true" required="true"/>
+    <fieldType name="miqlUnindexedStoredString" class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="true" omitNorms="true" multiValued="true" required="true"/>
+    <fieldType name="miqlDummyField" 			class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="false" multiValued="true"/>
+   	  	    
      <!-- new psiquic reference implementation -->  
-    <fieldType name="miqlIndexedStoredTextNew" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" >
+    <fieldType name="miqlText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="false" omitNorms="true" termVectors="true" required="true" multiValued="true">
       <analyzer>
-        <tokenizer class="solr.StandardTokenizerFactory"/> 	<!-- Good general purpose tokenizer, sets meaning for values: "I.B.M. cat's can't" ==> ACRONYM: "I.B.M.", APOSTROPHE:"cat's", APOSTROPHE:"can't" -->       
-        <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
-        <filter class="solr.LowerCaseFilterFactory"/> 		<!-- "I.B.M.", "Solr" ==> "i.b.m.", "solr" -->      	
-        <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true" enablePositionIncrements="false"/> <!--  Discards common words: "a", "an", "and", "are", "as", "at", "be", "but", "by" -->
-        <!--  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/> -->
-        <!--  <filter class="solr.SynonymFilterFactory" synonyms="syn.txt" ignoreCase="true" expand="false"/> -->
+		<tokenizer 	class="solr.WhitespaceTokenizerFactory"/>
+        <filter	class="solr.LowerCaseFilterFactory"/>   
       </analyzer>
     </fieldType>   
   </types>  
+  
+    <!-- to garantee backwards-compatability with psiquic reference implementation  1.2.1 which uses the default lucene 2.3.2 analyzer-->  
+   <fieldType name="miqlTextOld" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" multiValued="true">
+     <analyzer>
+       <tokenizer class="solr.ClassicTokenizerFactory"/> 	<!-- StandardTokenizer's behavior pre-Solr 3.1" -->       
+       <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
+       <filter class="solr.LowerCaseFilterFactory"/> 		<!-- "I.B.M.", "Solr" ==> "i.b.m.", "solr" -->      	
+       <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true" enablePositionIncrements="false"/> <!--  Discards common words: "a", "an", "and", "are", "as", "at", "be", "but", "by" -->
+       <!--  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/> -->
+       <!--  <filter class="solr.SynonymFilterFactory" synonyms="syn.txt" ignoreCase="true" expand="false"/> -->
+     </analyzer>
+   </fieldType>      
+  
 
   <fields>
- 	<field name="uuId" type="miqlUuid"/>
+ 	<field name="uuId"  type="miqlUuid" default="NEW"/>
+ 	<field name="recId" type="miqlUnindexedStoredString"/>	
  	
- 	<!-- MIQL 2.5 field specification http://code.google.com/p/psicquic/wiki/MiqlReference27-->    
-   <field name="idA"			type="miqlIndexedStoredText"/> <!-- idA = idA+altA -->
-   <field name="idB"			type="miqlIndexedStoredText"/> <!-- idB = idB+altB --> 
-   <field name="id" 			type="miqlIndexedStoredText"/> <!-- id = idA+altA+idB+altB --> 
-   <field name="alias" 			type="miqlIndexedStoredText"/> <!-- alias = aliasA+aliasB --> 
-   <field name="identifier" 	type="miqlIndexedStoredText"/> <!-- identifier = id + alias -->     
-   <field name="pubauth"		type="miqlIndexedStoredText"/>
-   <field name="pubid"			type="miqlIndexedStoredText"/>
-   <field name="taxidA"			type="miqlIndexedStoredText"/>
-   <field name="taxidB"			type="miqlIndexedStoredText"/> 
-   <field name="species" 		type="miqlIndexedStoredText"/> <!-- species = taxidA + taxidB -->   
-   <field name="type" 			type="miqlIndexedStoredText"/> 
-   <field name="detmethod"		type="miqlIndexedStoredText"/>
-   <field name="source"			type="miqlIndexedStoredText"/> 
-   <field name="interaction_id"	type="miqlIndexedStoredText"/> 
-   <field name="confidence"		type="miqlIndexedStoredString"/>
+ 	<!-- MIQL 2.5 indexed and stored fields specification http://code.google.com/p/psicquic/wiki/MiqlReference-->    
+   <field name="idA"			type="miqlText" default="-"/> 
+   <field name="idB"			type="miqlText" default="-"/>  
+   <field name="id" 			type="miqlText" default=""/> <!-- id = idA+altA+idB+altB -->        
+   <field name="alias" 			type="miqlText" default=""/> <!-- alias = aliasA+aliasB --> 
+   <field name="identifier" 	type="miqlText" default=""/> <!-- identifier = id + alias -->     
+   <field name="pubauth"		type="miqlText" default="-"/>
+   <field name="pubid"			type="miqlText" default="-"/>
+   <field name="taxidA"			type="miqlText" default="-"/>
+   <field name="taxidB"			type="miqlText" default="-"/> 
+   <field name="species" 		type="miqlText" default=""/> <!-- species = taxidA + taxidB -->   
+   <field name="type" 			type="miqlText" default="-"/> 
+   <field name="detmethod"		type="miqlText" default="-"/>  
+   <field name="interaction_id"	type="miqlText" default="-"/> 
+ 
+   <!-- MIQL 2.5 dummy fields used as input for 2.5 copy fields --> 
+   <field name="altidA"			type="miqlDummyField" default="-"/> 	 
+   <field name="altidB"			type="miqlDummyField" default="-"/>     
+   <field name="aliasA"			type="miqlDummyField" default="-"/> 	 
+   <field name="aliasB"			type="miqlDummyField" default="-"/> 	 
+   <field name="source"			type="miqlDummyField" default="-"/> 	
+   <field name="confidence"		type="miqlDummyField" default="-"/>  
    
-   <!-- MIQL 2.7 http://code.google.com/p/psicquic/wiki/MiqlReference-->
-   <field name="pbioroleA" 		type="miqlIndexedStoredText"/>
-   <field name="pbioroleB" 		type="miqlIndexedStoredText"/>
-   <field name="pbiorole" 		type="miqlIndexedStoredText"/> <!-- pbiorole = pbioroleA + pbioroleB -->   
-   <field name="ptypeA" 		type="miqlIndexedStoredText"/>
-   <field name="ptypeB" 		type="miqlIndexedStoredText"/>
-   <field name="ptype" 			type="miqlIndexedStoredText"/> <!-- ptype = ptypeA + ptypeB -->   
-   <field name="pxrefA" 		type="miqlIndexedStoredText"/>
-   <field name="pxrefB" 		type="miqlIndexedStoredText"/>
-   <field name="xref" 			type="miqlIndexedStoredText"/> <!-- xref = xrefA + xrefB -->
-   <field name="pxref" 			type="miqlIndexedStoredText"/> <!-- pxref = pxrefA + pxrefB -->   
-   <field name="annot" 			type="miqlIndexedStoredText"/> <!-- annot = annotA + annotB --> 
-   <field name="udate" 			type="miqlInt"/>
-   <field name="negative" 		type="miqlBoolean"/>
-   <field name="complex" 		type="miqlIndexedStoredText"/>
-   <field name="ftypeA" 		type="miqlIndexedStoredText"/>
-   <field name="ftypeB" 		type="miqlIndexedStoredText"/> 
-   <field name="ftype" 			type="miqlIndexedStoredText"/> <!-- ftype = ftypeA + ftypeB -->
-   <field name="pmethodA"		type="miqlIndexedStoredText"/>
-   <field name="pmethodB" 		type="miqlIndexedStoredText"/>
-   <field name="pmethod" 		type="miqlIndexedStoredText"/> <!-- pmethod = pmethodA + pmethodB -->
-   <field name="stc" 			type="miqlBoolean"/>
-   <field name="param" 			type="miqlBoolean"/>
-   <field name="text" 			type="miqlBoolean"/>
+   <!-- MIQL 2.7 indexed and stored fields http://code.google.com/p/psicquic/wiki/MiqlReference27 -->
+   <field name="complex" 		type="miqlText" 	default="-"/>
+   <field name="pbioroleA" 		type="miqlText" 	default="-"/>
+   <field name="pbioroleB" 		type="miqlText"		default="-"/>
+   <field name="pbiorole" 		type="miqlText" 	default=""/> <!-- pbiorole = pbioroleA + pbioroleB -->   
+   <field name="ptypeA" 		type="miqlText" 	default="-"/>
+   <field name="ptypeB" 		type="miqlText" 	default="-"/>
+   <field name="ptype" 			type="miqlText" 	default=""/> <!-- ptype = ptypeA + ptypeB -->   
+   <field name="pxrefA" 		type="miqlText" 	default="-"/>
+   <field name="pxrefB" 		type="miqlText" 	default="-"/>
+   <field name="pxref" 			type="miqlText" 	default=""/> <!-- pxref = pxrefA + pxrefB -->   
+   <field name="xref" 			type="miqlText" 	default="-"/> 
+   <field name="annot" 			type="miqlText" 	default=""/> <!-- annot = annotA + annotB --> 
+   <field name="udate" 			type="miqlInt"  	default="0"/>
+   <field name="negative" 		type="miqlBoolean" 	default="false"/> 
+   <field name="ftypeA" 		type="miqlText" 	default="-"/>
+   <field name="ftypeB" 		type="miqlText" 	default="-"/> 
+   <field name="ftype" 			type="miqlText" 	default=""/> <!-- ftype = ftypeA + ftypeB -->
+   <field name="pmethodA"		type="miqlText" 	default="-"/>
+   <field name="pmethodB" 		type="miqlText" 	default="-"/>
+   <field name="pmethod" 		type="miqlText" 	default=""/> <!-- pmethod = pmethodA + pmethodB -->
+   <field name="stc" 			type="miqlBoolean"  default="false"/>
+   <field name="param" 			type="miqlBoolean"  default="false"/>
 
+   <!-- MIQL 2.7 dummy fields used as input for 2.7 copy fields --> 
+   <field name="pexproleA"		type="miqlDummyField" default="-"/> 	
+   <field name="pexproleB"		type="miqlDummyField" default="-"/>  
+   <field name="annotA" 		type="miqlDummyField" default="-"/>
+   <field name="annotB" 		type="miqlDummyField" default="-"/> 
+   <field name="taxidHost" 		type="miqlDummyField" default="-"/>	   
+   <field name="paramText"	 	type="miqlDummyField" default="-"/>
+   <field name="cdate"	 		type="miqlDummyField" default="-"/>
+   <field name="stcA"	 		type="miqlDummyField" default="-"/>
+   <field name="stcB"	 		type="miqlDummyField" default="-"/>
+   <field name="checksumA"	 	type="miqlDummyField" default="-"/>
+   <field name="checksumB"	 	type="miqlDummyField" default="-"/>
+   <field name="checksumI"	 	type="miqlDummyField" default=""/>
+         	
    <!-- Dynamic Stored Fields that can be used for faceting/sorting -->
-   <dynamicField name="*_s"  type="miqlIndexedUnstoredString"/>    
+   <dynamicField name="*_s"  type="miqlIndexedUnstoredString" default="-"/> 
+   <dynamicField name="*_o"  type="miqlUnindexedStoredString" default="-"/>     
  </fields>
-
+ 
+ <copyField source="idA" 		dest="id"/>
+ <copyField source="idB" 		dest="id"/>
+ <copyField source="aliasA" 	dest="alias"/>
+ <copyField source="aliasB" 	dest="alias"/>
+ <copyField source="idA" 		dest="identifier"/>
+ <copyField source="idB" 		dest="identifier"/>	
+ <copyField source="altidA" 	dest="identifier"/>
+ <copyField source="altidB" 	dest="identifier"/>	
+ <copyField source="aliasA" 	dest="identifier"/>
+ <copyField source="aliasB" 	dest="identifier"/>
+ <copyField source="taxidA" 	dest="species"/>
+ <copyField source="taxidB" 	dest="species"/>
+ <copyField source="pbioroleA" 	dest="pbiorole"/>	
+ <copyField source="pbioroleB" 	dest="pbiorole"/>
+ <copyField source="ptypeA" 	dest="ptype"/>	
+ <copyField source="ptypeB" 	dest="ptype"/>	
+ <copyField source="pxrefA" 	dest="pxref"/>	
+ <copyField source="pxrefB" 	dest="pxref"/>	
+ <copyField source="annotA" 	dest="annot"/>	
+ <copyField source="annotB" 	dest="annot"/>		
+ <copyField source="ftypeA" 	dest="ftype"/>	
+ <copyField source="ftypeB" 	dest="ftype"/>
+ <copyField source="pmethodA" 	dest="pmethod"/>
+ <copyField source="pmethodB" 	dest="pmethod"/>	
+ 					
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field
    -->
  <uniqueKey>uuId</uniqueKey>
-
 </schema>

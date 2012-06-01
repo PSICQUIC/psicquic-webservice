@@ -109,7 +109,7 @@ public class XsltTransformer implements PsqTransformer{
 		
                 if( domList.item( domPos ).getNodeName().equals( "doc" ) ){
 		    
-                    String pid = fileName;
+                    String recId = fileName;
 
                     SolrInputDocument doc =  new SolrInputDocument();
                     NodeList field = domList.item( domPos ).getChildNodes();
@@ -120,12 +120,12 @@ public class XsltTransformer implements PsqTransformer{
                             String value = fe.getFirstChild().getNodeValue();
                             doc.addField( name,value );
 			    
-                            if( name.equals( "pid" ) ){
-                                pid = value;
+                            if( name.equals( "recId" ) ){
+                                recId = value;
                             }
                         }
                     }
-		    resMap.put( "pid", pid );
+		    resMap.put( "recId", recId );
 		    resMap.put( "solr", doc );
 		    resMap.put( "dom", 
 				domList.item( domPos ).getChildNodes() );

@@ -123,7 +123,7 @@ public class DerbyStore{
 		    while( rt.hasNext() ){
 					
 			Map cdoc= rt.next();
-			String pid = (String) cdoc.get( "pid" );
+			String recId = (String) cdoc.get( "recId" );
 			NodeList fl = (NodeList) cdoc.get( "dom" );
 		       
 			String vStr = null;
@@ -135,8 +135,8 @@ public class DerbyStore{
 				String name = fe.getAttribute("name");
 				String value = fe.getFirstChild().getNodeValue();
 				
-				if( name.equals( "pid" ) ){
-				    pid = value;
+				if( name.equals( "recId" ) ){
+				    recId = value;
 				}
 				if( name.equals( "view" ) ){
 				    vStr= value;
@@ -145,7 +145,7 @@ public class DerbyStore{
 			}
 			
 			try{
-			    this.add( pid, vType, vStr );
+			    this.add( recId, vType, vStr );
 			}catch( Exception ex ){
 			    ex.printStackTrace();
 			}
