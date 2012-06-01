@@ -35,6 +35,9 @@
             </plugin>
         </plugins>
     </build>
+    <properties>
+        <solr.url>http://localhost:8983/solr</solr.url>
+    </properties>
 
     <profiles>
         <profile>
@@ -200,9 +203,9 @@
         <!-- json parser -->
 
         <dependency>
-          <groupId>org.json</groupId>
-          <artifactId>json</artifactId>
-          <version>20090211</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20090211</version>
         </dependency>
 
         <dependency>
