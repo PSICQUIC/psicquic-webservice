@@ -57,7 +57,8 @@
    	  	    
      <!-- new psiquic reference implementation -->  
     <fieldType name="miqlText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="false" omitNorms="true" termVectors="true" required="true" multiValued="true">
-      <analyzer>
+      <analyzer>		
+		<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="[)()]" replacement=""/> <!-- replace brakets -->
 		<tokenizer 	class="solr.WhitespaceTokenizerFactory"/>
 		<filter	class="solr.TrimFilterFactory"/> 
         <filter	class="solr.LowerCaseFilterFactory"/>   
