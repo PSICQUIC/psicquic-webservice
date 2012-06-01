@@ -1,9 +1,8 @@
 package org.hupo.psi.mi.indexing.batch.writer;
 
 import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.core.CoreContainer;
 import org.hupo.psi.calimocho.model.Row;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStream;
@@ -13,7 +12,6 @@ import org.xml.sax.SAXException;
 import psidev.psi.mi.calimocho.solr.converter.Converter;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,12 +25,12 @@ import java.util.List;
 
 public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
-    private String solrPath;
-    private EmbeddedSolrServer solrServer;
+    private String solrUrl;
+    private SolrServer solrServer;
 
     public void write(List<? extends Row> items) throws Exception {
 
-        if (solrPath == null) {
+        if (solrUrl == null) {
             throw new NullPointerException("No 'solrURL' configured for SolrItemWriter");
         }
 
@@ -51,7 +49,7 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     public void open(ExecutionContext executionContext) throws ItemStreamException {
         try {
-            if (solrPath != null) {
+            if (solrUrl != null) {
                 try {
                     createSolrServer();
                 } catch (SAXException e) {
@@ -61,7 +59,7 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
                 }
             }
         } catch (IOException e) {
-            throw new ItemStreamException("Problem with ontology solr server: "+ solrPath, e);
+            throw new ItemStreamException("Problem with ontology solr server: "+ solrUrl, e);
         }
     }
 
@@ -73,8 +71,6 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             solrServer.optimize();
             solrServer.commit();
 
-            solrServer.shutdown();
-
         } catch (Exception e) {
             throw new ItemStreamException("Problem closing solr server", e);
         }
@@ -82,22 +78,17 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     public SolrServer createSolrServer() throws IOException, SAXException, ParserConfigurationException {
         if (solrServer == null) {
-            if (solrPath == null) {
+            if (solrUrl == null) {
                 throw new NullPointerException("No 'solr url' configured for SolrItemWriter");
             }
 
-            File home = new File(solrPath);
-            File f = new File( home, "solr.xml" );
-            CoreContainer container = new CoreContainer();
-            container.load( solrPath, f );
-
-            solrServer = new EmbeddedSolrServer( container, "" );
+            solrServer = new HttpSolrServer(solrUrl);
         }
 
         return solrServer;
     }
 
-    public void setSolrPath(String solrPath) {
-        this.solrPath = solrPath;
+    public void setSolrUrl(String solrUrl) {
+        this.solrUrl = solrUrl;
     }
 }

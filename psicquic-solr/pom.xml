@@ -64,7 +64,7 @@
 
                                 <argument>org.hupo.psi.mi.indexing.batch.SolrMitabIndexer</argument>
                                 <argument>${mitab.file}</argument>
-                                <argument>${solr.home.path}</argument>
+                                <argument>${solr.url}</argument>
                                 <argument>${mitab.version}</argument>
                             </arguments>
                         </configuration>
@@ -211,6 +211,24 @@
             <version>1.6.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.1.2</version>
+            <!-- HttpSolrServer requires this dependency. -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.1.2</version>
+            <!-- HttpSolrServer requires this dependency. -->
+        </dependency>
     </dependencies>
 
     <repositories>

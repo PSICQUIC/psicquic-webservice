@@ -30,11 +30,11 @@
     <!-- writer -->
 
     <bean id="solrWriterTest" class="org.hupo.psi.mi.indexing.batch.writer.SolrItemWriter">
-        <property name="solrPath" value="resources/solr-home"/>
+        <property name="solrUrl" value="resources/solr-home"/>
     </bean>
 
     <bean id="solrCleanerTaskletTest" class="org.hupo.psi.mi.indexing.batch.tasklet.SolrCleanerTasklet">
-        <property name="solrPath" value="resources/solr-home"/>
+        <property name="solrUrl" value="resources/solr-home"/>
     </bean>
 
     <!-- steps -->

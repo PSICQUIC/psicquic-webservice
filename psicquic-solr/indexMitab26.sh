@@ -1,4 +1,5 @@
 #!/bin/sh
 
 MITAB_FILE=$1;
-mvn clean install -Pexec -Dmitab.file=${MITAB_FILE} -Dmitab.version=MITAB26 -Dsolr.home.path=src/main/resources/solr-home -Dmaven.test.skip
+SOLR_URL=$2;
+mvn clean install -Pexec -Dmitab.file=${MITAB_FILE} -Dmitab.version=MITAB26 -Dsolr.url=${SOLR_URL} -Dmaven.test.skip
