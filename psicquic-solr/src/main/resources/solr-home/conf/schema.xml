@@ -62,7 +62,7 @@
 		<tokenizer 	class="solr.WhitespaceTokenizerFactory"/>
 		<filter	class="solr.TrimFilterFactory"/> 
 		<filter class="solr.StopFilterFactory"/> <!--  discards common english stop words: "a", "an", ... -->
-		<filter class="solr.LengthFilterFactory" min="2" max="-1"/> <!-- remove words with length 1 -->
+		<filter class="solr.LengthFilterFactory" min="2" max="1000"/> <!-- remove words with length 1 -->
         <filter	class="solr.LowerCaseFilterFactory"/>   
       </analyzer>
     </fieldType>   
