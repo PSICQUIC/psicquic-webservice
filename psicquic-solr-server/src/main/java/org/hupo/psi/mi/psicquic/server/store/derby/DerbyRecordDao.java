@@ -150,6 +150,8 @@ public class DerbyRecordDao implements RecordDao{
         connect();
         String record = "";
 
+	Log log = LogFactory.getLog( this.getClass() );
+
         try{
             PreparedStatement pst = dbcon
                 .prepareStatement( "select rid, record from record" +
@@ -163,6 +165,9 @@ public class DerbyRecordDao implements RecordDao{
                 record = rc.getSubString( 1L, 
                                           new Long(rc.length()).intValue() );
             } 
+
+	log.info( "DerbyRecordDao: recId=" + rid + "  record=" + record );
+
         }catch( Exception ex ){
             ex.printStackTrace();
         }

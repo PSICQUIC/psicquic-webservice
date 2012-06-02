@@ -159,7 +159,7 @@ public class DerbyStore{
         
         log.info( "PID=" + pid ); 
         log.info( "  VTP=" + vType ); 
-        log.info( "  VIEW=" + view.substring( 0,16 ) ); 
+        log.info( "  VIEW=" + view.substring(0,24) + "..." ); 
 
         // add record
         //-----------

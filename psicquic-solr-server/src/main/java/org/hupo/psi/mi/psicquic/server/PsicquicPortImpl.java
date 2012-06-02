@@ -140,11 +140,11 @@ public class PsicquicPortImpl implements PsqPort {
         for( Iterator i = rs.getResultList().iterator(); i.hasNext(); ){
             Map in = (Map) i.next();
             
-            String pid = (String) in.get("pid");
+            String recId = (String) in.get("recId");
 
-            String drecord =  rdao.getRecord( pid ,"psi-mi/tab25" );
+            String drecord =  rdao.getRecord( recId ,"psi-mi/tab25" );
         
-            log.info( " SolrDoc: pid=" + pid + " :: "  + drecord );
+            log.info( " SolrDoc: recId=" + recId + " :: "  + drecord );
             mitab += drecord + "\n";
         }
         qr.getResultSet().setMitab( mitab );     

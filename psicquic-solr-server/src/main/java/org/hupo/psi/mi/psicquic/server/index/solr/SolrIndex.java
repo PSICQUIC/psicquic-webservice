@@ -211,14 +211,15 @@ public class SolrIndex implements Index{
 
     public void addFile( String format, String fileName, InputStream is ){
         
+	Log log = LogFactory.getLog( this.getClass() );
+
         Map rtr = ricon.get( format );
         
         List<SolrInputDocument> output = new ArrayList<SolrInputDocument>();
 
         if( ((String) rtr.get("type")).equalsIgnoreCase("XSLT") ){
             if( rtr.get( "transformer" ) == null ){
-
-                Log log = LogFactory.getLog( this.getClass() );
+		
                 log.info( " Initializing transformer: format=" + format
                           + " type=XSLT config=" + rtr.get("config") );
 
@@ -229,7 +230,7 @@ public class SolrIndex implements Index{
             
             PsqTransformer rt = (PsqTransformer) rtr.get( "transformer" );
             rt.start( fileName, is );
-            
+            log.info( " SolrIndex(add): trnsformation start...");
 	    while( rt.hasNext() ){
 		
 		Map cdoc= rt.next();
@@ -238,14 +239,17 @@ public class SolrIndex implements Index{
 		SolrInputDocument doc 
 		    = (SolrInputDocument) cdoc.get("solr");
 		
+		log.info( " SolrIndex(add): recId=" + recId + 
+			  "\n                 SIDoc=" + doc );
+
 		try{
 		    if( shSolr.size() > 1 ){
 			
 			int shard = this.shardSelect( recId );
-			Log log = LogFactory.getLog( this.getClass() );
 			int shMax = shSolr.size() - 1;
-			log.info( " SolrIndex(add): recId=" + recId 
-				  + " shard= " + shard 
+			
+			log.info( " SolrIndex(add): recId=" + recId +
+				  "\n                 shard= " + shard 
 				  + " (max= " + shMax +")" );
 			
 			this.add( shard, doc );
@@ -256,7 +260,7 @@ public class SolrIndex implements Index{
 		    ex.printStackTrace();
 		}                    
 	    }
-            
+                        log.info( " SolrIndex(add): trnsformation DONE");
             try{
                 this.commit();   
             }catch( Exception ex ){

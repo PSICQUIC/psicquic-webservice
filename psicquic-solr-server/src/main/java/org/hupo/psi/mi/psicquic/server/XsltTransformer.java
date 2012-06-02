@@ -23,6 +23,9 @@ import javax.xml.bind.util.JAXBResult;
 
 import org.apache.solr.common.SolrInputDocument;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class XsltTransformer implements PsqTransformer{
     
     private Transformer psqtr = null;
@@ -30,6 +33,7 @@ public class XsltTransformer implements PsqTransformer{
     private String fileName = "";
     private NodeList domList = null;
     private int domPos = -1;
+    private int nextPos = -1;
     
     public XsltTransformer( String xslt ){
 	
@@ -66,8 +70,11 @@ public class XsltTransformer implements PsqTransformer{
     public void start( String fileName ){
 	this.fileName = fileName;	
     }
-    
+
     public void start( String fileName, InputStream is ){
+	
+	Log log = LogFactory.getLog( this.getClass() );
+	log.info( " XsltTransformer: start(file= " + fileName + ")");
 	
 	try {
 	    this.fileName = fileName;
@@ -83,11 +90,13 @@ public class XsltTransformer implements PsqTransformer{
             psqtr.transform( ssNative, domResult );
             
 	    Node domNode = domResult.getNode();
-	    
+	    log.info( " XsltTransformer: node=" + domNode );
+
 	    if( domNode != null ){
 	        domList = domNode.getFirstChild().getChildNodes();
 	    }    
-	    
+	    log.info( " XsltTransformer: domList=" + domList );
+
 	} catch( Exception ex ) {
 	    ex.printStackTrace();
 	}
@@ -95,16 +104,28 @@ public class XsltTransformer implements PsqTransformer{
 
     public boolean hasNext(){
 	if( domList == null | domPos >= domList.getLength() ) return false;
-	return true;
+	nextPos = domPos + 1;
+	while( nextPos <domList.getLength() ){
+	    if( domList.item( nextPos ).getNodeName().equals( "doc" ) ){
+		return true;
+	    }
+	    nextPos++;
+	}
+	return false;
     }
     
     public Map next(){
 
-	Map resMap = new HashMap();
+	Log log = LogFactory.getLog( this.getClass() );
+
+	if( domPos == nextPos && !hasNext() ) return null;
+	if( nextPos < domList.getLength() ){
+	    domPos = nextPos;
 	
-	if( domList != null ){
-	    domPos++;
+	    Map resMap = new HashMap();
 	    
+	    log.info( " XsltTransformer: pos=" + domPos );
+	    log.info( "                  node=" + domList.item( domPos ) );
 	    if( domPos < domList.getLength() ){
 		
                 if( domList.item( domPos ).getNodeName().equals( "doc" ) ){
@@ -130,8 +151,9 @@ public class XsltTransformer implements PsqTransformer{
 		    resMap.put( "dom", 
 				domList.item( domPos ).getChildNodes() );
 		}
-	    }                                    
+	    }
+	    return resMap;
 	}
-       	return resMap;
+	return null;
     }
 }
