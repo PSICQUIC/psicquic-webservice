@@ -136,10 +136,11 @@ public class PsicquicPortImpl implements PsqPort {
         qr.setResultSet( psqOF.createResultSet() );
         
         String mitab="";
-
+	log.info( "getByQuery: rs="+ rs); 
         for( Iterator i = rs.getResultList().iterator(); i.hasNext(); ){
             Map in = (Map) i.next();
-            
+            log.info( "getByQuery: in="+ in);
+
             String recId = (String) in.get("recId");
 
             String drecord =  rdao.getRecord( recId ,"psi-mi/tab25" );

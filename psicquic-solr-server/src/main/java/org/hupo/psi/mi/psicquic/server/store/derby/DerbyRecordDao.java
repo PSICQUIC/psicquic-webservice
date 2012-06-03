@@ -166,7 +166,7 @@ public class DerbyRecordDao implements RecordDao{
                                           new Long(rc.length()).intValue() );
             } 
 
-	log.info( "DerbyRecordDao: recId=" + rid + "  record=" + record );
+	log.info( "DerbyRecordDao(getRecord): recId=" + rid + "  record=" + record );
 
         }catch( Exception ex ){
             ex.printStackTrace();

@@ -48,24 +48,43 @@
 <schema name="psiquic-schema-2.7" version="1.5">
 
   <types>
-  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="true" required="true"/> 	
-    <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="false" precisionStep="0" positionIncrementGap="0" multiValued="false" required="true"/>
-    <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="false" multiValued="false" required="true"/>  
-    <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true"  multiValued="true" required="true"/>
-    <fieldType name="miqlUnindexedStoredString" class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="true" omitNorms="true" multiValued="true" required="true"/>
-    <fieldType name="miqlDummyField" 			class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="false" multiValued="true"/>
+    <fieldType name="miqlUuid"  class="solr.UUIDField" 
+	       indexed="true" stored="true" required="true"/> 	
+
+    <fieldType name="recId" class="solr.StrField" 
+	       indexed="false" stored="true" required="false"/> 	
+
+    <fieldType name="miqlInt" class="solr.TrieIntField" 
+	       indexed="true" stored="false" required="true"
+	       precisionStep="0" positionIncrementGap="0" multiValued="false" />
+    <fieldType name="miqlBoolean" class="solr.BoolField" 
+	       indexed="true" stored="false" multiValued="false" required="true"/>  
+    <fieldType name="miqlIndexedUnstoredString" class="solr.StrField" 
+	       indexed="true" stored="false" sortMissingLast="true"  
+	       omitNorms="true" multiValued="true" required="true"/>
+    <fieldType name="miqlUnindexedStoredString" class="solr.StrField" 
+	       sortMissingLast="true" indexed="false" stored="true" 
+	       omitNorms="true" multiValued="true" required="true"/>
+    <fieldType name="miqlDummyField" class="solr.StrField" 
+	       sortMissingLast="true" indexed="false" stored="false" 
+	       multiValued="true"/>
    	  	    
      <!-- new psiquic reference implementation -->  
-    <fieldType name="miqlText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="false" omitNorms="true" termVectors="true" required="true" multiValued="true">
-      <analyzer>
-		<tokenizer 	class="solr.WhitespaceTokenizerFactory"/>
-        <filter	class="solr.LowerCaseFilterFactory"/>   
-      </analyzer>
-    </fieldType>   
+     <fieldType name="miqlText" class="solr.TextField" 
+		positionIncrementGap="100" indexed="true" stored="false" 
+		omitNorms="true" termVectors="true" required="true" 
+		multiValued="true">
+       <analyzer>
+	 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+	 <filter class="solr.LowerCaseFilterFactory"/>   
+       </analyzer>
+     </fieldType>   
   </types>  
   
     <!-- to garantee backwards-compatability with psiquic reference implementation  1.2.1 which uses the default lucene 2.3.2 analyzer-->  
-   <fieldType name="miqlTextOld" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" multiValued="true">
+    <fieldType name="miqlTextOld" class="solr.TextField" 
+	       positionIncrementGap="100" indexed="true" stored="true" 
+	       omitNorms="true" termVectors="true" required="true" multiValued="true">
      <analyzer>
        <tokenizer class="solr.ClassicTokenizerFactory"/> 	<!-- StandardTokenizer's behavior pre-Solr 3.1" -->       
        <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
@@ -74,12 +93,12 @@
        <!--  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/> -->
        <!--  <filter class="solr.SynonymFilterFactory" synonyms="syn.txt" ignoreCase="true" expand="false"/> -->
      </analyzer>
-   </fieldType>      
+    </fieldType>      
   
 
-  <fields>
- 	<field name="uuId"  type="miqlUuid" default="NEW"/>
- 	<field name="recId" type="miqlUnindexedStoredString"/>	
+    <fields>
+      <field name="uuId"  type="miqlUuid" default="NEW"/>
+      <field name="recId" type="recId"/>	
  	
  	<!-- MIQL 2.5 indexed and stored fields specification http://code.google.com/p/psicquic/wiki/MiqlReference-->    
    <field name="idA"			type="miqlText" default="-"/> 
