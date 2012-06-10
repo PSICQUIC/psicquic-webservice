@@ -3,23 +3,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.hupo.psi.mi.psicquic</groupId>
-    <artifactId>psicquic-solr</artifactId>
+    <artifactId>psicquic-solr-server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>psicquic-solr</name>
+    <name>psicquic-solr-server</name>
 
     <properties>
       <cxf.version>2.6.0</cxf.version>
       <spring.version>3.0.5.RELEASE</spring.version>
       <struts.version>2.3.4</struts.version>
       <solr.version>3.6.0</solr.version>
+      <calimocho.version>2.2-SNAPSHOT</calimocho.version>
     </properties>
 
     <scm>
-      <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr</connection>
-      <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr</developerConnection>
-      <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-solr</url>
+      <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr-server</connection>
+      <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr-server</developerConnection>
+      <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-solr-server</url>
     </scm>
 
     <dependencies>
@@ -90,13 +91,21 @@
             </exclusions>
         </dependency>
         -->
+
+
+        <dependency>
+            <groupId>psidev.psi.mi</groupId>
+            <artifactId>calimocho-solr</artifactId>
+            <version>${calimocho.version}</version>
+        </dependency>
 <!--
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-tab</artifactId>
-            <version>2.2-SNAPSHOT</version>
+            <version>${calimocho.version}</version>
         </dependency>
 -->
+
          <dependency>
            <groupId>org.springframework</groupId>
            <artifactId>spring-web</artifactId>

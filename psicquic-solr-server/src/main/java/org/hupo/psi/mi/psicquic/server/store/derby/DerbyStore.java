@@ -112,7 +112,7 @@ public class DerbyStore{
                                   + " type=XSLT config=" + itr.get("config") );
                         
                         PsqTransformer rt =
-                            new XsltTransformer( (String) itr.get("config") );
+                            new XsltTransformer( (Map) itr.get("config") );
                         itr.put( "transformer", rt );
                     }
 

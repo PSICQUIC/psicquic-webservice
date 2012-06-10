@@ -217,56 +217,84 @@ public class SolrIndex implements Index{
         
         List<SolrInputDocument> output = new ArrayList<SolrInputDocument>();
 
-        if( ((String) rtr.get("type")).equalsIgnoreCase("XSLT") ){
-            if( rtr.get( "transformer" ) == null ){
-		
+        // Known record transformers (add more when implemented)
+        //--------------------------
+
+        if( rtr.get( "transformer" ) == null ){
+
+            if( ((String) rtr.get("type")).equalsIgnoreCase( "XSLT" ) ){
+        
                 log.info( " Initializing transformer: format=" + format
                           + " type=XSLT config=" + rtr.get("config") );
-
-                PsqTransformer rt = 
-                    new XsltTransformer( (String) rtr.get("config") );
-                rtr.put( "transformer",rt );
+                
+                PsqTransformer recTr = 
+                    new XsltTransformer( (Map) rtr.get("config") );
+                rtr.put( "transformer",recTr );
+            }    
+        
+            if( ((String) rtr.get("type")).equalsIgnoreCase( "CALIMOCHO" ) ){
+            		
+                log.info( " Initializing transformer: format=" + format
+                          + " type=CALIMOCHO config=" + rtr.get("config") );
+                
+                PsqTransformer recTr = 
+                    new CalimochoTransformer( (Map) rtr.get( "config" ) );
+                rtr.put( "transformer", recTr );
             }
+        }    
+                
+        PsqTransformer recordTransformer 
+            = (PsqTransformer) rtr.get( "transformer" );
+        
+        if( recordTransformer == null ){
+
+            // NOTE: throw unknown transformer exception ?
             
-            PsqTransformer rt = (PsqTransformer) rtr.get( "transformer" );
-            rt.start( fileName, is );
-            log.info( " SolrIndex(add): trnsformation start...");
-	    while( rt.hasNext() ){
-		
-		Map cdoc= rt.next();
-		
-		String recId = (String) cdoc.get("recId");;
-		SolrInputDocument doc 
-		    = (SolrInputDocument) cdoc.get("solr");
-		
-		log.info( " SolrIndex(add): recId=" + recId + 
-			  "\n                 SIDoc=" + doc );
+        }
 
-		try{
-		    if( shSolr.size() > 1 ){
-			
-			int shard = this.shardSelect( recId );
-			int shMax = shSolr.size() - 1;
-			
-			log.info( " SolrIndex(add): recId=" + recId +
-				  "\n                 shard= " + shard 
-				  + " (max= " + shMax +")" );
-			
-			this.add( shard, doc );
-		    } else {
-			this.add( doc );
-		    }
-		} catch(Exception ex){
-		    ex.printStackTrace();
-		}                    
-	    }
-                        log.info( " SolrIndex(add): trnsformation DONE");
+        recordTransformer.start( fileName, is );
+        log.info( " SolrIndex(add): trnsformation start...");
+        while( recordTransformer.hasNext() ){
+		
+            Map cdoc= recordTransformer.next();
+		
+            String recId = (String) cdoc.get("recId");;
+            SolrInputDocument doc 
+                = (SolrInputDocument) cdoc.get("solr");
+            
+            log.info( " SolrIndex(add): recId=" + recId + 
+                      "\n                 SIDoc=" + doc );
+            
             try{
-                this.commit();   
-            }catch( Exception ex ){
+                if( shSolr.size() > 1 ){
+                    
+                    int shard = this.shardSelect( recId );
+                    int shMax = shSolr.size() - 1;
+                    
+                    log.info( " SolrIndex(add): recId=" + recId +
+                              "\n                 shard= " + shard 
+                              + " (max= " + shMax +")" );
+                    
+                    this.add( shard, doc );
+                } else {
+                    this.add( doc );
+                }
+            } catch(Exception ex){
                 ex.printStackTrace();
-            }
-        }   
+            }                    
+        }
+        
+        log.info( " SolrIndex(add): trnsformation DONE");
+
+        try{
+            
+            // NOTE: commit every n (configurable) records ? 
+
+            this.commit();   
+        }catch( Exception ex ){
+            ex.printStackTrace();
+        }
+        
     }
 
     public int shardSelect( String id ){

@@ -11,6 +11,27 @@
           "mif254":{
              "type":"xslt", 
              "config":"etc/xsl/mif2index2-xpsq.xml"
+          },
+          "mitab25":{
+             "type":"calimocho", 
+             "config":{
+                "in":"mitab25",
+                "out":"solr"
+             }
+          },
+          "mitab26":{
+             "type":"calimocho", 
+             "config":{
+                "in":"mitab26",
+                "out":"solr"
+             }
+          },
+          "mitab27":{
+             "type":"calimocho", 
+             "config":{
+                "in":"mitab25",
+                "out":"solr"
+             }
           }
       }
   },
@@ -26,18 +47,60 @@
         "mif254":[
             {  "type":"xslt", 
                "view":"psi-mi/tab25", 
-               "config":"etc/xsl/mif2mitab25view2-xpsq.xml",
+               "config":{
+                    "xslt":"etc/xsl/mif2mitab25view2-xpsq.xml"
+                  },
                "active":true
             },
             {  "type":"xslt",
                "view":"psi-mi/tab27", 
-               "config":"etc/xsl/mif2mitab25view2-xpsq.xml",
+               "config":{
+                    "xslt":"etc/xsl/mif2mitab25view2-xpsq.xml"
+                  },
                "active":false
             },
             {  "type":"xslt",
                "format":"psi-mi/xml25", 
-               "config":"etc/xsl/mif2mitab25view2-xpsq.xml",
+               "config":{
+                    "xslt":"etc/xsl/mif2mitab25view2-xpsq.xml"
+                  },
                "active":false
+            }
+        ],
+        "mitab25":[
+            {  "type":"calimocho",
+               "view":"psi-mi/tab25",
+               "config":{
+                    "in":"mitab25",
+                    "out":"mitab25"
+                  },
+               "active":true
+            },
+            {  "type":"calimocho",
+               "view":"psi-mi/tab27",
+               "config":{
+                    "in":"mitab25",
+                    "out":"mitab27"
+                  },
+               "active":true
+            }
+        ],
+        "mitab27":[
+            {  "type":"calimocho",
+               "view":"psi-mi/tab25",
+               "config":{
+                    "in":"mitab27",
+                    "out":"mitab25"
+                  },
+               "active":true
+            },
+            {  "type":"calimocho",
+               "view":"psi-mi/tab27",
+               "config":{
+                    "in":"mitab27",
+                    "out":"mitab27"
+                  },
+               "active":true
             }
         ]
      }

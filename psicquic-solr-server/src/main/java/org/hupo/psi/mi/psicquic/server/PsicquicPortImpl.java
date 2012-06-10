@@ -1,8 +1,8 @@
 package org.hupo.psi.mi.psicquic.server;
 
 /* =============================================================================
- # $Id:: PsqPortImpl.java 267 2012-05-21 21:03:05Z lukasz                      $
- # Version: $Rev:: 267                                                         $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #
  # PsicquicPortImpl: implementation of PSICQUIC 1.1 SOAP service 

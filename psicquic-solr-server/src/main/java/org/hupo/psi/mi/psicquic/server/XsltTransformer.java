@@ -1,8 +1,8 @@
 package org.hupo.psi.mi.psicquic.server;
 
 /* =============================================================================
- # $Id:: XsltTransformer.java 937 2012-05-29 15:39:09Z lukasz99                $
- # Version: $Rev:: 937                                                         $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #
  # XsltTransformer: transform the incoming xml file into solr documents
@@ -35,7 +35,7 @@ public class XsltTransformer implements PsqTransformer{
     private int domPos = -1;
     private int nextPos = -1;
     
-    public XsltTransformer( String xslt ){
+    public XsltTransformer( Map config ){
 	
 	try {
 	    DocumentBuilderFactory
@@ -43,25 +43,31 @@ public class XsltTransformer implements PsqTransformer{
 	    dbf.setNamespaceAware( true );
 	    
 	    DocumentBuilder db = dbf.newDocumentBuilder();
-	    
-	    File xslFile = new File( xslt );
-	    InputStream xslIStr = null;
-	    
-	    if( !xslFile.canRead() ){
-		xslIStr = this.getClass().getClassLoader()
-		    .getResourceAsStream( xslt );
-	    } else {
-		xslIStr = new FileInputStream( xslt );
-	    }
-	    
-	    Document xslDoc = db.parse( xslIStr );
-	    
-	    DOMSource xslDomSource = new DOMSource( xslDoc );
-	    TransformerFactory
-		tFactory = TransformerFactory.newInstance();
-	    
-	    psqtr = tFactory.newTransformer( xslDomSource );
             
+            if( config == null || config.get("xslt") == null ){
+                
+            } else {
+                
+                String xslt = (String) config.get("xslt");
+
+                File xslFile = new File( xslt );
+                InputStream xslIStr = null;
+	    
+                if( !xslFile.canRead() ){
+                    xslIStr = this.getClass().getClassLoader()
+                        .getResourceAsStream( xslt );
+                } else {
+                    xslIStr = new FileInputStream( xslt );
+                }
+	    
+                Document xslDoc = db.parse( xslIStr );
+	    
+                DOMSource xslDomSource = new DOMSource( xslDoc );
+                TransformerFactory
+                    tFactory = TransformerFactory.newInstance();
+                
+                psqtr = tFactory.newTransformer( xslDomSource );
+            }
 	} catch( Exception ex ) {
 	    ex.printStackTrace();
 	}
