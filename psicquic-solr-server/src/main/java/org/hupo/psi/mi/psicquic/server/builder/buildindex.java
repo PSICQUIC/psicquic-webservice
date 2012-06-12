@@ -5,7 +5,7 @@ package org.hupo.psi.mi.psicquic.server.builder;
  # Version: $Rev:: 266                                                         $
  #==============================================================================
  #
- # BuildSolrIndex: Build Solr-based index
+ # BuildIndex: Build index
  #
  #=========================================================================== */
 
@@ -13,43 +13,32 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
-
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.bind.util.JAXBResult;
+import java.lang.Thread.State;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.commons.cli.*;
 
-//import org.apache.solr.common.*;
-//import org.apache.solr.core.*;
-
-//import org.apache.solr.client.solrj.*;
-//import org.apache.solr.client.solrj.impl.*;
-//import org.apache.solr.client.solrj.response.*;
-
-import java.util.zip.CRC32;
-import java.lang.Thread.State;
+//import org.w3c.dom.*;
+//import javax.xml.parsers.*;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
 
 public class buildindex{
     
     public static final String 
-        CONTEXT = "/etc/psq-context-default.json";
+        DEFAULT_CONTEXT = "/etc/psq-context-default.json";
     
     public static final String 
-        RFRMT = "mif254";   
+        DEFAULT_RECORD_FORMAT = "mif254";   
 
-    public static String rfrmt;
+    public static String rfrmt = DEFAULT_RECORD_FORMAT;
 
-    public static String dir =  "/home/lukasz/imex_test";
+    public static String idir = null;
+    public static String ifile = null;
     public static boolean zip = false;
+    public static boolean desc = false;
     
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -70,13 +59,26 @@ public class buildindex{
             .create( "url" );
 
 
+        Option fileOption = OptionBuilder.withLongOpt( "file" )
+            .withArgName( "file" ).hasArg()
+            .withDescription( "input file" )
+            .create( "f" );
+
+        options.addOption( fileOption );
+
         Option dirOption = OptionBuilder.withLongOpt( "dir" )
             .withArgName( "dir" ).hasArg()
-            .withDescription( "file location" )
+            .withDescription( "input file directory" )
             .create( "d" );
 
         options.addOption( dirOption );
 
+        Option recOption = OptionBuilder.withLongOpt( "r" )
+            .withDescription( "recursively process directory" )
+            .create( "r" );
+        
+        options.addOption( recOption );
+        
         Option zipOption = OptionBuilder.withLongOpt( "zip" )
             .withDescription( "zipped files" )
             .create( "z" );
@@ -92,14 +94,14 @@ public class buildindex{
         
         String context = null;
  
-        Option iftOption = OptionBuilder.withLongOpt( "iformat" )
+        Option fmtOption = OptionBuilder.withLongOpt( "format" )
             .withArgName( "format" ).hasArg()
             .withDescription( "input record format" )
-            .create( "ift" );
+            .create( "fmt" );
         
-        options.addOption( iftOption );
+        options.addOption( fmtOption );
         
-        String ifrmt = BuildSolrDerbyIndex.RFRMT;
+        String ifrmt = DEFAULT_RECORD_FORMAT;
         
         try{
             CommandLineParser parser = new PosixParser();
@@ -113,53 +115,64 @@ public class buildindex{
                 System.exit(0);
             }
 
-            if( cmd.hasOption("ctx") ){
-                context = cmd.getOptionValue("ctx");
+            if( cmd.hasOption( "ctx" ) ){
+                context = cmd.getOptionValue( "ctx" );
             } 
         
-            if( cmd.hasOption("ift") ){
-                ifrmt = cmd.getOptionValue( "ift" );
+            if( cmd.hasOption( "fmt" ) ){
+                ifrmt = cmd.getOptionValue( "fmt" );
             }
 
-            if( cmd.hasOption("d") ){
-                dir = cmd.getOptionValue( "d" );
+            if( cmd.hasOption( "d" ) ){
+                idir = cmd.getOptionValue( "d" );
             }
             
-            if( cmd.hasOption("z") ){
+            if( cmd.hasOption( "f" ) ){
+                ifile = cmd.getOptionValue( "f" );
+            }
+            
+            if( cmd.hasOption( "z" ) ){
                 zip = true;
+            }
+            
+            if( cmd.hasOption("r") ){
+                desc = true;
             }
 
         } catch( Exception exp ) {
-            System.out.println( "BuildSolrDerbyIndex: Options parsing failed. " +
+            System.out.println( "BuildIndex: Options parsing failed. " +
                                 "Reason: " + exp.getMessage() );
             HelpFormatter formatter = new HelpFormatter();
             formatter.setWidth(127);
-            formatter.printHelp( "BuildSolrDerbyIndex", options );
+            formatter.printHelp( "BuildIndex", options );
             System.exit(1);
         }
 
-       
-        BuildSolrDerbyIndex psi = null;
+        IndexBuilder ibuilder = null;
         
         if( context != null ){
             System.out.println( "Context: " + context );
-            psi = new BuildSolrDerbyIndex( context, ifrmt,
-                                           dir, zip );
+            ibuilder = new IndexBuilder( context, ifrmt, zip );
         }else{
             
-            System.out.println( "Context(default): " 
-                                + BuildSolrDerbyIndex.CONTEXT );
+            System.out.println( "Context(default): " + DEFAULT_CONTEXT );
             try{
                 InputStream ctxStream = buildindex.class
-                    .getResourceAsStream( BuildSolrDerbyIndex.CONTEXT );
+                    .getResourceAsStream( DEFAULT_CONTEXT );
                 
-                psi = new BuildSolrDerbyIndex( ctxStream, ifrmt, dir, zip );
+                ibuilder = new IndexBuilder( ctxStream, ifrmt, zip );
             } catch( Exception ex){
                 ex.printStackTrace();
             }
             
         }
-        psi.start();
 
+        if( ibuilder != null && ifile != null ){  
+            ibuilder.processFile( ifile );
+        } else { // file option has a precedence over directory
+            if( ibuilder != null && idir != null ){
+                ibuilder.processDirectory( idir, desc );
+            }
+        }
     }
 }

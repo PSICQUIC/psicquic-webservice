@@ -1,18 +1,21 @@
 package org.hupo.psi.mi.psicquic.server.store;
 
 /* =============================================================================
- # $Id:: ResultSet.java 934 2012-05-29 15:08:30Z lukasz99                      $
- # Version: $Rev:: 934                                                         $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #
- # Record access: 
+ # RecordStore: record access 
  #
  #=========================================================================== */
 
 import java.util.List;
+import java.io.InputStream;
 
-public interface RecordDao{
+public interface RecordStore{
+    public void initialize();
     public void addRecord( String id, String record, String format );
     public String getRecord( String id, String format );
+    public void addFile( String fileName, String format, InputStream is );
     public List<String> getRecordList( List<String> id, String format );
 }

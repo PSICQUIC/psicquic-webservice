@@ -5,7 +5,7 @@ package org.hupo.psi.mi.psicquic.server.builder;
  # Version: $Rev:: 266                                                         $
  #==============================================================================
  #
- # BuildSolrDerbyIndex: populate Solr/Derby-based PSQ index 
+ # IndexBuilder: populate  PSICQUIC index 
  #
  #=========================================================================== */
 
@@ -18,13 +18,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.hupo.psi.mi.psicquic.server.index.*;
+import org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex;
 
-import org.hupo.psi.mi.psicquic.server.index.solr.SolrIndex;
-import org.hupo.psi.mi.psicquic.server.store.derby.DerbyStore;
+import org.hupo.psi.mi.psicquic.server.store.*;
+import org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore;
+import org.hupo.psi.mi.psicquic.server.store.solr.SolrRecordStore;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
 
-public class BuildSolrDerbyIndex{
+public class IndexBuilder{
 
     private List<String> solrURL = 
         Arrays.asList( "http://127.0.0.1:8080/psicquic-solr/ws/psq" );    
@@ -38,15 +40,15 @@ public class BuildSolrDerbyIndex{
     public static final String 
         RFRMT = "mif254";
         
-    String rfrmt;
+    String format;
     
-    String rootDir= null;
+    String source = null;
     boolean zip = false;
 
     boolean defCtx = true;
 
-    SolrIndex sIndex = null;
-    DerbyStore dStore = null;
+    RecordIndex recordIndex = null;
+    RecordStore recordStore = null;
     
     //--------------------------------------------------------------------------
     
@@ -62,31 +64,28 @@ public class BuildSolrDerbyIndex{
 
     //--------------------------------------------------------------------------
     
-    public BuildSolrDerbyIndex( String ctx, String rfrmt,
-                                String dir, boolean zip ){
+    public IndexBuilder( String ctx, String format, boolean zip ){
         
-        InputStream ctxStream = null;
+        InputStream isCtx = null;
         try{
-            ctxStream = new FileInputStream( ctx );
+            isCtx = new FileInputStream( ctx );
         } catch( Exception ex ){
             ex.printStackTrace();
         }
         
         defCtx = false;
-        this.initialize( ctxStream, rfrmt,  dir, zip );
+        this.initialize( isCtx, format, zip );
     }
 
-    public BuildSolrDerbyIndex( InputStream ctxStream, String rfrmt,
-                                String dir, boolean zip ){
-        this.initialize( ctxStream, rfrmt,  dir, zip );
+    public IndexBuilder( InputStream isCtx, String format, boolean zip ){
+        this.initialize( isCtx, format, zip );
     }
     
-    private void initialize( InputStream ctxStream, String rfrmt,
-                             String dir, boolean zip ){
+    private void initialize( InputStream isCtx, String format, boolean zip ){
         
         this.zip = zip;
-        this.rfrmt = rfrmt;
-        this.rootDir = dir;
+        this.format=format;
+        this.source = source;
         
         // get context
         //------------
@@ -94,28 +93,39 @@ public class BuildSolrDerbyIndex{
         psqContext = new JsonContext();
 
         try{                     
-            //psqContext.readJsonConfigDef( new FileInputStream( ctx ) );
             
-            psqContext.readJsonConfigDef( ctxStream );
+            psqContext.readJsonConfigDef( isCtx );
             Map jctx = (Map) getPsqContext().getJsonConfig();
             
             // SOLR Index
             //-----------
 
-            if( ((Map)jctx.get( "index" )).get( "solr" ) != null ){
-                sIndex = new SolrIndex( psqContext );
+            String activeIndex = 
+                (String) ((Map)jctx.get( "index" )).get( "active" );
 
-                sIndex.initialize();
-                sIndex.connect();
+            if( activeIndex.equals( "solr" ) ){
+                recordIndex = new SolrRecordIndex( psqContext );
+                
+                recordIndex.initialize();
+                recordIndex.connect();
             }            
             
             // Derby data store
             //-----------------
 
-            if( ((Map)jctx.get( "store" )).get( "derby" ) != null ){
+            String activeStore = 
+                (String) ((Map)jctx.get( "store" )).get( "active" );
+            
+            if( activeStore.equals( "solr" ) ){
                 
-                dStore = new DerbyStore( psqContext );
-                dStore.initialize();
+                recordStore = new SolrRecordStore( psqContext );
+                recordStore.initialize();
+            }
+
+            if( activeStore.equals( "derby" ) ){
+                
+                recordStore = new DerbyRecordStore( psqContext );
+                recordStore.initialize();
             }
             
         } catch( Exception ex ){
@@ -125,24 +135,30 @@ public class BuildSolrDerbyIndex{
 
     //--------------------------------------------------------------------------
 
-    public void start(){
+    public void processFile( String file ){
+        File srcFl = new File( file );
+        index("", srcFl );        
+    }
     
-        File dirFl = new File( rootDir );
+    public void processDirectory( String dir, boolean desc ){
+        File dirFl = new File( dir );
         try{
-            processFiles( dirFl.getCanonicalPath(), dirFl );
+            processFiles( dirFl.getCanonicalPath(), dirFl, desc );
         } catch(Exception ex){
             ex.printStackTrace();
         }
     }
     
-    private void processFiles( String root, File file ){
+    private void processFiles( String root, File file, boolean desc ){
         
         File[] filesAndDirs = file.listFiles();
         List<File> filesDirs = Arrays.asList( filesAndDirs );
         for(File sfile : filesDirs) {
-            if ( ! sfile.isFile() ) {
-                //recursive call: must be a directory
-                processFiles( root, sfile );
+            if ( ! sfile.isFile() && desc) {
+                
+                //recursive call: must be a directory to descend
+                
+                processFiles( root, sfile, desc );
             } else {
                 index( root, sfile );                
             }
@@ -166,9 +182,10 @@ public class BuildSolrDerbyIndex{
             } else {
                 is = new FileInputStream( file );  
             }
-            
-            sIndex.addFile( rfrmt, 
-                            file.getCanonicalPath().replace( root, "" ), is );
+
+            recordIndex.addFile( format, 
+                                 file.getCanonicalPath().replace( root, "" ), 
+                                 is );
             
         }catch( Exception ex ){
             ex.printStackTrace();
@@ -188,8 +205,9 @@ public class BuildSolrDerbyIndex{
                 is = new FileInputStream( file );  
             }
             
-            dStore.addFile( rfrmt,
-                            file.getCanonicalPath().replace( root, "" ), is );
+            recordStore.addFile( format,
+                                 file.getCanonicalPath().replace( root, "" ), 
+                                 is );
             
         }catch( Exception ex ){
             ex.printStackTrace();

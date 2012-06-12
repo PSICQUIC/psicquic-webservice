@@ -1,8 +1,8 @@
 package org.hupo.psi.mi.psicquic.server.store.derby;
 
 /* =============================================================================
- # $Id:: PsqPortImpl.java 259 2012-05-06 16:29:56Z lukasz                      $
- # Version: $Rev:: 259                                                         $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #
  # DerbyStore: apache derby-based data store builder

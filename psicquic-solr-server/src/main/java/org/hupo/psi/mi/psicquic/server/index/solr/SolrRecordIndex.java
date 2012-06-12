@@ -1,11 +1,11 @@
 package org.hupo.psi.mi.psicquic.server.index.solr;
 
 /* =============================================================================
- # $Id:: SolrIndex.java 937 2012-05-29 15:39:09Z lukasz99                      $
- # Version: $Rev:: 937                                                         $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #
- # SolrIndex: access to solr-based index
+ # SolrRecordIndex: access to solr-based index
  #
  #=========================================================================== */
 
@@ -32,9 +32,11 @@ import org.hupo.psi.mi.psicquic.server.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class SolrIndex implements Index{
+public class SolrRecordIndex implements RecordIndex{
 
     JsonContext context = null;
+
+    //PsqContext  context = null;
 
     String baseUrl = null;
     SolrServer baseSolr = null;
@@ -51,9 +53,9 @@ public class SolrIndex implements Index{
 	initialize( true );
     }
 
-    public SolrIndex(){}
+    public SolrRecordIndex(){}
     
-    public SolrIndex( JsonContext context ){
+    public SolrRecordIndex( JsonContext context ){
         this.context = context;
         initialize( true );
     }
@@ -67,7 +69,7 @@ public class SolrIndex implements Index{
         if( force || baseUrl == null ){
             
             Log log = LogFactory.getLog( this.getClass() );
-            log.info( " initilizing SolrIndex: context=" + context );
+            log.info( " initilizing SolrRecordIndex: context=" + context );
 	    if( context != null ){
 		log.info( "                        "
 			  + "JsonConfig=" + context.getJsonConfig() );
@@ -127,7 +129,7 @@ public class SolrIndex implements Index{
 	
         try{
             if( baseUrl == null ){ initialize(); }
-	    log.debug( "   SolrIndex: baseUrl="+ baseUrl );
+	    log.debug( "   SolrRecordIndex: baseUrl="+ baseUrl );
 
             if( baseUrl != null ){
 
@@ -163,7 +165,7 @@ public class SolrIndex implements Index{
         baseSolr = new CommonsHttpSolrServer( baseUrl );
         
         Log log = LogFactory.getLog( this.getClass() );
-        log.info( "   SolrIndex: connecting" );
+        log.info( "   SolrRecordIndex: connecting" );
 
         
         if( shardUrl.size() > 0 ){
@@ -225,7 +227,7 @@ public class SolrIndex implements Index{
             if( ((String) rtr.get("type")).equalsIgnoreCase( "XSLT" ) ){
         
                 log.info( " Initializing transformer: format=" + format
-                          + " type=XSLT config=" + rtr.get("config") );
+                          + " type=XSLT config=" + rtr.get( "config" ) );
                 
                 PsqTransformer recTr = 
                     new XsltTransformer( (Map) rtr.get("config") );
@@ -253,7 +255,7 @@ public class SolrIndex implements Index{
         }
 
         recordTransformer.start( fileName, is );
-        log.info( " SolrIndex(add): trnsformation start...");
+        log.info( " SolrRecordIndex(add): transformation start...");
         while( recordTransformer.hasNext() ){
 		
             Map cdoc= recordTransformer.next();
@@ -262,8 +264,8 @@ public class SolrIndex implements Index{
             SolrInputDocument doc 
                 = (SolrInputDocument) cdoc.get("solr");
             
-            log.info( " SolrIndex(add): recId=" + recId + 
-                      "\n                 SIDoc=" + doc );
+            log.info( " SolrRecordIndex(add): recId=" + recId + 
+                      " SIDoc=" + doc );
             
             try{
                 if( shSolr.size() > 1 ){
@@ -271,10 +273,9 @@ public class SolrIndex implements Index{
                     int shard = this.shardSelect( recId );
                     int shMax = shSolr.size() - 1;
                     
-                    log.info( " SolrIndex(add): recId=" + recId +
-                              "\n                 shard= " + shard 
-                              + " (max= " + shMax +")" );
-                    
+                    log.info( " SolrRecordIndex(add): recId=" + recId +
+                              " shard= " + shard + " (max= " + shMax +")" );
+
                     this.add( shard, doc );
                 } else {
                     this.add( doc );
@@ -284,7 +285,7 @@ public class SolrIndex implements Index{
             }                    
         }
         
-        log.info( " SolrIndex(add): trnsformation DONE");
+        log.info( " SolrRecordIndex(add): transformation DONE");
 
         try{
             

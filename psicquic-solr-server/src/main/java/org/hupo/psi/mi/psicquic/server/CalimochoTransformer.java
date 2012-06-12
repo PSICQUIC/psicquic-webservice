@@ -80,7 +80,9 @@ public class CalimochoTransformer implements PsqTransformer{
     public void start( String fileName ){
 
         this.fileName = fileName;
-
+        this.curRowStr = null;
+        this.curLineNumber = 0;
+        
         try {
             InputStreamReader isr = 
                 new InputStreamReader( new FileInputStream( fileName ) );
@@ -97,6 +99,8 @@ public class CalimochoTransformer implements PsqTransformer{
     public void start( String fileName, InputStream is ){
 
         this.fileName = fileName;
+        this.curRowStr = null;
+        this.curLineNumber = 0;
 
         try {
             this.bufferedReader 

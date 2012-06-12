@@ -25,13 +25,29 @@
 
 <!-- ========================================================== CONFIGUATION -->
   
-  <bean id="psqContext" class="org.hupo.psi.mi.psicquic.util.JsonContext">
+  <bean id="psqConfig" class="org.hupo.psi.mi.psicquic.util.JsonContext">
     <property name="config">
       <map>
         <entry key="json-config" value="etc/psq-context-default.json"/>
       </map>
     </property>
   </bean>
+
+  <bean id="psqContext" class="org.hupo.psi.mi.psicquic.server.PsqContext">
+    <property name="psqConfig" ref="psqConfig"/>
+    <property name="indexMap">
+      <map>
+        <entry key="solr" value-ref="solrIndex"/>
+      </map>
+    </property>
+    <property name="storeMap">
+      <map>
+        <entry key="solr" value-ref="solrStore"/>       
+        <entry key="derby" value-ref="derbyStore"/>
+      </map>
+    </property>
+  </bean>
+ 
 <!--
  <bean id="applicationContextProvider" 
        class="edu.ucla.mbi.util.ApplicationContextProvider" />
@@ -39,22 +55,28 @@
 <!-- ================================================================= INDEX -->
 
   <bean id="solrIndex" 
-        class="org.hupo.psi.mi.psicquic.server.index.solr.SolrIndex">
-    <property name="context" ref="psqContext"/>
+        class="org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex">
+    <property name="context" ref="psqConfig"/> 
   </bean>
  
-<!-- ============================================================ DATA STORE -->
+<!-- ========================================================= DATA STORE(S) -->
   
-  <bean id="derbyDao" destroy-method="shutdown" 
-        class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordDao">
-    <property name="context" ref="psqContext"/>     
+  <bean id="derbyStore" destroy-method="shutdown" 
+        class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore">
+    <property name="context" ref="psqConfig"/>     
   </bean>
-  
+
+  <bean id="solrStore"  
+        class="org.hupo.psi.mi.psicquic.server.store.solr.SolrRecordStore">
+    <property name="context" ref="psqConfig"/>     
+  </bean>
+
+ 
 <!-- ======================================================== STRUTS ACTIONS -->
   
   <bean id="recordMgrAction" scope="prototype"
         class="org.hupo.psi.mi.psicquic.server.struts.action.RecordMgrAction">
-    <property name="recordDao" ref="derbyDao"/>
+<!--    <property name="recordDao" ref="derbyStore"/> -->
     <property name="psqContext" ref="psqContext"/>     
   </bean>
  
@@ -66,8 +88,8 @@
         scope="prototype" init-method="initialize">
 
     <property name="psqContext" ref="psqContext"/>
-    <property name="index" ref="solrIndex"/>
-    <property name="recordDao" ref="derbyDao"/>
+<!--    <property name="index" ref="solrIndex"/> -->
+<!--    <property name="recordDao" ref="derbyStore"/> -->
 
   </bean>  
 
@@ -81,7 +103,7 @@
 
     <property name="psqContext" ref="psqContext"/>
     <property name="index" ref="solrIndex"/> 
-    <property name="recordDao" ref="derbyDao"/> 
+    <property name="recordDao" ref="derbyStore"/> 
 
   </bean>
 -->

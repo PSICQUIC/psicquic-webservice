@@ -63,6 +63,15 @@ public class JsonContext {
     private Map<String,Object> jsonConfigUtil = null;
 
     public Map<String,Object>  getJsonConfig() {
+
+        if( jsonConfigUtil == null ){
+            try{
+                readJsonConfigDef();
+            }catch( IOException ex ){
+                Log log = LogFactory.getLog( JsonContext.class );
+                log.info("JsonContext: configuration error");
+            }
+        }
         return jsonConfigUtil;
     }
 

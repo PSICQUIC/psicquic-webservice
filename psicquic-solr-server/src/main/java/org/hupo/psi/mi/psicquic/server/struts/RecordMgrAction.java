@@ -1,4 +1,4 @@
-package  org.hupo.psi.mi.psicquic.server.struts.action;
+package org.hupo.psi.mi.psicquic.server.struts.action;
 
 import java.io.InputStream;
 import javax.servlet.ServletContext;
@@ -11,24 +11,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
+
+import org.hupo.psi.mi.psicquic.server.*;
 import org.hupo.psi.mi.psicquic.server.store.*;
 import org.hupo.psi.mi.psicquic.server.store.derby.*;
 
 public class RecordMgrAction extends ActionSupport
     implements ServletContextAware{
     
-    JsonContext psqContext;
+    PsqContext psqContext;
     
     //--------------------------------------------------------------------------
     
-    public void setPsqContext( JsonContext context ){
+    public void setPsqContext( PsqContext context ){
         psqContext = context;
-    }
-
-    //--------------------------------------------------------------------------
-    
-    public JsonContext getPsqContext(){
-        return psqContext;
     }
     
     //--------------------------------------------------------------------------
@@ -41,10 +37,12 @@ public class RecordMgrAction extends ActionSupport
 
     private void initialize( boolean force) {
         
-        if ( getPsqContext().getJsonConfig() == null || force ) {
+        if ( psqContext.getJsonConfig() == null || force ) {
 
             Log log = LogFactory.getLog( this.getClass() );
             log.info( " initilizing psq context" );
+
+            /*
             String jsonPath =
                 (String) getPsqContext().getConfig().get( "json-config" );
             log.info( "JsonPsqDef=" + jsonPath );
@@ -63,6 +61,7 @@ public class RecordMgrAction extends ActionSupport
                     log.info( "JsonConfig reading error" );
                 }
             }
+            */
         }
     }
 
@@ -114,13 +113,13 @@ public class RecordMgrAction extends ActionSupport
     }
     
     //--------------------------------------------------------------------------
-
+    /*
     RecordDao  rdao = null;
 
     public void setRecordDao( RecordDao dao ){
         this.rdao= dao;
     }
-
+    */
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
 
@@ -133,14 +132,14 @@ public class RecordMgrAction extends ActionSupport
         
         if( op != null && op.equals( "add" ) ){
             if( pid != null && vt != null && vv != null ){
-                rdao.addRecord( pid, vv, vt );
+                psqContext.getActiveStore().addRecord( pid, vv, vt );
                 vv="";
             }
         }
         
         if( op != null && op.equals( "get" ) ){
             if( pid != null && vt!= null ){
-                vv = rdao.getRecord( pid, vt );
+                vv = psqContext.getActiveStore().getRecord( pid, vt );
             }
 
         }

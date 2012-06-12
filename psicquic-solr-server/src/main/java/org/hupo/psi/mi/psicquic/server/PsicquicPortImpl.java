@@ -48,6 +48,7 @@ public class PsicquicPortImpl implements PsqPort {
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
 
+    /*
     Index index = null;
 
     public void setIndex( Index index ){
@@ -62,16 +63,18 @@ public class PsicquicPortImpl implements PsqPort {
     public void setRecordDao( RecordDao dao ){
         this.rdao= dao;
     }
+    */
 
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
 
-    JsonContext psqContext;
+    PsqContext psqContext;
     
-    public void setPsqContext( JsonContext context ){
+    public void setPsqContext( PsqContext context ){
         psqContext = context;
     }
     
+
     //--------------------------------------------------------------------------
 
     private void initialize() {
@@ -85,7 +88,7 @@ public class PsicquicPortImpl implements PsqPort {
 	Log log = LogFactory.getLog( this.getClass() );
 	log.info( " psqContext=" + psqContext );
 	
-
+        /*
         if ( psqContext.getJsonConfig() == null || force ) {
             log.info( " initilizing psq context" );
 
@@ -95,6 +98,8 @@ public class PsicquicPortImpl implements PsqPort {
                 log.info( "JsonConfig reading error" );
             }            
         }
+        */
+
     }
 
     //==========================================================================
@@ -121,6 +126,84 @@ public class PsicquicPortImpl implements PsqPort {
         Log log = LogFactory.getLog( this.getClass() );
         log.info( "PsqPortImpl: getByQuery: context =" + psqContext);
         log.info( "PsqPortImpl: getByQuery: q=" + query );
+
+
+        /*        
+        // MIQL Extension(s)
+        //------------------
+
+        // psq-facet-field:<field> - faceting field
+        //-----------------------------------------
+
+        String facetField = null;
+
+        if( q != null && q.indexOf( " psq-facet-field:" ) > 0 ){
+
+            int vtStart = q.indexOf( " psq-facet-field:" );
+            int vtStop = q.indexOf( ' ', vtStart + 6 );
+
+            if( vtStop > vtStart ){
+                viewType = q.substring( vtStart+6, vtStop );
+            } else {
+                viewType = q.substring( vtStart + 6 );
+            }
+
+            String nq = q.substring( 0, vtStart + 1 );
+            if( vtStop > vtStart ){
+                nq = nq + q.substring( vtStop );
+            }
+
+            q = nq;
+        }
+        
+        // psq-view:<view type> - return type
+        //-----------------------------------
+
+        String viewType = null;
+        
+        if( q != null && q.indexOf( " psq-view:" ) > 0 ){
+        
+            int vtStart = q.indexOf( " psq-view:" );
+            int vtStop = q.indexOf( ' ', vtStart + 6 ); 
+            
+            if( vtStop > vtStart ){
+                viewType = q.substring(vtStart+6, vtStop);
+            } else {
+                viewType = q.substring(vtStart+6);
+            }
+
+            String nq = q.substring(0, vtStart + 1);
+            if( vtStop > vtStart ){
+                nq = nq + q.substring( vtStop );
+            }
+            
+            q = nq;
+        }
+        
+        // psq-client:<ip>|'watchdog' - client info
+        //------------------------------------------
+
+        String client = null;
+        
+        if( q != null && q.indexOf( " psq-client:" ) > 0 ){
+        
+            int vtStart = q.indexOf( " psq-client:" );
+            int vtStop = q.indexOf( ' ', vtStart + 6 ); 
+            
+            if( vtStop > vtStart ){
+                viewType = q.substring( vtStart+6, vtStop );
+            } else {
+                viewType = q.substring( vtStart+6 );
+            }
+
+            String nq = q.substring( 0, vtStart + 1 );
+            if( vtStop > vtStart ){
+                nq = nq + q.substring( vtStop );
+            }
+            
+            q = nq;
+        }
+        */
         
         if( infoRequest != null ){              
             log.info( "                         FR=" 
@@ -130,7 +213,7 @@ public class PsicquicPortImpl implements PsqPort {
         }
         
         org.hupo.psi.mi.psicquic.server.index.ResultSet 
-            rs = index.query( query );
+            rs = psqContext.getActiveIndex().query( query );
         
         QueryResponse qr = psqOF.createQueryResponse();
         qr.setResultSet( psqOF.createResultSet() );
@@ -143,7 +226,8 @@ public class PsicquicPortImpl implements PsqPort {
 
             String recId = (String) in.get("recId");
 
-            String drecord =  rdao.getRecord( recId ,"psi-mi/tab25" );
+            String drecord =  psqContext.getActiveStore()
+                .getRecord( recId ,"psi-mi/tab25" );
         
             log.info( " SolrDoc: recId=" + recId + " :: "  + drecord );
             mitab += drecord + "\n";

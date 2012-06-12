@@ -45,46 +45,31 @@
     that avoids logging every request
 -->
 
-<schema name="psiquic-schema-2.7" version="1.5">
+<schema name="psiqcuic-schema-2.7" version="1.5">
 
   <types>
-    <fieldType name="miqlUuid"  class="solr.UUIDField" 
-	       indexed="true" stored="true" required="true"/> 	
-
-    <fieldType name="recId" class="solr.StrField" 
-	       indexed="false" stored="true" required="false"/> 	
-
-    <fieldType name="miqlInt" class="solr.TrieIntField" 
-	       indexed="true" stored="false" required="true"
-	       precisionStep="0" positionIncrementGap="0" multiValued="false" />
-    <fieldType name="miqlBoolean" class="solr.BoolField" 
-	       indexed="true" stored="false" multiValued="false" required="true"/>  
-    <fieldType name="miqlIndexedUnstoredString" class="solr.StrField" 
-	       indexed="true" stored="false" sortMissingLast="true"  
-	       omitNorms="true" multiValued="true" required="true"/>
-    <fieldType name="miqlUnindexedStoredString" class="solr.StrField" 
-	       sortMissingLast="true" indexed="false" stored="true" 
-	       omitNorms="true" multiValued="true" required="true"/>
-    <fieldType name="miqlDummyField" class="solr.StrField" 
-	       sortMissingLast="true" indexed="false" stored="false" 
-	       multiValued="true"/>
+  	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="true" required="true"/> 	
+    <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="false" precisionStep="0" positionIncrementGap="0" multiValued="false" required="true"/>
+    <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="false" multiValued="false" required="true"/>  
+    <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true"  multiValued="true" required="true"/>
+    <fieldType name="miqlUnindexedStoredString" class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="true" omitNorms="true" multiValued="false" required="true"/>
+    <fieldType name="miqlDummyField" 			class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="false" multiValued="true"/>
    	  	    
      <!-- new psiquic reference implementation -->  
-     <fieldType name="miqlText" class="solr.TextField" 
-		positionIncrementGap="100" indexed="true" stored="false" 
-		omitNorms="true" termVectors="true" required="true" 
-		multiValued="true">
-       <analyzer>
-	 <tokenizer class="solr.WhitespaceTokenizerFactory"/>
-	 <filter class="solr.LowerCaseFilterFactory"/>   
-       </analyzer>
-     </fieldType>   
+    <fieldType name="miqlText" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="false" omitNorms="true" termVectors="true" required="true" multiValued="true">
+      <analyzer>		
+		<charFilter class="solr.PatternReplaceCharFilterFactory" pattern="[\(\)]" replacement=""/> <!-- replace brakets -->
+		<tokenizer 	class="solr.WhitespaceTokenizerFactory"/>
+		<filter	class="solr.TrimFilterFactory"/> <!--  trim white spaces at the beginning and end of the words -->		
+		<!--   <filter class="solr.LengthFilterFactory" min="2" max="1000"/>  --><!-- remove words with length 1 -->
+        <filter	class="solr.LowerCaseFilterFactory"/>   
+        <filter class="solr.StopFilterFactory"/> <!--  discards common english stop words: "a", "an", ... -->
+      </analyzer>
+    </fieldType>   
   </types>  
   
     <!-- to garantee backwards-compatability with psiquic reference implementation  1.2.1 which uses the default lucene 2.3.2 analyzer-->  
-    <fieldType name="miqlTextOld" class="solr.TextField" 
-	       positionIncrementGap="100" indexed="true" stored="true" 
-	       omitNorms="true" termVectors="true" required="true" multiValued="true">
+   <fieldType name="miqlTextOld" class="solr.TextField" positionIncrementGap="100" indexed="true" stored="true" omitNorms="true" termVectors="true" required="true" multiValued="true">
      <analyzer>
        <tokenizer class="solr.ClassicTokenizerFactory"/> 	<!-- StandardTokenizer's behavior pre-Solr 3.1" -->       
        <filter class="solr.ClassicFilterFactory"/> 		<!-- Removes dots from acronyms and 's from the end of tokens -->
@@ -93,12 +78,12 @@
        <!--  <filter class="solr.RemoveDuplicatesTokenFilterFactory"/> -->
        <!--  <filter class="solr.SynonymFilterFactory" synonyms="syn.txt" ignoreCase="true" expand="false"/> -->
      </analyzer>
-    </fieldType>      
+   </fieldType>      
   
 
-    <fields>
-      <field name="uuId"  type="miqlUuid" default="NEW"/>
-      <field name="recId" type="recId"/>	
+  <fields>
+ 	<field name="uuId"  type="miqlUuid" default="NEW"/>
+ 	<field name="recId" type="miqlUnindexedStoredString" default="-"/>	
  	
  	<!-- MIQL 2.5 indexed and stored fields specification http://code.google.com/p/psicquic/wiki/MiqlReference-->    
    <field name="idA"			type="miqlText" default="-"/> 
@@ -190,6 +175,32 @@
  <copyField source="ftypeB" 	dest="ftype"/>
  <copyField source="pmethodA" 	dest="pmethod"/>
  <copyField source="pmethodB" 	dest="pmethod"/>	
+
+ <copyField source="idA_s" 		dest="id_s"/>
+ <copyField source="idB_s" 		dest="id_s"/>
+ <copyField source="aliasA_s" 	dest="alias_s"/>
+ <copyField source="aliasB_s" 	dest="alias_s"/>
+ <copyField source="idA_s" 		dest="identifier_s"/>
+ <copyField source="idB_s" 		dest="identifier_s"/>	
+ <copyField source="altidA_s" 	dest="identifier_s"/>
+ <copyField source="altidB_s" 	dest="identifier_s"/>	
+ <copyField source="aliasA_s" 	dest="identifier_s"/>
+ <copyField source="aliasB_s" 	dest="identifier_s"/>
+ <copyField source="taxidA_s" 	dest="species_s"/>
+ <copyField source="taxidB_s" 	dest="species_s"/>
+ <copyField source="pbioroleA_s" 	dest="pbiorole_s"/>	
+ <copyField source="pbioroleB_s" 	dest="pbiorole_s"/>
+ <copyField source="ptypeA_s" 	dest="ptype_s"/>	
+ <copyField source="ptypeB_s" 	dest="ptype_s"/>	
+ <copyField source="pxrefA_s" 	dest="pxref_s"/>	
+ <copyField source="pxrefB_s" 	dest="pxref_s"/>	
+ <copyField source="annotA_s" 	dest="annot_s"/>	
+ <copyField source="annotB_s" 	dest="annot_s"/>		
+ <copyField source="ftypeA_s" 	dest="ftype_s"/>	
+ <copyField source="ftypeB_s" 	dest="ftype_s"/>
+ <copyField source="pmethodA_s" 	dest="pmethod_s"/>
+ <copyField source="pmethodB_s" 	dest="pmethod_s"/>
+ 
  					
  <!-- Field to use to determine and enforce document uniqueness. 
       Unless this field is marked with required="false", it will be a required field

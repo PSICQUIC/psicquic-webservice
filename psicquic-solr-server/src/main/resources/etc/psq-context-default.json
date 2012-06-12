@@ -1,47 +1,58 @@
 {
   "index":{
+     "active":"solr",
      "solr":{ 
-        "url":"http://127.0.0.1:8080/psicquic-solr/solr/psq-01",
+        "url":"http://127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
         "shard":[
-            "127.0.0.1:8080/psicquic-solr/solr/psq-01",
-            "127.0.0.1:8080/psicquic-solr/solr/psq-02"
+            "127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
+            "127.0.0.1:8080/psicquic-solr-server/solr/psq-02"
         ]
        },
-      "transform":{
-          "mif254":{
+     "transform":{
+        "mif254":{
              "type":"xslt", 
-             "config":"etc/xsl/mif2index2-xpsq.xml"
-          },
-          "mitab25":{
+             "config":{
+                 "xslt":"etc/xsl/mif2index2-xpsq.xml"
+             }  
+        },
+        "mitab25":{
              "type":"calimocho", 
              "config":{
                 "in":"mitab25",
                 "out":"solr"
              }
-          },
-          "mitab26":{
+        },
+        "mitab26":{
              "type":"calimocho", 
              "config":{
                 "in":"mitab26",
                 "out":"solr"
              }
-          },
-          "mitab27":{
+        },
+        "mitab27":{
              "type":"calimocho", 
              "config":{
                 "in":"mitab25",
                 "out":"solr"
              }
-          }
-      }
+        }
+     }
   },
   "store":{
+     "record-mgr": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr",
+     "active":"solr",
      "derby":{
         "derby-db":"derby/psq-store",
-        "record-mgr": "http://127.0.0.1:8080/psicquic-solr/recordmgr"
+     },    
+     "solr":{
+        "url":"http://127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
+        "shard":[
+           "127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
+           "127.0.0.1:8080/psicquic-solr-server/solr/psq-02"
+        ]
      },
      "psq":{
-        "url": "http://127.0.0.1:8080/psicquic-solr/recordmgr"
+        "url": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr"
      },
      "transform":{
         "mif254":[
