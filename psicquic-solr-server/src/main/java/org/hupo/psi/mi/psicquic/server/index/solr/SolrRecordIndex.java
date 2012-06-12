@@ -38,8 +38,10 @@ public class SolrRecordIndex implements RecordIndex{
 
     //PsqContext  context = null;
 
-    String baseUrl = null;
     SolrServer baseSolr = null;
+
+    private String baseUrl = null;
+    private String shardStr = "";
 
     List<String> shardUrl = null;
     List<SolrServer> shSolr = null;
@@ -137,9 +139,13 @@ public class SolrRecordIndex implements RecordIndex{
                 ModifiableSolrParams params = new ModifiableSolrParams();
                 params.set( "q", query );
                 
-                // set shards if needed ?
+                // set shards when needed
                 //-----------------------
                 
+                if( shardStr != null ){
+                    params.set( "shards", shardStr );
+                }
+
                 try{            
                     QueryResponse response = solr.query( params );
                     log.debug( "response = " + response );

@@ -14,6 +14,7 @@ import java.io.InputStream;
 
 public interface RecordStore{
     public void initialize();
+    public void shutdown();
     public void addRecord( String id, String record, String format );
     public String getRecord( String id, String format );
     public void addFile( String fileName, String format, InputStream is );

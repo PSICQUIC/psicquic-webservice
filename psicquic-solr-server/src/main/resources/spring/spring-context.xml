@@ -61,12 +61,12 @@
  
 <!-- ========================================================= DATA STORE(S) -->
   
-  <bean id="derbyStore" destroy-method="shutdown" 
+  <bean id="derbyStore" init-method="initialize" destroy-method="shutdown" 
         class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore">
     <property name="context" ref="psqConfig"/>     
   </bean>
 
-  <bean id="solrStore"  
+  <bean id="solrStore" init-method="initialize" destroy-method="shutdown"
         class="org.hupo.psi.mi.psicquic.server.store.solr.SolrRecordStore">
     <property name="context" ref="psqConfig"/>     
   </bean>

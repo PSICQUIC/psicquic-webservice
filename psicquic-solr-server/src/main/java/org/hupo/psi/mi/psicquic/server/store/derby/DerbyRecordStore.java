@@ -68,9 +68,7 @@ public class DerbyRecordStore implements RecordStore{
     }
     
     public void initialize(){
-
-        
-
+       
     }
 
     private void connect(){
