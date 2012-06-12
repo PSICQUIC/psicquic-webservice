@@ -32,7 +32,7 @@
         "mitab27":{
              "type":"calimocho", 
              "config":{
-                "in":"mitab25",
+                "in":"mitab27",
                 "out":"solr"
              }
         }
