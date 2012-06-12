@@ -45,14 +45,14 @@
     that avoids logging every request
 -->
 
-<schema name="psiquic-schema-2.7" version="1.5">
+<schema name="psiqcuic-schema-2.7" version="1.5">
 
   <types>
   	<fieldType name="miqlUuid" 					class="solr.UUIDField" 		indexed="true" stored="true" required="true"/> 	
     <fieldType name="miqlInt"					class="solr.TrieIntField" 	indexed="true" stored="false" precisionStep="0" positionIncrementGap="0" multiValued="false" required="true"/>
     <fieldType name="miqlBoolean" 				class="solr.BoolField" 		indexed="true" stored="false" multiValued="false" required="true"/>  
     <fieldType name="miqlIndexedUnstoredString" class="solr.StrField"  		sortMissingLast="true" indexed="true" stored="false" omitNorms="true"  multiValued="true" required="true"/>
-    <fieldType name="miqlUnindexedStoredString" class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="true" omitNorms="true" multiValued="true" required="true"/>
+    <fieldType name="miqlUnindexedStoredString" class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="true" omitNorms="true" multiValued="false" required="true"/>
     <fieldType name="miqlDummyField" 			class="solr.StrField"  		sortMissingLast="true" indexed="false" stored="false" multiValued="true"/>
    	  	    
      <!-- new psiquic reference implementation -->  
