@@ -75,7 +75,7 @@
                  ]
                }
             },
-            "psi-mi/tab27",
+            "psi-mi/tab27":{
                "config":{
                  "col":[ "idA_o","idB_o","altidA_o","altidB_o", 
                         "aliasA_o","aliasB_o","detmethod_o","pubauth_o", 
@@ -88,7 +88,8 @@
                         "checksumA_o","checksumB_o","checksumI_o",
                         "negative","ftypeA_o","ftypeB_o","stcA_o","stcB_o",
                         "pmethodA_o","pmethodB_o"
-               ]
+                 ]
+               }
             }
         }
      },
