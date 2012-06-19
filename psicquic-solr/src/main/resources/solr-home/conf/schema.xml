@@ -105,8 +105,6 @@
    <field name="altidB"			type="miqlDummyField" default="-"/>     
    <field name="aliasA"			type="miqlDummyField" default="-"/> 	 
    <field name="aliasB"			type="miqlDummyField" default="-"/> 	 
-   <field name="source"			type="miqlDummyField" default="-"/> 	
-   <field name="confidence"		type="miqlDummyField" default="-"/>  
    
    <!-- MIQL 2.7 indexed and stored fields http://code.google.com/p/psicquic/wiki/MiqlReference27 -->
    <field name="complex" 		type="miqlText" 	default="-"/>
@@ -120,7 +118,7 @@
    <field name="pxrefB" 		type="miqlText" 	default="-"/>
    <field name="pxref" 			type="miqlText" 	default=""/> <!-- pxref = pxrefA + pxrefB -->   
    <field name="xref" 			type="miqlText" 	default="-"/> 
-   <field name="annot" 			type="miqlText" 	default=""/> <!-- annot = annotA + annotB --> 
+   <field name="annot" 			type="miqlText" 	default=""/> 
    <field name="udate" 			type="miqlInt"  	default="0"/>
    <field name="negative" 		type="miqlBoolean" 	default="false"/> 
    <field name="ftypeA" 		type="miqlText" 	default="-"/>
@@ -131,20 +129,6 @@
    <field name="pmethod" 		type="miqlText" 	default=""/> <!-- pmethod = pmethodA + pmethodB -->
    <field name="stc" 			type="miqlBoolean"  default="false"/>
    <field name="param" 			type="miqlBoolean"  default="false"/>
-
-   <!-- MIQL 2.7 dummy fields used as input for 2.7 copy fields --> 
-   <field name="pexproleA"		type="miqlDummyField" default="-"/> 	
-   <field name="pexproleB"		type="miqlDummyField" default="-"/>  
-   <field name="annotA" 		type="miqlDummyField" default="-"/>
-   <field name="annotB" 		type="miqlDummyField" default="-"/> 
-   <field name="taxidHost" 		type="miqlDummyField" default="-"/>	   
-   <field name="paramText"	 	type="miqlDummyField" default="-"/>
-   <field name="cdate"	 		type="miqlDummyField" default="-"/>
-   <field name="stcA"	 		type="miqlDummyField" default="-"/>
-   <field name="stcB"	 		type="miqlDummyField" default="-"/>
-   <field name="checksumA"	 	type="miqlDummyField" default="-"/>
-   <field name="checksumB"	 	type="miqlDummyField" default="-"/>
-   <field name="checksumI"	 	type="miqlDummyField" default=""/>
          	
    <!-- Dynamic Stored Fields that can be used for faceting/sorting -->
    <dynamicField name="*_s"  type="miqlIndexedUnstoredString" default="-"/> 
@@ -168,9 +152,7 @@
  <copyField source="ptypeA" 	dest="ptype"/>	
  <copyField source="ptypeB" 	dest="ptype"/>	
  <copyField source="pxrefA" 	dest="pxref"/>	
- <copyField source="pxrefB" 	dest="pxref"/>	
- <copyField source="annotA" 	dest="annot"/>	
- <copyField source="annotB" 	dest="annot"/>		
+ <copyField source="pxrefB" 	dest="pxref"/>		
  <copyField source="ftypeA" 	dest="ftype"/>	
  <copyField source="ftypeB" 	dest="ftype"/>
  <copyField source="pmethodA" 	dest="pmethod"/>
@@ -193,9 +175,7 @@
  <copyField source="ptypeA_s" 	dest="ptype_s"/>	
  <copyField source="ptypeB_s" 	dest="ptype_s"/>	
  <copyField source="pxrefA_s" 	dest="pxref_s"/>	
- <copyField source="pxrefB_s" 	dest="pxref_s"/>	
- <copyField source="annotA_s" 	dest="annot_s"/>	
- <copyField source="annotB_s" 	dest="annot_s"/>		
+ <copyField source="pxrefB_s" 	dest="pxref_s"/>			
  <copyField source="ftypeA_s" 	dest="ftype_s"/>	
  <copyField source="ftypeB_s" 	dest="ftype_s"/>
  <copyField source="pmethodA_s" 	dest="pmethod_s"/>
