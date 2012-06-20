@@ -76,46 +76,19 @@
   
   <bean id="recordMgrAction" scope="prototype"
         class="org.hupo.psi.mi.psicquic.server.struts.action.RecordMgrAction">
-<!--    <property name="recordDao" ref="derbyStore"/> -->
     <property name="psqContext" ref="psqContext"/>     
   </bean>
  
 <!-- ========================================================== WEB SERVICES -->
 <!-- ver 1.1 -->
 
-
-  <bean id="psq-ws-imp"   class="org.hupo.psi.mi.psicquic.server.PsicquicPortImpl"
+  <bean id="psq-ws-imp" class="org.hupo.psi.mi.psicquic.server.PsicquicPortImpl"
         scope="prototype" init-method="initialize">
 
     <property name="psqContext" ref="psqContext"/>
-<!--    <property name="index" ref="solrIndex"/> -->
-<!--    <property name="recordDao" ref="derbyStore"/> -->
 
   </bean>  
 
-<!--   <import resource="cxf.xml" /> -->
-
-
-<!--
-  <bean id="psq-ws-1.1-imp" scope="prototype" init-method="initialize"
-        class="org.hupo.psi.mi.psicquic.server.PsicquicPortImpl">
-
-
-    <property name="psqContext" ref="psqContext"/>
-    <property name="index" ref="solrIndex"/> 
-    <property name="recordDao" ref="derbyStore"/> 
-
-  </bean>
--->
-<!--
-  <ws:service  id="psq-ws-1.1" bean="#psq-ws-1.1-imp"/>
-  <wss:binding url="/ws" service="#psq-ws-1.1" />
-  <wss:binding url="/ws-v11" service="#psq-ws-1.1" />
--->
-
-
-<!--
-  <sws:annotation-driven/>
--->
+  <import resource="cxf.xml" /> 
 
 </beans>

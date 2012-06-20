@@ -24,7 +24,6 @@ public class ResultSet{
         resultList = new ArrayList();
         firstResult = 0;
         maxResult = 0;
-
     }
     
     public ResultSet( int first, int max, List results ){

@@ -145,52 +145,23 @@
     </listener-class>
   </listener>
 
-  <!-- ===================================================== JAX-WS listener -->
-<!--
-  <listener>
-   <listener-class>
-    com.sun.xml.ws.transport.http.servlet.WSServletContextListener
-   </listener-class>
-  </listener>
--->
-  <!-- =========================================== WSContextManager listener -->
-<!--
-  <listener>
-   <listener-class>
-    edu.ucla.mbi.proxy.WSContextManager
-   </listener-class>
-  </listener>
--->
-
 <!-- ======================================================= =============== -->
 <!-- ======================================================= Servlet startup -->
 <!-- ======================================================= =============== -->
 
   <!-- ========================================================= WS servlets -->
-<!--
-  <servlet>
-   <servlet-name>psq-webservice</servlet-name>
-   <servlet-class>
-    com.sun.xml.ws.transport.http.servlet.WSSpringServlet
-   </servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>psq-ws</servlet-name>
-    <servlet-class>org.springframework.ws.transport.http.MessageDispatcherServlet</servlet-class>
-  </servlet>
--->
 
   <servlet>
     <servlet-name>cxf</servlet-name>
     <display-name>cxf</display-name>
     <description>Apache CXF Endpoint</description>
     <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+<!--
     <init-param>
       <param-name>config-location</param-name>
       <param-value>/WEB-INF/spring/cxf.xml</param-value>    
     </init-param>
-
+-->
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -224,12 +195,6 @@
 <!-- ======================================================= =============== -->
 
   <!-- ========================================================= WS mappings -->
-<!--
-  <servlet-mapping>
-   <servlet-name>psq-ws</servlet-name>
-   <url-pattern>/ws</url-pattern>
-  </servlet-mapping>
--->
 
   <servlet-mapping>
     <servlet-name>cxf</servlet-name>

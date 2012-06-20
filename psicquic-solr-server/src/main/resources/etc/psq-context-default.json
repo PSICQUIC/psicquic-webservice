@@ -41,8 +41,11 @@
   "store":{
      "record-mgr": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr",
      "active":"solr",
+     "rec-id":"uuId",
+     "view-default":"psi-mi/tab25",
      "derby":{
         "derby-db":"derby/psq-store",
+        "rec-id":"recId"
      },    
      "solr":{
         "url":"http://127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
@@ -50,6 +53,7 @@
            "127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
            "127.0.0.1:8080/psicquic-solr-server/solr/psq-02"
         ],
+        "rec-id":"uuId",
         "view":{
            "psi-mi/tab25":{
                "config":{
@@ -57,7 +61,8 @@
                         "aliasA_o","aliasB_o","detmethod_o","pubauth_o",
                         "pubid_o","taxidA_o","taxidB_o","type_o","source_o",
                         "interaction_id_o","confidence_o"
-                 ]
+                 ],
+                 "col-sep":"\t"
                }
             },
             "psi-mi/tab26":{
@@ -73,7 +78,8 @@
                         "checksumA_o","checksumB_o","checksumI_o",
                         "negative"
                  ]
-               }
+               },
+               "col-sep":"\t"
             },
             "psi-mi/tab27":{
                "config":{
@@ -88,7 +94,8 @@
                         "checksumA_o","checksumB_o","checksumI_o",
                         "negative","ftypeA_o","ftypeB_o","stcA_o","stcB_o",
                         "pmethodA_o","pmethodB_o"
-                 ]
+                 ],
+                 "col-sep":"\t"
                }
             }
         }
@@ -159,6 +166,13 @@
      }
   },
   "service":{
+     "miqlx":{
+         "field":[ 
+             {"name":"MiqlxClient"},
+             {"name":"MiqlxView"},
+             {"name":"MiqlxFacetField"},
+             {"name":"MiqlxGroupBy"}]
+     },
      "soap":{
         "version":"1.1",
         "properties":{

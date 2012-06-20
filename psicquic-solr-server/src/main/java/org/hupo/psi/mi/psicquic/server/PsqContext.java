@@ -55,10 +55,25 @@ public class PsqContext{
         return storeMap.get( name );
     }
 
+    public Map getMiqlxDef(){
+        return (Map) ((Map) getJsonConfig().get( "service" )).get( "miqlx" );
+        
+    }
+
     public RecordStore getActiveStore(){
         return storeMap.get( (String) ((Map) getJsonConfig().get( "store" ))
                              .get( "active" ) );
     }
+
+    public String getRecId(){
+        return (String) 
+            ((Map) getJsonConfig().get( "store" )).get( "rec-id" );
+    }
+    public String getDefaultView(){
+        return (String) 
+            ((Map) getJsonConfig().get( "store" )).get( "view-default" );
+    }
+
 }
 
 

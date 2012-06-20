@@ -172,7 +172,15 @@ Configuration
   
     Parameters:
            
-      active - currently active data store (valid values "derby", "solr")
+      active - currently active data store. Valid values "derby", "solr".
+
+      rec-id - index field to use as the data store id. Valid values: 
+                "uuId" - to be used with solr data store 
+                "recId" - to be used with anything else (preferrd)
+
+      view-default - default record view. Valid values:
+                "psi-mi/tab25", "psi-mi/tab26", "psi-mi/tab27" (solr,derby dts) 
+                "psi-mi/xml25" (derby dts only)
 
       record-mgr - url of the action used to commit/retrieve individual 
                records from the record store; used only by the derby record 
@@ -189,9 +197,10 @@ Configuration
 
            view - definitions of the views offered by the solr store.
               each view ("psi-mi/tab25","psi-mi/tab26","psi-mi/tab27")
-              is defined by a single configuration parameter, 'col' that
-              lists the solr index fields to be concatenated while building
-              the view of a single index record.
+              is defined by "col" parameter that lists the solr index 
+              fields to be concatenated while building the view of 
+              a single index record and "col-sep" parameter
+              that defines column separator (typically tab or comma)
    
   Service Configuration
   ---------------------

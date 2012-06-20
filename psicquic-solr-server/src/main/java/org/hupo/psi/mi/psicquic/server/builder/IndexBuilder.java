@@ -86,6 +86,18 @@ public class IndexBuilder{
         this.zip = zip;
         this.format=format;
         this.source = source;
+
+
+
+        // setup threads here
+        //-------------------
+
+
+
+
+
+
+
         
         // get context
         //------------

@@ -12,6 +12,7 @@ package org.hupo.psi.mi.psicquic.server;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import java.io.InputStream;
@@ -45,36 +46,12 @@ public class PsicquicPortImpl implements PsqPort {
     org.hupo.psi.mi.psq.ObjectFactory psqOF =
         new org.hupo.psi.mi.psq.ObjectFactory();
     
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
-
-    /*
-    Index index = null;
-
-    public void setIndex( Index index ){
-        this.index = index;
-    }
-
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
-
-    RecordDao  rdao = null;
-
-    public void setRecordDao( RecordDao dao ){
-        this.rdao= dao;
-    }
-    */
-
-    //--------------------------------------------------------------------------
-    //--------------------------------------------------------------------------
-
     PsqContext psqContext;
     
     public void setPsqContext( PsqContext context ){
         psqContext = context;
     }
     
-
     //--------------------------------------------------------------------------
 
     private void initialize() {
@@ -87,19 +64,6 @@ public class PsicquicPortImpl implements PsqPort {
 
 	Log log = LogFactory.getLog( this.getClass() );
 	log.info( " psqContext=" + psqContext );
-	
-        /*
-        if ( psqContext.getJsonConfig() == null || force ) {
-            log.info( " initilizing psq context" );
-
-            try {
-                psqContext.readJsonConfigDef();
-            } catch ( Exception e ){
-                log.info( "JsonConfig reading error" );
-            }            
-        }
-        */
-
     }
 
     //==========================================================================
@@ -126,108 +90,52 @@ public class PsicquicPortImpl implements PsqPort {
         Log log = LogFactory.getLog( this.getClass() );
         log.info( "PsqPortImpl: getByQuery: context =" + psqContext);
         log.info( "PsqPortImpl: getByQuery: q=" + query );
-
-
-        /*        
-        // MIQL Extension(s)
-        //------------------
-
-        // psq-facet-field:<field> - faceting field
-        //-----------------------------------------
-
-        String facetField = null;
-
-        if( q != null && q.indexOf( " psq-facet-field:" ) > 0 ){
-
-            int vtStart = q.indexOf( " psq-facet-field:" );
-            int vtStop = q.indexOf( ' ', vtStart + 6 );
-
-            if( vtStop > vtStart ){
-                viewType = q.substring( vtStart+6, vtStop );
-            } else {
-                viewType = q.substring( vtStart + 6 );
-            }
-
-            String nq = q.substring( 0, vtStart + 1 );
-            if( vtStop > vtStart ){
-                nq = nq + q.substring( vtStop );
-            }
-
-            q = nq;
-        }
-        
-        // psq-view:<view type> - return type
-        //-----------------------------------
-
-        String viewType = null;
-        
-        if( q != null && q.indexOf( " psq-view:" ) > 0 ){
-        
-            int vtStart = q.indexOf( " psq-view:" );
-            int vtStop = q.indexOf( ' ', vtStart + 6 ); 
-            
-            if( vtStop > vtStart ){
-                viewType = q.substring(vtStart+6, vtStop);
-            } else {
-                viewType = q.substring(vtStart+6);
-            }
-
-            String nq = q.substring(0, vtStart + 1);
-            if( vtStop > vtStart ){
-                nq = nq + q.substring( vtStop );
-            }
-            
-            q = nq;
-        }
-        
-        // psq-client:<ip>|'watchdog' - client info
-        //------------------------------------------
-
-        String client = null;
-        
-        if( q != null && q.indexOf( " psq-client:" ) > 0 ){
-        
-            int vtStart = q.indexOf( " psq-client:" );
-            int vtStop = q.indexOf( ' ', vtStart + 6 ); 
-            
-            if( vtStop > vtStart ){
-                viewType = q.substring( vtStart+6, vtStop );
-            } else {
-                viewType = q.substring( vtStart+6 );
-            }
-
-            String nq = q.substring( 0, vtStart + 1 );
-            if( vtStop > vtStart ){
-                nq = nq + q.substring( vtStop );
-            }
-            
-            q = nq;
-        }
-        */
         
         if( infoRequest != null ){              
-            log.info( "                         FR=" 
-                      + infoRequest.getFirstResult() );
-            log.info( "                         BS=" 
-                      + infoRequest.getBlockSize() );
+            log.info( "PsqPortImpl: FR=" + infoRequest.getFirstResult() 
+                      + " BS=" + infoRequest.getBlockSize() );
+        }
+
+        Map<String,List<String>> miqlx = null;
+
+        if( query != null && query.indexOf( " Miqlx" ) > -1 ){
+            MiqlxFilter mf = new MiqlxFilter( psqContext );
+            query = mf.process( query );
+            miqlx = mf.getMiqlx();
         }
         
+        String viewType = psqContext.getDefaultView();
+        
+        if( miqlx != null ){
+            for( Iterator mi = miqlx.entrySet().iterator(); mi.hasNext(); ){
+                Map.Entry me = (Map.Entry) mi.next();
+
+                log.info( "MIQLX: field=\'" + me.getKey() 
+                          + "\'  value=\'" + me.getValue() +"\'");
+            }
+
+            if( miqlx.get("MiqlxView:") != null ){
+                viewType = ((List<String>) miqlx.get("MiqlxView:")).get(0);
+            }
+        }
+
         org.hupo.psi.mi.psicquic.server.index.ResultSet 
-            rs = psqContext.getActiveIndex().query( query );
+            rs = psqContext.getActiveIndex().query( query, miqlx );
         
         QueryResponse qr = psqOF.createQueryResponse();
         qr.setResultSet( psqOF.createResultSet() );
         
         String mitab="";
 	log.info( "getByQuery: rs="+ rs); 
+        
         for( Iterator i = rs.getResultList().iterator(); i.hasNext(); ){
             Map in = (Map) i.next();
             log.info( "getByQuery: in="+ in);
 
-            String recId = (String) in.get("recId");
+            String recId = (String) in.get( psqContext.getRecId() );
 
             String drecord =  psqContext.getActiveStore()
-                .getRecord( recId ,"psi-mi/tab25" );
+                .getRecord( recId , viewType );
         
             log.info( " SolrDoc: recId=" + recId + " :: "  + drecord );
             mitab += drecord + "\n";

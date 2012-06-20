@@ -91,7 +91,7 @@ public class SolrRecordIndex implements RecordIndex{
                 
                 if( jSolrCon.get("shard") != null ){
                     List shardList = (List) jSolrCon.get("shard");
-                    String shardStr= "";
+                    //String shardStr= "";
                     for( Iterator is = shardList.iterator(); is.hasNext(); ){
                         String csh = (String) is.next();
                         shardStr += csh + ",";
@@ -100,7 +100,7 @@ public class SolrRecordIndex implements RecordIndex{
                         }
                         shardUrl.add( "http://" + csh );
                     }
-                    if( !shardStr.equals("") ){
+                    if( ! shardStr.equals("") ){
                         shardStr = shardStr.substring( 0, shardStr.length()-1);
                     }
                 }
@@ -122,9 +122,14 @@ public class SolrRecordIndex implements RecordIndex{
     }
     
     //--------------------------------------------------------------------------
-    
-    public ResultSet query( String query ){
 
+
+    public ResultSet query( String query ){
+        return query( query, null );
+    }
+
+    public ResultSet query( String query, Map<String,List<String>> xquery ){
+        
 	Log log = LogFactory.getLog( this.getClass() );
 
         ResultSet rs = new ResultSet();
@@ -138,7 +143,19 @@ public class SolrRecordIndex implements RecordIndex{
                 SolrServer solr = new CommonsHttpSolrServer( baseUrl );
                 ModifiableSolrParams params = new ModifiableSolrParams();
                 params.set( "q", query );
-                
+
+                if( xquery != null  && xquery.get( "MiqlxGroupBy:") != null ){
+                    List<String> ff = xquery.get( "MiqlxGroupBy:" );
+                    
+                    params.set( "facet", "true" );
+                    for( Iterator<String> fi = ff.iterator(); fi.hasNext(); ){
+                        
+                        // NOTE: restrict fields ???
+                        
+                        params.set( "facet.field", fi.next() );
+                    }
+                }
+
                 // set shards when needed
                 //-----------------------
                 
@@ -148,7 +165,7 @@ public class SolrRecordIndex implements RecordIndex{
 
                 try{            
                     QueryResponse response = solr.query( params );
-                    log.debug( "response = " + response );
+                    log.debug( "\n\nresponse = " + response +"\n\n\n");
 
                     SolrDocumentList res = response.getResults();
                     rs.setResultList( res );
