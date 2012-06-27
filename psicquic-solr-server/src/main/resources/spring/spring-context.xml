@@ -54,7 +54,7 @@
 -->
 <!-- ================================================================= INDEX -->
 
-  <bean id="solrIndex" 
+  <bean id="solrIndex"
         class="org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex">
     <property name="context" ref="psqConfig"/> 
   </bean>

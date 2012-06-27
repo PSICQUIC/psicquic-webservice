@@ -39,6 +39,9 @@ public class buildindex{
     public static String ifile = null;
     public static boolean zip = false;
     public static boolean desc = false;
+
+    public static int btCount = 2;
+    public static int stCount = 2;
     
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -100,7 +103,22 @@ public class buildindex{
             .create( "fmt" );
         
         options.addOption( fmtOption );
+       
+        Option btcOption = OptionBuilder.withLongOpt( "builder-thread-count" )
+            .withArgName( "count" ).hasArg()
+            .withDescription( "number of builder threads" )
+            .create( "btc" );
         
+        options.addOption( btcOption );
+
+        Option stcOption = OptionBuilder.withLongOpt( "solr-thread-count" )
+            .withArgName( "count" ).hasArg()
+            .withDescription( "number of solr connection threads" )
+            .create( "stc" );
+        
+        options.addOption( stcOption );
+        
+
         String ifrmt = DEFAULT_RECORD_FORMAT;
         
         try{
@@ -137,7 +155,30 @@ public class buildindex{
             
             if( cmd.hasOption("r") ){
                 desc = true;
+
             }
+
+            if( cmd.hasOption("btc") ){
+                try{
+                    String sBtc =  cmd.getOptionValue( "btc" );
+                    int btc = Integer.parseInt( sBtc ); 
+                    btCount = btc;
+                }catch( NumberFormatException nfx ){
+                    System.out.println( "BTC format Error. Using default: " + btCount );
+                }
+            }
+
+            if( cmd.hasOption("stc") ){
+                try{
+                    String sStc =  cmd.getOptionValue( "stc" );
+                    int stc = Integer.parseInt( sStc ); 
+                    stCount = stc;
+                }catch( NumberFormatException nfx ){
+                    System.out.println( "STC format Error. Using default: " + stCount );
+                }
+            }
+
+
 
         } catch( Exception exp ) {
             System.out.println( "BuildIndex: Options parsing failed. " +
@@ -152,7 +193,8 @@ public class buildindex{
         
         if( context != null ){
             System.out.println( "Context: " + context );
-            ibuilder = new IndexBuilder( context, ifrmt, zip );
+            ibuilder = new IndexBuilder( context, btCount, stCount, 
+                                         ifrmt, zip );
         }else{
             
             System.out.println( "Context(default): " + DEFAULT_CONTEXT );
@@ -160,18 +202,21 @@ public class buildindex{
                 InputStream ctxStream = buildindex.class
                     .getResourceAsStream( DEFAULT_CONTEXT );
                 
-                ibuilder = new IndexBuilder( ctxStream, ifrmt, zip );
+                ibuilder = new IndexBuilder( ctxStream, btCount, stCount, 
+                                             ifrmt, zip );
             } catch( Exception ex){
                 ex.printStackTrace();
             }
-            
+
         }
 
         if( ibuilder != null && ifile != null ){  
             ibuilder.processFile( ifile );
+            ibuilder.start();
         } else { // file option has a precedence over directory
             if( ibuilder != null && idir != null ){
                 ibuilder.processDirectory( idir, desc );
+                ibuilder.start();
             }
         }
     }

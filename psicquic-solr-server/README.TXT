@@ -121,6 +121,9 @@ Configuration
            remote solr servers are visible from the host running the psicquic
            server and that the solr cores there use the proper solr schema.
 
+         param-default - default values of parameters to be passed to solr 
+               provided as a name, value/list of values map.  
+
       transform - transformations used to convert incoming data into index
            document. 
            NOTE: These parameters are used only by the index builder. They are 

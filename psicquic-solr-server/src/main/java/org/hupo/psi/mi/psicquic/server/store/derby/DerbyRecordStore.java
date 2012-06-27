@@ -40,6 +40,8 @@ public class DerbyRecordStore implements RecordStore{
     Log log;
     Connection dbcon = null;
 
+    Map<String,Map<String,PsqTransformer>> inTransformerMap = null;
+
     String rmgrURL = "";
     
     public DerbyRecordStore(){
@@ -241,6 +243,15 @@ public class DerbyRecordStore implements RecordStore{
             .get("transform");
         
         List rtrList = (List) trCfg.get( format );
+
+
+        if( inTransformerMap == null ){
+            inTransformerMap 
+                = new HashMap<String,Map<String,PsqTransformer>>();
+            
+        }
+        
+        Map<String,PsqTransformer> itm = inTransformerMap.get( format );
         
         if( rtrList != null ){
             for( Iterator it = rtrList.iterator(); it.hasNext(); ){
@@ -249,21 +260,24 @@ public class DerbyRecordStore implements RecordStore{
 
                 if( ((String) itr.get("type")).equalsIgnoreCase("XSLT") &&
                     (Boolean) itr.get("active") ){
-                    
-                    if( itr.get( "transformer" ) == null ){
 
+                   
+                    //if( itr.get( "transformer" ) == null ){ 
+                    if( itm.get( itr.get("view") ) == null ){            
+                        
                         log.info( " Initializing transformer: format=" + format
                                   + " type=XSLT config=" + itr.get("config") );
                         
                         PsqTransformer rt =
                             new XsltTransformer( (Map) itr.get("config") );
-                        itr.put( "transformer", rt );
+                        //itr.put( "transformer", rt );
+                        itm.put( (String) itr.get("view"), rt );
                     }
 
-                    PsqTransformer rt 
-                        = (PsqTransformer) itr.get( "transformer" );
+                    PsqTransformer rt = itm.get( itr.get("view") ); 
+                    //            = (PsqTransformer) itr.get( "transformer" );
                     rt.start( fileName, is );
-		    
+
 		    while( rt.hasNext() ){
 					
 			Map cdoc= rt.next();

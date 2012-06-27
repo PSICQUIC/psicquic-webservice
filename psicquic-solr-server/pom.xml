@@ -37,14 +37,25 @@
             <artifactId>solr-core</artifactId>
             <version>${solr.version}</version>
             <type>jar</type>
-            <scope>compile</scope>
+           
         </dependency>
         <dependency>
             <groupId>org.apache.solr</groupId>
             <artifactId>solr-solrj</artifactId>
             <version>${solr.version}</version>
             <type>jar</type>
-            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.2</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpmime</artifactId>
+          <version>4.2</version>
         </dependency>
 
         <dependency>

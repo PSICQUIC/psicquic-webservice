@@ -6,8 +6,15 @@
         "shard":[
             "127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
             "127.0.0.1:8080/psicquic-solr-server/solr/psq-02"
-        ]
-       },
+        ],
+        "param-default":{
+           "defType":"edismax",
+           "start":"0",
+           "rows":"10",
+           "wr":"xml",
+           "df":["identifier","taxidA","taxidB"]
+        }
+     },
      "transform":{
         "mif254":{
              "type":"xslt", 

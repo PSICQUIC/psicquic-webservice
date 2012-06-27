@@ -21,6 +21,10 @@ import psidev.psi.mi.calimocho.solr.converter.Converter;
 
 import org.apache.solr.common.SolrInputDocument;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+
 public class CalimochoTransformer implements PsqTransformer{
     
     ColumnBasedDocumentDefinition docDef = null;
@@ -79,10 +83,15 @@ public class CalimochoTransformer implements PsqTransformer{
 
     public void start( String fileName ){
 
+        Log log = LogFactory.getLog( this.getClass() );
+        log.info( " starting CalimochoTransformer(fileName): filename(o)=" + this.fileName );
+        
         this.fileName = fileName;
         this.curRowStr = null;
         this.curLineNumber = 0;
         
+        log.info( " starting CalimochoTransformer(fileName): filename(n)=" + this.fileName );
+
         try {
             InputStreamReader isr = 
                 new InputStreamReader( new FileInputStream( fileName ) );
@@ -98,9 +107,15 @@ public class CalimochoTransformer implements PsqTransformer{
     
     public void start( String fileName, InputStream is ){
 
+        Log log = LogFactory.getLog( this.getClass() );
+        log.info( " starting CalimochoTransformer(stream): filename(o)=" + this.fileName );
+
+
         this.fileName = fileName;
         this.curRowStr = null;
         this.curLineNumber = 0;
+
+        log.info( " starting CalimochoTransformer(stream): filename(n)=" + this.fileName );
 
         try {
             this.bufferedReader 
@@ -110,6 +125,10 @@ public class CalimochoTransformer implements PsqTransformer{
         }catch( Exception ex ){
             //TODO - do whatever you want to do with this exception
         }
+    }
+
+    public String getFileName(){
+        return this.fileName;
     }
     
     public boolean hasNext(){

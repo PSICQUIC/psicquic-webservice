@@ -6,11 +6,13 @@ package org.hupo.psi.mi.psicquic.server.index.solr;
  #==============================================================================
  #
  # SolrRecordIndex: access to solr-based index
- #
- #=========================================================================== */
+ #         NOTE: supports only one set of solr server connections (base or 
+ #               shards) shared between document submitting instances
+ #   
+ # ========================================================================== */
 
-import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.params.*;
 
 import java.net.MalformedURLException;
 
@@ -32,23 +34,33 @@ import org.hupo.psi.mi.psicquic.server.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.Thread;
+
 public class SolrRecordIndex implements RecordIndex{
 
     JsonContext context = null;
 
     //PsqContext  context = null;
 
-    SolrServer baseSolr = null;
+    int queueSize = 4096;
+    int solrconTCount = 2;
+
+    private static SolrServer baseSolr = null;
 
     private String baseUrl = null;
     private String shardStr = "";
 
+    private SolrParams defSolrParams = null;
+
     List<String> shardUrl = null;
-    List<SolrServer> shSolr = null;
+
+    private static List<SolrServer> shSolr = null;
+
+
     CRC32 shCRC = null;
 
-    Map<String,Map> ricon = null;
-    Map<String,Map> rscon = null;
+    private Map<String,Map> ricon = null;
+    private Map<String,PsqTransformer> inTransformer = null;
     
     public void setContext( JsonContext context ){
         this.context = context;
@@ -56,12 +68,23 @@ public class SolrRecordIndex implements RecordIndex{
     }
 
     public SolrRecordIndex(){}
+
+    
+    public SolrRecordIndex( JsonContext context, int solrconTCount ){
+        this.context = context;
+        this.solrconTCount = solrconTCount;
+        initialize( true );
+    }
+
+
     
     public SolrRecordIndex( JsonContext context ){
         this.context = context;
         initialize( true );
     }
     
+
+
     public void initialize(){
         initialize( false );
     }
@@ -104,11 +127,22 @@ public class SolrRecordIndex implements RecordIndex{
                         shardStr = shardStr.substring( 0, shardStr.length()-1);
                     }
                 }
+
+
+                // query parameters
+                //-----------------
                 
+                defSolrParams 
+                    = initSolrParams( (Map) jSolrCon.get( "param-default" ) );
+
+                // transformations
+                //----------------
+
                 Map jFmtCon = (Map) ((Map) context.getJsonConfig().get("index"))
                     .get("transform");
                 
                 ricon = new HashMap<String,Map>();
+                inTransformer = new HashMap<String,PsqTransformer>();
 
                 for( Iterator ik = jFmtCon.keySet().iterator(); ik.hasNext(); ){
                     
@@ -131,18 +165,32 @@ public class SolrRecordIndex implements RecordIndex{
     public ResultSet query( String query, Map<String,List<String>> xquery ){
         
 	Log log = LogFactory.getLog( this.getClass() );
-
+        
+        ModifiableSolrParams params = new ModifiableSolrParams( defSolrParams );
         ResultSet rs = new ResultSet();
 	
-        try{
+        //try{
             if( baseUrl == null ){ initialize(); }
 	    log.debug( "   SolrRecordIndex: baseUrl="+ baseUrl );
 
             if( baseUrl != null ){
+                
+                SolrServer solr = new HttpSolrServer( baseUrl );                       
+                
+                // set shards when needed
+                //-----------------------
+                
+                if( shardStr != null ){
+                    params.set( "shards", shardStr );
+                }
 
-                SolrServer solr = new CommonsHttpSolrServer( baseUrl );
-                ModifiableSolrParams params = new ModifiableSolrParams();
+                // Query
+                //------
+
                 params.set( "q", query );
+                
+                // Extended query paramaters
+                //--------------------------
 
                 if( xquery != null  && xquery.get( "MiqlxGroupBy:") != null ){
                     List<String> ff = xquery.get( "MiqlxGroupBy:" );
@@ -156,13 +204,6 @@ public class SolrRecordIndex implements RecordIndex{
                     }
                 }
 
-                // set shards when needed
-                //-----------------------
-                
-                if( shardStr != null ){
-                    params.set( "shards", shardStr );
-                }
-
                 try{            
                     QueryResponse response = solr.query( params );
                     log.debug( "\n\nresponse = " + response +"\n\n\n");
@@ -174,9 +215,9 @@ public class SolrRecordIndex implements RecordIndex{
                     sex.printStackTrace();
                 }
             }
-        } catch( MalformedURLException mex ){
-            mex.printStackTrace();
-        }
+            //} catch( MalformedURLException mex ){
+            //mex.printStackTrace();
+            //}
         return rs;
     }
 
@@ -184,25 +225,35 @@ public class SolrRecordIndex implements RecordIndex{
     
     public void connect() throws MalformedURLException{
 
-        
-        baseSolr = new CommonsHttpSolrServer( baseUrl );
-        
         Log log = LogFactory.getLog( this.getClass() );
-        log.info( "   SolrRecordIndex: connecting" );
-
+        log.info( "SolrRecordIndex: connecting" );
         
-        if( shardUrl.size() > 0 ){
-
+        if( shardUrl.size() == 0 && baseSolr == null ){
+            baseSolr = new ConcurrentUpdateSolrServer( baseUrl, 
+                                                       queueSize, 
+                                                       solrconTCount );
+        } else {
+            log.info( "SolrRecordIndex: baseSolr already initialized: " 
+                      + baseSolr );
+        }
+        
+        if( shardUrl.size() > 0 && shSolr == null ){
+            
             shSolr = new ArrayList<SolrServer>();
             
             for( Iterator<String> is = shardUrl.iterator(); is.hasNext(); ){
-                shSolr.add( new CommonsHttpSolrServer( is.next() ) );                        
+                shSolr.add( new ConcurrentUpdateSolrServer( is.next(), 
+                                                            queueSize, 
+                                                            solrconTCount ) );                        
             }
-        } 
-
-        log.info( "              shards: total=" + shardUrl.size() 
-                  + " connected=" + shSolr.size() );
-
+        } else {
+            if( shardUrl.size() > 0 ){
+                log.info( "SolrRecordIndex: Shards already initialized: " 
+                          + shSolr );
+            }                           
+        }
+        
+        log.info( "SolrRecordIndex: connected" );
     }
     
     public void add( SolrInputDocument doc ) 
@@ -237,16 +288,15 @@ public class SolrRecordIndex implements RecordIndex{
     public void addFile( String format, String fileName, InputStream is ){
         
 	Log log = LogFactory.getLog( this.getClass() );
-
+        
         Map rtr = ricon.get( format );
         
         List<SolrInputDocument> output = new ArrayList<SolrInputDocument>();
 
         // Known record transformers (add more when implemented)
         //--------------------------
-
-        if( rtr.get( "transformer" ) == null ){
-
+        
+        if( inTransformer.get( format ) == null ){
             if( ((String) rtr.get("type")).equalsIgnoreCase( "XSLT" ) ){
         
                 log.info( " Initializing transformer: format=" + format
@@ -254,7 +304,10 @@ public class SolrRecordIndex implements RecordIndex{
                 
                 PsqTransformer recTr = 
                     new XsltTransformer( (Map) rtr.get("config") );
-                rtr.put( "transformer",recTr );
+                
+                inTransformer.put( format, recTr );
+                log.info( " Initializing transformer(" + format
+                          + "): new=" + inTransformer.get( format ) );
             }    
         
             if( ((String) rtr.get("type")).equalsIgnoreCase( "CALIMOCHO" ) ){
@@ -264,21 +317,25 @@ public class SolrRecordIndex implements RecordIndex{
                 
                 PsqTransformer recTr = 
                     new CalimochoTransformer( (Map) rtr.get( "config" ) );
-                rtr.put( "transformer", recTr );
+                inTransformer.put( format, recTr );
+                log.info( " Initializing transformer(" + format 
+                          + "): new=" + inTransformer.get( format ) );                
             }
         }    
                 
         PsqTransformer recordTransformer 
-            = (PsqTransformer) rtr.get( "transformer" );
+            
+            = (PsqTransformer) inTransformer.get( format );
         
         if( recordTransformer == null ){
-
+            
             // NOTE: throw unknown transformer exception ?
             
         }
 
         recordTransformer.start( fileName, is );
-        log.info( " SolrRecordIndex(add): transformation start...");
+        log.info( " SolrRecordIndex(add): transformation start (" 
+                  + fileName + ")..." + recordTransformer);
         while( recordTransformer.hasNext() ){
 		
             Map cdoc= recordTransformer.next();
@@ -286,9 +343,8 @@ public class SolrRecordIndex implements RecordIndex{
             String recId = (String) cdoc.get("recId");;
             SolrInputDocument doc 
                 = (SolrInputDocument) cdoc.get("solr");
-            
-            log.info( " SolrRecordIndex(add): recId=" + recId + 
-                      " SIDoc=" + doc );
+            log.debug( " SolrRecordIndex(add): recId=" + recId );
+            log.debug( " SolrRecordIndex(add): SIDoc=" + doc );
             
             try{
                 if( shSolr.size() > 1 ){
@@ -296,8 +352,8 @@ public class SolrRecordIndex implements RecordIndex{
                     int shard = this.shardSelect( recId );
                     int shMax = shSolr.size() - 1;
                     
-                    log.info( " SolrRecordIndex(add): recId=" + recId +
-                              " shard= " + shard + " (max= " + shMax +")" );
+                    log.debug( " SolrRecordIndex(add): recId=" + recId +
+                               " shard= " + shard + " (max= " + shMax +")" );
 
                     this.add( shard, doc );
                 } else {
@@ -338,6 +394,46 @@ public class SolrRecordIndex implements RecordIndex{
         } else {
             return - crc.intValue() % shc;
         }
+    }
+
+    //--------------------------------------------------------------------------
+
+    private SolrParams initSolrParams( Map map ){
+        
+        if( map == null ) return new ModifiableSolrParams();
+        
+        Map<String,String[]> mmap = new HashMap<String,String[]>();
+        
+        for( Iterator<Map.Entry> mi = map.entrySet().iterator(); 
+             mi.hasNext(); ){
+
+            Map.Entry me = mi.next();
+
+            String key = (String) me.getKey();
+            Object val = me.getValue();
+           
+            try{  // NOTE: Some ugly casting; arrgh... ;o)
+
+                if( val instanceof String ){
+
+                    String[] va = new String[1]; 
+                    va[0] = (String) val;
+                    mmap.put( key, va );
+                } else {
+                    String[] vl = 
+                        (String[]) ((List) val).toArray( new String[0] );
+                    mmap.put( key, vl );
+                }
+            }catch( Exception ex ){
+                Log log = LogFactory.getLog( this.getClass() );
+                log.info( " initilizing SolrRecordIndex: " 
+                          + "param-default format error=" + val );
+                
+                ex.printStackTrace();
+            }
+        }
+
+        return new ModifiableSolrParams( mmap );
     }
 
 }
