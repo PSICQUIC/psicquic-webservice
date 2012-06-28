@@ -229,9 +229,12 @@ public class SolrRecordIndex implements RecordIndex{
         log.info( "SolrRecordIndex: connecting" );
         
         if( shardUrl.size() == 0 && baseSolr == null ){
+	    
             baseSolr = new ConcurrentUpdateSolrServer( baseUrl, 
                                                        queueSize, 
-                                                       solrconTCount );
+                                                       solrconTCount ); 
+	    //baseSolr = new HttpSolrServer( baseUrl ); 
+	    
         } else {
             log.info( "SolrRecordIndex: baseSolr already initialized: " 
                       + baseSolr );
@@ -242,10 +245,16 @@ public class SolrRecordIndex implements RecordIndex{
             shSolr = new ArrayList<SolrServer>();
             
             for( Iterator<String> is = shardUrl.iterator(); is.hasNext(); ){
+
+		
                 shSolr.add( new ConcurrentUpdateSolrServer( is.next(), 
                                                             queueSize, 
                                                             solrconTCount ) );                        
-            }
+		
+
+                //shSolr.add( new HttpSolrServer( is.next() ) ); 
+                                                                                   
+	    }
         } else {
             if( shardUrl.size() > 0 ){
                 log.info( "SolrRecordIndex: Shards already initialized: " 

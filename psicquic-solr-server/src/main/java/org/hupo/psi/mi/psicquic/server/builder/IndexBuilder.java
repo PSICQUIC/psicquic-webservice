@@ -208,6 +208,9 @@ public class IndexBuilder{
 
         try{
             while( running ){        
+
+		running = false;
+
                 for( Iterator<IndexThread> iti = itl.iterator(); iti.hasNext(); ){
                     IndexThread cit = iti.next();
                     if( cit.getState() != Thread.State.TERMINATED ){
@@ -216,10 +219,15 @@ public class IndexBuilder{
                     System.out.println( cit.getState() + ":" );
                 }
                 if( running ){
-                    System.out.print(".");
+		    log.info( "IndexBuilder: still running...");
                     Thread.sleep( 1000*5 );
-                }
+                } else {
+		    log.info( "IndexBuilder: done...");
+		}
             }
+
+	    log.info( "IndexBuilder: all threads terminated");
+
 
         } catch( InterruptedException ix ){
             ix.printStackTrace();
