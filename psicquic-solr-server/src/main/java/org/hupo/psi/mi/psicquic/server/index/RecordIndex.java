@@ -10,7 +10,7 @@ public interface RecordIndex{
     public ResultSet query( String query );
     public ResultSet query( String query, Map<String,List<String>> xquery );
     public void initialize();
+    public void clear();
     public void connect() throws MalformedURLException;
-
     public void addFile( String format, String fileName, InputStream is );
 }

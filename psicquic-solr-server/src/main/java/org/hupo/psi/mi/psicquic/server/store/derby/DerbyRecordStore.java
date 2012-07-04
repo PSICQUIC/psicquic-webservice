@@ -27,6 +27,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import java.util.regex.*;
+
 import org.hupo.psi.mi.psicquic.util.JsonContext;
 import org.hupo.psi.mi.psicquic.server.store.*;
 
@@ -42,7 +44,11 @@ public class DerbyRecordStore implements RecordStore{
 
     Map<String,Map<String,PsqTransformer>> inTransformerMap = null;
 
-    String rmgrURL = "";
+    String rmgrURL = null;
+
+    JsonContext context = null;
+    String host = null;
+
     
     public DerbyRecordStore(){
 
@@ -62,8 +68,21 @@ public class DerbyRecordStore implements RecordStore{
             ex.printStackTrace();
         }
     }
+
+    public DerbyRecordStore( JsonContext context, String host ){
+        
+        if( host != null ){
+            this.host = host;
+        }
+        
+        try{
+            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+        } catch( Exception ex ){
+            ex.printStackTrace();
+        }
+    }
     
-    JsonContext context = null;
+
     
     public void setContext( JsonContext context ){
         this.context = context;
@@ -71,6 +90,25 @@ public class DerbyRecordStore implements RecordStore{
     
     public void initialize(){
        
+    }
+
+    public void clear(){
+
+        log = LogFactory.getLog( this.getClass() );
+        if( dbcon == null ){
+            connect();
+        }
+
+        try{
+            Statement st = dbcon.createStatement();
+            st.setQueryTimeout(5);
+            st.executeQuery( "truncate table record");
+            log.info( "record table truncated" );
+        } catch( Exception ex ){
+            // missing table ?
+            log.info( "creating record table" );
+            create();
+        }        
     }
 
     private void connect(){
@@ -333,10 +371,17 @@ public class DerbyRecordStore implements RecordStore{
             postData += "&" + URLEncoder.encode("vv", "UTF-8") + "="
                 + URLEncoder.encode( view, "UTF-8");
 
-            String rmgrUrlStr = (String) 
-                ((Map) context.getJsonConfig().get("store")).get("derby");            
+            if( rmgrURL == null ){
+                rmgrURL = (String) 
+                    ((Map) context.getJsonConfig().get("store"))
+                    .get("record-mgr");            
 
-            URL url = new URL( rmgrUrlStr );
+                if( host != null ){
+                    rmgrURL = hostReset( rmgrURL, host );
+                }
+            }
+            
+            URL url = new URL( rmgrURL );
             URLConnection conn = url.openConnection();
             conn.setDoOutput( true );
             OutputStreamWriter wr =
@@ -356,6 +401,36 @@ public class DerbyRecordStore implements RecordStore{
             wr.close();
             rd.close();
         } catch (Exception e) {
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    private String hostReset( String url, String newHost ){
+
+        if( host == null ) return url;
+
+        // http://aaa:8888/d/d/d
+
+        try{
+            Pattern p = Pattern.compile( "([^/]*//)([^/:]+)(:[0-9]+)?(.*)" );
+            Matcher m = p.matcher( url );
+
+            if( m.matches() ){
+
+                String prefix = m.group( 1 );
+                String host = m.group( 2 );
+                String port = m.group( 3 );
+                String postfix = m.group( 4 );
+
+                String newUrl = prefix + newHost + port + postfix;
+                return newUrl;
+
+            } else {
+                return url;
+            }
+        } catch(Exception ex ){
+            return url;
         }
     }
 }

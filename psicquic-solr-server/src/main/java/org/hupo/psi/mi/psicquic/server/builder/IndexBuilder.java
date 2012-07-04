@@ -42,10 +42,10 @@ public class IndexBuilder{
     public static final String 
         RFRMT = "mif254";
 
-    Log log = null;  //LogFactory.getLog( this.getClass() );
+    Log log = null;
         
-    String format;
-
+    String format = null;
+    
     String root = null;
     String source = null;
     boolean zip = false;
@@ -55,9 +55,12 @@ public class IndexBuilder{
     RecordIndex recordIndex = null;
     RecordStore recordStore = null;
 
-    int builderTCount = 2;
-    int solrconTCount = 2;
+    int builderTCount = 1;
+    int solrconTCount = 1;
     
+
+    String host = null;
+
     //--------------------------------------------------------------------------
     
     JsonContext psqContext;
@@ -72,12 +75,9 @@ public class IndexBuilder{
 
     //--------------------------------------------------------------------------
     
-    public IndexBuilder( String ctx, int btc, int stc, 
+    public IndexBuilder( String ctx, String host, int btc, int stc, 
                          String format, boolean zip ){
-
-        builderTCount = btc;
-        solrconTCount = stc;
-
+        
         InputStream isCtx = null;
         try{
             isCtx = new FileInputStream( ctx );
@@ -87,15 +87,54 @@ public class IndexBuilder{
         
         defCtx = false;
         this.initialize( isCtx, format, zip );
+
+        Map jctx = (Map) getPsqContext().getJsonConfig();
+
+        if( btc > 0 ){
+            builderTCount = btc;
+        } else {
+            Integer btcInt = (Integer) ((Map)jctx.get( "builder" ))
+                .get( "builder-thread-count" );           
+            builderTCount = btcInt.intValue();
+        }
+        
+        if( stc > 0 ){
+            solrconTCount = stc;
+        } else {
+            Integer stcInt = (Integer) ((Map)jctx.get( "builder" ))
+                .get( "solr-thread-count" );
+            solrconTCount = stcInt.intValue();
+        }
+
+        if( host != null ){
+            this.host = host;
+        }
     }
-
-    public IndexBuilder( InputStream isCtx, int btc, int stc,
+    
+    public IndexBuilder( InputStream isCtx, String host, int btc, int stc,
                          String format, boolean zip ){
-
-        builderTCount = btc;
-        solrconTCount = stc;
         
         this.initialize( isCtx, format, zip );
+        
+        Map jctx = (Map) getPsqContext().getJsonConfig();
+        if( btc > 0 ){
+            builderTCount = btc;
+        } else {
+            Integer btcInt = (Integer) ((Map)jctx.get( "builder" ))
+                .get( "builder-thread-count" );
+            builderTCount = btcInt.intValue();
+        }
+
+        if( stc > 0 ){
+            solrconTCount = stc;
+        }  else {
+            Integer stcInt = (Integer) ((Map)jctx.get( "builder" ))
+                .get( "solr-thread-count" );
+            solrconTCount = stcInt.intValue();
+        }
+        if( host != null ){
+            this.host = host;
+        }
     }
     
     private void initialize( InputStream isCtx, String format, boolean zip ){
@@ -122,6 +161,46 @@ public class IndexBuilder{
         }        
     }
 
+    //--------------------------------------------------------------------------
+    public void  clear(){
+
+        Map jctx = (Map) getPsqContext().getJsonConfig();
+         
+        try{
+            
+            // clear index
+            //------------
+
+            String activeIndex =
+                (String) ((Map)jctx.get( "index" )).get( "active" );
+            
+            if( activeIndex.equals( "solr" ) ){
+                recordIndex = new SolrRecordIndex( getPsqContext() );
+                recordIndex.initialize();
+                recordIndex.connect();
+                recordIndex.clear();
+            }
+            
+            // clear data store
+            //-----------------
+
+            String activeStore =
+                (String) ((Map)jctx.get( "store" )).get( "active" );
+            
+            if( activeStore.equals( "solr" ) ){
+                // implicitly cleared by clearing index
+            }
+
+            if( activeStore.equals( "derby" ) ){
+                recordStore = new DerbyRecordStore( getPsqContext() );
+                recordStore.initialize();
+                recordStore.clear();
+            }
+        } catch( MalformedURLException mux ){
+            mux.printStackTrace();
+        }              
+    }
+    
     //--------------------------------------------------------------------------
 
     public void processFile( String file ){
@@ -193,7 +272,7 @@ public class IndexBuilder{
                 log.info( "IndexBuilder:  file: " + fqi.next() );
             }
             
-            IndexThread it = new IndexThread( psqContext, solrconTCount,
+            IndexThread it = new IndexThread( psqContext, host, solrconTCount,
                                               root, fq, format, zip );
             itl.add( it );
 
@@ -298,8 +377,8 @@ class IndexThread extends Thread{
     String format;
     
     List<File> fileq;
-    
-    public IndexThread( JsonContext psqContext, int solrconTCount,
+
+    public IndexThread( JsonContext psqContext, String host, int solrconTCount,
                         String root, List<File> files, 
                         String format, boolean zip ){
         
@@ -309,8 +388,6 @@ class IndexThread extends Thread{
         this.root = root;
         this.format = format;
         
-
-
         try{
 
             // SOLR Index
@@ -320,7 +397,8 @@ class IndexThread extends Thread{
                 (String) ((Map)jctx.get( "index" )).get( "active" );
             
             if( activeIndex.equals( "solr" ) ){
-                recordIndex = new SolrRecordIndex( psqContext, solrconTCount );
+                recordIndex = new SolrRecordIndex( psqContext, host, 
+                                                   solrconTCount );
                 recordIndex.initialize();
                 recordIndex.connect();
             }
@@ -332,12 +410,12 @@ class IndexThread extends Thread{
                 (String) ((Map)jctx.get( "store" )).get( "active" );
             
             if( activeStore.equals( "solr" ) ){
-                recordStore = new SolrRecordStore( psqContext );
+                recordStore = new SolrRecordStore( psqContext, host );
                 recordStore.initialize();
             }
             
             if( activeStore.equals( "derby" ) ){
-                recordStore = new DerbyRecordStore( psqContext );
+                recordStore = new DerbyRecordStore( psqContext, host );
                 recordStore.initialize();
             }
         } catch( MalformedURLException mux ){

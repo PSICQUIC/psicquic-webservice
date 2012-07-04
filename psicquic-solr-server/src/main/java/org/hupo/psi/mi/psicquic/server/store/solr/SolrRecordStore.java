@@ -14,6 +14,8 @@ import java.util.*;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 
+import java.util.regex.*;
+
 import org.hupo.psi.mi.psicquic.util.JsonContext;
 import org.hupo.psi.mi.psicquic.server.store.*;
 
@@ -40,10 +42,15 @@ public class SolrRecordStore implements RecordStore{
     Map<String,Object> viewMap;
 
     JsonContext context = null;
+    String host = null;
 
     public SolrRecordStore(){}
 
     public SolrRecordStore( JsonContext context ){
+        this.context = context;
+    }
+    
+    public SolrRecordStore( JsonContext context, String host ){
         this.context = context;        
     }
     
@@ -56,7 +63,6 @@ public class SolrRecordStore implements RecordStore{
     }
 
     public void initialize( boolean force ){
-
         
         Log log = LogFactory.getLog( this.getClass() );
         log.info( " initilizing SolrRecordIndex: context=" + context );
@@ -76,7 +82,11 @@ public class SolrRecordStore implements RecordStore{
             log.info( "    url=" + jSolrCon.get("url") );
             log.info( "    shard=" + jSolrCon.get("shard") );
 
-            baseUrl = (String) jSolrCon.get("url");
+            baseUrl = (String) jSolrCon.get( "url" );
+
+            if( host != null ){
+                baseUrl = hostReset( baseUrl , host );
+            }
 
             if( jSolrCon.get("shard") != null ){
                 List shardList = (List) jSolrCon.get("shard");
@@ -87,7 +97,12 @@ public class SolrRecordStore implements RecordStore{
                     if( shardUrl == null ){
                         shardUrl = new ArrayList<String>();
                     }
-                    shardUrl.add( "http://" + csh );
+                    
+                    if( host != null ){
+                        shardUrl.add( hostReset( "http://" + csh, host ) );
+                    } else { 
+                        shardUrl.add( "http://" + csh );
+                    }
                 }
                 if( !shardStr.equals("") ){
                     shardStr = shardStr.substring( 0, shardStr.length()-1);
@@ -110,22 +125,50 @@ public class SolrRecordStore implements RecordStore{
         }
     }
     
-    public void shutdown(){}
-    
+    private String hostReset( String url, String newHost ){
+
+        if( host == null ) return url;
+       
+        // http://aaa:8888/d/d/d 
+
+        try{
+            Pattern p = Pattern.compile( "([^/]*//)([^/:]+)(:[0-9]+)?(.*)" );
+            Matcher m = p.matcher( url );
+            
+            if( m.matches() ){
+                
+                String prefix = m.group( 1 );
+                String host = m.group( 2 );
+                String port = m.group( 3 );
+                String postfix = m.group( 4 );
+
+                String newUrl = prefix + newHost + port + postfix;
+                return newUrl;
+
+            } else {
+                return url;
+            }
+        } catch(Exception ex ){
+            return url;
+        }
+    }
+
+
+    //--------------------------------------------------------------------------
+    // NOTE: dummy operation: records are expected to be handled while indexing
+    //--------------------------------------------------------------------------
+
     private void connect(){}
-    
+    public void clear(){}
+    public void shutdown(){}
+    public void addRecord( String rid, String record, String format ){}
     public void addFile( String fileName, String format, InputStream is ){
-        // NOTE: dummy operation: records expected to be stored while indexing
-
         Log log = LogFactory.getLog( this.getClass() );
-        log.info( " SolrRecordStore: addFile(dummy) file=" + fileName );
-        
+        log.info( " SolrRecordStore: addFile(dummy) file=" + fileName );        
     }
-
-    public void addRecord( String rid, String record, String format ){
-        // NOTE: dummy operation: records expected to be stored while indexing
-
-    }
+    
+    //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 
     public String getRecord( String rid, String format ){
 

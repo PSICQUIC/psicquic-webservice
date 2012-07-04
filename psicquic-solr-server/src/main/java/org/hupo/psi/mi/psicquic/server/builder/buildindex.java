@@ -34,14 +34,17 @@ public class buildindex{
         DEFAULT_RECORD_FORMAT = "mif254";   
 
     public static String rfrmt = DEFAULT_RECORD_FORMAT;
-
+    
+    public static String host = null;
     public static String idir = null;
     public static String ifile = null;
+    
+    public static boolean clr = false;
     public static boolean zip = false;
     public static boolean desc = false;
 
-    public static int btCount = 2;
-    public static int stCount = 2;
+    public static int btCount = -1;
+    public static int stCount = -1;
     
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
@@ -49,45 +52,13 @@ public class buildindex{
     public static void main( String [ ] args ){
         
         Options options = new Options();
- 
-        Option hlpOption = OptionBuilder.withLongOpt( "help" )
-            .withDescription( "help " )
-            .create( "help" );
-
-        options.addOption( hlpOption );
         
-        Option urlOption = OptionBuilder.withLongOpt( "url" )
-            .withArgName( "url" ).hasArg()
-            .withDescription( "server url" )
-            .create( "url" );
+        Option clrOption = OptionBuilder.withLongOpt( "clear" )
+            .withDescription( "clear index" )
+            .create( "clr" );
 
+        options.addOption( clrOption );
 
-        Option fileOption = OptionBuilder.withLongOpt( "file" )
-            .withArgName( "file" ).hasArg()
-            .withDescription( "input file" )
-            .create( "f" );
-
-        options.addOption( fileOption );
-
-        Option dirOption = OptionBuilder.withLongOpt( "dir" )
-            .withArgName( "dir" ).hasArg()
-            .withDescription( "input file directory" )
-            .create( "d" );
-
-        options.addOption( dirOption );
-
-        Option recOption = OptionBuilder.withLongOpt( "r" )
-            .withDescription( "recursively process directory" )
-            .create( "r" );
-        
-        options.addOption( recOption );
-        
-        Option zipOption = OptionBuilder.withLongOpt( "zip" )
-            .withDescription( "zipped files" )
-            .create( "z" );
-
-        options.addOption( zipOption );
-        
         Option ctxOption = OptionBuilder.withLongOpt( "context" )
             .withArgName( "file.json" ).hasArg()
             .withDescription( "configuration file" )
@@ -95,30 +66,67 @@ public class buildindex{
 
         options.addOption( ctxOption );
         
-        String context = null;
- 
+        Option dirOption = OptionBuilder.withLongOpt( "dir" )
+            .withArgName( "dir" ).hasArg()
+            .withDescription( "input file directory" )
+            .create( "d" );
+        
+        options.addOption( dirOption );
+
+        Option fileOption = OptionBuilder.withLongOpt( "file" )
+            .withArgName( "file" ).hasArg()
+            .withDescription( "input file" )
+            .create( "f" );
+
+        options.addOption( fileOption );
+        
         Option fmtOption = OptionBuilder.withLongOpt( "format" )
             .withArgName( "format" ).hasArg()
             .withDescription( "input record format" )
             .create( "fmt" );
         
         options.addOption( fmtOption );
-       
-        Option btcOption = OptionBuilder.withLongOpt( "builder-thread-count" )
+        
+        Option hlpOption = OptionBuilder.withLongOpt( "help" )
+            .withDescription( "help " )
+            .create( "help" );
+        
+        options.addOption( hlpOption );
+
+        Option hostOption = OptionBuilder.withLongOpt( "host" )
+            .withArgName( "host" ).hasArg()
+            .withDescription( "host" )
+            .create( "h" );
+
+        options.addOption( hostOption );
+               
+        Option recOption = OptionBuilder.withLongOpt( "r" )
+            .withDescription( "recursively process directory" )
+            .create( "r" );
+        
+        options.addOption( recOption );
+
+        Option tbOption = OptionBuilder.withLongOpt( "threads-builder" )
             .withArgName( "count" ).hasArg()
             .withDescription( "number of builder threads" )
-            .create( "btc" );
+            .create( "tb" );
         
-        options.addOption( btcOption );
-
-        Option stcOption = OptionBuilder.withLongOpt( "solr-thread-count" )
+        options.addOption( tbOption );
+        
+        Option tsOption = OptionBuilder.withLongOpt( "threads-solr" )
             .withArgName( "count" ).hasArg()
             .withDescription( "number of solr connection threads" )
-            .create( "stc" );
+            .create( "ts" );
         
-        options.addOption( stcOption );
+        options.addOption( tsOption );
         
+        Option zipOption = OptionBuilder.withLongOpt( "zip" )
+            .withDescription( "zipped files" )
+            .create( "z" );
 
+        options.addOption( zipOption );
+        
+        String context = null;     
         String ifrmt = DEFAULT_RECORD_FORMAT;
         
         try{
@@ -132,7 +140,11 @@ public class buildindex{
                 formatter.printHelp( "BuildSolrDerbyIndex", options );
                 System.exit(0);
             }
-
+            
+            if( cmd.hasOption( "clr" ) ){
+                clr = true;
+            } 
+            
             if( cmd.hasOption( "ctx" ) ){
                 context = cmd.getOptionValue( "ctx" );
             } 
@@ -149,32 +161,35 @@ public class buildindex{
                 ifile = cmd.getOptionValue( "f" );
             }
             
+            if( cmd.hasOption( "h" ) ){
+                host = cmd.getOptionValue( "h" );
+            }
+            
             if( cmd.hasOption( "z" ) ){
                 zip = true;
             }
             
             if( cmd.hasOption("r") ){
                 desc = true;
-
             }
 
-            if( cmd.hasOption("btc") ){
+            if( cmd.hasOption("tb") ){
                 try{
-                    String sBtc =  cmd.getOptionValue( "btc" );
+                    String sBtc =  cmd.getOptionValue( "tb" );
                     int btc = Integer.parseInt( sBtc ); 
                     btCount = btc;
                 }catch( NumberFormatException nfx ){
-                    System.out.println( "BTC format Error. Using default: " + btCount );
+                    System.out.println( "TB format Error. Using default" );
                 }
             }
 
-            if( cmd.hasOption("stc") ){
+            if( cmd.hasOption("ts") ){
                 try{
-                    String sStc =  cmd.getOptionValue( "stc" );
+                    String sStc =  cmd.getOptionValue( "ts" );
                     int stc = Integer.parseInt( sStc ); 
                     stCount = stc;
                 }catch( NumberFormatException nfx ){
-                    System.out.println( "STC format Error. Using default: " + stCount );
+                    System.out.println( "TS format Error. Using default" );
                 }
             }
 
@@ -193,7 +208,7 @@ public class buildindex{
         
         if( context != null ){
             System.out.println( "Context: " + context );
-            ibuilder = new IndexBuilder( context, btCount, stCount, 
+            ibuilder = new IndexBuilder( context, host, btCount, stCount, 
                                          ifrmt, zip );
         }else{
             
@@ -202,12 +217,17 @@ public class buildindex{
                 InputStream ctxStream = buildindex.class
                     .getResourceAsStream( DEFAULT_CONTEXT );
                 
-                ibuilder = new IndexBuilder( ctxStream, btCount, stCount, 
+                ibuilder = new IndexBuilder( ctxStream, host, btCount, stCount, 
                                              ifrmt, zip );
             } catch( Exception ex){
                 ex.printStackTrace();
             }
+            
+        }
 
+        if( clr ){
+            System.out.println( "Clear index" );
+            ibuilder.clear();
         }
 
         if( ibuilder != null && ifile != null ){  

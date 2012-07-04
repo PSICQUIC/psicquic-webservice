@@ -207,6 +207,10 @@
            "MI:0481",
            "MI:0486" ]
      }
+  },
+  "builder":{
+     "solr-thread-count":1,
+     "builder-thread-count":2
   }
 }
 

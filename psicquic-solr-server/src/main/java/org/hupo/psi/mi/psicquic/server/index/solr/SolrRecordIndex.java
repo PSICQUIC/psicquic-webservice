@@ -20,6 +20,8 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.CRC32;
 
+import java.util.regex.*;
+
 import org.apache.solr.core.*;
 import org.apache.solr.common.*;
 import org.apache.solr.client.solrj.*;
@@ -48,8 +50,10 @@ public class SolrRecordIndex implements RecordIndex{
     private static SolrServer baseSolr = null;
 
     private String baseUrl = null;
+    private String host = null;
+    
     private String shardStr = "";
-
+    
     private SolrParams defSolrParams = null;
 
     List<String> shardUrl = null;
@@ -75,16 +79,34 @@ public class SolrRecordIndex implements RecordIndex{
         this.solrconTCount = solrconTCount;
         initialize( true );
     }
+    
+    public SolrRecordIndex( JsonContext context, String host,
+                            int solrconTCount ){
+        this.context = context;
+        this.solrconTCount = solrconTCount;
 
+        if( host != null ){
+            this.host = host;
+        }
 
+        initialize( true );
+    }
     
     public SolrRecordIndex( JsonContext context ){
         this.context = context;
         initialize( true );
     }
     
+    public SolrRecordIndex( JsonContext context,  String host ){
+        this.context = context;
 
-
+        if( host != null ){
+            this.host = host;
+        }
+        
+        initialize( true );
+    }
+    
     public void initialize(){
         initialize( false );
     }
@@ -112,6 +134,10 @@ public class SolrRecordIndex implements RecordIndex{
                 
                 baseUrl = (String) jSolrCon.get("url");
                 
+                if( host != null ){
+                    baseUrl = hostReset( baseUrl , host );
+                }
+                
                 if( jSolrCon.get("shard") != null ){
                     List shardList = (List) jSolrCon.get("shard");
                     //String shardStr= "";
@@ -121,7 +147,13 @@ public class SolrRecordIndex implements RecordIndex{
                         if( shardUrl == null ){
                             shardUrl = new ArrayList<String>();
                         }
-                        shardUrl.add( "http://" + csh );
+                        //shardUrl.add( "http://" + csh );
+
+                        if( host != null ){
+                            shardUrl.add( hostReset( "http://" + csh, host ) );
+                        } else {
+                            shardUrl.add( "http://" + csh );
+                        }
                     }
                     if( ! shardStr.equals("") ){
                         shardStr = shardStr.substring( 0, shardStr.length()-1);
@@ -154,9 +186,42 @@ public class SolrRecordIndex implements RecordIndex{
             }
         }
     }
-    
+
     //--------------------------------------------------------------------------
 
+    private String hostReset( String url, String newHost ){
+
+        if( host == null ) return url;
+
+        // http://aaa:8888/d/d/d
+
+        try{
+            Pattern p = Pattern.compile( "([^/]*//)([^/:]+)(:[0-9]+)?(.*)" );
+            Matcher m = p.matcher( url );
+
+            if( m.matches() ){
+
+                String prefix = m.group( 1 );
+                String host = m.group( 2 );
+                String port = m.group( 3 );
+                String postfix = m.group( 4 );
+
+                String newUrl = prefix + newHost + port + postfix;
+
+                Log log = LogFactory.getLog( this.getClass() );
+                log.info( "hostReset: old=" + url + " new=" + newUrl );
+
+                return newUrl;
+
+            } else {
+                return url;
+            }
+        } catch(Exception ex ){
+            return url;
+        }
+    }
+    
+    //--------------------------------------------------------------------------
 
     public ResultSet query( String query ){
         return query( query, null );
@@ -290,6 +355,37 @@ public class SolrRecordIndex implements RecordIndex{
         }    
     }
 
+
+    //--------------------------------------------------------------------------
+    
+    public void clear(){
+        
+        Log log = LogFactory.getLog( this.getClass() );
+        
+        try{
+            if( shSolr != null && shSolr.size()>0 ){
+                int i =0;
+                for( Iterator<SolrServer> is = shSolr.iterator(); 
+                     is.hasNext(); ){
+
+                    SolrServer css = is.next();
+                    css.deleteByQuery( "*:*" );
+                    css.commit();
+
+                    log.info( "SolrRecordIndex Shard#"+i+" Cleared" );
+                    i++;
+                } 
+            } else {
+                baseSolr.deleteByQuery( "*:*" );
+                baseSolr.commit();
+                log.info( "SolrRecordIndex Base Index Cleared");
+            }
+        }catch( SolrServerException ssx ){
+            log.error( "SolrRecordIndex Clear Error:", ssx );
+        }catch( IOException  iox ){
+            log.error( "SolrRecordIndex Clear Error:", iox );
+        }
+    }
     
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
