@@ -149,11 +149,11 @@
 <!-- ======================================================= Servlet startup -->
 <!-- ======================================================= =============== -->
 
-  <!-- ========================================================= WS servlets -->
+  <!-- ================================================= Web service servlet -->
 
   <servlet>
-    <servlet-name>cxf</servlet-name>
-    <display-name>cxf</display-name>
+    <servlet-name>cxf-service</servlet-name>
+    <display-name>cxf-service</display-name>
     <description>Apache CXF Endpoint</description>
     <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
 <!--
@@ -164,7 +164,6 @@
 -->
     <load-on-startup>1</load-on-startup>
   </servlet>
-
 
   <!-- ======================================================= SOLR servlets -->
 
@@ -189,16 +188,15 @@
     <servlet-class>org.apache.solr.servlet.LogLevelSelection</servlet-class>
   </servlet>
 
-
 <!-- ======================================================= =============== -->
 <!-- ======================================================= Servlet mapping -->
 <!-- ======================================================= =============== -->
 
-  <!-- ========================================================= WS mappings -->
+  <!-- ================================================ Web Service mappings -->
 
   <servlet-mapping>
-    <servlet-name>cxf</servlet-name>
-    <url-pattern>/ws/*</url-pattern>
+    <servlet-name>cxf-service</servlet-name>
+    <url-pattern>/service/*</url-pattern>
   </servlet-mapping>
 
   <!-- ======================================================= SOLR mappings -->
@@ -238,10 +236,6 @@
     <servlet-name>SolrUpdate</servlet-name>
     <url-pattern>/solr/psq-01/update/*</url-pattern>
   </servlet-mapping>
-
-
-
-
 
 <!-- ======================================================= =============== -->
 <!-- ========================================================== MIME mapping -->

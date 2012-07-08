@@ -41,7 +41,7 @@ import javax.annotation.*;
              endpointInterface = "org.hupo.psi.mi.psq.PsqPort")
 //             wsdlLocation = "/WEB-INF/wsdl/psicquic11.wsdl")
 
-public class PsicquicPortImpl implements PsqPort {
+public class PsicquicSoapImpl implements PsqPort {
     
     org.hupo.psi.mi.psq.ObjectFactory psqOF =
         new org.hupo.psi.mi.psq.ObjectFactory();

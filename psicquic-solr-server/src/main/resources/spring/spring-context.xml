@@ -47,11 +47,7 @@
       </map>
     </property>
   </bean>
- 
-<!--
- <bean id="applicationContextProvider" 
-       class="edu.ucla.mbi.util.ApplicationContextProvider" />
--->
+
 <!-- ================================================================= INDEX -->
 
   <bean id="solrIndex"
@@ -80,13 +76,15 @@
   </bean>
  
 <!-- ========================================================== WEB SERVICES -->
-<!-- ver 1.1 -->
 
-  <bean id="psq-ws-imp" class="org.hupo.psi.mi.psicquic.server.PsicquicPortImpl"
+  <bean id="psq-ws-imp" class="org.hupo.psi.mi.psicquic.server.PsicquicSoapImpl"
         scope="prototype" init-method="initialize">
-
     <property name="psqContext" ref="psqContext"/>
+  </bean>  
 
+  <bean id="psq-rs-imp" class="org.hupo.psi.mi.psicquic.server.PsicquicRestImpl"
+        scope="prototype" init-method="initialize">
+    <property name="psqContext" ref="psqContext"/>
   </bean>  
 
   <import resource="cxf.xml" /> 
