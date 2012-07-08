@@ -9,7 +9,6 @@
 
   <name>psicquic-api: PSICQUIC Web Service API module</name>
 
-
   <scm>
    <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-api</connection>
    <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-api</developerConnection>
