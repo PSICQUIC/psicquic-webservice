@@ -20,20 +20,20 @@
         <constructor-arg value="${mitab.file}"/>
     </bean>
 
-    <bean id="mitabReader" class="org.hupo.psi.mi.indexing.batch.reader.MitabReader">
+    <bean id="mitabReader" class="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabReader">
         <property name="mitabVersion">
-            <value type="org.hupo.psi.mi.indexing.batch.reader.MitabVersion">${mitab.version}</value>
+            <value type="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabVersion">${mitab.version}</value>
         </property>
         <property name="resource" ref="mitabFile"/>
     </bean>
 
     <!-- writer -->
 
-    <bean id="solrWriter" class="org.hupo.psi.mi.indexing.batch.writer.SolrItemWriter">
+    <bean id="solrWriter" class="org.hupo.psi.mi.psicquic.indexing.batch.writer.SolrItemWriter">
         <property name="solrUrl" value="${solr.url}"/>
     </bean>
 
-    <bean id="solrCleanerTasklet" class="org.hupo.psi.mi.indexing.batch.tasklet.SolrCleanerTasklet">
+    <bean id="solrCleanerTasklet" class="org.hupo.psi.mi.psicquic.indexing.batch.tasklet.SolrCleanerTasklet">
         <property name="solrUrl" value="${solr.url}"/>
     </bean>
 
@@ -71,7 +71,7 @@
 
         <batch:listeners>
             <batch:listener>
-                <bean class="org.hupo.psi.mi.indexing.batch.listener.PsicquicJobExecutionListener"/>
+                <bean class="org.hupo.psi.mi.psicquic.indexing.batch.listener.PsicquicJobExecutionListener"/>
             </batch:listener>
         </batch:listeners>
 

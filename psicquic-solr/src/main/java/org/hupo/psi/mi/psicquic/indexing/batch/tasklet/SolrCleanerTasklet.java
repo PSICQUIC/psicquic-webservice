@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.indexing.batch.tasklet;
+package org.hupo.psi.mi.psicquic.indexing.batch.tasklet;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
@@ -28,7 +28,7 @@ public class SolrCleanerTasklet implements Tasklet {
             SolrServer solrServer = new HttpSolrServer(solrUrl);
             solrServer.deleteByQuery("*:*");
 
-            solrServer.optimize();
+            // only commit here
             solrServer.commit();
 
             contribution.getExitStatus().addExitDescription("Cleared: " + solrUrl);

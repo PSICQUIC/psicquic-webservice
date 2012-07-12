@@ -1,6 +1,7 @@
-package org.hupo.psi.mi.indexing.batch.writer;
+package org.hupo.psi.mi.psicquic.indexing.batch.writer;
 
 import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
 import org.hupo.psi.calimocho.model.Row;
@@ -27,7 +28,17 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     private String solrUrl;
     private SolrServer solrServer;
+    private Converter solrConverter;
 
+    public SolrItemWriter(){
+        solrConverter = new Converter();
+    }
+
+    /**
+     * Index a list of calimocho rows in SOLR
+     * @param items
+     * @throws Exception
+     */
     public void write(List<? extends Row> items) throws Exception {
 
         if (solrUrl == null) {
@@ -38,11 +49,9 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             return;
         }
 
-        Converter solrDocumentConverter = new Converter();
-
         for (Row binaryInteraction : items) {
 
-            SolrInputDocument solrInputDoc = solrDocumentConverter.toSolrDocument(binaryInteraction);
+            SolrInputDocument solrInputDoc = solrConverter.toSolrDocument(binaryInteraction);
             solrServer.add(solrInputDoc);
         }
     }
@@ -64,13 +73,18 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     }
 
     public void update(ExecutionContext executionContext) throws ItemStreamException {
+        try {
+            solrServer.commit();
+        } catch (SolrServerException e) {
+            throw new ItemStreamException("Problem committing the results.", e);
+        } catch (IOException e) {
+            throw new ItemStreamException("Problem committing the results.", e);
+        }
     }
 
     public void close() throws ItemStreamException {
         try {
             solrServer.optimize();
-            solrServer.commit();
-
         } catch (Exception e) {
             throw new ItemStreamException("Problem closing solr server", e);
         }

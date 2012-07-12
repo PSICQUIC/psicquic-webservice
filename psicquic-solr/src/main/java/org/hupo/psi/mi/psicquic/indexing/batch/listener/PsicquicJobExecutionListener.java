@@ -1,10 +1,10 @@
-package org.hupo.psi.mi.indexing.batch.listener;
+package org.hupo.psi.mi.psicquic.indexing.batch.listener;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 
 /**
- * TODO comment this
+ * Listener of a PSICQUIC Job
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -14,8 +14,7 @@ import org.springframework.batch.core.JobExecutionListener;
 public class PsicquicJobExecutionListener implements JobExecutionListener {
 
     public void beforeJob(JobExecution jobExecution) {
-
-
+        System.out.println("\nJOB STARTED: "+jobExecution+"\n");
     }
 
     public void afterJob(JobExecution jobExecution) {

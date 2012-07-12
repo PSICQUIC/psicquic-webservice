@@ -1,7 +1,7 @@
-package org.hupo.psi.mi.indexing.batch.reader;
+package org.hupo.psi.mi.psicquic.indexing.batch.reader;
 
 /**
- * TODO comment this
+ * Existing versions of MITAB
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

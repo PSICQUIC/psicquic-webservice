@@ -1,10 +1,10 @@
-package org.hupo.psi.mi.indexing.batch.reader;
+package org.hupo.psi.mi.psicquic.indexing.batch.reader;
 
 import org.hupo.psi.calimocho.model.Row;
 import org.springframework.batch.item.file.FlatFileItemReader;
 
 /**
- * TODO comment this
+ * Reader of MITAB file
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -21,6 +21,10 @@ public class MitabReader extends FlatFileItemReader<Row> {
         super.doOpen();
     }
 
+    /**
+     * setting the MITAB version will set the mitab line mapper
+     * @param mitabVersion
+     */
     public void setMitabVersion(MitabVersion mitabVersion) {
         this.mitabVersion = mitabVersion;
         MitabLineMapper mitabLineMapper = new MitabLineMapper(mitabVersion);

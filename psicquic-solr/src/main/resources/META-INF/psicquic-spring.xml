@@ -14,7 +14,7 @@
            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
            http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-2.1.xsd">
 
-    <context:component-scan base-package="org.hupo.psi.mi.indexing.batch" />
+    <context:component-scan base-package="org.hupo.psi.mi.psicquic.indexing.batch" />
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations" value="classpath*:/psicquic.properties"/>
     </bean>
@@ -35,7 +35,7 @@
     <bean id="jobExplorer" class="org.springframework.batch.core.explore.support.JobExplorerFactoryBean"
           p:dataSource-ref="batchDataSource" />
 
-    <bean id="psicquicJobRegistry" class="org.hupo.psi.mi.indexing.batch.PsicquicJobRegistry"/>
+    <bean id="psicquicJobRegistry" class="org.hupo.psi.mi.psicquic.indexing.batch.PsicquicJobRegistry"/>
 
     <bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
         <property name="jobExplorer" ref="jobExplorer"/>
@@ -64,7 +64,7 @@
     </bean>
 
     <!-- Initialize the datasource -->
-    <bean id="dataSourceInitializer" class="org.hupo.psi.mi.indexing.batch.BatchDataSourceInitializer">
+    <bean id="dataSourceInitializer" class="org.hupo.psi.mi.psicquic.indexing.batch.BatchDataSourceInitializer">
         <property name="dataSource" ref="batchDataSource"/>
         <property name="initScripts" value="classpath*:/org/springframework/batch/core/schema-h2.sql"/>
     </bean>
@@ -76,7 +76,7 @@
         <property name="password" value=""/>
     </bean>
 
-    <bean id="solrMitabIndexer" class="org.hupo.psi.mi.indexing.batch.SolrMitabIndexer"/>
+    <bean id="solrMitabIndexer" class="org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer"/>
 
-    <bean id="simpleChunkListener" class="org.hupo.psi.mi.indexing.batch.listener.SimpleChunkListener"/>
+    <bean id="simpleChunkListener" class="org.hupo.psi.mi.psicquic.indexing.batch.listener.SimpleChunkListener"/>
 </beans>

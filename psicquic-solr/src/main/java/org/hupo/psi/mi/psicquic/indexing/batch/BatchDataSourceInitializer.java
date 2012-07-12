@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.indexing.batch;
+package org.hupo.psi.mi.psicquic.indexing.batch;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * TODO comment this
+ * This class will initialize the batch database using external scripts containing sql commands to create the tables necessary for running Spring batch jobs.
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -40,7 +40,6 @@ public class BatchDataSourceInitializer implements org.springframework.beans.fac
     private boolean ignoreFailedDrop = true;
 
     private boolean initialized = false;
-
 
     /**
      * @throws Throwable
@@ -74,6 +73,9 @@ public class BatchDataSourceInitializer implements org.springframework.beans.fac
         initialize();
     }
 
+    /**
+     * Run the initialize scripts
+     */
     private void initialize() {
         if (!initialized) {
             destroy();
@@ -87,6 +89,10 @@ public class BatchDataSourceInitializer implements org.springframework.beans.fac
         }
     }
 
+    /**
+     * execute the scripts
+     * @param scriptResource
+     */
     private void doExecuteScript(final Resource scriptResource) {
         if (scriptResource == null || !scriptResource.exists())
             throw new IllegalStateException("Script is null or resource does not exist: "+scriptResource );

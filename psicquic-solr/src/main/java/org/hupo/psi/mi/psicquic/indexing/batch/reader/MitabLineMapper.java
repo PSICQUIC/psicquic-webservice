@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.indexing.batch.reader;
+package org.hupo.psi.mi.psicquic.indexing.batch.reader;
 
 import org.hupo.psi.calimocho.model.Row;
 import org.hupo.psi.calimocho.tab.io.DefaultRowReader;
@@ -8,7 +8,7 @@ import org.hupo.psi.calimocho.tab.util.MitabDocumentDefinitionFactory;
 import org.springframework.batch.item.file.LineMapper;
 
 /**
- * TODO comment this
+ * Mapper that will map a MITAB line to a Calimocho Row
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -21,6 +21,8 @@ public class MitabLineMapper implements LineMapper<Row>{
     private RowReader rowReader;
 
     public MitabLineMapper(MitabVersion mitabVersion) {
+
+        // if no version, then we suppose it is MITAB 25
         if (mitabVersion == null){
             mitabVersion = MitabVersion.MITAB25;
         }
@@ -43,6 +45,13 @@ public class MitabLineMapper implements LineMapper<Row>{
         this.rowReader = new DefaultRowReader( documentDefinition );
     }
 
+    /**
+     *
+     * @param line
+     * @param lineNumber
+     * @return the matching Calimocho Row
+     * @throws Exception
+     */
     public Row mapLine(String line, int lineNumber) throws Exception {
         try {
 

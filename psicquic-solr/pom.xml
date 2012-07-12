@@ -65,7 +65,7 @@
                                 <argument>-classpath</argument>
                                 <classpath/>
 
-                                <argument>org.hupo.psi.mi.indexing.batch.SolrMitabIndexer</argument>
+                                <argument>org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer</argument>
                                 <argument>${mitab.file}</argument>
                                 <argument>${solr.url}</argument>
                                 <argument>${mitab.version}</argument>
@@ -98,11 +98,11 @@
                                 <argument>-classpath</argument>
                                 <classpath/>
 
-                                <argument>uk.ac.ebi.intact.release.ReleaseManager</argument>
+                                <argument>org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer</argument>
                                 <argument>${mitab.file}</argument>
-                                <argument>${solr.path}</argument>
+                                <argument>${solr.url}</argument>
                                 <argument>${mitab.version}</argument>
-                                <argument>${indexingId}</argument>
+                                <argument>${indexing.id}</argument>
                             </arguments>
                         </configuration>
                     </plugin>

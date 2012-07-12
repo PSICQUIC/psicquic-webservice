@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.indexing.batch;
+package org.hupo.psi.mi.psicquic.indexing.batch;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * Main class to run to index mitab in solr
+ * Main class to index mitab in solr
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -41,29 +41,34 @@ public class SolrMitabIndexer {
 
     @Autowired
     private ApplicationContext applicationContext;
-    
-    private String indexingId;
 
     public SolrMitabIndexer() {
     }
 
     public static void main(String[] args) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, NoSuchJobExecutionException, NoSuchJobException, NoSuchJobInstanceException {
 
+        String indexingId = null;
+
+        if (args.length == 4) {
+            indexingId = args[3];
+        }
+
+        // loads the spring context defining beans and jobs
         ApplicationContext context = new ClassPathXmlApplicationContext(
                 new String[] {"/META-INF/psicquic-spring.xml", "/META-INF/jobs/psicquic-indexing-spring.xml"});
 
         SolrMitabIndexer rm = (SolrMitabIndexer)
                 context.getBean("solrMitabIndexer");
         
-        if (rm.getIndexingId() != null){
-            rm.resumeIndexing();
+        if (indexingId != null){
+            rm.resumeIndexing(indexingId);
         }
         else {
             rm.startIndexing();
         }
     }
 
-    public void resumeIndexing() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, JobRestartException, NoSuchJobException, NoSuchJobInstanceException {
+    public void resumeIndexing(String indexingId) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, JobRestartException, NoSuchJobException, NoSuchJobInstanceException {
         Long executionId = findJobId(indexingId, "mitabIndexJob");
 
         if (executionId == null) {
@@ -90,7 +95,7 @@ public class SolrMitabIndexer {
     }
 
     public String startIndexing() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
-        String indexingId = "indexing_"+System.currentTimeMillis();
+        String indexingId = "psicquic_index_"+System.currentTimeMillis();
 
         if (log.isInfoEnabled()) log.info("Starting indexing: "+indexingId);
 
@@ -109,13 +114,5 @@ public class SolrMitabIndexer {
         log.info("starting job " + indexingId);
 
         return jobLauncher.run(job, jobParamBuilder.toJobParameters());
-    }
-
-    public String getIndexingId() {
-        return indexingId;
-    }
-
-    public void setIndexingId(String indexingId) {
-        this.indexingId = indexingId;
     }
 }

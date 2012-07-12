@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.indexing.batch;
+package org.hupo.psi.mi.psicquic.indexing.batch;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.configuration.DuplicateJobException;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * TODO comment this
+ * The spring job registry for PSICQUIC
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$

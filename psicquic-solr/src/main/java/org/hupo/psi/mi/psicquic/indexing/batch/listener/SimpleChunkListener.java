@@ -1,14 +1,13 @@
-package org.hupo.psi.mi.indexing.batch.listener;
+package org.hupo.psi.mi.psicquic.indexing.batch.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 
 /**
- * TODO comment this
+ * Listener of a job step that will print the number of lines that have been read
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
@@ -41,8 +40,6 @@ public class SimpleChunkListener implements StepExecutionListener {
         }
 
         final int readCount = stepExecution.getReadCount();
-
-        DateTime now = new DateTime();
 
         log.info("Number of lines read : " + readCount);
     }
