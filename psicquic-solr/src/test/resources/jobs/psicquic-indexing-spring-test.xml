@@ -17,24 +17,24 @@
     <!-- reader -->
 
     <bean id="mitabFileTest" class="org.springframework.core.io.FileSystemResource">
-        <constructor-arg value="resources/samples/sampleFileParameter.txt"/>
+        <constructor-arg value="/home/marine/Downloads/20120615_all.mitab"/>
     </bean>
 
-    <bean id="mitabReaderTest" class="org.hupo.psi.mi.indexing.batch.reader.MitabReader">
+    <bean id="mitabReaderTest" class="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabReader">
         <property name="mitabVersion">
-            <value type="org.hupo.psi.mi.indexing.batch.reader.MitabVersion">MITAB27</value>
+            <value type="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabVersion">MITAB27</value>
         </property>
         <property name="resource" ref="mitabFileTest"/>
     </bean>
 
     <!-- writer -->
 
-    <bean id="solrWriterTest" class="org.hupo.psi.mi.indexing.batch.writer.SolrItemWriter">
-        <property name="solrUrl" value="resources/solr-home"/>
+    <bean id="solrWriterTest" class="org.hupo.psi.mi.psicquic.indexing.batch.writer.SolrItemWriter">
+        <property name="solrUrl" value="http://localhost:8983/solr"/>
     </bean>
 
-    <bean id="solrCleanerTaskletTest" class="org.hupo.psi.mi.indexing.batch.tasklet.SolrCleanerTasklet">
-        <property name="solrUrl" value="resources/solr-home"/>
+    <bean id="solrCleanerTaskletTest" class="org.hupo.psi.mi.psicquic.indexing.batch.tasklet.SolrCleanerTasklet">
+        <property name="solrUrl" value="http://localhost:8983/solr"/>
     </bean>
 
     <!-- steps -->
@@ -71,7 +71,7 @@
 
         <batch:listeners>
             <batch:listener>
-                <bean class="org.hupo.psi.mi.indexing.batch.listener.PsicquicJobExecutionListener"/>
+                <bean class="org.hupo.psi.mi.psicquic.indexing.batch.listener.PsicquicJobExecutionListener"/>
             </batch:listener>
         </batch:listeners>
 

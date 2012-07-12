@@ -1,7 +1,5 @@
 package org.hupo.psi.mi.psicquic.indexing.batch;
 
-import org.hupo.psi.mi.indexing.batch.SolrMitabIndexer;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -32,7 +30,6 @@ public class SolrMitabIndexerTest {
     private ApplicationContext applicationContext;
 
     @Test
-    @Ignore
     public void test_indexing_mitab27(){
 
         try {
