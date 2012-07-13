@@ -17,7 +17,10 @@ import java.net.MalformedURLException;
 import java.util.regex.*;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
+
+import org.hupo.psi.mi.psicquic.server.*;
 import org.hupo.psi.mi.psicquic.server.store.*;
+import org.hupo.psi.mi.psicquic.server.index.solr.*;
 
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.SolrDocumentList;
@@ -56,6 +59,17 @@ public class SolrRecordStore implements RecordStore{
     
     public void setContext( JsonContext context ){
         this.context = context;
+    }
+
+    PsqContext  psqContext = null;
+    public void setPsqContext( PsqContext context ){
+        this.psqContext = context;
+    }
+
+    SolrRecordIndex sri = null;
+
+    public void setSolrRecordIndex( SolrRecordIndex sri ){
+        this.sri = sri;
     }
 
     public void initialize(){
@@ -170,18 +184,33 @@ public class SolrRecordStore implements RecordStore{
     //-------------------------------------------------------------------------
     //-------------------------------------------------------------------------
 
+    private SolrServer solr = null;
+
     public String getRecord( String rid, String format ){
 
         String record = "";
         Log log = LogFactory.getLog( this.getClass() );
 
-        try{
+        SolrDocument srec = null;
+        Map recordCache = null;
+
+        if( sri.getRecordCache() != null ){
+            recordCache = sri.getRecordCache();
+            synchronized( recordCache ){
+                srec = (SolrDocument) recordCache.get( rid );
+            }
+        }
+        
+        if( srec == null ){
+
             if( baseUrl == null ){ initialize(); }
             log.debug( "   SolrRecordIndex: baseUrl="+ baseUrl );
 
             if( baseUrl != null ){
-                
-                SolrServer solr = new CommonsHttpSolrServer( baseUrl );
+ 
+                if( solr == null ){
+                    solr = new HttpSolrServer( baseUrl );
+                }
                 ModifiableSolrParams params = new ModifiableSolrParams();
                 params.set( "q", "uuId:" + rid.replace( ":","\\:") ); // escape special character
                 
@@ -191,25 +220,32 @@ public class SolrRecordStore implements RecordStore{
                 if( shardStr != null ){
                     params.set( "shards", shardStr );
                 }
-
+                
                 try{
                     QueryResponse response = solr.query( params );
                     log.debug( "response = " + response );
 
                     SolrDocumentList res = response.getResults();
-                    
-                    if( res.size() == 1 ){
-                        record = convert( res.get(0), format );
-                    }
+                    srec = res.get(0);
 
+                    String recfld = psqContext.getRecId();
+                    String rec = (String) srec.get( recfld );
+                                       
+                    if( recordCache != null ){
+                        synchronized( recordCache ){
+                            recordCache.put( rec, srec );
+                        }
+                    }
+                    
                 } catch( SolrServerException sex ){
                     sex.printStackTrace();
                 }
             }
-        } catch( MalformedURLException mex ){
-            mex.printStackTrace();
         }
         
+        if( srec !=null ){
+            record = convert( srec , format );
+        }
         return record;
     }
     

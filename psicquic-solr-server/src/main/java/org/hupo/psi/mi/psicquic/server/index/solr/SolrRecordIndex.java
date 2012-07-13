@@ -41,8 +41,7 @@ import java.lang.Thread;
 public class SolrRecordIndex implements RecordIndex{
 
     JsonContext context = null;
-
-    //PsqContext  context = null;
+    PsqContext  psqContext = null;
 
     int queueSize = 4096;
     int solrconTCount = 2;
@@ -60,15 +59,29 @@ public class SolrRecordIndex implements RecordIndex{
 
     private static List<SolrServer> shSolr = null;
 
-
     CRC32 shCRC = null;
 
     private Map<String,Map> ricon = null;
     private Map<String,PsqTransformer> inTransformer = null;
     
+    // record cache
+    //-------------
+
+    Map recordCache = null; 
+
+    public Map getRecordCache(){
+        return recordCache;
+    }
+
+    //--------------------------------------------------------------------------
+
     public void setContext( JsonContext context ){
-        this.context = context;
-	initialize( true );
+      this.context = context;
+    	initialize( true );
+    }
+
+    public void setPsqContext( PsqContext context ){
+        this.psqContext = context;
     }
 
     public SolrRecordIndex(){}
@@ -112,7 +125,14 @@ public class SolrRecordIndex implements RecordIndex{
     }
     
     public void initialize( boolean force ){
-        
+       
+        if( recordCache == null ){
+
+            WeakHashMap whm = 
+                new WeakHashMap( new HashMap<String,SolrDocument>());
+            recordCache = Collections.synchronizedMap( whm ); 
+        }
+
         if( force || baseUrl == null ){
             
             Log log = LogFactory.getLog( this.getClass() );
@@ -224,66 +244,94 @@ public class SolrRecordIndex implements RecordIndex{
     //--------------------------------------------------------------------------
 
     public ResultSet query( String query ){
-        return query( query, null );
+        return query( query, null, -1, -1 );
     }
 
-    public ResultSet query( String query, Map<String,List<String>> xquery ){
+    public ResultSet query( String query, long firstRecord, long blockSize ){
+        return query( query, null, firstRecord, blockSize );
+    }
+    
+    public ResultSet query( String query, Map<String,List<String>> xquery,
+                            long firstRecord, long blockSize ){
         
 	Log log = LogFactory.getLog( this.getClass() );
         
         ModifiableSolrParams params = new ModifiableSolrParams( defSolrParams );
-        ResultSet rs = new ResultSet();
-	
-        //try{
-            if( baseUrl == null ){ initialize(); }
-	    log.debug( "   SolrRecordIndex: baseUrl="+ baseUrl );
+        
+        if( baseUrl == null ){ initialize(); }
+        log.debug( "   SolrRecordIndex: baseUrl="+ baseUrl );
 
-            if( baseUrl != null ){
+        if( baseUrl != null ){
                 
-                SolrServer solr = new HttpSolrServer( baseUrl );                       
+            SolrServer solr = new HttpSolrServer( baseUrl );                       
                 
-                // set shards when needed
-                //-----------------------
-                
-                if( shardStr != null ){
-                    params.set( "shards", shardStr );
-                }
+            // set shards when needed
+            //-----------------------
+            
+            if( shardStr != null ){
+                params.set( "shards", shardStr );
+            }
+            
+            // Query
+            //------
+            
+            params.set( "q", query );
+            
+            // Paging
+            //-------
 
-                // Query
-                //------
+            if( firstRecord >= 0 ){
+                params.set( "start", Long.toString( firstRecord ) );
+            }
 
-                params.set( "q", query );
+            if( blockSize >= 0 ){
+                params.set( "rows", Long.toString( blockSize ) );
+            }
+
+            // Extended query paramaters
+            //--------------------------
+            
+            if( xquery != null  && xquery.get( "MiqlxGroupBy:") != null ){
+                List<String> ff = xquery.get( "MiqlxGroupBy:" );
                 
-                // Extended query paramaters
-                //--------------------------
-
-                if( xquery != null  && xquery.get( "MiqlxGroupBy:") != null ){
-                    List<String> ff = xquery.get( "MiqlxGroupBy:" );
-                    
-                    params.set( "facet", "true" );
-                    for( Iterator<String> fi = ff.iterator(); fi.hasNext(); ){
+                params.set( "facet", "true" );
+                for( Iterator<String> fi = ff.iterator(); fi.hasNext(); ){
                         
-                        // NOTE: restrict fields ???
-                        
-                        params.set( "facet.field", fi.next() );
-                    }
-                }
-
-                try{            
-                    QueryResponse response = solr.query( params );
-                    log.debug( "\n\nresponse = " + response +"\n\n\n");
-
-                    SolrDocumentList res = response.getResults();
-                    rs.setResultList( res );
+                    // NOTE: restrict fields ???
                     
-                } catch( SolrServerException sex ){
-                    sex.printStackTrace();
+                    params.set( "facet.field", fi.next() );
                 }
             }
-            //} catch( MalformedURLException mex ){
-            //mex.printStackTrace();
-            //}
-        return rs;
+            
+            try{            
+                QueryResponse response = solr.query( params );
+                log.debug( "\n\nresponse = " + response +"\n\n\n");
+                
+                SolrDocumentList sdl = response.getResults();
+                
+                ResultSet rs = new ResultSet( sdl.getStart(),
+                                              sdl.getNumFound(),
+                                              (List) sdl );
+
+
+                String recid = psqContext.getRecId();
+                
+                for( Iterator<SolrDocument> i = sdl.iterator(); i.hasNext(); ){
+                    
+                    SolrDocument cdoc = i.next();
+                    String rec = (String) cdoc.get( recid );
+                    
+                    synchronized( recordCache ){
+                        recordCache.put( rec, cdoc );
+                    }
+                }
+                return rs;
+                
+            } catch( SolrServerException sex ){
+                sex.printStackTrace();
+            }
+        }
+        return null;
     }
 
     //--------------------------------------------------------------------------

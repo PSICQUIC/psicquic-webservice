@@ -1,12 +1,15 @@
 {
   "index":{
      "active":"solr",
+     "first-result":0,
+     "block-size":10,
      "solr":{ 
         "url":"http://127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
         "shard":[
             "127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
             "127.0.0.1:8080/psicquic-solr-server/solr/psq-02"
         ],
+        "rec-id":"uuId",
         "param-default":{
            "defType":"edismax",
            "start":"0",
@@ -197,7 +200,10 @@
      },
      "rest":{
         "version":"1.1",
-        "properties":{},
+        "properties":{
+           "implementation":"ic-psq-0.01",
+           "last-protein-update":"01-Jan-12"
+        },
         "supported-return-type":[
            "psi-mi/tab25",
            "psi-mi/tab27",
@@ -213,4 +219,3 @@
      "builder-thread-count":2
   }
 }
-

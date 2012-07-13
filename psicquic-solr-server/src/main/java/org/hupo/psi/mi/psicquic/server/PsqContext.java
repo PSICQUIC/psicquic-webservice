@@ -74,6 +74,17 @@ public class PsqContext{
             ((Map) getJsonConfig().get( "store" )).get( "view-default" );
     }
 
+    public long getDefaultFirstResult(){
+        return (Long)
+            ((Map) getJsonConfig().get( "index" )).get( "first-result" );
+    }
+
+    public long getDefaultBlockSize(){
+        return (Long)
+            ((Map) getJsonConfig().get( "index" )).get( "block-size" );
+    }
+
+
 }
 
 

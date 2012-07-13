@@ -53,6 +53,7 @@
   <bean id="solrIndex"
         class="org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex">
     <property name="context" ref="psqConfig"/> 
+    <property name="psqContext" ref="psqContext"/>
   </bean>
  
 <!-- ========================================================= DATA STORE(S) -->
@@ -64,7 +65,9 @@
 
   <bean id="solrStore" init-method="initialize" destroy-method="shutdown"
         class="org.hupo.psi.mi.psicquic.server.store.solr.SolrRecordStore">
-    <property name="context" ref="psqConfig"/>     
+    <property name="context" ref="psqConfig"/>
+    <property name="psqContext" ref="psqContext"/>
+    <property name="solrRecordIndex" ref="solrIndex" /> 
   </bean>
 
  
@@ -77,14 +80,21 @@
  
 <!-- ========================================================== WEB SERVICES -->
 
+  <bean id="psq-server" class="org.hupo.psi.mi.psicquic.server.PsicquicServer"
+        scope="prototype" init-method="initialize">
+    <property name="psqContext" ref="psqContext"/>
+  </bean>  
+
   <bean id="psq-ws-imp" class="org.hupo.psi.mi.psicquic.server.PsicquicSoapImpl"
         scope="prototype" init-method="initialize">
     <property name="psqContext" ref="psqContext"/>
+    <property name="psqServer" ref="psq-server"/>
   </bean>  
 
   <bean id="psq-rs-imp" class="org.hupo.psi.mi.psicquic.server.PsicquicRestImpl"
         scope="prototype" init-method="initialize">
     <property name="psqContext" ref="psqContext"/>
+    <property name="psqServer" ref="psq-server"/>
   </bean>  
 
   <import resource="cxf.xml" /> 

@@ -9,17 +9,11 @@ package org.hupo.psi.mi.psicquic.server;
  #
  #=========================================================================== */
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-
+import java.util.*;
 import java.io.InputStream;
 
+import javax.annotation.*;
 import javax.jws.WebService;
-
-//import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,8 +25,6 @@ import org.hupo.psi.mi.psicquic.server.index.*;
 import org.hupo.psi.mi.psicquic.server.store.*;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
-
-import javax.annotation.*;
 
 @WebService( name = "PsicquicService", 
              targetNamespace = "http://psi.hupo.org/mi/psicquic",
@@ -50,6 +42,13 @@ public class PsicquicSoapImpl implements PsqPort {
     
     public void setPsqContext( PsqContext context ){
         psqContext = context;
+    }
+
+
+    PsicquicServer psqServer;
+
+    public void setPsqServer( PsicquicServer server ){
+        psqServer = server;
     }
     
     //--------------------------------------------------------------------------
@@ -91,54 +90,34 @@ public class PsicquicSoapImpl implements PsqPort {
         log.info( "PsqPortImpl: getByQuery: context =" + psqContext);
         log.info( "PsqPortImpl: getByQuery: q=" + query );
         
+        long firstResult = -1;
+        long blockSize = -1;
+        String viewType = null; 
+        
         if( infoRequest != null ){              
             log.info( "PsqPortImpl: FR=" + infoRequest.getFirstResult() 
                       + " BS=" + infoRequest.getBlockSize() );
-        }
-
-        Map<String,List<String>> miqlx = null;
-
-        if( query != null && query.indexOf( " Miqlx" ) > -1 ){
-            MiqlxFilter mf = new MiqlxFilter( psqContext );
-            query = mf.process( query );
-            miqlx = mf.getMiqlx();
+            
+            firstResult = infoRequest.getFirstResult();           
+            blockSize = infoRequest.getBlockSize();
+               
+            if( infoRequest.getResultType() != null ){
+                viewType = infoRequest.getResultType();   
+            } 
         }
         
-        String viewType = psqContext.getDefaultView();
-        
-        if( miqlx != null ){
-            for( Iterator mi = miqlx.entrySet().iterator(); mi.hasNext(); ){
-                Map.Entry me = (Map.Entry) mi.next();
-
-                log.info( "MIQLX: field=\'" + me.getKey() 
-                          + "\'  value=\'" + me.getValue() +"\'");
-            }
-
-            if( miqlx.get("MiqlxView:") != null ){
-                viewType = ((List<String>) miqlx.get("MiqlxView:")).get(0);
-            }
-        }
-
-        org.hupo.psi.mi.psicquic.server.index.ResultSet 
-            rs = psqContext.getActiveIndex().query( query, miqlx );
+        ResultSet qrs = psqServer.getByQuery( query, viewType,
+                                              firstResult, blockSize );
         
         QueryResponse qr = psqOF.createQueryResponse();
         qr.setResultSet( psqOF.createResultSet() );
         
         String mitab="";
-	log.info( "getByQuery: rs="+ rs); 
+	log.info( "getByQuery: rs="+ qrs); 
         
-        for( Iterator i = rs.getResultList().iterator(); i.hasNext(); ){
-            Map in = (Map) i.next();
-            log.info( "getByQuery: in="+ in);
-
-            String recId = (String) in.get( psqContext.getRecId() );
-
-            String drecord =  psqContext.getActiveStore()
-                .getRecord( recId , viewType );
-        
-            log.info( " SolrDoc: recId=" + recId + " :: "  + drecord );
-            mitab += drecord + "\n";
+        for( Iterator i = qrs.getResultList().iterator(); i.hasNext(); ){
+            String record = (String) i.next();
+            mitab += record + "\n";
         }
         qr.getResultSet().setMitab( mitab );     
 
@@ -184,52 +163,36 @@ public class PsicquicSoapImpl implements PsqPort {
     //==========
 
     public List<String> getSupportedReturnTypes(){
-        
-        return (List<String>) ((Map) ((Map) psqContext.getJsonConfig()
-                                      .get( "service" )).get( "soap" ))
-            .get( "supported-return-type" );
+        return psqServer.getSupportedReturnTypes( "soap" );
     };
     
     //--------------------------------------------------------------------------
     
     public String getVersion(){
-        
-        return (String) ((Map) ((Map) psqContext.getJsonConfig()
-                                .get( "service" )).get( "soap" ))
-            .get( "version" );
-    };
+        return psqServer.getVersion( "soap" );
+    }
 
     //--------------------------------------------------------------------------
     
     public List<String> getSupportedDbAcs(){
-        
-        return (List<String>) ((Map) ((Map) psqContext.getJsonConfig()
-                                      .get( "service" )).get( "soap" ))
-            .get( "supported-db-ac" );
-    };
+        return psqServer.getSupportedDbAcs( "soap" );
+    }
     
     //--------------------------------------------------------------------------
 
     public String getProperty( String property ){     
-        
-        return (String) ((Map) ((Map) ((Map) psqContext.getJsonConfig()
-                                       .get( "service" )) .get( "soap" )) 
-                         .get( "properties" ))
-            .get( property );
-    };
+        return psqServer.getProperty( "soap", property );
+    }
     
     //--------------------------------------------------------------------------
     
     public List<Property> getProperties(){
         
-        Map propmap = (Map) ((Map) ((Map) psqContext.getJsonConfig()
-                                    .get( "service" )).get( "soap" ))
-            .get( "properties" );
-        
+        Set<Map.Entry> props = psqServer.getProperties( "soap" );
         List<Property> pl = new ArrayList<Property>();
         
-        for( Iterator pi = propmap.entrySet().iterator(); pi.hasNext(); ){
-            Map.Entry me = (Map.Entry) pi.next();
+        for( Iterator<Map.Entry> pi = props.iterator(); pi.hasNext(); ){
+            Map.Entry me = pi.next();
             
             Property p = psqOF.createProperty();
         
@@ -238,5 +201,5 @@ public class PsicquicSoapImpl implements PsqPort {
             pl.add( p );
         }
         return pl;
-    };
+    }
 }

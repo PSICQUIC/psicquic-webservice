@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psicquic.server.index;
+package org.hupo.psi.mi.psicquic.server;
 
 /* =============================================================================
  # $Id::                                                                       $
@@ -15,24 +15,26 @@ public class ResultSet{
 
     List resultList;
 
-    int firstResult;
-    int maxResult;
+    long firstResult;
+    long maxResult;
 
     Map<String,Object> meta;
     
     public ResultSet(){
-        resultList = new ArrayList();
         firstResult = 0;
         maxResult = 0;
     }
     
-    public ResultSet( int first, int max, List results ){
+    public ResultSet( long first, long max, List results ){
         resultList = results;
         firstResult = first;
         maxResult = max;
     }
 
     public List getResultList(){
+        if(resultList == null ){
+            resultList = new ArrayList();
+        }
         return resultList;
     }
 
@@ -40,19 +42,19 @@ public class ResultSet{
         resultList = results;
     }
     
-    public int getFirstResult(){
+    public long getFirstResult(){
         return firstResult;
     }
 
-    public void setFirstResult(int first ){
+    public void setFirstResult( long first ){
         firstResult = first;
     }
 
-    public int getMaxResult(){
+    public long getMaxResult(){
         return maxResult;
     }
 
-    public void setMaxResult( int max ){
+    public void setMaxResult( long max ){
         maxResult = max;
     }
     
