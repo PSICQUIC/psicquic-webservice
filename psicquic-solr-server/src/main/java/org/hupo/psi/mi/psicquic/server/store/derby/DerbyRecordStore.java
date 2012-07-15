@@ -46,9 +46,8 @@ public class DerbyRecordStore implements RecordStore{
 
     String rmgrURL = null;
 
-    JsonContext context = null;
+    PsqContext psqContext = null;
     String host = null;
-
     
     public DerbyRecordStore(){
 
@@ -61,7 +60,10 @@ public class DerbyRecordStore implements RecordStore{
         }
     }
 
-    public DerbyRecordStore( JsonContext context ){
+    public DerbyRecordStore( PsqContext context ){
+
+        this.psqContext = context;
+
         try{
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         } catch( Exception ex ){
@@ -69,7 +71,9 @@ public class DerbyRecordStore implements RecordStore{
         }
     }
 
-    public DerbyRecordStore( JsonContext context, String host ){
+    public DerbyRecordStore( PsqContext context, String host ){
+        
+        this.psqContext = context;
         
         if( host != null ){
             this.host = host;
@@ -82,14 +86,12 @@ public class DerbyRecordStore implements RecordStore{
         }
     }
     
-
-    
-    public void setContext( JsonContext context ){
-        this.context = context;
+    public void setPsqContext( PsqContext context ){
+        this.psqContext = context;
     }
     
     public void initialize(){
-       
+        
     }
 
     public void clear(){
@@ -118,10 +120,10 @@ public class DerbyRecordStore implements RecordStore{
             Log log = LogFactory.getLog( this.getClass() );
             log.info( "DerbyRecordDao:connect" );
             
-            if( context != null && context.getJsonConfig() != null ){
+            if( psqContext != null && psqContext.getJsonConfig() != null ){
                 
                 Map derbyCfg = (Map)
-                    ((Map) context.getJsonConfig().get("store")).get("derby");
+                    ((Map) psqContext.getJsonConfig().get("store")).get("derby");
                 try{
                     String derbydb = (String) derbyCfg.get("derby-db");
                     log.info( "               location: " + derbydb );
@@ -133,7 +135,6 @@ public class DerbyRecordStore implements RecordStore{
                 } catch( Exception ex ){
                     ex.printStackTrace();
                 }
-                
                 
                 try{
                     Statement st = dbcon.createStatement();
@@ -176,7 +177,7 @@ public class DerbyRecordStore implements RecordStore{
     public void shutdown(){
         if( dbcon != null ){      
             try{
-                DriverManager.getConnection("jdbc:derby:;shutdown=true");
+                DriverManager.getConnection( "jdbc:derby:;shutdown=true" );
             } catch( Exception ex ){
                 Log log = LogFactory.getLog( this.getClass() );
                 log.info( "DerbyRecordDao(shutdown): " + ex);
@@ -212,7 +213,7 @@ public class DerbyRecordStore implements RecordStore{
     public String getRecord( String rid, String format ){
         connect();
         String record = "";
-
+        
 	Log log = LogFactory.getLog( this.getClass() );
 
         try{
@@ -277,7 +278,7 @@ public class DerbyRecordStore implements RecordStore{
                          InputStream is ){
 
 
-        Map trCfg = (Map) ((Map) context.getJsonConfig().get("store"))
+        Map trCfg = (Map) ((Map) psqContext.getJsonConfig().get("store"))
             .get("transform");
         
         List rtrList = (List) trCfg.get( format );
@@ -373,7 +374,7 @@ public class DerbyRecordStore implements RecordStore{
 
             if( rmgrURL == null ){
                 rmgrURL = (String) 
-                    ((Map) context.getJsonConfig().get("store"))
+                    ((Map) psqContext.getJsonConfig().get("store"))
                     .get("record-mgr");            
 
                 if( host != null ){
@@ -391,7 +392,8 @@ public class DerbyRecordStore implements RecordStore{
             
             // Get the response
             BufferedReader rd =
-                new BufferedReader( new InputStreamReader(conn.getInputStream()));
+                new BufferedReader( new InputStreamReader( conn
+                                                           .getInputStream()));
             String line;
 
             log.info( "  Response:" );

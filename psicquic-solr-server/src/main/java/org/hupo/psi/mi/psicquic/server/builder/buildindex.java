@@ -1,8 +1,8 @@
 package org.hupo.psi.mi.psicquic.server.builder;
 
 /* =============================================================================
- # $Id:: buildindex.java 266 2012-05-21 01:02:31Z lukasz                       $
- # Version: $Rev:: 266                                                         $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #
  # BuildIndex: Build index

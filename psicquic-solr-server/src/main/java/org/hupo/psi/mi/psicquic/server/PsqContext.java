@@ -20,6 +20,12 @@ import org.hupo.psi.mi.psicquic.server.store.RecordStore;
 
 public class PsqContext{
 
+    public PsqContext(){}
+    
+    public PsqContext( JsonContext context ){
+        jsonContext = context;
+    }
+    
     private JsonContext jsonContext;
 
     public void setPsqConfig( JsonContext context ){
@@ -27,7 +33,10 @@ public class PsqContext{
     }
 
     public Map<String,Object> getJsonConfig(){
-        return jsonContext.getJsonConfig();
+        if( jsonContext != null ){
+            return jsonContext.getJsonConfig();
+        } 
+        return null;
     }
 
     private Map<String,RecordIndex> indexMap;
@@ -39,10 +48,13 @@ public class PsqContext{
     public RecordIndex getIndex( String name ){
         return indexMap.get( name );
     }
-
+    
+    public String getActiveIndexName(){
+        return (String) ((Map) getJsonConfig().get( "index" )).get( "active" );
+    }
+    
     public RecordIndex getActiveIndex(){
-        return indexMap.get( (String) ((Map) getJsonConfig().get( "index" ))
-                             .get( "active" ) );
+        return indexMap.get( getActiveIndexName() );
     }
     
     private Map<String,RecordStore> storeMap;
@@ -54,15 +66,18 @@ public class PsqContext{
     public RecordStore getStore( String name ){
         return storeMap.get( name );
     }
-
+    
+    public String getActiveStoreName(){
+        return (String) ((Map) getJsonConfig().get( "store" )).get( "active" );
+    }
+    
+    public RecordStore getActiveStore(){
+        return storeMap.get( getActiveStoreName() );
+    }
+    
     public Map getMiqlxDef(){
         return (Map) ((Map) getJsonConfig().get( "service" )).get( "miqlx" );
         
-    }
-
-    public RecordStore getActiveStore(){
-        return storeMap.get( (String) ((Map) getJsonConfig().get( "store" ))
-                             .get( "active" ) );
     }
 
     public String getRecId(){

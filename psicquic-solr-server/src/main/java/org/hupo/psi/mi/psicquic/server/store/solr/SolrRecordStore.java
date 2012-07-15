@@ -1,14 +1,13 @@
 package org.hupo.psi.mi.psicquic.server.store.solr;
 
 /* =============================================================================
- # $Id:: DerbyRecordStore.java -1                                              $
- # Version: $Rev:: -1                                                          $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #
- # SolrRecordStore: apache solr-backed RecordStore implementation
+ # SolrRecordStore: SolrRecordIndex-backed RecordStore implementation
  #
  #=========================================================================== */
-
 
 import java.util.*;
 import java.io.InputStream;
@@ -43,33 +42,24 @@ public class SolrRecordStore implements RecordStore{
     private String shardStr= "";
 
     Map<String,Object> viewMap;
-
-    JsonContext context = null;
+    
     String host = null;
-
-    public SolrRecordStore(){}
-
-    public SolrRecordStore( JsonContext context ){
-        this.context = context;
-    }
     
-    public SolrRecordStore( JsonContext context, String host ){
-        this.context = context;        
-    }
-    
-    public void setContext( JsonContext context ){
-        this.context = context;
-    }
-
-    PsqContext  psqContext = null;
-    public void setPsqContext( PsqContext context ){
-        this.psqContext = context;
-    }
-
     SolrRecordIndex sri = null;
 
-    public void setSolrRecordIndex( SolrRecordIndex sri ){
+    public SolrRecordStore(){}
+    
+    public SolrRecordStore( SolrRecordIndex sri ){
         this.sri = sri;
+    }
+    
+    public SolrRecordStore( SolrRecordIndex index, String host ){
+        this.sri = index;
+        this.host = host;
+    }
+    
+    public void setSolrRecordIndex( SolrRecordIndex index ){
+        this.sri = index;
     }
 
     public void initialize(){
@@ -79,55 +69,20 @@ public class SolrRecordStore implements RecordStore{
     public void initialize( boolean force ){
         
         Log log = LogFactory.getLog( this.getClass() );
-        log.info( " initilizing SolrRecordIndex: context=" + context );
-        if( context != null ){
-            log.info( "                        "
-                      + "JsonConfig=" + context.getJsonConfig() );
-        }
-        if( context != null && context.getJsonConfig() != null ){
-
-            // SOLR URLs
-            //----------
-
+        log.info( " initilizing SolrRecordStore: index=" + sri );
+        
+        if( sri != null 
+            && sri.getPsqContext() != null 
+            && sri.getPsqContext().getJsonConfig() != null ){
+            
+            // RECORD VIEWS
+            //-------------
+            
             Map jSolrCon = (Map)
-                ((Map) context.getJsonConfig().get("store")).get("solr");
-
-
-            log.info( "    url=" + jSolrCon.get("url") );
-            log.info( "    shard=" + jSolrCon.get("shard") );
-
-            baseUrl = (String) jSolrCon.get( "url" );
-
-            if( host != null ){
-                baseUrl = hostReset( baseUrl , host );
-            }
-
-            if( jSolrCon.get("shard") != null ){
-                List shardList = (List) jSolrCon.get("shard");
-                
-                for( Iterator is = shardList.iterator(); is.hasNext(); ){
-                    String csh = (String) is.next();
-                    shardStr += csh + ",";
-                    if( shardUrl == null ){
-                        shardUrl = new ArrayList<String>();
-                    }
-                    
-                    if( host != null ){
-                        shardUrl.add( hostReset( "http://" + csh, host ) );
-                    } else { 
-                        shardUrl.add( "http://" + csh );
-                    }
-                }
-                if( !shardStr.equals("") ){
-                    shardStr = shardStr.substring( 0, shardStr.length()-1);
-                }
-            }
-
-            // Views
-            //------
+                ((Map) sri.getPsqContext().getJsonConfig().get("store")).get("solr");            
             
             viewMap =  (Map) jSolrCon.get("view");
-
+            
             /* "psi-mi/tab25":{
                   "config":{
                     "col":["idA_o","idB_o","altidA_o","altidB_o",
@@ -139,37 +94,8 @@ public class SolrRecordStore implements RecordStore{
         }
     }
     
-    private String hostReset( String url, String newHost ){
-
-        if( host == null ) return url;
-       
-        // http://aaa:8888/d/d/d 
-
-        try{
-            Pattern p = Pattern.compile( "([^/]*//)([^/:]+)(:[0-9]+)?(.*)" );
-            Matcher m = p.matcher( url );
-            
-            if( m.matches() ){
-                
-                String prefix = m.group( 1 );
-                String host = m.group( 2 );
-                String port = m.group( 3 );
-                String postfix = m.group( 4 );
-
-                String newUrl = prefix + newHost + port + postfix;
-                return newUrl;
-
-            } else {
-                return url;
-            }
-        } catch(Exception ex ){
-            return url;
-        }
-    }
-
-
     //--------------------------------------------------------------------------
-    // NOTE: dummy operation: records are expected to be handled while indexing
+    // NOTE: dummy operation: records are expected to be handled by the index
     //--------------------------------------------------------------------------
 
     private void connect(){}
@@ -193,32 +119,34 @@ public class SolrRecordStore implements RecordStore{
 
         SolrDocument srec = null;
         Map recordCache = null;
-
+        
         if( sri.getRecordCache() != null ){
             recordCache = sri.getRecordCache();
             synchronized( recordCache ){
                 srec = (SolrDocument) recordCache.get( rid );
             }
         }
-        
+
         if( srec == null ){
+            log.debug( "   SolrRecordIndex: baseUrl="+ sri.getBaseUrl() );
+            log.info( "RecordCache: miss" );
 
-            if( baseUrl == null ){ initialize(); }
-            log.debug( "   SolrRecordIndex: baseUrl="+ baseUrl );
-
-            if( baseUrl != null ){
+            if( sri.getBaseUrl() != null ){
  
                 if( solr == null ){
-                    solr = new HttpSolrServer( baseUrl );
+                    solr = new HttpSolrServer( sri.getBaseUrl() );
                 }
                 ModifiableSolrParams params = new ModifiableSolrParams();
-                params.set( "q", "uuId:" + rid.replace( ":","\\:") ); // escape special character
+
+                // NOTE: escape special character
+                
+                params.set( "q", "uuId:" + rid.replace( ":","\\:") ); 
                 
                 // set shards when needed
                 //-----------------------
-
-                if( shardStr != null ){
-                    params.set( "shards", shardStr );
+                
+                if( sri.getShardStr() != null ){
+                    params.set( "shards", sri.getShardStr() );
                 }
                 
                 try{
@@ -227,8 +155,8 @@ public class SolrRecordStore implements RecordStore{
 
                     SolrDocumentList res = response.getResults();
                     srec = res.get(0);
-
-                    String recfld = psqContext.getRecId();
+                    
+                    String recfld = sri.getPsqContext().getRecId();
                     String rec = (String) srec.get( recfld );
                                        
                     if( recordCache != null ){
@@ -252,17 +180,20 @@ public class SolrRecordStore implements RecordStore{
     public List<String> getRecordList( List<String> rid, String format ){
         
         List<String> recordList = new ArrayList<String>();
-        
-        connect();
 
-        return recordList;
-        
+        // NOTE: not implemented
+        return recordList;        
     }
 
     private String convert( SolrDocument sdoc, String format ){
 
         Log log = LogFactory.getLog( this.getClass() );
         log.info( " SolrRecordStore: convert to format=" + format );
+
+        if( viewMap == null ){
+            initialize();
+        }
+
 
         Map vconf = ((Map) ((Map) viewMap.get( format )).get("config"));
 

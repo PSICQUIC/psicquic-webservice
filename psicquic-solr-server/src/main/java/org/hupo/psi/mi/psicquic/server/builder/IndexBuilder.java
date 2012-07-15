@@ -1,8 +1,8 @@
 package org.hupo.psi.mi.psicquic.server.builder;
 
 /* =============================================================================
- # $Id:: BuildSolrDerbyIndex.java 266 2012-05-21 01:02:31Z lukasz              $
- # Version: $Rev:: 266                                                         $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #
  # IndexBuilder: populate  PSICQUIC index 
@@ -16,6 +16,8 @@ import java.io.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.hupo.psi.mi.psicquic.server.*;
 
 import org.hupo.psi.mi.psicquic.server.index.*;
 import org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex;
@@ -50,8 +52,6 @@ public class IndexBuilder{
     String source = null;
     boolean zip = false;
 
-    boolean defCtx = true;
-
     RecordIndex recordIndex = null;
     RecordStore recordStore = null;
 
@@ -60,19 +60,16 @@ public class IndexBuilder{
     
 
     String host = null;
-
+    
     //--------------------------------------------------------------------------
     
-    JsonContext psqContext;
+    PsqContext psqContext = null;
     
-    public void setPsqContext( JsonContext context ){
-        psqContext = context;
-    } 
-
-    public JsonContext getPsqContext(){
+    
+    public PsqContext getPsqContext(){
         return psqContext;
     }
-
+    
     //--------------------------------------------------------------------------
     
     public IndexBuilder( String ctx, String host, int btc, int stc, 
@@ -85,11 +82,41 @@ public class IndexBuilder{
             ex.printStackTrace();
         }
         
-        defCtx = false;
-        this.initialize( isCtx, format, zip );
+        this._IndexBuilder( isCtx, host, btc, stc, format, zip );          
+    }
+    
+    public IndexBuilder( InputStream isCtx, String host, int btc, int stc,
+                         String format, boolean zip ){
+        
+        this._IndexBuilder( isCtx, host, btc, stc, format, zip );
+    }
 
-        Map jctx = (Map) getPsqContext().getJsonConfig();
+    private void _IndexBuilder( InputStream isCtx,  String host, 
+                                int btc, int stc, String format, boolean zip ){
+        
+        this.zip = zip;
+        this.format = format;
+        this.source = source;
+        
+        this.log = LogFactory.getLog( this.getClass() );
+        log.info( " initilizing IndexBuilder: threads=" + builderTCount );
+        
+        // get context
+        //------------
 
+        JsonContext jsq = new JsonContext();
+        
+        try{                     
+            jsq.readJsonConfigDef( isCtx );
+            Map jctx = (Map) getPsqContext().getJsonConfig();            
+        } catch( Exception ex ){
+            ex.printStackTrace();
+        }        
+
+        psqContext = new PsqContext( jsq );
+        
+        Map jctx = psqContext.getJsonConfig();
+        
         if( btc > 0 ){
             builderTCount = btc;
         } else {
@@ -110,72 +137,22 @@ public class IndexBuilder{
             this.host = host;
         }
     }
-    
-    public IndexBuilder( InputStream isCtx, String host, int btc, int stc,
-                         String format, boolean zip ){
-        
-        this.initialize( isCtx, format, zip );
-        
-        Map jctx = (Map) getPsqContext().getJsonConfig();
-        if( btc > 0 ){
-            builderTCount = btc;
-        } else {
-            Integer btcInt = (Integer) ((Map)jctx.get( "builder" ))
-                .get( "builder-thread-count" );
-            builderTCount = btcInt.intValue();
-        }
-
-        if( stc > 0 ){
-            solrconTCount = stc;
-        }  else {
-            Integer stcInt = (Integer) ((Map)jctx.get( "builder" ))
-                .get( "solr-thread-count" );
-            solrconTCount = stcInt.intValue();
-        }
-        if( host != null ){
-            this.host = host;
-        }
-    }
-    
-    private void initialize( InputStream isCtx, String format, boolean zip ){
-        
-        this.zip = zip;
-        this.format = format;
-        this.source = source;
-        
-        this.log = LogFactory.getLog( this.getClass() );
-        log.info( " initilizing IndexBuilder: threads=" + builderTCount );
-        
-        // get context
-        //------------
-
-        psqContext = new JsonContext();
-        
-        try{                     
-            
-            psqContext.readJsonConfigDef( isCtx );
-            Map jctx = (Map) getPsqContext().getJsonConfig();
-            
-        } catch( Exception ex ){
-            ex.printStackTrace();
-        }        
-    }
 
     //--------------------------------------------------------------------------
+
     public void  clear(){
 
-        Map jctx = (Map) getPsqContext().getJsonConfig();
+        Map jctx = (Map) psqContext.getJsonConfig();
          
         try{
             
             // clear index
             //------------
 
-            String activeIndex =
-                (String) ((Map)jctx.get( "index" )).get( "active" );
+            String activeIndexName = psqContext.getActiveIndexName();
             
-            if( activeIndex.equals( "solr" ) ){
-                recordIndex = new SolrRecordIndex( getPsqContext() );
+            if( activeIndexName.equals( "solr" ) ){
+                recordIndex = new SolrRecordIndex( psqContext );
                 recordIndex.initialize();
                 recordIndex.connect();
                 recordIndex.clear();
@@ -184,15 +161,14 @@ public class IndexBuilder{
             // clear data store
             //-----------------
 
-            String activeStore =
-                (String) ((Map)jctx.get( "store" )).get( "active" );
-            
-            if( activeStore.equals( "solr" ) ){
+            String activeStoreName = psqContext.getActiveStoreName();
+                      
+            if( activeStoreName.equals( "solr" ) ){
                 // implicitly cleared by clearing index
             }
 
-            if( activeStore.equals( "derby" ) ){
-                recordStore = new DerbyRecordStore( getPsqContext() );
+            if( activeStoreName.equals( "derby" ) ){
+                recordStore = new DerbyRecordStore( psqContext );
                 recordStore.initialize();
                 recordStore.clear();
             }
@@ -200,7 +176,7 @@ public class IndexBuilder{
             mux.printStackTrace();
         }              
     }
-    
+
     //--------------------------------------------------------------------------
 
     public void processFile( String file ){
@@ -224,7 +200,7 @@ public class IndexBuilder{
         List<File> filesDirs = Arrays.asList( filesAndDirs );
         
         if( ! file.isFile() ){
-            log.info("IndexBuilder: processing directory=" + file );
+            log.info( "IndexBuilder: processing directory=" + file );
         }
         
         for( File sfile : filesDirs) {
@@ -261,7 +237,7 @@ public class IndexBuilder{
     public void start(){
         
         // start threads
-
+        
         List<IndexThread> itl = new ArrayList<IndexThread>();
 
         for( Iterator<List<File>> thi = thq.iterator(); thi.hasNext(); ){
@@ -290,7 +266,8 @@ public class IndexBuilder{
 
 		running = false;
 
-                for( Iterator<IndexThread> iti = itl.iterator(); iti.hasNext(); ){
+                for( Iterator<IndexThread> iti = itl.iterator(); 
+                     iti.hasNext(); ){
                     IndexThread cit = iti.next();
                     if( cit.getState() != Thread.State.TERMINATED ){
                         running = true;
@@ -306,8 +283,7 @@ public class IndexBuilder{
             }
 
 	    log.info( "IndexBuilder: all threads terminated");
-
-
+            
         } catch( InterruptedException ix ){
             ix.printStackTrace();
         }
@@ -378,25 +354,22 @@ class IndexThread extends Thread{
     
     List<File> fileq;
 
-    public IndexThread( JsonContext psqContext, String host, int solrconTCount,
+    public IndexThread( PsqContext psqContext, String host, int solrconTCount,
                         String root, List<File> files, 
                         String format, boolean zip ){
-        
-        Map jctx = (Map) psqContext.getJsonConfig();
         fileq = files;
         this.zip = zip;
         this.root = root;
         this.format = format;
         
         try{
-
+            
             // SOLR Index
             //-----------
         
-            String activeIndex = 
-                (String) ((Map)jctx.get( "index" )).get( "active" );
+            String activeIndexName = psqContext.getActiveIndexName();
             
-            if( activeIndex.equals( "solr" ) ){
+            if( activeIndexName.equals( "solr" ) ){
                 recordIndex = new SolrRecordIndex( psqContext, host, 
                                                    solrconTCount );
                 recordIndex.initialize();
@@ -406,15 +379,15 @@ class IndexThread extends Thread{
             // Derby data store
             //-----------------
             
-            String activeStore = 
-                (String) ((Map)jctx.get( "store" )).get( "active" );
+            String activeStoreName =  psqContext.getActiveStoreName();
             
-            if( activeStore.equals( "solr" ) ){
-                recordStore = new SolrRecordStore( psqContext, host );
-                recordStore.initialize();
+            if( activeStoreName.equals( "solr" ) ){
+                //recordStore = new SolrRecordStore( psqContext, host );
+                //recordStore.initialize();
+                recordStore = new SolrRecordStore();
             }
             
-            if( activeStore.equals( "derby" ) ){
+            if( activeStoreName.equals( "derby" ) ){
                 recordStore = new DerbyRecordStore( psqContext, host );
                 recordStore.initialize();
             }
@@ -423,27 +396,23 @@ class IndexThread extends Thread{
         }
     }
 
-    //--------------------------------------------------------------------------    
+    //--------------------------------------------------------------------------
 
     public void run(){
  
         Log log = LogFactory.getLog( this.getClass() );
-        
-
-        
         log.info( "IndexThread: processing fileq:" + fileq );
-
-
+        
         for( Iterator<File> fi = fileq.iterator(); fi.hasNext(); ){
             
             File file = fi.next();
             log.info( "IndexThread: processing file:" + file );
-
+            
             // transform/add -> index
             //-----------------------
 
             try{
-
+                
                 InputStream is = null;
 
                 if( zip ){
@@ -464,7 +433,7 @@ class IndexThread extends Thread{
 
             // transform/add -> datastore
             //---------------------------
-
+            
             try{
                 InputStream is = null;
 

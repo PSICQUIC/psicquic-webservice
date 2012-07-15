@@ -6,7 +6,7 @@
  ! Version: $Rev:: 217                                                         $
  !==============================================================================
  !
- ! IMEx Central: application context
+ ! PSICQUIC Server: application context
  !
  !========================================================================== -->
 
@@ -52,22 +52,20 @@
 
   <bean id="solrIndex"
         class="org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex">
-    <property name="context" ref="psqConfig"/> 
-    <property name="psqContext" ref="psqContext"/>
+    <property name="psqContext" ref="psqContext"/> 
   </bean>
  
 <!-- ========================================================= DATA STORE(S) -->
   
   <bean id="derbyStore" init-method="initialize" destroy-method="shutdown" 
         class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore">
-    <property name="context" ref="psqConfig"/>     
+    <property name="psqContext" ref="psqContext"/>      
   </bean>
 
   <bean id="solrStore" init-method="initialize" destroy-method="shutdown"
         class="org.hupo.psi.mi.psicquic.server.store.solr.SolrRecordStore">
-    <property name="context" ref="psqConfig"/>
-    <property name="psqContext" ref="psqContext"/>
-    <property name="solrRecordIndex" ref="solrIndex" /> 
+<!--    <property name="psqContext" ref="psqContext"/>  -->
+    <property name="solrRecordIndex" ref="solrIndex" />  <!-- index name ??-->
   </bean>
 
  

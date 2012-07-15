@@ -58,11 +58,7 @@
         "rec-id":"recId"
      },    
      "solr":{
-        "url":"http://127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
-        "shard":[
-           "127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
-           "127.0.0.1:8080/psicquic-solr-server/solr/psq-02"
-        ],
+        "solr-index":"solr",
         "rec-id":"uuId",
         "view":{
            "psi-mi/tab25":{
