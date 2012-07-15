@@ -54,24 +54,6 @@ public class PsicquicRestImpl implements PsicquicRest{
     //==========================================================================
     // REST SERVICE OPERATIONS
     //========================
-
-    public Object getByInteractor( String intAc,String db, String format,
-                                   String firstResult, String maxResults ) 
-        throws PsicquicServiceException,
-               NotSupportedMethodException,
-               NotSupportedTypeException {
-        
-        throw new NotSupportedMethodException( "", null );
-    }
-    
-    public Object getByInteraction( String intAc, String db, String format,
-                                    String firstResult, String maxResults ) 
-        throws PsicquicServiceException,
-               NotSupportedMethodException,
-               NotSupportedTypeException{
-        
-        throw new NotSupportedMethodException( "", null );
-    }
     
     public Object getByQuery( String query, String format,
                               String firstResult, String maxResults ) 
@@ -114,6 +96,31 @@ public class PsicquicRestImpl implements PsicquicRest{
         return mitab;        
     }
     
+
+    //--------------------------------------------------------------------------
+    
+    public Object getByInteractor( String intAc, String db, String format,
+                                   String firstResult, String maxResults ) 
+        throws PsicquicServiceException,
+               NotSupportedMethodException,
+               NotSupportedTypeException {
+       
+        String query = psqServer.buildQuery( "identifier", db, intAc );
+        return getByQuery( query, format, firstResult, maxResults );
+    }
+    
+    //--------------------------------------------------------------------------
+
+    public Object getByInteraction( String intAc, String db, String format,
+                                    String firstResult, String maxResults ) 
+        throws PsicquicServiceException,
+               NotSupportedMethodException,
+               NotSupportedTypeException{
+
+        String query = psqServer.buildQuery( "interaction_id", db, intAc );
+        return getByQuery( query, format, firstResult, maxResults );
+    }
+
     //==========================================================================
     // META INFO
     //==========

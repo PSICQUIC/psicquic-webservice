@@ -123,38 +123,6 @@ public class PsicquicServer {
     }
     
     //--------------------------------------------------------------------------
-    
-    public ResultSet getByInteractor(  String db, String ac, String resultType,
-                                       int firstResult, int blockSize ){
-        return getByQuery( db+"\\:"+ac, resultType, firstResult, blockSize );
-    }
-    
-    //--------------------------------------------------------------------------
-
-    public ResultSet getByInteractorList( List<Map<String,String>> intId, 
-                                          String resultType,
-                                          int firstResult, int blockSize,
-                                          String operand ){                               
-        return null;
-     }
-    
-    //--------------------------------------------------------------------------
-    
-    public ResultSet getByInteraction( String db, String ac, String resultType,
-                                       int firstResult, int blockSize ){
-
-        return getByQuery( db+"\\:"+ac, resultType, firstResult, blockSize );
-    }
-
-    //--------------------------------------------------------------------------
-    
-    public ResultSet getByInteractionList( List<Map<String,String>> intId, 
-                                           String resultType,
-                                           int firstResult, int blockSize ){    
-        return null;
-    }
-
-    //--------------------------------------------------------------------------
 
     public List<String> getSupportedReturnTypes( String service) {
         
@@ -201,4 +169,48 @@ public class PsicquicServer {
         
         return (Set<Map.Entry>) propmap.entrySet(); 
     }
+    
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+    
+    public String buildQuery( String field, String db, String ac ){
+
+        StringBuffer sb = new StringBuffer();
+        sb.append( field ).append(":");
+        if( db != null && !db.equals("") ){
+            sb.append( db ).append( "\\:" );
+        }
+        sb.append( ac );
+    
+        return sb.toString();
+    }
+
+    //--------------------------------------------------------------------------
+    
+    public String buildQuery( String field, List<String> dbl, 
+                              List<String> acl, String operand ){
+        
+        StringBuffer sb = new StringBuffer();
+        sb.append( field ).append( ":(" );
+
+        int pos = 0;
+        for ( Iterator<String> idbl = dbl.iterator(); idbl.hasNext(); ){
+            String db  = idbl.next();
+            String ac = acl.get( pos );
+            pos++;
+            
+            if( db != null && !db.equals("") ){
+                sb.append( db ).append( "\\:" );
+            }
+            sb.append( ac );
+            
+            if( idbl.hasNext() ){
+                sb.append( " " ).append( operand ).append( " " );
+            }
+        }
+
+        sb.append( ")" );
+        return sb.toString();
+    }
+
 }

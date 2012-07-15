@@ -68,18 +68,7 @@ public class PsicquicSoapImpl implements PsqPort {
     //==========================================================================
     // WEB SERVICE OPERATIONS
     //=======================
-    
-    public QueryResponse getByInteractor( DbRef dbRef,
-                                          RequestInfo infoRequest )
-        throws NotSupportedMethodException, 
-               NotSupportedTypeException, 
-               PsicquicServiceException {
-        
-        throw new NotSupportedMethodException( "", null );
-    };
-    
-    //--------------------------------------------------------------------------
-
+   
     public QueryResponse getByQuery( String query,
                                      RequestInfo infoRequest )
         throws NotSupportedMethodException, 
@@ -122,6 +111,20 @@ public class PsicquicSoapImpl implements PsqPort {
         qr.getResultSet().setMitab( mitab );     
 
         return qr;
+        
+    };
+
+    //--------------------------------------------------------------------------
+    
+    public QueryResponse getByInteractor( DbRef dbRef,
+                                          RequestInfo infoRequest )
+        throws NotSupportedMethodException, 
+               NotSupportedTypeException, 
+               PsicquicServiceException {
+
+        String query = psqServer.buildQuery( "identifier", 
+                                             dbRef.getDbAc(), dbRef.getId() );        
+        return getByQuery( query, infoRequest );
     };
     
     //--------------------------------------------------------------------------
@@ -132,8 +135,18 @@ public class PsicquicSoapImpl implements PsqPort {
         throws NotSupportedMethodException, 
                NotSupportedTypeException, 
                PsicquicServiceException {
-        
-        throw new NotSupportedMethodException( "", null );
+
+        List<String> dbl = new ArrayList();
+        List<String> acl = new ArrayList();
+
+        for( Iterator<DbRef> i = dbRef.iterator(); i.hasNext(); ){
+            DbRef cref = i.next();
+            dbl.add( cref.getDbAc());
+            acl.add( cref.getId());
+        }
+
+        String query = psqServer.buildQuery( "identifier", dbl, acl, operand );
+        return getByQuery( query, infoRequest );
     };
 
     //--------------------------------------------------------------------------
@@ -144,7 +157,9 @@ public class PsicquicSoapImpl implements PsqPort {
                NotSupportedTypeException, 
                PsicquicServiceException {
         
-        throw new NotSupportedMethodException( "", null );
+        String query = psqServer.buildQuery( "interaction_id",
+                                             dbRef.getDbAc(), dbRef.getId() );
+        return getByQuery( query, infoRequest );        
     };
 
     //--------------------------------------------------------------------------
@@ -154,9 +169,19 @@ public class PsicquicSoapImpl implements PsqPort {
         throws NotSupportedMethodException, 
                NotSupportedTypeException, 
                PsicquicServiceException{
-        throw new NotSupportedMethodException( "", null );
-    };
+       
+        List<String> dbl = new ArrayList();
+        List<String> acl = new ArrayList();
 
+        for( Iterator<DbRef> i = dbRef.iterator(); i.hasNext(); ){
+            DbRef cref = i.next();
+            dbl.add( cref.getDbAc());
+            acl.add( cref.getId());
+        }
+        
+        String query = psqServer.buildQuery( "identifier", dbl, acl, "OR" );
+        return getByQuery( query, infoRequest );
+    };
 
     //==========================================================================
     // META DATA
