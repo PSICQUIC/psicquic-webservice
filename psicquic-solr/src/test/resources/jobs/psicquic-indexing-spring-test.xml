@@ -17,7 +17,7 @@
     <!-- reader -->
 
     <bean id="mitabFileTest" class="org.springframework.core.io.FileSystemResource">
-        <constructor-arg value="/home/marine/Downloads/20120615_all.mitab"/>
+        <constructor-arg value="resources/samples/sampleFileParameter.txt"/>
     </bean>
 
     <bean id="mitabReaderTest" class="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabCalimochoReaderTest">
@@ -30,11 +30,11 @@
     <!-- writer -->
 
     <bean id="solrWriterTest" class="org.hupo.psi.mi.psicquic.indexing.batch.writer.SolrItemWriter">
-        <property name="solrUrl" value="http://localhost:8983/solr"/>
+        <property name="solrUrl" value="http://localhost:18080/solr"/>
     </bean>
 
     <bean id="solrCleanerTaskletTest" class="org.hupo.psi.mi.psicquic.indexing.batch.tasklet.SolrCleanerTasklet">
-        <property name="solrUrl" value="http://localhost:8983/solr"/>
+        <property name="solrUrl" value="http://localhost:18080/solr"/>
     </bean>
 
     <!-- steps -->
