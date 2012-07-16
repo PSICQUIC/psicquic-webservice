@@ -38,7 +38,7 @@
   adminPath: RequestHandler path to manage cores.  
     If 'null' (or absent), cores will not be manageable via request handler
   -->
-  <cores adminPath="/admin/cores" defaultCoreName="collection1">
-    <core name="collection1" instanceDir="." />
+  <cores adminPath="/admin/cores" defaultCoreName="psicquic-core">
+    <core name="psicquic-core" instanceDir="." />
   </cores>
 </solr>

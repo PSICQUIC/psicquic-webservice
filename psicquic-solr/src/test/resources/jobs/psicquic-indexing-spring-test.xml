@@ -20,7 +20,7 @@
         <constructor-arg value="/home/marine/Downloads/20120615_all.mitab"/>
     </bean>
 
-    <bean id="mitabReaderTest" class="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabReader">
+    <bean id="mitabReaderTest" class="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabCalimochoReaderTest">
         <property name="mitabVersion">
             <value type="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabVersion">MITAB27</value>
         </property>
@@ -53,7 +53,7 @@
 
             <batch:chunk reader="mitabReaderTest"
                          writer="solrWriterTest"
-                         retry-limit="10" commit-interval="1000">
+                         retry-limit="10" commit-interval="5000">
                 <batch:streams>
                     <batch:stream ref="mitabReaderTest"/>
                     <batch:stream ref="solrWriterTest"/>

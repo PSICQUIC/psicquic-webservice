@@ -25,11 +25,12 @@ public class SolrCleanerTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         if (solrUrl != null){
 
+            // delete all previous records
             SolrServer solrServer = new HttpSolrServer(solrUrl);
             solrServer.deleteByQuery("*:*");
 
-            // only commit here
-            solrServer.commit();
+            // optimize here
+            solrServer.optimize();
 
             contribution.getExitStatus().addExitDescription("Cleared: " + solrUrl);
         }
