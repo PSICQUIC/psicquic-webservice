@@ -35,7 +35,7 @@ public class SolrCleanerTasklet implements Tasklet {
             contribution.getExitStatus().addExitDescription("Cleared: " + solrUrl);
         }
         else {
-            contribution.getExitStatus().addExitDescription("no SOLR server url found.");
+            throw new IllegalStateException("no SOLR server url found.");
         }
 
         return RepeatStatus.FINISHED;

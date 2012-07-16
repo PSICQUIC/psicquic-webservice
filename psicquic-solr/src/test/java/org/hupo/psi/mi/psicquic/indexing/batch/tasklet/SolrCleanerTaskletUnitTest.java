@@ -1,10 +1,10 @@
 package org.hupo.psi.mi.psicquic.indexing.batch.tasklet;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.common.SolrInputDocument;
 import org.hupo.psi.calimocho.model.Row;
+import org.hupo.psi.mi.psicquic.indexing.batch.AbstractSolrServerTest;
 import org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabCalimochoLineMapper;
 import org.hupo.psi.mi.psicquic.indexing.batch.server.SolrJettyRunner;
 import org.junit.Assert;
@@ -25,13 +25,11 @@ import psidev.psi.mi.calimocho.solr.converter.Converter;
  * @since <pre>12/07/12</pre>
  */
 
-public class SolrCleanerTaskletUnitTest {
+public class SolrCleanerTaskletUnitTest extends AbstractSolrServerTest{
 
     @Test
     public void test_delete_all() throws Exception {
-        // Start a jetty server to host the solr index
-        SolrJettyRunner solrJettyRunner = new SolrJettyRunner();
-        solrJettyRunner.start();
+        SolrJettyRunner solrJettyRunner = startJetty();
 
         String solrUr= "http://localhost:18080/solr";
         SolrCleanerTasklet tasklet = new SolrCleanerTasklet();
@@ -61,9 +59,6 @@ public class SolrCleanerTaskletUnitTest {
         Assert.assertEquals(RepeatStatus.FINISHED, status);
         Assert.assertEquals(0L, solrServer.query(new SolrQuery("*:*")).getResults().getNumFound());
 
-        // shutdown solrJetty
-        solrJettyRunner.stop();
-
-        FileUtils.deleteQuietly(solrJettyRunner.getSolrHome());
+        stopJetty(solrJettyRunner);
     }
 }

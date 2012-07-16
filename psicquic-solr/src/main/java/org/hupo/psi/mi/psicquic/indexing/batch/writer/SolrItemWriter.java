@@ -42,7 +42,7 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     public void write(List<? extends Row> items) throws Exception {
 
         if (solrUrl == null) {
-            throw new NullPointerException("No 'solrURL' configured for SolrItemWriter");
+            throw new IllegalStateException("No 'solrURL' configured for SolrItemWriter");
         }
 
         if (items.isEmpty()) {

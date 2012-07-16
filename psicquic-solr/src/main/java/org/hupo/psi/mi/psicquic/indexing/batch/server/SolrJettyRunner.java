@@ -105,6 +105,9 @@ public class SolrJettyRunner {
 
     public void stop() throws Exception {
         if (server != null) server.stop();
+        if (solrServer != null){
+            ((HttpSolrServer) solrServer).shutdown();
+        }
     }
 
     public File getSolrHome() {
