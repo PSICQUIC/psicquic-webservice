@@ -21,9 +21,6 @@
     </bean>
 
     <bean id="mitabReader" class="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabCalimochoReader">
-        <property name="mitabVersion">
-            <value type="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabVersion">${mitab.version}</value>
-        </property>
         <property name="resource" ref="mitabFile"/>
     </bean>
 

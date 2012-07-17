@@ -13,21 +13,13 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 
 public class MitabCalimochoReader extends FlatFileItemReader<Row> {
 
-    private MitabVersion mitabVersion;
+    public MitabCalimochoReader(){
+        setLineMapper(new MitabCalimochoLineMapper());
+    }
 
     @Override
     protected void doOpen() throws Exception {
 
         super.doOpen();
-    }
-
-    /**
-     * setting the MITAB version will set the mitab line mapper
-     * @param mitabVersion
-     */
-    public void setMitabVersion(MitabVersion mitabVersion) {
-        this.mitabVersion = mitabVersion;
-        MitabCalimochoLineMapper mitabLineMapper = new MitabCalimochoLineMapper(mitabVersion);
-        setLineMapper(mitabLineMapper);
     }
 }

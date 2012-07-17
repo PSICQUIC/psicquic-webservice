@@ -17,6 +17,7 @@
 
     <properties>
         <solr.url>http://localhost:8983/solr</solr.url>
+        <psicquic.indexing.id></psicquic.indexing.id>
     </properties>
 
     <build>
@@ -69,7 +70,6 @@
                                 <argument>org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer</argument>
                                 <argument>${mitab.file}</argument>
                                 <argument>${solr.url}</argument>
-                                <argument>${mitab.version}</argument>
                             </arguments>
                         </configuration>
                     </plugin>
@@ -102,7 +102,6 @@
                                 <argument>org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer</argument>
                                 <argument>${mitab.file}</argument>
                                 <argument>${solr.url}</argument>
-                                <argument>${mitab.version}</argument>
                                 <argument>${indexing.id}</argument>
                             </arguments>
                         </configuration>

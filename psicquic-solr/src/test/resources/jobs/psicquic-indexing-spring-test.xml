@@ -20,10 +20,7 @@
         <constructor-arg value="resources/samples/sampleFileParameter.txt"/>
     </bean>
 
-    <bean id="mitabReaderTest" class="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabCalimochoReaderTest">
-        <property name="mitabVersion">
-            <value type="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabVersion">MITAB27</value>
-        </property>
+    <bean id="mitabReaderTest" class="org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabCalimochoReader">
         <property name="resource" ref="mitabFileTest"/>
     </bean>
 

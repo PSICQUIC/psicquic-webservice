@@ -42,16 +42,12 @@ public class SolrMitabIndexer {
     @Autowired
     private ApplicationContext applicationContext;
 
+    private String indexingId;
+
     public SolrMitabIndexer() {
     }
 
     public static void main(String[] args) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, NoSuchJobExecutionException, NoSuchJobException, NoSuchJobInstanceException {
-
-        String indexingId = null;
-
-        if (args.length == 4) {
-            indexingId = args[3];
-        }
 
         // loads the spring context defining beans and jobs
         ApplicationContext context = new ClassPathXmlApplicationContext(
@@ -60,15 +56,15 @@ public class SolrMitabIndexer {
         SolrMitabIndexer rm = (SolrMitabIndexer)
                 context.getBean("solrMitabIndexer");
         
-        if (indexingId != null){
-            rm.resumeIndexing(indexingId);
+        if ( rm.getIndexingId() != null){
+            rm.resumeIndexing();
         }
         else {
             rm.startIndexing();
         }
     }
 
-    public void resumeIndexing(String indexingId) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, JobRestartException, NoSuchJobException, NoSuchJobInstanceException {
+    public void resumeIndexing() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, JobRestartException, NoSuchJobException, NoSuchJobInstanceException {
         Long executionId = findJobId(indexingId, "mitabIndexJob");
 
         if (executionId == null) {
@@ -114,5 +110,13 @@ public class SolrMitabIndexer {
         log.info("starting job " + indexingId);
 
         return jobLauncher.run(job, jobParamBuilder.toJobParameters());
+    }
+
+    public void setIndexingId(String indexingId) {
+        this.indexingId = indexingId;
+    }
+
+    public String getIndexingId() {
+        return indexingId;
     }
 }

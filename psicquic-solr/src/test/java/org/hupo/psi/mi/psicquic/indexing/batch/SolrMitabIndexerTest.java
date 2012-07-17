@@ -32,19 +32,9 @@ public class SolrMitabIndexerTest {
 
     @Test
     @Ignore
-    public void test_indexing_mitab27(){
+    public void test_indexing_mitab27() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
 
-        try {
-            solrMitabIndexer.startIndexing();
-        } catch (JobInstanceAlreadyCompleteException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (JobParametersInvalidException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (JobRestartException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (JobExecutionAlreadyRunningException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        solrMitabIndexer.startIndexing();
     }
 }
 

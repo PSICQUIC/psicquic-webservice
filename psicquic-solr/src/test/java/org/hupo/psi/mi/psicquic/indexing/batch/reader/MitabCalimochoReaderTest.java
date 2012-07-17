@@ -19,7 +19,6 @@ public class MitabCalimochoReaderTest {
     public void read_mitab_27() throws Exception {
 
         MitabCalimochoReader reader = new MitabCalimochoReader();
-        reader.setMitabVersion(MitabVersion.MITAB27);
         reader.setResource(new FileSystemResource(MitabCalimochoReader.class.getResource("/samples/sampleFileNegative.txt").getFile()));
 
         reader.doOpen();
@@ -36,8 +35,7 @@ public class MitabCalimochoReaderTest {
     public void read_mitab_25() throws Exception {
 
         MitabCalimochoReader reader = new MitabCalimochoReader();
-        reader.setMitabVersion(MitabVersion.MITAB25);
-        reader.setResource(new FileSystemResource(MitabCalimochoReader.class.getResource("/samples/sampleFileNegative.txt").getFile()));
+        reader.setResource(new FileSystemResource(MitabCalimochoReader.class.getResource("/samples/sampleFileMitab25.txt").getFile()));
 
         reader.doOpen();
 
@@ -53,8 +51,7 @@ public class MitabCalimochoReaderTest {
     public void read_mitab_26() throws Exception {
 
         MitabCalimochoReader reader = new MitabCalimochoReader();
-        reader.setMitabVersion(MitabVersion.MITAB26);
-        reader.setResource(new FileSystemResource(MitabCalimochoReader.class.getResource("/samples/sampleFileNegative.txt").getFile()));
+        reader.setResource(new FileSystemResource(MitabCalimochoReader.class.getResource("/samples/sampleFileMitab26.txt").getFile()));
 
         reader.doOpen();
 

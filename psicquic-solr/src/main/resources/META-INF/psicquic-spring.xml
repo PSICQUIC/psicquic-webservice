@@ -76,7 +76,9 @@
         <property name="password" value=""/>
     </bean>
 
-    <bean id="solrMitabIndexer" class="org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer"/>
+    <bean id="solrMitabIndexer" class="org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer">
+       <property name="indexingId" value="${psicquic.indexing.id}"/>
+    </bean>
 
     <bean id="simpleChunkListener" class="org.hupo.psi.mi.psicquic.indexing.batch.listener.SimpleChunkListener"/>
 </beans>

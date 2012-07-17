@@ -23,32 +23,7 @@ public class MitabCalimochoLineMapper implements LineMapper<Row>{
     public MitabCalimochoLineMapper() {
 
         // if no version, then we suppose it is MITAB 25
-        documentDefinition = MitabDocumentDefinitionFactory.mitab25();
-
-        this.rowReader = new DefaultRowReader( documentDefinition );
-    }
-
-    public MitabCalimochoLineMapper(MitabVersion mitabVersion) {
-
-        // if no version, then we suppose it is MITAB 25
-        if (mitabVersion == null){
-            mitabVersion = MitabVersion.MITAB25;
-        }
-
-        switch (mitabVersion){
-            case MITAB25:
-                documentDefinition = MitabDocumentDefinitionFactory.mitab25();
-                break;
-            case MITAB26:
-                documentDefinition = MitabDocumentDefinitionFactory.mitab26();
-                break;
-            case MITAB27:
-                documentDefinition = MitabDocumentDefinitionFactory.mitab27();
-                break;
-            default:
-                documentDefinition = MitabDocumentDefinitionFactory.mitab25();
-                break;
-        }
+        documentDefinition = MitabDocumentDefinitionFactory.mitab27();
 
         this.rowReader = new DefaultRowReader( documentDefinition );
     }
