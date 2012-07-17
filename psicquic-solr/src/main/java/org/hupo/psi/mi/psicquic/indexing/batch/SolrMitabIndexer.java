@@ -56,7 +56,8 @@ public class SolrMitabIndexer {
         SolrMitabIndexer rm = (SolrMitabIndexer)
                 context.getBean("solrMitabIndexer");
         
-        if ( rm.getIndexingId() != null){
+        if ( args.length == 1){
+            rm.setIndexingId(args[0]);
             rm.resumeIndexing();
         }
         else {
@@ -65,7 +66,11 @@ public class SolrMitabIndexer {
     }
 
     public void resumeIndexing() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, JobRestartException, NoSuchJobException, NoSuchJobInstanceException {
-        Long executionId = findJobId(indexingId, "mitabIndexJob");
+        resumeJob("mitabIndexJob");
+    }
+
+    public void resumeJob(String jobName) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, JobRestartException, NoSuchJobException, NoSuchJobInstanceException {
+        Long executionId = findJobId(indexingId, jobName);
 
         if (executionId == null) {
             throw new IllegalStateException("Indexing Id not found: "+indexingId);
@@ -90,14 +95,17 @@ public class SolrMitabIndexer {
         return null;
     }
 
-    public String startIndexing() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
+    public void startIndexing() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
+        startJob("mitabIndexJob");
+    }
+
+    public void startJob(String jobName) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
         String indexingId = "psicquic_index_"+System.currentTimeMillis();
+        setIndexingId(indexingId);
 
         if (log.isInfoEnabled()) log.info("Starting indexing: "+indexingId);
 
-        runJob("mitabIndexJob", indexingId);
-
-        return indexingId;
+        runJob(jobName, indexingId);
     }
 
     protected JobExecution runJob(String jobName, String indexingId) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
