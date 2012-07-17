@@ -82,6 +82,8 @@ public class PsicquicServer {
             miqlx = mf.getMiqlx();
         }
         
+        log.info(":" + query +":");
+
         String viewType = psqContext.getDefaultView();
         
         if( miqlx != null ){
@@ -94,6 +96,8 @@ public class PsicquicServer {
 
             if( miqlx.get("MiqlxView:") != null ){
                 viewType = ((List<String>) miqlx.get("MiqlxView:")).get(0);
+                
+
             }
         }
         log.info( " FR(q)=" + firstResult + " BS(q)=" + blockSize );
@@ -104,6 +108,8 @@ public class PsicquicServer {
             new ResultSet( qrs.getFirstResult(), qrs.getMaxResult(),
                            new ArrayList() );
         
+        prs.setMeta( qrs.getMeta() );
+
 	log.info( "getByQuery: rs="+ qrs); 
         
         for( Iterator i = qrs.getResultList().iterator(); i.hasNext(); ){

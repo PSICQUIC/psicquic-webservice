@@ -85,12 +85,49 @@ public class PsicquicRestImpl implements PsicquicRest{
         }
 
         ResultSet qrs = psqServer.getByQuery( query, format, fRes, mRes );
+        
+        log.info( "getByQuery: rs="+ qrs );
+        log.info( "meta=" + qrs.getMeta() );
+        
         String mitab="";
-        log.info( "getByQuery: rs="+ qrs);
+
+        // Records
+        //--------
 
         for( Iterator i = qrs.getResultList().iterator(); i.hasNext(); ){
             String record = (String) i.next();
             mitab += record + "\n";
+        }
+      
+        // Meta info 
+        //----------
+        if( qrs.getMeta() != null ){
+
+            if( qrs.getMeta().get( "groups") != null ){
+            
+                Map<String,List<ValueCount>> groups 
+                    = (Map<String,List<ValueCount>>) qrs.getMeta().get( "groups"); 
+                
+                for( Iterator<Map.Entry<String,List<ValueCount>>> ig =
+                         groups.entrySet().iterator(); ig.hasNext(); ){
+                
+                    Map.Entry<String,List<ValueCount>> me = ig.next();
+                
+                    String field = me.getKey();
+                
+                    for( Iterator<ValueCount> ivc = me.getValue().iterator();
+                         ivc.hasNext(); ){
+                        
+                        ValueCount vc = ivc.next();
+                        String value = vc.getValue();
+                        long count = vc.getCount();
+                        mitab += "#" + "miqlx:groupby" + "\t" 
+                            + field + "\t" 
+                            + value + "\t" 
+                            + count + "\n";
+                    }
+                }
+            }
         }
         
         return mitab;        

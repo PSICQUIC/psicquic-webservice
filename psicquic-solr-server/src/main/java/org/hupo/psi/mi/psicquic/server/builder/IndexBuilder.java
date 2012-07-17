@@ -181,7 +181,13 @@ public class IndexBuilder{
 
     public void processFile( String file ){
         File srcFl = new File( file );
-        enqueue("", srcFl );        
+        try{
+            String cpath = srcFl.getCanonicalPath();
+            this.root = cpath;
+            enqueue( cpath, srcFl );        
+        } catch( IOException ex ){
+            ex.printStackTrace();
+        }
     }
     
     public void processDirectory( String dir, boolean desc ){
@@ -406,8 +412,15 @@ class IndexThread extends Thread{
         for( Iterator<File> fi = fileq.iterator(); fi.hasNext(); ){
             
             File file = fi.next();
-            log.info( "IndexThread: processing file:" + file );
-            
+            try{
+                log.info( "IndexThread: processing file:" + file );
+                log.info( "IndexThread: canonical:" + file.getCanonicalPath() );
+                log.info( "IndexThread: root:" + root );
+            } catch(  Exception ex ){
+                ex.printStackTrace();
+            }
+
+
             // transform/add -> index
             //-----------------------
 

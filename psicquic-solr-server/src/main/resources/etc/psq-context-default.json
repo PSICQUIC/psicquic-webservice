@@ -61,7 +61,7 @@
         "solr-index":"solr",
         "rec-id":"uuId",
         "view":{
-           "psi-mi/tab25":{
+           "mitab25":{
                "config":{
                  "col":["idA_o","idB_o","altidA_o","altidB_o",
                         "aliasA_o","aliasB_o","detmethod_o","pubauth_o",
@@ -71,7 +71,7 @@
                  "col-sep":"\t"
                }
             },
-            "psi-mi/tab26":{
+            "mitab26":{
                "config":{
                  "col":["idA_o","idB_o","altidA_o","altidB_o", 
                         "aliasA_o","aliasB_o","detmethod_o","pubauth_o", 
@@ -83,11 +83,11 @@
                         "param_o","cdate_o","udate_o",
                         "checksumA_o","checksumB_o","checksumI_o",
                         "negative"
-                 ]
+                 ],               
+                 "col-sep":"\t"
                },
-               "col-sep":"\t"
             },
-            "psi-mi/tab27":{
+            "mitab27":{
                "config":{
                  "col":[ "idA_o","idB_o","altidA_o","altidB_o", 
                         "aliasA_o","aliasB_o","detmethod_o","pubauth_o", 
@@ -201,9 +201,9 @@
            "last-protein-update":"01-Jan-12"
         },
         "supported-return-type":[
-           "psi-mi/tab25",
-           "psi-mi/tab27",
-           "psi-mi/xml25" ],
+           "mitab25",
+           "mitab27",
+           "mif25" ],
         "supported-db-ac":[
            "MI:0670",
            "MI:0481",

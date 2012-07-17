@@ -59,10 +59,6 @@ public class ResultSet{
     }
     
     public Map<String,Object> getMeta(){
-
-        if( meta == null ){
-            meta = new HashMap<String,Object>();
-        }
         return meta;
     }
 

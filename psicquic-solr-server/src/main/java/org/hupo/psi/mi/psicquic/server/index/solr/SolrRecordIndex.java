@@ -311,6 +311,9 @@ public class SolrRecordIndex implements RecordIndex{
             // Extended query paramaters
             //--------------------------
             
+            // -faceting: MiqlxGroupBy
+            //------------------------
+            
             if( xquery != null  && xquery.get( "MiqlxGroupBy:") != null ){
                 List<String> ff = xquery.get( "MiqlxGroupBy:" );
                 
@@ -319,13 +322,28 @@ public class SolrRecordIndex implements RecordIndex{
                         
                     // NOTE: restrict fields ???
                     
-                    params.set( "facet.field", fi.next() );
+                    params.set( "facet.field", fi.next() + "_s" );
+                }
+            }
+            
+            // -faceting: FacetField (same as GroupBy ) 
+            //-----------------------------------------
+
+            if( xquery != null  && xquery.get( "MiqlxFacetField:") != null ){
+                List<String> ff = xquery.get( "MiqlxFacetField:" );
+                
+                params.set( "facet", "true" );
+                for( Iterator<String> fi = ff.iterator(); fi.hasNext(); ){
+                        
+                    // NOTE: restrict fields ???
+                    
+                    params.set( "facet.field", fi.next() + "_s" );
                 }
             }
             
             try{            
                 QueryResponse response = solr.query( params );
-                log.debug( "\n\nresponse = " + response +"\n\n\n");
+                log.debug( "\n\nresponse:\n\n\n" + response +"\n\n\n");
                 
                 SolrDocumentList sdl = response.getResults();
                 
@@ -344,6 +362,45 @@ public class SolrRecordIndex implements RecordIndex{
                         recordCache.put( rec, cdoc );
                     }
                 }
+
+                // Extended query results
+                //-----------------------
+
+                // - faceting
+                //-----------
+
+                if( response.getFacetFields() != null 
+                    && response.getFacetFields().size() > 0 ){
+
+                    log.info("processing facets");
+                
+                    Map<String,List<ValueCount>> rsFacets
+                        = new HashMap<String,List<ValueCount>>();
+
+                    for( Iterator<FacetField> iff = response.getFacetFields()
+                             .iterator(); iff.hasNext(); ){
+
+                        FacetField ff = iff.next();
+                        String ffName = ff.getName().replaceAll( "_s$",""); 
+                   
+                        if( rsFacets.get( ffName )  == null ){
+                            rsFacets.put( ffName, new ArrayList<ValueCount>());
+                        }
+     
+                        for( Iterator<FacetField.Count> ifv = ff.getValues()
+                                 .iterator(); ifv.hasNext(); ){
+                            
+                            FacetField.Count fv = ifv.next();
+                            rsFacets.get( ffName )
+                                .add( new ValueCount( fv.getName(), fv.getCount() ) );
+                        }                        
+                    }
+                    
+                    log.debug( "processing facets: done" );
+                    rs.setMeta( "groups", rsFacets );
+                    log.debug( "processing facets: meta=" + rs.getMeta() );
+                }
+
                 return rs;
                 
             } catch( SolrServerException sex ){
@@ -521,6 +578,10 @@ public class SolrRecordIndex implements RecordIndex{
                     log.debug( " SolrRecordIndex(add): recId=" + recId +
                                " shard= " + shard + " (max= " + shMax +")" );
 
+                    log.debug( " SolrRecordIndex(add): document START");
+                    log.debug( doc );
+                    log.debug( " SolrRecordIndex(add): document END");
+                    
                     this.add( shard, doc );
                 } else {
                     this.add( doc );

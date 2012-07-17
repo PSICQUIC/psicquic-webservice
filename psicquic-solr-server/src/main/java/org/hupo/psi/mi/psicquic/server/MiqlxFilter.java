@@ -56,7 +56,11 @@ public class MiqlxFilter{
     private String testMiqlx( String query, String field ){
         
         String nquery = query;
-        
+
+        Log log = LogFactory.getLog( this.getClass() );
+        log.debug( " query=" + "<  field=" + field + "<" );
+               
+
         while( query.indexOf( " " + field ) > 0 ){
 
             int vtStart = query.indexOf( " " + field );
@@ -87,7 +91,8 @@ public class MiqlxFilter{
             }
             query = nquery;
         }
-        
+
+        log.debug( " nquery=" + nquery + "<" );        
         return nquery;
     }
 }
