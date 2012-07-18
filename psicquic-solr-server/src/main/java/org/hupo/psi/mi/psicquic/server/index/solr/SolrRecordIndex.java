@@ -336,8 +336,27 @@ public class SolrRecordIndex implements RecordIndex{
                 for( Iterator<String> fi = ff.iterator(); fi.hasNext(); ){
                         
                     // NOTE: restrict fields ???
-                    
+                    // NOTE: 'set' limits faceting to one field only
+
                     params.set( "facet.field", fi.next() + "_s" );
+                }
+            }
+
+            // -filter queries
+            //----------------
+
+            if( xquery != null  && xquery.get( "MiqlxFilter:") != null ){
+                List<String> fq = xquery.get( "MiqlxFilter:" );
+
+                for( Iterator<String> fi = fq.iterator(); fi.hasNext(); ){
+
+                    // NOTE: multiple filters allowed
+
+                    if( params.get( "fq" ) == null ){
+                        params.set( "fq", fi.next() );
+                    } else {
+                        params.add( "fq", fi.next() );
+                    }
                 }
             }
             

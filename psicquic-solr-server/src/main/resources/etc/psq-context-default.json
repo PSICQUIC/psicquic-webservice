@@ -52,7 +52,7 @@
      "record-mgr": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr",
      "active":"solr",
      "rec-id":"uuId",
-     "view-default":"psi-mi/tab25",
+     "view-default":"mitab27",
      "derby":{
         "derby-db":"derby/psq-store",
         "rec-id":"recId"
@@ -177,7 +177,8 @@
              {"name":"MiqlxClient"},
              {"name":"MiqlxView"},
              {"name":"MiqlxFacetField"},
-             {"name":"MiqlxGroupBy"}]
+             {"name":"MiqlxGroupBy"},
+             {"name":"MiqlxFilter"}]
      },
      "soap":{
         "version":"1.1",
