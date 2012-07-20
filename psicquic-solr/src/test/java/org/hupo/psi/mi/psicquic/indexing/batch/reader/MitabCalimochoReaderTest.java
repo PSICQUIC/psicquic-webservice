@@ -28,7 +28,7 @@ public class MitabCalimochoReaderTest {
         reader.close();
 
         Assert.assertNotNull(row);
-        Assert.assertEquals(137, row.getAllFields().size());
+        Assert.assertEquals(139, row.getAllFields().size());
     }
 
     @Test

@@ -191,8 +191,6 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
         // test altidA and altidB -> identifier and id
         Assert.assertEquals(4L, server.query(new SolrQuery("id:intact")).getResults().getNumFound());
         Assert.assertEquals(4L, server.query(new SolrQuery("identifier:intact")).getResults().getNumFound());
-        Assert.assertEquals(4L, server.query(new SolrQuery("idA:intact")).getResults().getNumFound());
-        Assert.assertEquals(4L, server.query(new SolrQuery("idB:intact")).getResults().getNumFound());
         Assert.assertEquals(2L, server.query(new SolrQuery("id:\"intact:EBI-5606437\"")).getResults().getNumFound());
         Assert.assertEquals(2L, server.query(new SolrQuery("identifier:\"intact:EBI-5606437\"")).getResults().getNumFound());
         Assert.assertEquals(0L, server.query(new SolrQuery("identifier:\"uniprotkb:EBI-5606437\"")).getResults().getNumFound());
