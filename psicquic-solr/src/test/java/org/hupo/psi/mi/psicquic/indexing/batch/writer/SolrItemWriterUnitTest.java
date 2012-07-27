@@ -4,7 +4,6 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.hupo.psi.calimocho.model.Row;
 import org.hupo.psi.mi.psicquic.indexing.batch.AbstractSolrServerTest;
 import org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabCalimochoLineMapper;
-import org.hupo.psi.mi.psicquic.indexing.batch.server.SolrJettyRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.batch.item.ExecutionContext;
@@ -23,8 +22,6 @@ public class SolrItemWriterUnitTest extends AbstractSolrServerTest{
 
     @Test
     public void test_write_rows() throws Exception {
-        SolrJettyRunner solrJettyRunner = startJetty();
-
         String solrUr= "http://localhost:18080/solr";
         SolrItemWriter writer = new SolrItemWriter();
         writer.setSolrUrl(solrUr);
@@ -41,7 +38,5 @@ public class SolrItemWriterUnitTest extends AbstractSolrServerTest{
         writer.close();
 
         Assert.assertEquals(1L, solrJettyRunner.getSolrServer().query(new SolrQuery("*:*")).getResults().getNumFound());
-
-        stopJetty(solrJettyRunner);
     }
 }

@@ -4,7 +4,6 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.hupo.psi.mi.psicquic.indexing.batch.server.SolrJettyRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,8 +39,6 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
 
     @Test
     public void test_indexing_negative() throws Exception, JobRestartException, JobExecutionAlreadyRunningException {
-
-        SolrJettyRunner solrJettyRunner = startJetty();
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
@@ -135,14 +132,10 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
         Assert.assertEquals(1L, server.query(new SolrQuery("pmethodA:\"MI:0981\"")).getResults().getNumFound());
         Assert.assertEquals(1L, server.query(new SolrQuery("pmethodB:\"MI:0981\"")).getResults().getNumFound());
         Assert.assertEquals(1L, server.query(new SolrQuery("pmethod:\"MI:0981\"")).getResults().getNumFound());
-
-        stopJetty(solrJettyRunner);
     }
 
     @Test
     public void test_indexing_parameter() throws Exception, JobRestartException, JobExecutionAlreadyRunningException {
-
-        SolrJettyRunner solrJettyRunner = startJetty();
 
         solrMitabIndexer.startJob("mitabIndexParameterJob");
 
@@ -162,14 +155,10 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
         // test stc
         Assert.assertEquals(2L, server.query(new SolrQuery("stc:true")).getResults().getNumFound());
         Assert.assertEquals(12L, server.query(new SolrQuery("stc:false")).getResults().getNumFound());
-
-        stopJetty(solrJettyRunner);
     }
 
     @Test
     public void test_search_different_values() throws Exception, JobRestartException, JobExecutionAlreadyRunningException {
-
-        SolrJettyRunner solrJettyRunner = startJetty();
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
@@ -272,14 +261,10 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
         Assert.assertEquals(4L, server.query(new SolrQuery("pmethodA:psi-mi")).getResults().getNumFound());
         Assert.assertEquals(4L, server.query(new SolrQuery("pmethodB:psi-mi")).getResults().getNumFound());
         Assert.assertEquals(4L, server.query(new SolrQuery("pmethod:psi-mi")).getResults().getNumFound());
-
-        stopJetty(solrJettyRunner);
     }
 
     @Test
     public void test_retrieve_results_solr() throws Exception, JobExecutionAlreadyRunningException {
-
-        SolrJettyRunner solrJettyRunner = startJetty();
 
         solrMitabIndexer.startJob("mitabIndexParameterJob");
 
@@ -416,15 +401,11 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
         Collection<Object> pmethodB = doc.getFieldValues(SolrFieldName.pmethodB.toString()+"_o");
         Assert.assertEquals(1, pmethodB.size());
         Assert.assertEquals("psi-mi:\"MI:0396\"(predetermined participant)", pmethodB.iterator().next());
-
-        stopJetty(solrJettyRunner);
     }
 
     @Test
     @DirtiesContext
     public void failingRelease1() throws Exception {
-
-        SolrJettyRunner solrJettyRunner = startJetty();
 
         // first time should fail after 2 readings
         solrMitabIndexer.startJob("mitabIndexFailingJob");
@@ -436,8 +417,6 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
         solrMitabIndexer.resumeJob("mitabIndexFailingJob");
 
         Assert.assertEquals(4L, server.query(new SolrQuery("*:*")).getResults().getNumFound());
-
-        stopJetty(solrJettyRunner);
     }
 }
 

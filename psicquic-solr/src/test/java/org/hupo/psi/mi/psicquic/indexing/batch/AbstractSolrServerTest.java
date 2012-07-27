@@ -2,6 +2,8 @@ package org.hupo.psi.mi.psicquic.indexing.batch;
 
 import org.apache.commons.io.FileUtils;
 import org.hupo.psi.mi.psicquic.indexing.batch.server.SolrJettyRunner;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * Abstract class for testing solr server
@@ -13,15 +15,17 @@ import org.hupo.psi.mi.psicquic.indexing.batch.server.SolrJettyRunner;
 
 public class AbstractSolrServerTest {
 
-    protected SolrJettyRunner startJetty() throws Exception {
-        // Start a jetty server to host the solr index
-        SolrJettyRunner solrJettyRunner = new SolrJettyRunner();
-        solrJettyRunner.start();
+    protected SolrJettyRunner solrJettyRunner;
 
-        return solrJettyRunner;
+    @Before
+    public void startJetty() throws Exception {
+        // Start a jetty server to host the solr index
+        this.solrJettyRunner = new SolrJettyRunner();
+        solrJettyRunner.start();
     }
 
-    protected void stopJetty(SolrJettyRunner solrJettyRunner) throws Exception {
+    @After
+    public void stopJetty() throws Exception {
         // shutdown solrJetty
         solrJettyRunner.stop();
 

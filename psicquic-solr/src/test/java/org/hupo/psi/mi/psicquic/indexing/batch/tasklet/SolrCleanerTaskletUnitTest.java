@@ -6,7 +6,6 @@ import org.apache.solr.common.SolrInputDocument;
 import org.hupo.psi.calimocho.model.Row;
 import org.hupo.psi.mi.psicquic.indexing.batch.AbstractSolrServerTest;
 import org.hupo.psi.mi.psicquic.indexing.batch.reader.MitabCalimochoLineMapper;
-import org.hupo.psi.mi.psicquic.indexing.batch.server.SolrJettyRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.batch.core.JobExecution;
@@ -29,7 +28,6 @@ public class SolrCleanerTaskletUnitTest extends AbstractSolrServerTest{
 
     @Test
     public void test_delete_all() throws Exception {
-        SolrJettyRunner solrJettyRunner = startJetty();
 
         String solrUr= "http://localhost:18080/solr";
         SolrCleanerTasklet tasklet = new SolrCleanerTasklet();
@@ -58,7 +56,5 @@ public class SolrCleanerTaskletUnitTest extends AbstractSolrServerTest{
         // the index should be empty
         Assert.assertEquals(RepeatStatus.FINISHED, status);
         Assert.assertEquals(0L, solrServer.query(new SolrQuery("*:*")).getResults().getNumFound());
-
-        stopJetty(solrJettyRunner);
     }
 }
