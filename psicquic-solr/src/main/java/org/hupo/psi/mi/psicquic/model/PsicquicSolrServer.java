@@ -8,7 +8,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import psidev.psi.mi.calimocho.solr.converter.SolrFieldName;
-import psidev.psi.mi.tab.PsimiTabReader;
+import psidev.psi.mi.tab.io.PsimiTabReader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class PsicquicSolrServer {
         initializeSolrFieldsMap();
 
         // create new mitab reader without header
-        mitabReader = new PsimiTabReader(false);
+        mitabReader = new PsimiTabReader();
     }
 
     /**
