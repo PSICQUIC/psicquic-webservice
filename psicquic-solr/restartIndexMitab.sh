@@ -1,21 +1,25 @@
 #!/bin/sh
 
-if [ $# -e 2 ]
+if [ $# -e 3 ]
 then
       MITAB_FILE=$1;
-      SOLR_URL=$2;
+      SOLR_URL=$3;
+      INDEXING_ID=$2;
       echo "MITAB file: ${MITAB_FILE}"
       echo "SOLR server URL: ${SOLR_URL}"
-      mvn clean install -Pexec -Dmitab.file=${MITAB_FILE} -Dsolr.url=${SOLR_URL} -Dmaven.test.skip
-elif [ $# -e 1 ]
+      echo "Indexing job ID: ${INDEXING_ID}"
+      mvn clean install -Presume -Dmitab.file=${MITAB_FILE} -Dsolr.url=${SOLR_URL} -Dindexing.id=${INDEXING_ID} -Dmaven.test.skip
+elif [ $# -e 2 ]
       MITAB_FILE=$1;
+      INDEXING_ID=$2;
       echo "MITAB file: ${MITAB_FILE}"
       echo "SOLR server URL not provided, use default: ${SOLR_URL}"
-      mvn clean install -Pexec -Dmitab.file=${MITAB_FILE} -Dmaven.test.skip
+      echo "Indexing job ID: ${INDEXING_ID}"
+      mvn clean install -Presume -Dmitab.file=${MITAB_FILE} -Dindexing.id=${INDEXING_ID} -Dmaven.test.skip
 else
       echo ""
       echo "ERROR: wrong number of parameters ($#)."
-      echo "usage: MITAB_FILE (SOLR_URL)"
+      echo "usage: MITAB_FILE INDEXING_ID SOLR_URL"
       echo "usage: MITAB_FILE: the name of the MITAB file to index. Can be 2.5, 2.6 or 2.7"
       echo "usage: SOLR_URL: the url of the SOLR server file (By default, if nothing is given, it is : http://localhost:8983/solr)"
       echo ""

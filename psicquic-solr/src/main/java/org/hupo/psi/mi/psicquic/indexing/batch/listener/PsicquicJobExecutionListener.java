@@ -1,5 +1,7 @@
 package org.hupo.psi.mi.psicquic.indexing.batch.listener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 
@@ -13,11 +15,13 @@ import org.springframework.batch.core.JobExecutionListener;
 
 public class PsicquicJobExecutionListener implements JobExecutionListener {
 
+    private static final Log log = LogFactory.getLog(SimpleChunkListener.class);
+
     public void beforeJob(JobExecution jobExecution) {
-        System.out.println("\nJOB STARTED: "+jobExecution+"\n");
+        log.info("\nJOB STARTED: " + jobExecution + "\n");
     }
 
     public void afterJob(JobExecution jobExecution) {
-        System.out.println("\nJOB FINISHED: "+jobExecution+"\n");
+        log.info("\nJOB FINISHED: "+jobExecution+"\n");
     }
 }

@@ -16,6 +16,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.annotation.Resource;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -103,7 +105,26 @@ public class SolrMitabIndexer {
         String indexingId = "psicquic_index_"+System.currentTimeMillis();
         setIndexingId(indexingId);
 
-        if (log.isInfoEnabled()) log.info("Starting indexing: "+indexingId);
+        if (log.isInfoEnabled()) log.info("Starting indexing : "+indexingId);
+
+        FileWriter indexingWriter = null;
+        try {
+            String fileName = "target/"+jobName+"_"+System.currentTimeMillis();
+            if (log.isInfoEnabled()) log.info("The indexing id is stored in : "+fileName +". This indexing id is necessary for restarting an indexing job from where it failed.");
+
+            indexingWriter = new FileWriter(fileName);
+
+            indexingWriter.write(indexingId);
+        } catch (IOException e) {
+            log.error("Impossible to create the file containing the indexing id for this job.", e);
+        }
+        finally {
+            try {
+                indexingWriter.close();
+            } catch (IOException e) {
+                log.error("Impossible to close the file writer writing the indexing id for this job.", e);
+            }
+        }
 
         runJob(jobName, indexingId);
     }

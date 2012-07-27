@@ -2,6 +2,7 @@ package org.hupo.psi.mi.psicquic.indexing.batch.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.batch.core.ChunkListener;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -14,7 +15,7 @@ import org.springframework.batch.core.StepExecutionListener;
  * @since <pre>30/05/12</pre>
  */
 
-public class SimpleChunkListener implements StepExecutionListener {
+public class SimpleChunkListener implements StepExecutionListener, ChunkListener {
 
     private static final Log log = LogFactory.getLog(SimpleChunkListener.class);
 
@@ -22,6 +23,8 @@ public class SimpleChunkListener implements StepExecutionListener {
     private long startTime;
 
     public ExitStatus afterStep(StepExecution stepExecution) {
+        final int readCount = stepExecution.getReadCount();
+
         return null;
     }
 
