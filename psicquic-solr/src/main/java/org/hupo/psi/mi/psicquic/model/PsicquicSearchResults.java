@@ -8,9 +8,9 @@ import org.hupo.psi.calimocho.tab.util.MitabDocumentDefinitionFactory;
 import org.hupo.psi.calimocho.xgmml.XGMMLDocumentDefinition;
 import org.hupo.psi.mi.rdf.PsimiRdfConverter;
 import org.hupo.psi.mi.rdf.RdfFormat;
-import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.converter.tab2xml.Tab2Xml;
 import psidev.psi.mi.tab.converter.tab2xml.XmlConversionException;
+import psidev.psi.mi.tab.io.PsimiTabReader;
 import psidev.psi.mi.xml.converter.ConverterException;
 import psidev.psi.mi.xml.model.EntrySet;
 
@@ -44,7 +44,7 @@ public class PsicquicSearchResults {
     public PsicquicSearchResults(SolrDocumentList results, String [] fieldNames){
         this.results = results;
         this.fieldNames = fieldNames;
-        mitabReader = new PsimiTabReader(false);
+        mitabReader = new PsimiTabReader();
         rdfConverter = new PsimiRdfConverter();
 
         if (results != null){
