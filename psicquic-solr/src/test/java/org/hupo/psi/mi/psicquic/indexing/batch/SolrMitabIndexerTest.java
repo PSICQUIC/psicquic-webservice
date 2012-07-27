@@ -8,11 +8,11 @@ import org.hupo.psi.mi.psicquic.indexing.batch.server.SolrJettyRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import psidev.psi.mi.calimocho.solr.converter.SolrFieldName;
@@ -39,7 +39,7 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
     private ApplicationContext applicationContext;
 
     @Test
-    public void test_indexing_negative() throws Exception, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
+    public void test_indexing_negative() throws Exception, JobRestartException, JobExecutionAlreadyRunningException {
 
         SolrJettyRunner solrJettyRunner = startJetty();
 
@@ -140,7 +140,7 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
     }
 
     @Test
-    public void test_indexing_parameter() throws Exception, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
+    public void test_indexing_parameter() throws Exception, JobRestartException, JobExecutionAlreadyRunningException {
 
         SolrJettyRunner solrJettyRunner = startJetty();
 
@@ -167,7 +167,7 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
     }
 
     @Test
-    public void test_search_different_values() throws Exception, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
+    public void test_search_different_values() throws Exception, JobRestartException, JobExecutionAlreadyRunningException {
 
         SolrJettyRunner solrJettyRunner = startJetty();
 
@@ -277,7 +277,7 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
     }
 
     @Test
-    public void test_retrieve_results_solr() throws Exception, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
+    public void test_retrieve_results_solr() throws Exception, JobExecutionAlreadyRunningException {
 
         SolrJettyRunner solrJettyRunner = startJetty();
 
@@ -416,6 +416,26 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
         Collection<Object> pmethodB = doc.getFieldValues(SolrFieldName.pmethodB.toString()+"_o");
         Assert.assertEquals(1, pmethodB.size());
         Assert.assertEquals("psi-mi:\"MI:0396\"(predetermined participant)", pmethodB.iterator().next());
+
+        stopJetty(solrJettyRunner);
+    }
+
+    @Test
+    @DirtiesContext
+    public void failingRelease1() throws Exception {
+
+        SolrJettyRunner solrJettyRunner = startJetty();
+
+        // first time should fail after 2 readings
+        solrMitabIndexer.startJob("mitabIndexFailingJob");
+        SolrServer server = solrJettyRunner.getSolrServer();
+
+        Assert.assertEquals(2L, server.query(new SolrQuery("*:*")).getResults().getNumFound());
+
+        // it should resume and continue
+        solrMitabIndexer.resumeJob("mitabIndexFailingJob");
+
+        Assert.assertEquals(4L, server.query(new SolrQuery("*:*")).getResults().getNumFound());
 
         stopJetty(solrJettyRunner);
     }
