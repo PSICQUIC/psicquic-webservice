@@ -27,12 +27,12 @@ public class PsicquicSolrServer {
 
     // static final variables
     private final static String STORED_FIELD_EXTENSION="_o";
-    private static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
-    private static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
-    private static final String RETURN_TYPE_MITAB26 = "psi-mi/tab26";
-    private static final String RETURN_TYPE_MITAB27 = "psi-mi/tab27";
-    private static final String RETURN_TYPE_COUNT = "count";
-    private static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
+    public static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
+    public static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
+    public static final String RETURN_TYPE_MITAB26 = "psi-mi/tab26";
+    public static final String RETURN_TYPE_MITAB27 = "psi-mi/tab27";
+    public static final String RETURN_TYPE_COUNT = "count";
+    public static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
     private final static String DISMAX_PARAM_NAME = "qf";
     private final static String DEFAULT_PARAM_NAME = "df";
     private final static String DISMAX_TYPE = "edismax";
@@ -88,7 +88,7 @@ public class PsicquicSolrServer {
                 SolrFieldName.complex+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleA+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleB+STORED_FIELD_EXTENSION,
                 SolrFieldName.pexproleA+STORED_FIELD_EXTENSION, SolrFieldName.pexproleB+STORED_FIELD_EXTENSION, SolrFieldName.ptypeA+STORED_FIELD_EXTENSION,
                 SolrFieldName.ptypeB+STORED_FIELD_EXTENSION, SolrFieldName.pxrefA+STORED_FIELD_EXTENSION, SolrFieldName.pxrefB+STORED_FIELD_EXTENSION,
-                SolrFieldName.xref+STORED_FIELD_EXTENSION, SolrFieldName.pexproleA+STORED_FIELD_EXTENSION, SolrFieldName.annotA+STORED_FIELD_EXTENSION,
+                SolrFieldName.xref+STORED_FIELD_EXTENSION, SolrFieldName.annotA+STORED_FIELD_EXTENSION,
                 SolrFieldName.annotB+STORED_FIELD_EXTENSION, SolrFieldName.annot+STORED_FIELD_EXTENSION, SolrFieldName.taxidHost+STORED_FIELD_EXTENSION,
                 SolrFieldName.param+STORED_FIELD_EXTENSION, SolrFieldName.cdate+STORED_FIELD_EXTENSION, SolrFieldName.udate+STORED_FIELD_EXTENSION,
                 SolrFieldName.checksumA+STORED_FIELD_EXTENSION, SolrFieldName.checksumB+STORED_FIELD_EXTENSION, SolrFieldName.checksumI+STORED_FIELD_EXTENSION,
@@ -104,7 +104,7 @@ public class PsicquicSolrServer {
                 SolrFieldName.complex+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleA+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleB+STORED_FIELD_EXTENSION,
                 SolrFieldName.pexproleA+STORED_FIELD_EXTENSION, SolrFieldName.pexproleB+STORED_FIELD_EXTENSION, SolrFieldName.ptypeA+STORED_FIELD_EXTENSION,
                 SolrFieldName.ptypeB+STORED_FIELD_EXTENSION, SolrFieldName.pxrefA+STORED_FIELD_EXTENSION, SolrFieldName.pxrefB+STORED_FIELD_EXTENSION,
-                SolrFieldName.xref+STORED_FIELD_EXTENSION, SolrFieldName.pexproleA+STORED_FIELD_EXTENSION, SolrFieldName.annotA+STORED_FIELD_EXTENSION,
+                SolrFieldName.xref+STORED_FIELD_EXTENSION, SolrFieldName.annotA+STORED_FIELD_EXTENSION,
                 SolrFieldName.annotB+STORED_FIELD_EXTENSION, SolrFieldName.annot+STORED_FIELD_EXTENSION, SolrFieldName.taxidHost+STORED_FIELD_EXTENSION,
                 SolrFieldName.param+STORED_FIELD_EXTENSION, SolrFieldName.cdate+STORED_FIELD_EXTENSION, SolrFieldName.udate+STORED_FIELD_EXTENSION,
                 SolrFieldName.checksumA+STORED_FIELD_EXTENSION, SolrFieldName.checksumB+STORED_FIELD_EXTENSION, SolrFieldName.checksumI+STORED_FIELD_EXTENSION,
@@ -131,6 +131,11 @@ public class PsicquicSolrServer {
      * @throws PsicquicSolrException
      */
     public PsicquicSearchResults search(String q, Integer firstResult, Integer maxResults, String returnType, String queryFilter) throws PsicquicSolrException, SolrServerException {
+
+        return searchWithFilters(q, firstResult, maxResults, returnType, queryFilter != null ? new String[]{queryFilter} : null);
+    }
+
+    public PsicquicSearchResults searchWithFilters(String q, Integer firstResult, Integer maxResults, String returnType, String [] queryFilter) throws PsicquicSolrException, SolrServerException {
         if (q == null) throw new NullPointerException("Null query");
 
         // format wildcard query
@@ -139,10 +144,10 @@ public class PsicquicSolrServer {
         }
 
         SolrQuery solrQuery = new SolrQuery(q);
-        
+
         // use dismax parser for querying default fields
         //solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString(), SolrFieldName.pubid.toString(), SolrFieldName.pubauth.toString(), SolrFieldName.species.toString(), SolrFieldName.detmethod.toString(), SolrFieldName.type.toString(), SolrFieldName.interaction_id.toString());
-        solrQuery.setParam(DEFAULT_PARAM_NAME, SolrFieldName.identifier.toString()+" "+SolrFieldName.pubid.toString()+" "+SolrFieldName.pubauth.toString()+" "+SolrFieldName.species.toString()+" "+SolrFieldName.detmethod.toString()+" "+SolrFieldName.type.toString()+" "+SolrFieldName.interaction_id.toString());
+        solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString()+" "+SolrFieldName.pubid.toString()+" "+SolrFieldName.pubauth.toString()+" "+SolrFieldName.species.toString()+" "+SolrFieldName.detmethod.toString()+" "+SolrFieldName.type.toString()+" "+SolrFieldName.interaction_id.toString());
         solrQuery.setParam(QUERY_TYPE, DISMAX_TYPE);
 
         // set first result
@@ -154,23 +159,27 @@ public class PsicquicSolrServer {
         }
 
         // set max results
+        // WARNING in solr 3.6
+        // * an *NumberFormatException* occurs if _rows_ > 2147483647
+        // * an *ArrayIndexOutOfBoundsException* occurs if _rows_ + _start_ > 2147483647; e.g. _rows_ = 2147483640 and _start_ = 8
+        // we need to substract to avoid this exception
         if (maxResults != null) {
-            solrQuery.setRows(maxResults);
+            solrQuery.setRows(Math.min(Integer.MAX_VALUE, maxResults));
         } else {
-            solrQuery.setRows(Integer.MAX_VALUE);
+            solrQuery.setRows(Integer.MAX_VALUE - solrQuery.getStart());
         }
 
         // by default, if no return types is specified, it will return MITAB 2.5
         if (returnType == null){
-             returnType = RETURN_TYPE_DEFAULT;
+            returnType = RETURN_TYPE_DEFAULT;
         }
 
         // apply any filter
-        if (queryFilter != null && !queryFilter.isEmpty()) {
-            if ("*".equals(queryFilter) || q.trim().isEmpty()) {
-                q = queryFilter;
-            } else {
-                solrQuery.addFilterQuery(queryFilter);
+        if (queryFilter != null && queryFilter.length > 0) {
+            for (String filter : queryFilter){
+                if (!"*".equals(filter)) {
+                    solrQuery.addFilterQuery(filter);
+                }
             }
         }
 
