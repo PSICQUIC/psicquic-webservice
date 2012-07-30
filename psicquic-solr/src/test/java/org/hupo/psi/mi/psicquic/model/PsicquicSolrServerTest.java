@@ -263,4 +263,32 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
         Assert.assertNotNull(results6);
         Assert.assertNull(results6.getMitab());
     }
+
+    @Test
+    public void test_wild_query_to_lower_case() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException {
+
+        solrMitabIndexer.startJob("mitabIndexNegativeJob");
+
+        SolrServer server = solrJettyRunner.getSolrServer();
+
+        PsicquicSolrServer psicquicServer = new PsicquicSolrServer(server);
+
+        // should return 4 lines because P0* can match both P07228 and P05556
+        PsicquicSearchResults results = psicquicServer.search("P0*", null, null, null, null);
+
+        Assert.assertNotNull(results);
+        Assert.assertEquals(4L, results.getNumberResults());
+
+        // should return 4 lines because P0* can match both P07228 and P05556
+        PsicquicSearchResults results2 = psicquicServer.search("identifier:P0*", null, null, null, null);
+
+        Assert.assertNotNull(results2);
+        Assert.assertEquals(4L, results2.getNumberResults());
+
+        // should return 2 lines because P0* can match both P07228 and P05556
+        PsicquicSearchResults results3 = psicquicServer.search("idA:P0*", null, null, null, null);
+
+        Assert.assertNotNull(results3);
+        Assert.assertEquals(2L, results3.getNumberResults());
+    }
 }

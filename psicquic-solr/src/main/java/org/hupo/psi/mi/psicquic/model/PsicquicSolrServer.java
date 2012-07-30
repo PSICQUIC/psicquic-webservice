@@ -50,7 +50,7 @@ public class PsicquicSolrServer {
      * Map of SOLR fields that can be returned for a specific format
      */
     private Map<String, String []> solrFields;
-    
+
     public PsicquicSolrServer(SolrServer solrServer){
         this.solrServer = solrServer;
 
@@ -200,7 +200,7 @@ public class PsicquicSolrServer {
         }
 
         originalQuery.setFields(fields);
-        
+
         String query = originalQuery.getQuery();
         // if using a wildcard query we convert to lower case
         // as of http://mail-archives.apache.org/mod_mbox/lucene-solr-user/200903.mbox/%3CFD3AFB65-AEC1-40B2-A0A4-7E14A519AB05@ehatchersolutions.com%3E
@@ -211,7 +211,20 @@ public class PsicquicSolrServer {
 
             for (String token : tokens) {
                 if (token.contains("*")) {
-                    sb.append(token.toLowerCase());
+                    // name of the field with upper case to keep
+                    if (token.startsWith("idA:") || token.startsWith("idB:") || token.startsWith("taxidA:") || token.startsWith("taxidB:")
+                            || token.startsWith("pbioroleA:") || token.startsWith("pbioroleB:") || token.startsWith("ptypeA:")
+                            || token.startsWith("ptypeB:") || token.startsWith("pxrefA:") || token.startsWith("pxrefB:")
+                            || token.startsWith("ftypeA:") || token.startsWith("ftypeB:") || token.startsWith("pmethodA:") || token.startsWith("pmethodA:")){
+
+                        int firstIndex = token.indexOf(":");
+                        String prefix = token.substring(0, firstIndex+1);
+                        String correctedValue = token.substring(firstIndex+1).toLowerCase();
+                        sb.append(prefix).append(correctedValue);
+                    }
+                    else {
+                        sb.append(token.toLowerCase());
+                    }
                 } else {
                     sb.append(token);
                 }
@@ -222,8 +235,6 @@ public class PsicquicSolrServer {
             query = sb.toString().trim();
         }
 
-        // and, or and not should be upper case
-        query = query.replaceAll(" and ", " AND ").replaceAll(" or ", " OR ").replaceAll(" not ", " NOT ").replaceAll("\\\"", "\"").replaceAll("\\\\","\\");
         originalQuery.setQuery(query);
 
         org.apache.solr.client.solrj.response.QueryResponse solrResponse = solrServer.query(originalQuery);
@@ -237,7 +248,7 @@ public class PsicquicSolrServer {
     protected PsicquicSearchResults createSearchResults(SolrDocumentList docList, String returnType) throws PsicquicSolrException {
 
         String resultType = returnType != null ? returnType : RETURN_TYPE_DEFAULT;
-        PsicquicSearchResults results = createMitabResultsForType(docList, returnType);
+        PsicquicSearchResults results = createMitabResultsForType(docList, resultType);
 
         return results;
     }
@@ -249,7 +260,7 @@ public class PsicquicSolrServer {
         if (fieldNames == null){
             throw new PsicquicSolrException("The format " + mitabType + " is not a recognised MITAB format");
         }
-        
+
         PsicquicSearchResults searchResults = new PsicquicSearchResults(docList, fieldNames);
         return searchResults;
     }
