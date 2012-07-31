@@ -124,13 +124,18 @@ public class MitabInputStream extends InputStream{
         return 0;
     }
 
-    private InputStream readNextLine(){
+    private InputStream readNextLine() throws IOException {
 
         if (solrResultsIterator != null && solrResultsIterator.hasNext() && fieldNames != null && fieldNames.length > 0){
             SolrDocument solrDoc = solrResultsIterator.next();
 
             // clear the mitabLineBuffer
             mitabLineBuffer.setLength(0);
+
+            // close previous inputStream
+            if (mitabLineInputStream != null){
+                mitabLineInputStream.close();
+            }
 
             int size = fieldNames.length;
             int index = 0;
@@ -164,7 +169,7 @@ public class MitabInputStream extends InputStream{
                 mitabLineBuffer.append(NEW_LINE);
             }
 
-            return IOUtils.toInputStream(mitabLineBuffer.toString());
+            return IOUtils.toInputStream(mitabLineBuffer);
         }
 
         return null;

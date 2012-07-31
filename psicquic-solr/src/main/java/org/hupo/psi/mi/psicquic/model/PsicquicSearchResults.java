@@ -130,7 +130,7 @@ public class PsicquicSearchResults {
 
     public InputStream createRDFOrBiopax(String format) throws ConverterException, IOException, XmlConversionException, IllegalAccessException {
 
-        if (format == null){
+        if (format == null || format.length() < 4){
             return null;
         }
 

@@ -51,6 +51,48 @@ public class PsicquicSolrServer {
      */
     private Map<String, String []> solrFields;
 
+    public static String[] DATA_FIELDS_25 = new String[] {
+            SolrFieldName.idA+STORED_FIELD_EXTENSION, SolrFieldName.idB+STORED_FIELD_EXTENSION, SolrFieldName.altidA+STORED_FIELD_EXTENSION,
+            SolrFieldName.altidB+STORED_FIELD_EXTENSION, SolrFieldName.aliasA+STORED_FIELD_EXTENSION, SolrFieldName.aliasB+STORED_FIELD_EXTENSION,
+            SolrFieldName.detmethod+STORED_FIELD_EXTENSION, SolrFieldName.pubauth+STORED_FIELD_EXTENSION, SolrFieldName.pubid+STORED_FIELD_EXTENSION,
+            SolrFieldName.taxidA+STORED_FIELD_EXTENSION, SolrFieldName.taxidB+STORED_FIELD_EXTENSION, SolrFieldName.type+STORED_FIELD_EXTENSION,
+            SolrFieldName.source+STORED_FIELD_EXTENSION,SolrFieldName.interaction_id+STORED_FIELD_EXTENSION, SolrFieldName.confidence+STORED_FIELD_EXTENSION
+    };
+
+    public static String[] DATA_FIELDS_26 = new String[] {
+            SolrFieldName.idA+STORED_FIELD_EXTENSION, SolrFieldName.idB+STORED_FIELD_EXTENSION, SolrFieldName.altidA+STORED_FIELD_EXTENSION,
+            SolrFieldName.altidB+STORED_FIELD_EXTENSION, SolrFieldName.aliasA+STORED_FIELD_EXTENSION, SolrFieldName.aliasB+STORED_FIELD_EXTENSION,
+            SolrFieldName.detmethod+STORED_FIELD_EXTENSION, SolrFieldName.pubauth+STORED_FIELD_EXTENSION, SolrFieldName.pubid+STORED_FIELD_EXTENSION,
+            SolrFieldName.taxidA+STORED_FIELD_EXTENSION, SolrFieldName.taxidB+STORED_FIELD_EXTENSION, SolrFieldName.type+STORED_FIELD_EXTENSION,
+            SolrFieldName.source+STORED_FIELD_EXTENSION,SolrFieldName.interaction_id+STORED_FIELD_EXTENSION, SolrFieldName.confidence+STORED_FIELD_EXTENSION,
+            SolrFieldName.complex+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleA+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleB+STORED_FIELD_EXTENSION,
+            SolrFieldName.pexproleA+STORED_FIELD_EXTENSION, SolrFieldName.pexproleB+STORED_FIELD_EXTENSION, SolrFieldName.ptypeA+STORED_FIELD_EXTENSION,
+            SolrFieldName.ptypeB+STORED_FIELD_EXTENSION, SolrFieldName.pxrefA+STORED_FIELD_EXTENSION, SolrFieldName.pxrefB+STORED_FIELD_EXTENSION,
+            SolrFieldName.xref+STORED_FIELD_EXTENSION, SolrFieldName.annotA+STORED_FIELD_EXTENSION,
+            SolrFieldName.annotB+STORED_FIELD_EXTENSION, SolrFieldName.annot+STORED_FIELD_EXTENSION, SolrFieldName.taxidHost+STORED_FIELD_EXTENSION,
+            SolrFieldName.param+STORED_FIELD_EXTENSION, SolrFieldName.cdate+STORED_FIELD_EXTENSION, SolrFieldName.udate+STORED_FIELD_EXTENSION,
+            SolrFieldName.checksumA+STORED_FIELD_EXTENSION, SolrFieldName.checksumB+STORED_FIELD_EXTENSION, SolrFieldName.checksumI+STORED_FIELD_EXTENSION,
+            SolrFieldName.negative+STORED_FIELD_EXTENSION
+    };
+
+    public static String[] DATA_FIELDS_27 = new String[] {
+            SolrFieldName.idA+STORED_FIELD_EXTENSION, SolrFieldName.idB+STORED_FIELD_EXTENSION, SolrFieldName.altidA+STORED_FIELD_EXTENSION,
+            SolrFieldName.altidB+STORED_FIELD_EXTENSION, SolrFieldName.aliasA+STORED_FIELD_EXTENSION, SolrFieldName.aliasB+STORED_FIELD_EXTENSION,
+            SolrFieldName.detmethod+STORED_FIELD_EXTENSION, SolrFieldName.pubauth+STORED_FIELD_EXTENSION, SolrFieldName.pubid+STORED_FIELD_EXTENSION,
+            SolrFieldName.taxidA+STORED_FIELD_EXTENSION, SolrFieldName.taxidB+STORED_FIELD_EXTENSION, SolrFieldName.type+STORED_FIELD_EXTENSION,
+            SolrFieldName.source+STORED_FIELD_EXTENSION,SolrFieldName.interaction_id+STORED_FIELD_EXTENSION, SolrFieldName.confidence+STORED_FIELD_EXTENSION,
+            SolrFieldName.complex+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleA+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleB+STORED_FIELD_EXTENSION,
+            SolrFieldName.pexproleA+STORED_FIELD_EXTENSION, SolrFieldName.pexproleB+STORED_FIELD_EXTENSION, SolrFieldName.ptypeA+STORED_FIELD_EXTENSION,
+            SolrFieldName.ptypeB+STORED_FIELD_EXTENSION, SolrFieldName.pxrefA+STORED_FIELD_EXTENSION, SolrFieldName.pxrefB+STORED_FIELD_EXTENSION,
+            SolrFieldName.xref+STORED_FIELD_EXTENSION, SolrFieldName.annotA+STORED_FIELD_EXTENSION,
+            SolrFieldName.annotB+STORED_FIELD_EXTENSION, SolrFieldName.annot+STORED_FIELD_EXTENSION, SolrFieldName.taxidHost+STORED_FIELD_EXTENSION,
+            SolrFieldName.param+STORED_FIELD_EXTENSION, SolrFieldName.cdate+STORED_FIELD_EXTENSION, SolrFieldName.udate+STORED_FIELD_EXTENSION,
+            SolrFieldName.checksumA+STORED_FIELD_EXTENSION, SolrFieldName.checksumB+STORED_FIELD_EXTENSION, SolrFieldName.checksumI+STORED_FIELD_EXTENSION,
+            SolrFieldName.negative+STORED_FIELD_EXTENSION, SolrFieldName.ftypeA+STORED_FIELD_EXTENSION, SolrFieldName.ftypeB+STORED_FIELD_EXTENSION,
+            SolrFieldName.stcA+STORED_FIELD_EXTENSION, SolrFieldName.stcB+STORED_FIELD_EXTENSION, SolrFieldName.pmethodA+STORED_FIELD_EXTENSION,
+            SolrFieldName.pmethodB+STORED_FIELD_EXTENSION
+    };
+
     public PsicquicSolrServer(SolrServer solrServer){
         this.solrServer = solrServer;
 
@@ -70,49 +112,6 @@ public class PsicquicSolrServer {
      */
     private void initializeSolrFieldsMap(){
         solrFields = new HashMap<String, String[]>(5);
-
-        String[] DATA_FIELDS_25 = new String[] {
-                SolrFieldName.idA+STORED_FIELD_EXTENSION, SolrFieldName.idB+STORED_FIELD_EXTENSION, SolrFieldName.altidA+STORED_FIELD_EXTENSION,
-                SolrFieldName.altidB+STORED_FIELD_EXTENSION, SolrFieldName.aliasA+STORED_FIELD_EXTENSION, SolrFieldName.aliasB+STORED_FIELD_EXTENSION,
-                SolrFieldName.detmethod+STORED_FIELD_EXTENSION, SolrFieldName.pubauth+STORED_FIELD_EXTENSION, SolrFieldName.pubid+STORED_FIELD_EXTENSION,
-                SolrFieldName.taxidA+STORED_FIELD_EXTENSION, SolrFieldName.taxidB+STORED_FIELD_EXTENSION, SolrFieldName.type+STORED_FIELD_EXTENSION,
-                SolrFieldName.source+STORED_FIELD_EXTENSION,SolrFieldName.interaction_id+STORED_FIELD_EXTENSION, SolrFieldName.confidence+STORED_FIELD_EXTENSION
-        };
-
-        String[] DATA_FIELDS_26 = new String[] {
-                SolrFieldName.idA+STORED_FIELD_EXTENSION, SolrFieldName.idB+STORED_FIELD_EXTENSION, SolrFieldName.altidA+STORED_FIELD_EXTENSION,
-                SolrFieldName.altidB+STORED_FIELD_EXTENSION, SolrFieldName.aliasA+STORED_FIELD_EXTENSION, SolrFieldName.aliasB+STORED_FIELD_EXTENSION,
-                SolrFieldName.detmethod+STORED_FIELD_EXTENSION, SolrFieldName.pubauth+STORED_FIELD_EXTENSION, SolrFieldName.pubid+STORED_FIELD_EXTENSION,
-                SolrFieldName.taxidA+STORED_FIELD_EXTENSION, SolrFieldName.taxidB+STORED_FIELD_EXTENSION, SolrFieldName.type+STORED_FIELD_EXTENSION,
-                SolrFieldName.source+STORED_FIELD_EXTENSION,SolrFieldName.interaction_id+STORED_FIELD_EXTENSION, SolrFieldName.confidence+STORED_FIELD_EXTENSION,
-                SolrFieldName.complex+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleA+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleB+STORED_FIELD_EXTENSION,
-                SolrFieldName.pexproleA+STORED_FIELD_EXTENSION, SolrFieldName.pexproleB+STORED_FIELD_EXTENSION, SolrFieldName.ptypeA+STORED_FIELD_EXTENSION,
-                SolrFieldName.ptypeB+STORED_FIELD_EXTENSION, SolrFieldName.pxrefA+STORED_FIELD_EXTENSION, SolrFieldName.pxrefB+STORED_FIELD_EXTENSION,
-                SolrFieldName.xref+STORED_FIELD_EXTENSION, SolrFieldName.annotA+STORED_FIELD_EXTENSION,
-                SolrFieldName.annotB+STORED_FIELD_EXTENSION, SolrFieldName.annot+STORED_FIELD_EXTENSION, SolrFieldName.taxidHost+STORED_FIELD_EXTENSION,
-                SolrFieldName.param+STORED_FIELD_EXTENSION, SolrFieldName.cdate+STORED_FIELD_EXTENSION, SolrFieldName.udate+STORED_FIELD_EXTENSION,
-                SolrFieldName.checksumA+STORED_FIELD_EXTENSION, SolrFieldName.checksumB+STORED_FIELD_EXTENSION, SolrFieldName.checksumI+STORED_FIELD_EXTENSION,
-                SolrFieldName.negative+STORED_FIELD_EXTENSION
-        };
-
-        String[] DATA_FIELDS_27 = new String[] {
-                SolrFieldName.idA+STORED_FIELD_EXTENSION, SolrFieldName.idB+STORED_FIELD_EXTENSION, SolrFieldName.altidA+STORED_FIELD_EXTENSION,
-                SolrFieldName.altidB+STORED_FIELD_EXTENSION, SolrFieldName.aliasA+STORED_FIELD_EXTENSION, SolrFieldName.aliasB+STORED_FIELD_EXTENSION,
-                SolrFieldName.detmethod+STORED_FIELD_EXTENSION, SolrFieldName.pubauth+STORED_FIELD_EXTENSION, SolrFieldName.pubid+STORED_FIELD_EXTENSION,
-                SolrFieldName.taxidA+STORED_FIELD_EXTENSION, SolrFieldName.taxidB+STORED_FIELD_EXTENSION, SolrFieldName.type+STORED_FIELD_EXTENSION,
-                SolrFieldName.source+STORED_FIELD_EXTENSION,SolrFieldName.interaction_id+STORED_FIELD_EXTENSION, SolrFieldName.confidence+STORED_FIELD_EXTENSION,
-                SolrFieldName.complex+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleA+STORED_FIELD_EXTENSION, SolrFieldName.pbioroleB+STORED_FIELD_EXTENSION,
-                SolrFieldName.pexproleA+STORED_FIELD_EXTENSION, SolrFieldName.pexproleB+STORED_FIELD_EXTENSION, SolrFieldName.ptypeA+STORED_FIELD_EXTENSION,
-                SolrFieldName.ptypeB+STORED_FIELD_EXTENSION, SolrFieldName.pxrefA+STORED_FIELD_EXTENSION, SolrFieldName.pxrefB+STORED_FIELD_EXTENSION,
-                SolrFieldName.xref+STORED_FIELD_EXTENSION, SolrFieldName.annotA+STORED_FIELD_EXTENSION,
-                SolrFieldName.annotB+STORED_FIELD_EXTENSION, SolrFieldName.annot+STORED_FIELD_EXTENSION, SolrFieldName.taxidHost+STORED_FIELD_EXTENSION,
-                SolrFieldName.param+STORED_FIELD_EXTENSION, SolrFieldName.cdate+STORED_FIELD_EXTENSION, SolrFieldName.udate+STORED_FIELD_EXTENSION,
-                SolrFieldName.checksumA+STORED_FIELD_EXTENSION, SolrFieldName.checksumB+STORED_FIELD_EXTENSION, SolrFieldName.checksumI+STORED_FIELD_EXTENSION,
-                SolrFieldName.negative+STORED_FIELD_EXTENSION, SolrFieldName.ftypeA+STORED_FIELD_EXTENSION, SolrFieldName.ftypeB+STORED_FIELD_EXTENSION,
-                SolrFieldName.stcA+STORED_FIELD_EXTENSION, SolrFieldName.stcB+STORED_FIELD_EXTENSION, SolrFieldName.pmethodA+STORED_FIELD_EXTENSION,
-                SolrFieldName.pmethodB+STORED_FIELD_EXTENSION
-        };
-
         solrFields.put(RETURN_TYPE_MITAB25, DATA_FIELDS_25);
         solrFields.put(RETURN_TYPE_MITAB26, DATA_FIELDS_26);
         solrFields.put(RETURN_TYPE_MITAB27, DATA_FIELDS_27);
