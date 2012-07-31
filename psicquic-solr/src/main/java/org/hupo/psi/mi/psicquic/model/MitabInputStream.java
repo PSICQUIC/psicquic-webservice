@@ -99,14 +99,14 @@ public class MitabInputStream extends InputStream{
             return -1;
         }
 
-        int numberCharRead = mitabLineInputStream.read(bytes, off, len);
+        int numberCharRead = Math.max(0, mitabLineInputStream.read(bytes, off, len));
 
         // we need to read the next MITAB line because we reached the end of the current one
         while (numberCharRead < len && mitabLineInputStream != null){
             mitabLineInputStream = readNextLine();
 
             if (mitabLineInputStream != null){
-                int newNumberCharRead = mitabLineInputStream.read(bytes, off + numberCharRead, len - numberCharRead);
+                int newNumberCharRead = Math.max(0,mitabLineInputStream.read(bytes, off + numberCharRead, len - numberCharRead));
                 numberCharRead+=newNumberCharRead;
             }
         }

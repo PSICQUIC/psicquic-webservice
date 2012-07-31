@@ -163,7 +163,7 @@ public class PsicquicSolrServer {
         // * an *ArrayIndexOutOfBoundsException* occurs if _rows_ + _start_ > 2147483647; e.g. _rows_ = 2147483640 and _start_ = 8
         // we need to substract to avoid this exception
         if (maxResults != null) {
-            solrQuery.setRows(Math.min(Integer.MAX_VALUE, maxResults));
+            solrQuery.setRows(maxResults);
         } else {
             solrQuery.setRows(Integer.MAX_VALUE - solrQuery.getStart());
         }
