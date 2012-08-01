@@ -1,7 +1,7 @@
 package org.hupo.psi.mi.psicquic.indexing.batch;
 
 import org.apache.commons.io.FileUtils;
-import org.hupo.psi.mi.psicquic.indexing.batch.server.SolrJettyRunner;
+import org.hupo.psi.mi.psicquic.model.server.SolrJettyRunner;
 import org.junit.After;
 import org.junit.Before;
 

@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psicquic.indexing.batch.server;
+package org.hupo.psi.mi.psicquic.model.server;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
