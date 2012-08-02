@@ -140,5 +140,15 @@ public class PsicquicSearchResultsTest  extends AbstractSolrServerTest {
         Assert.assertNotNull(rdfXmlAbbrevFormat);
 
         rdfXmlAbbrevFormat.close();
+
+        InputStream rdfN3 = psicquicSearchResults.createRDFOrBiopax("rdf-n3");
+        Assert.assertNotNull(rdfN3);
+
+        rdfN3.close();
+
+        InputStream rdfTurtle = psicquicSearchResults.createRDFOrBiopax("rdf-turtle");
+        Assert.assertNotNull(rdfTurtle);
+
+        rdfTurtle.close();
     }
 }
