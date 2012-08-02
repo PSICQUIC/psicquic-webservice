@@ -4,7 +4,9 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -32,63 +34,108 @@ public class SolrHomeBuilder {
 
         // copy resource directory containing solr-home and war file
         File solrHomeToCreate = new File(solrWorkingDir,"solr-home");
-        solrHomeToCreate.mkdirs();
+        File solrWarToCreate = new File(solrWorkingDir,"solr.war");
 
-        File solrHomeToCopy = new File(SolrHomeBuilder.class.getResource("/solr-home").getFile());
-        // is in the resources
-        if (solrHomeToCopy.exists()){
-            FileUtils.copyDirectory(solrHomeToCopy, solrHomeToCreate);
-            File solrWarToCopy = new File(SolrHomeBuilder.class.getResource("/solr.war").getFile());
-            FileUtils.copyFileToDirectory(solrWarToCopy, solrWorkingDir);
-        }
-        // is in the jar in the dependencies
-        else {
+        // only copy solr-home when solr-home does not exist
+        if (!solrHomeToCreate.exists()){
+            solrHomeToCreate.mkdirs();
 
-            String originalName = SolrHomeBuilder.class.getResource("/solr-home").getFile();
-            String jarFileName = originalName.substring(0, originalName.indexOf("!")).replace("file:", "");
+            File solrHomeToCopy = new File(SolrHomeBuilder.class.getResource("/solr-home").getFile());
+            // is in the resources
+            if (solrHomeToCopy.exists()){
+                FileUtils.copyDirectory(solrHomeToCopy, solrHomeToCreate);
 
-            JarFile jarFile = new JarFile(jarFileName);
-            Enumeration<JarEntry> jarEntries = jarFile.entries();
+                if (!solrWarToCreate.exists()){
+                    File solrWarToCopy = new File(SolrHomeBuilder.class.getResource("/solr.war").getFile());
+                    FileUtils.copyFile(solrWarToCopy, solrWarToCreate);
+                }
+            }
+            // is in the jar in the dependencies
+            else {
 
-            // write
-            while (jarEntries.hasMoreElements()) {
-                JarEntry entry = jarEntries.nextElement();
+                String originalName = SolrHomeBuilder.class.getResource("/solr-home").getFile();
+                String jarFileName = originalName.substring(0, originalName.indexOf("!")).replace("file:", "");
 
-                // solr war file
-                if (entry.getName().endsWith("solr.war")) {
-                    File fileToCreate = new File(solrWorkingDir, entry.toString());
+                JarFile jarFile = new JarFile(jarFileName);
+                Enumeration<JarEntry> jarEntries = jarFile.entries();
 
-                    InputStream inputStream = jarFile.getInputStream(entry);
+                // write
+                while (jarEntries.hasMoreElements()) {
+                    JarEntry entry = jarEntries.nextElement();
 
-                    try{
-                        FileUtils.copyInputStreamToFile(inputStream, fileToCreate);
+                    // solr war file
+                    if (entry.getName().endsWith("solr.war") && !solrWarToCreate.exists()) {
+
+                        InputStream inputStream = jarFile.getInputStream(entry);
+
+                        try{
+                            FileUtils.copyInputStreamToFile(inputStream, solrWarToCreate);
+                        }
+                        finally {
+                            inputStream.close();
+                        }
                     }
-                    finally {
-                        inputStream.close();
+                    else if (entry.toString().startsWith("solr-home")){
+                        File fileToCreate = new File(solrWorkingDir, entry.toString());
+
+                        if (entry.isDirectory()) {
+                            fileToCreate.mkdirs();
+                            continue;
+                        }
+
+                        InputStream inputStream = jarFile.getInputStream(entry);
+
+                        try{
+                            FileUtils.copyInputStreamToFile(inputStream, fileToCreate);
+                        }
+                        finally {
+                            inputStream.close();
+                        }
                     }
                 }
-                else if (entry.toString().startsWith("solr-home")){
-                    File fileToCreate = new File(solrWorkingDir, entry.toString());
+            }
+        }
+        // only copy solr.war when solr.war does not exist
+        else if (!solrWarToCreate.exists()){
 
-                    if (entry.isDirectory()) {
-                        fileToCreate.mkdirs();
-                        continue;
-                    }
+            File solrHomeToCopy = new File(SolrHomeBuilder.class.getResource("/solr-home").getFile());
+            // is in the resources
+            if (solrHomeToCopy.exists()){
+                File solrWarToCopy = new File(SolrHomeBuilder.class.getResource("/solr.war").getFile());
+                FileUtils.copyFileToDirectory(solrWarToCopy, solrWorkingDir);
+            }
+            // is in the jar in the dependencies
+            else {
 
-                    InputStream inputStream = jarFile.getInputStream(entry);
+                String originalName = SolrHomeBuilder.class.getResource("/solr-home").getFile();
+                String jarFileName = originalName.substring(0, originalName.indexOf("!")).replace("file:", "");
 
-                    try{
-                        FileUtils.copyInputStreamToFile(inputStream, fileToCreate);
-                    }
-                    finally {
-                        inputStream.close();
+                JarFile jarFile = new JarFile(jarFileName);
+                Enumeration<JarEntry> jarEntries = jarFile.entries();
+
+                // write
+                while (jarEntries.hasMoreElements()) {
+                    JarEntry entry = jarEntries.nextElement();
+
+                    // solr war file
+                    if (entry.getName().endsWith("solr.war")) {
+                        File fileToCreate = new File(solrWorkingDir, entry.toString());
+
+                        InputStream inputStream = jarFile.getInputStream(entry);
+
+                        try{
+                            FileUtils.copyInputStreamToFile(inputStream, fileToCreate);
+                        }
+                        finally {
+                            inputStream.close();
+                        }
                     }
                 }
             }
         }
 
         solrHomeDir = solrHomeToCreate;
-        solrWar = new File(solrWorkingDir, "solr.war");
+        solrWar = solrWarToCreate;
 
         if (log.isDebugEnabled()) {
             log.debug("\nSolr Home: {}\nSolr WAR: {}", solrHomeDir.toString(), solrWar.toString());
