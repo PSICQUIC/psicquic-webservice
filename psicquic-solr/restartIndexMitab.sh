@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
-if [ $# -e 3 ]
+
+if [ $# == 3 ];
 then
       MITAB_FILE=$1;
       SOLR_URL=$3;
@@ -9,7 +10,8 @@ then
       echo "SOLR server URL: ${SOLR_URL}"
       echo "Indexing job ID: ${INDEXING_ID}"
       mvn clean install -Presume -Dmitab.file=${MITAB_FILE} -Dsolr.url=${SOLR_URL} -Dindexing.id=${INDEXING_ID} -Dmaven.test.skip
-elif [ $# -e 2 ]
+elif [ $# == 2 ];
+then
       MITAB_FILE=$1;
       INDEXING_ID=$2;
       echo "MITAB file: ${MITAB_FILE}"

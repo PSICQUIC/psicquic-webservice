@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
-if [ $# -e 2 ]
+if [ $# == 2 ];
 then
       MITAB_FILE=$1;
       SOLR_URL=$2;
       echo "MITAB file: ${MITAB_FILE}"
       echo "SOLR server URL: ${SOLR_URL}"
       mvn clean install -Pexec -Dmitab.file=${MITAB_FILE} -Dsolr.url=${SOLR_URL} -Dmaven.test.skip
-elif [ $# -e 1 ]
+elif [ $# == 1 ];
+then
       MITAB_FILE=$1;
       echo "MITAB file: ${MITAB_FILE}"
       echo "SOLR server URL not provided, use default: ${SOLR_URL}"
