@@ -26,7 +26,7 @@ public class PsicquicSolrServer {
     private final Logger logger = LoggerFactory.getLogger(PsicquicSolrServer.class);
 
     // static final variables
-    private final static String STORED_FIELD_EXTENSION="_o";
+    protected final static String STORED_FIELD_EXTENSION="_o";
     public static final String RETURN_TYPE_XML25 = "psi-mi/xml25";
     public static final String RETURN_TYPE_MITAB25 = "psi-mi/tab25";
     public static final String RETURN_TYPE_MITAB26 = "psi-mi/tab26";
@@ -41,15 +41,15 @@ public class PsicquicSolrServer {
     /**
      * solr server
      */
-    private SolrServer solrServer;
+    protected SolrServer solrServer;
     /**
      * MITAB reader
      */
-    private PsimiTabReader mitabReader;
+    protected PsimiTabReader mitabReader;
     /**
      * Map of SOLR fields that can be returned for a specific format
      */
-    private Map<String, String []> solrFields;
+    protected Map<String, String []> solrFields;
 
     public static String[] DATA_FIELDS_25 = new String[] {
             SolrFieldName.idA+STORED_FIELD_EXTENSION, SolrFieldName.idB+STORED_FIELD_EXTENSION, SolrFieldName.altidA+STORED_FIELD_EXTENSION,
@@ -110,7 +110,7 @@ public class PsicquicSolrServer {
     /**
      * Associates for each format the fields that are expected to be returned
      */
-    private void initializeSolrFieldsMap(){
+    protected void initializeSolrFieldsMap(){
         solrFields = new HashMap<String, String[]>(5);
         solrFields.put(RETURN_TYPE_MITAB25, DATA_FIELDS_25);
         solrFields.put(RETURN_TYPE_MITAB26, DATA_FIELDS_26);
@@ -189,7 +189,7 @@ public class PsicquicSolrServer {
         return search(solrQuery, returnType);
     }
 
-    private PsicquicSearchResults search(SolrQuery originalQuery, String returnType) throws PsicquicSolrException, SolrServerException {
+    protected PsicquicSearchResults search(SolrQuery originalQuery, String returnType) throws PsicquicSolrException, SolrServerException {
 
         String[] fields = solrFields.containsKey(returnType) ? solrFields.get(returnType) : new String[]{};
 
