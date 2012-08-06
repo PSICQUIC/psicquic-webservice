@@ -37,7 +37,7 @@ public class SolrHomeBuilder {
         File solrWarToCreate = new File(solrWorkingDir,"solr.war");
 
         // only copy solr-home when solr-home does not exist
-        if (!solrHomeToCreate.exists()){
+        if (!solrHomeToCreate.exists() && solrHomeDir == null){
             solrHomeToCreate.mkdirs();
 
             File solrHomeToCopy = new File(SolrHomeBuilder.class.getResource("/solr-home").getFile());
@@ -45,7 +45,7 @@ public class SolrHomeBuilder {
             if (solrHomeToCopy.exists()){
                 FileUtils.copyDirectory(solrHomeToCopy, solrHomeToCreate);
 
-                if (!solrWarToCreate.exists()){
+                if (!solrWarToCreate.exists() && solrWar == null){
                     File solrWarToCopy = new File(SolrHomeBuilder.class.getResource("/solr.war").getFile());
                     FileUtils.copyFile(solrWarToCopy, solrWarToCreate);
                 }
@@ -64,7 +64,7 @@ public class SolrHomeBuilder {
                     JarEntry entry = jarEntries.nextElement();
 
                     // solr war file
-                    if (entry.getName().endsWith("solr.war") && !solrWarToCreate.exists()) {
+                    if (entry.getName().endsWith("solr.war") && !solrWarToCreate.exists() && solrWar == null) {
 
                         InputStream inputStream = jarFile.getInputStream(entry);
 
@@ -94,9 +94,12 @@ public class SolrHomeBuilder {
                     }
                 }
             }
+
+            solrHomeDir = solrHomeToCreate;
+            solrWar = solrWarToCreate;
         }
         // only copy solr.war when solr.war does not exist
-        else if (!solrWarToCreate.exists()){
+        else if (!solrWarToCreate.exists() && solrWar == null){
 
             File solrHomeToCopy = new File(SolrHomeBuilder.class.getResource("/solr-home").getFile());
             // is in the resources
@@ -132,10 +135,10 @@ public class SolrHomeBuilder {
                     }
                 }
             }
-        }
 
-        solrHomeDir = solrHomeToCreate;
-        solrWar = solrWarToCreate;
+            solrHomeDir = solrHomeToCreate;
+            solrWar = solrWarToCreate;
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("\nSolr Home: {}\nSolr WAR: {}", solrHomeDir.toString(), solrWar.toString());
@@ -149,5 +152,13 @@ public class SolrHomeBuilder {
 
     public File getSolrWar() {
         return solrWar;
+    }
+
+    public void setSolrHomeDir(File solrHomeDir) {
+        this.solrHomeDir = solrHomeDir;
+    }
+
+    public void setSolrWar(File solrWar) {
+        this.solrWar = solrWar;
     }
 }
