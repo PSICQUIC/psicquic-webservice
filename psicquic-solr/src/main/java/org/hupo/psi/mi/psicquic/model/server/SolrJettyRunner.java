@@ -30,11 +30,11 @@ public class SolrJettyRunner {
 
     private int port = 18080;
 
-    private Server server;
-    private SolrServer solrServer;
+    protected Server server;
+    protected SolrServer solrServer;
 
-    private File workingDir;
-    private File solrHome;
+    protected File workingDir;
+    protected File solrHome;
 
     public SolrJettyRunner() {
         this(new File(System.getProperty("java.io.tmpdir"), "solr-home-"+System.currentTimeMillis()));
