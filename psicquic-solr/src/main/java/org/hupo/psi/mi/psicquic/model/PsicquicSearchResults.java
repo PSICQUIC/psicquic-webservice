@@ -1,8 +1,8 @@
 package org.hupo.psi.mi.psicquic.model;
 
 import org.apache.solr.common.SolrDocumentList;
-import org.hupo.psi.calimocho.io.DocumentConverter;
-import org.hupo.psi.calimocho.model.DocumentDefinition;
+import org.hupo.psi.calimocho.io.IllegalRowException;
+import org.hupo.psi.calimocho.tab.model.ColumnBasedDocumentDefinition;
 import org.hupo.psi.calimocho.tab.util.MitabDocumentDefinitionFactory;
 import org.hupo.psi.calimocho.xgmml.XGMMLDocumentDefinition;
 import org.hupo.psi.mi.rdf.PsimiRdfConverter;
@@ -67,23 +67,20 @@ public class PsicquicSearchResults {
         return tab2Xml.convert(mitabReader.read(getMitab()));
     }
 
-    public InputStream createXGMML() throws IOException {
+    public InputStream createXGMML() throws IOException, IllegalRowException {
         InputStream mitabOs = getMitab();
         InputStream xgmml = null;
 
         try{
-            DocumentDefinition mitab25Definition = MitabDocumentDefinitionFactory.mitab25();
-            DocumentDefinition xgmmlDefinition = new XGMMLDocumentDefinition("PSICQUIC", "Generated from MITAB 2.5", "http://psicquic.googlecode.com");
-
-            Reader mitabReader = new BufferedReader(new InputStreamReader(mitabOs));
+            ColumnBasedDocumentDefinition mitab25Definition = MitabDocumentDefinitionFactory.mitab25();
+            XGMMLDocumentDefinition xgmmlDefinition = new XGMMLDocumentDefinition("PSICQUIC", "Generated from MITAB 2.5", "http://psicquic.googlecode.com");
 
             ByteArrayOutputStream xgmmlOutput = new ByteArrayOutputStream();
             Writer xgmmlWriter = new BufferedWriter(new OutputStreamWriter(xgmmlOutput));
 
             try{
-                DocumentConverter converter = new DocumentConverter(mitab25Definition, xgmmlDefinition);
-                converter.convert(mitabReader, xgmmlWriter);
 
+                xgmmlDefinition.writeDocument(xgmmlWriter, mitabOs, mitab25Definition);
                 xgmml = new ByteArrayInputStream(xgmmlOutput.toByteArray());
 
                 // close stringWriter now
@@ -91,8 +88,6 @@ public class PsicquicSearchResults {
 
             }
             finally {
-                // close mitab reader now
-                mitabReader.close();
                 // close stringWriter now
                 xgmmlWriter.close();
                 xgmmlOutput.close();

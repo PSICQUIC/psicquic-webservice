@@ -4,6 +4,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocumentList;
+import org.hupo.psi.calimocho.io.IllegalRowException;
 import org.hupo.psi.mi.psicquic.indexing.batch.AbstractSolrServerTest;
 import org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer;
 import org.junit.Assert;
@@ -88,7 +89,7 @@ public class PsicquicSearchResultsTest  extends AbstractSolrServerTest {
     }
 
     @Test
-    public void test_create_xgmml_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException, XmlConversionException, IllegalAccessException {
+    public void test_create_xgmml_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException, XmlConversionException, IllegalAccessException, IllegalRowException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
