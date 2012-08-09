@@ -24,6 +24,8 @@ import psidev.psi.mi.xml.converter.ConverterException;
 import psidev.psi.mi.xml.model.Entry;
 import psidev.psi.mi.xml.model.EntrySet;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -89,7 +91,7 @@ public class PsicquicSearchResultsTest  extends AbstractSolrServerTest {
     }
 
     @Test
-    public void test_create_xgmml_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException, XmlConversionException, IllegalAccessException, IllegalRowException {
+    public void test_create_xgmml_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException, XmlConversionException, IllegalAccessException, IllegalRowException, XMLStreamException, JAXBException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
