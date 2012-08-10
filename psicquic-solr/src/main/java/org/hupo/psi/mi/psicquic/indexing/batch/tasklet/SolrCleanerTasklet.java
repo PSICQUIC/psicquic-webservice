@@ -1,6 +1,5 @@
 package org.hupo.psi.mi.psicquic.indexing.batch.tasklet;
 
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -26,13 +25,14 @@ public class SolrCleanerTasklet implements Tasklet {
         if (solrUrl != null){
 
             // delete all previous records
-            SolrServer solrServer = new HttpSolrServer(solrUrl);
+            HttpSolrServer solrServer = new HttpSolrServer(solrUrl);
             solrServer.deleteByQuery("*:*");
 
             // optimize here
             solrServer.optimize();
 
             contribution.getExitStatus().addExitDescription("Cleared: " + solrUrl);
+            solrServer.shutdown();
         }
         else {
             throw new IllegalStateException("no SOLR server url found.");

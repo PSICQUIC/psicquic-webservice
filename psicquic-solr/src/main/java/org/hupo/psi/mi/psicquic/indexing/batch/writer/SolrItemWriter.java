@@ -27,7 +27,7 @@ import java.util.List;
 public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     private String solrUrl;
-    private SolrServer solrServer;
+    private HttpSolrServer solrServer;
     private Converter solrConverter;
 
     public SolrItemWriter(){
@@ -86,8 +86,11 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
         try {
             solrServer.optimize();
         } catch (Exception e) {
+            solrServer.shutdown();
             throw new ItemStreamException("Problem closing solr server", e);
         }
+
+        solrServer.shutdown();
     }
 
     public SolrServer createSolrServer() throws IOException, SAXException, ParserConfigurationException {
