@@ -73,23 +73,27 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     }
 
     public void update(ExecutionContext executionContext) throws ItemStreamException {
-        try {
-            solrServer.commit();
-        } catch (SolrServerException e) {
-            throw new ItemStreamException("Problem committing the results.", e);
-        } catch (IOException e) {
-            throw new ItemStreamException("Problem committing the results.", e);
+        if (solrServer != null){
+            try {
+                solrServer.commit();
+            } catch (SolrServerException e) {
+                throw new ItemStreamException("Problem committing the results.", e);
+            } catch (IOException e) {
+                throw new ItemStreamException("Problem committing the results.", e);
+            }
         }
     }
 
     public void close() throws ItemStreamException {
-        try {
-            solrServer.optimize();
-        } catch (Exception e) {
-            throw new ItemStreamException("Problem closing solr server", e);
-        }
+        if (solrServer != null){
+            try {
+                solrServer.optimize();
+            } catch (Exception e) {
+                throw new ItemStreamException("Problem closing solr server", e);
+            }
 
-        solrServer.shutdown();
+            solrServer.shutdown();
+        }
     }
 
     public SolrServer createSolrServer() throws IOException, SAXException, ParserConfigurationException {
