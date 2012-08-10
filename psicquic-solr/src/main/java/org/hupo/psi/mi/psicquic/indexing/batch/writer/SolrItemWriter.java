@@ -86,7 +86,6 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
         try {
             solrServer.optimize();
         } catch (Exception e) {
-            solrServer.shutdown();
             throw new ItemStreamException("Problem closing solr server", e);
         }
 
