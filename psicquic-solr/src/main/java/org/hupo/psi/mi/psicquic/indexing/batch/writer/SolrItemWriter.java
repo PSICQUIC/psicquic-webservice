@@ -26,9 +26,9 @@ import java.util.List;
 
 public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
-    private String solrUrl;
-    private HttpSolrServer solrServer;
-    private Converter solrConverter;
+    protected String solrUrl;
+    protected HttpSolrServer solrServer;
+    protected Converter solrConverter;
 
     public SolrItemWriter(){
         solrConverter = new Converter();
