@@ -4,6 +4,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrDocumentList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,5 +263,13 @@ public class PsicquicSolrServer {
 
         PsicquicSearchResults searchResults = new PsicquicSearchResults(docList, fieldNames);
         return searchResults;
+    }
+
+    public void shutdown(){
+
+        if (this.solrServer != null && this.solrServer instanceof HttpSolrServer){
+            HttpSolrServer httpsolrServer = (HttpSolrServer) solrServer;
+            httpsolrServer.shutdown();
+        }
     }
 }
