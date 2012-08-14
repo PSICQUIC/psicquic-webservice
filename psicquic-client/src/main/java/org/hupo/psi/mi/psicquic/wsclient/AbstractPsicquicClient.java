@@ -15,16 +15,14 @@
  */
 package org.hupo.psi.mi.psicquic.wsclient;
 
-import org.apache.cxf.frontend.ClientProxyFactoryBean;
-import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.transport.http.HTTPConduit;
-import org.apache.cxf.transport.http.gzip.GZIPInInterceptor;
-import org.apache.cxf.transport.http.gzip.GZIPOutInterceptor;
 import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.frontend.ClientProxyFactoryBean;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cxf.transport.common.gzip.GZIPInInterceptor;
+import org.apache.cxf.transport.common.gzip.GZIPOutInterceptor;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.hupo.psi.mi.psicquic.DbRef;
 import org.hupo.psi.mi.psicquic.PsicquicService;
 import org.hupo.psi.mi.psicquic.RequestInfo;
@@ -41,9 +39,25 @@ import java.util.List;
 public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
 
     private PsicquicService service;
+    private long connectionTimeOut = 5000L;
 
     public AbstractPsicquicClient(String serviceAddress) {
-        this(serviceAddress, 0L);
+        if (serviceAddress == null) return;
+
+        ClientProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.setServiceClass(PsicquicService.class);
+        factory.setAddress(serviceAddress);
+        factory.getInInterceptors().add(new GZIPInInterceptor());
+        factory.getOutInterceptors().add(new GZIPOutInterceptor());
+
+        this.service = (PsicquicService) factory.create();
+
+        final Client client = ClientProxy.getClient(service);
+
+        final HTTPConduit http = (HTTPConduit) client.getConduit();
+        final HTTPClientPolicy httpClientPolicy = http.getClient();
+
+        setUpClientProperties(null, null, httpClientPolicy, this.connectionTimeOut);
     }
 
     public AbstractPsicquicClient(String serviceAddress, long timeout) {
@@ -62,12 +76,56 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
         final HTTPConduit http = (HTTPConduit) client.getConduit();
         final HTTPClientPolicy httpClientPolicy = http.getClient();
 
+        setUpClientProperties(null, null, httpClientPolicy, timeout);
+    }
+
+    public AbstractPsicquicClient(String serviceAddress, String proxyHost, Integer proxyPort) {
+        if (serviceAddress == null) return;
+
+        ClientProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.setServiceClass(PsicquicService.class);
+        factory.setAddress(serviceAddress);
+        factory.getInInterceptors().add(new GZIPInInterceptor());
+        factory.getOutInterceptors().add(new GZIPOutInterceptor());
+
+        this.service = (PsicquicService) factory.create();
+
+        final Client client = ClientProxy.getClient(service);
+
+        final HTTPConduit http = (HTTPConduit) client.getConduit();
+        final HTTPClientPolicy httpClientPolicy = http.getClient();
+
+        setUpClientProperties(proxyHost, proxyPort, httpClientPolicy, this.connectionTimeOut);
+    }
+
+    private void setUpClientProperties(String proxyHost, Integer proxyPort, HTTPClientPolicy httpClientPolicy, long timeout) {
         httpClientPolicy.setReceiveTimeout(timeout);
         httpClientPolicy.setAllowChunking(false);
-        httpClientPolicy.setConnectionTimeout(0L);
+        httpClientPolicy.setConnectionTimeout(timeout);
         httpClientPolicy.setAcceptEncoding("UTF-8");
+        if (proxyHost != null && proxyPort != null){
+            httpClientPolicy.setProxyServer(proxyHost);
+            httpClientPolicy.setProxyServerPort(proxyPort);
+        }
+    }
 
+    public AbstractPsicquicClient(String serviceAddress, long timeout, String proxyHost, Integer proxyPort) {
+        if (serviceAddress == null) return;
 
+        ClientProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.setServiceClass(PsicquicService.class);
+        factory.setAddress(serviceAddress);
+        factory.getInInterceptors().add(new GZIPInInterceptor());
+        factory.getOutInterceptors().add(new GZIPOutInterceptor());
+
+        this.service = (PsicquicService) factory.create();
+
+        final Client client = ClientProxy.getClient(service);
+
+        final HTTPConduit http = (HTTPConduit) client.getConduit();
+        final HTTPClientPolicy httpClientPolicy = http.getClient();
+
+        setUpClientProperties(proxyHost, proxyPort, httpClientPolicy, timeout);
     }
 
     public PsicquicService getService() {
@@ -97,5 +155,13 @@ public abstract class AbstractPsicquicClient<T> implements PsicquicClient<T> {
         }
 
         return dbRefs;
+    }
+
+    public long getConnectionTimeOut() {
+        return connectionTimeOut;
+    }
+
+    public void setConnectionTimeOut(long connectionTimeOut) {
+        this.connectionTimeOut = connectionTimeOut;
     }
 }

@@ -19,6 +19,7 @@ import org.hupo.psi.mi.psicquic.DbRef;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.RequestInfo;
 import org.hupo.psi.mi.psicquic.ResultInfo;
+import org.hupo.psi.mi.psicquic.wsclient.result.XmlSearchResult;
 import psidev.psi.mi.xml.converter.ConverterException;
 import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
 import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;

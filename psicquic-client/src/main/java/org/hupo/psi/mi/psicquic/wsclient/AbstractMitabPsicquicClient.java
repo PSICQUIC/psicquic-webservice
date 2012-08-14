@@ -19,12 +19,9 @@ import org.hupo.psi.mi.psicquic.DbRef;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.RequestInfo;
 import org.hupo.psi.mi.psicquic.ResultInfo;
-import psidev.psi.mi.search.SearchResult;
-import psidev.psi.mi.tab.PsimiTabReader;
-import psidev.psi.mi.tab.model.BinaryInteraction;
+import org.hupo.psi.mi.psicquic.wsclient.result.MitabSearchResult;
+import psidev.psi.mi.tab.model.builder.PsimiTabVersion;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,9 +30,13 @@ import java.util.List;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public abstract class AbstractMitabPsicquicClient<T extends BinaryInteraction> extends AbstractPsicquicClient<SearchResult<T>> {
+public abstract class AbstractMitabPsicquicClient extends AbstractPsicquicClient<MitabSearchResult> {
     
-    private static final String RETURN_TYPE = "psi-mi/tab25";
+    private static final String RETURN_TYPE_25 = "psi-mi/tab25";
+    private static final String RETURN_TYPE_26 = "psi-mi/tab26";
+    private static final String RETURN_TYPE_27 = "psi-mi/tab27";
+
+    protected PsimiTabVersion version = PsimiTabVersion.v2_5;
 
     public AbstractMitabPsicquicClient(String serviceAddress) {
         super(serviceAddress);
@@ -45,8 +46,36 @@ public abstract class AbstractMitabPsicquicClient<T extends BinaryInteraction> e
         super(serviceAddress, timeout);
     }
 
-    public SearchResult<T> getByQuery(String query, int firstResult, int maxResults) throws PsicquicClientException {
-        RequestInfo requestInfo = createRequestInfo(RETURN_TYPE, firstResult, maxResults);
+    public AbstractMitabPsicquicClient(String serviceAddress, String proxyHost, Integer proxyPort) {
+        super(serviceAddress, proxyHost, proxyPort);
+    }
+
+    public AbstractMitabPsicquicClient(String serviceAddress, long timeout, String proxyHost, Integer proxyPort) {
+        super(serviceAddress, timeout, proxyHost, proxyPort);
+    }
+
+    public AbstractMitabPsicquicClient(String serviceAddress, PsimiTabVersion version) {
+        super(serviceAddress);
+        this.version = version;
+    }
+
+    protected AbstractMitabPsicquicClient(String serviceAddress, long timeout, PsimiTabVersion version) {
+        super(serviceAddress, timeout);
+        this.version = version;
+    }
+
+    public AbstractMitabPsicquicClient(String serviceAddress, String proxyHost, Integer proxyPort, PsimiTabVersion version) {
+        super(serviceAddress, proxyHost, proxyPort);
+        this.version = version;
+    }
+
+    public AbstractMitabPsicquicClient(String serviceAddress, long timeout, String proxyHost, Integer proxyPort, PsimiTabVersion version) {
+        super(serviceAddress, timeout, proxyHost, proxyPort);
+        this.version = version;
+    }
+
+    public MitabSearchResult getByQuery(String query, int firstResult, int maxResults) throws PsicquicClientException {
+        RequestInfo requestInfo = createRequestInfo(processMitabVersion(), firstResult, maxResults);
 
         QueryResponse response;
         try {
@@ -58,7 +87,8 @@ public abstract class AbstractMitabPsicquicClient<T extends BinaryInteraction> e
         return createSearchResult(response);
     }
 
-    public SearchResult<T> getByInteractor(String identifier, int firstResult, int maxResults) throws PsicquicClientException {
+    public MitabSearchResult getByInteractor(String identifier, int firstResult, int maxResults) throws PsicquicClientException {
+        String RETURN_TYPE = processMitabVersion();
         DbRef dbRef = createDbRef(identifier);
         RequestInfo requestInfo = createRequestInfo(RETURN_TYPE, firstResult, maxResults);
 
@@ -72,7 +102,9 @@ public abstract class AbstractMitabPsicquicClient<T extends BinaryInteraction> e
         return createSearchResult(response);
     }
 
-    public SearchResult<T> getByInteraction(String identifier, int firstResult, int maxResults) throws PsicquicClientException {
+    public MitabSearchResult getByInteraction(String identifier, int firstResult, int maxResults) throws PsicquicClientException {
+        String RETURN_TYPE = processMitabVersion();
+
         DbRef dbRef = createDbRef(identifier);
         RequestInfo requestInfo = createRequestInfo(RETURN_TYPE, firstResult, maxResults);
 
@@ -86,7 +118,9 @@ public abstract class AbstractMitabPsicquicClient<T extends BinaryInteraction> e
         return createSearchResult(response);
     }
 
-    public SearchResult<T> getByInteractionList(String[] identifiers, int firstResult, int maxResults) throws PsicquicClientException {
+    public MitabSearchResult getByInteractionList(String[] identifiers, int firstResult, int maxResults) throws PsicquicClientException {
+        String RETURN_TYPE = processMitabVersion();
+
         List<DbRef> dbRefs = createDbRefs(identifiers);
         RequestInfo requestInfo = createRequestInfo(RETURN_TYPE, firstResult, maxResults);
 
@@ -100,7 +134,9 @@ public abstract class AbstractMitabPsicquicClient<T extends BinaryInteraction> e
         return createSearchResult(response);
     }
 
-    public SearchResult<T> getByInteractorList(String[] identifiers, QueryOperand operand, int firstResult, int maxResults) throws PsicquicClientException {
+    public MitabSearchResult getByInteractorList(String[] identifiers, QueryOperand operand, int firstResult, int maxResults) throws PsicquicClientException {
+        String RETURN_TYPE = processMitabVersion();
+
         List<DbRef> dbRefs = createDbRefs(identifiers);
         RequestInfo requestInfo = createRequestInfo(RETURN_TYPE, firstResult, maxResults);
 
@@ -114,30 +150,27 @@ public abstract class AbstractMitabPsicquicClient<T extends BinaryInteraction> e
         return createSearchResult(response);
     }
 
-    private SearchResult<T> createSearchResult(QueryResponse response) throws PsicquicClientException {
-        String mitab = response.getResultSet().getMitab();
+    private String processMitabVersion() {
+        String RETURN_TYPE = RETURN_TYPE_25;
 
-        PsimiTabReader reader = newPsimiTabReader();
-        List<T> interactions = null;
-        try {
-            Collection<BinaryInteraction> interactionCollection = reader.read(mitab);
-            interactions = new ArrayList<T>();
-
-            for (BinaryInteraction binaryInteraction : interactionCollection) {
-                interactions.add((T)binaryInteraction);
+        if (version != null){
+            if (version.equals(PsimiTabVersion.v2_6)){
+                RETURN_TYPE = RETURN_TYPE_26;
             }
-
-        } catch (Exception e) {
-            throw new PsicquicClientException("Problem converting the results to BinaryInteractions", e);
+            else if(version.equals(PsimiTabVersion.v2_7)){
+                RETURN_TYPE = RETURN_TYPE_27;
+            }
         }
+        return RETURN_TYPE;
+    }
+
+    private MitabSearchResult createSearchResult(QueryResponse response) throws PsicquicClientException {
+        String mitab = response.getResultSet().getMitab();
 
         ResultInfo resultInfo = response.getResultInfo();
 
-        return new SearchResult<T>(interactions, resultInfo.getTotalResults(),
+        return new MitabSearchResult(mitab, resultInfo.getTotalResults(),
                                                  resultInfo.getFirstResult(),
-                                                 resultInfo.getBlockSize(), null);
+                                                 resultInfo.getBlockSize());
     }
-
-    public abstract PsimiTabReader newPsimiTabReader();
-    
 }

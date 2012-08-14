@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hupo.psi.mi.psicquic.wsclient;
+package org.hupo.psi.mi.psicquic.wsclient.result;
 
 import psidev.psi.mi.xml.model.EntrySet;
 

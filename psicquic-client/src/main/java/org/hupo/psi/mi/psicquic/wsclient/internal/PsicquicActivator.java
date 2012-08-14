@@ -15,15 +15,13 @@
  */
 package org.hupo.psi.mi.psicquic.wsclient.internal;
 
-import java.util.Dictionary;
-import java.util.Properties;
-
+import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
+import org.hupo.psi.mi.psicquic.wsclient.result.MitabSearchResult;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClient;
-import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
-import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.search.SearchResult;
+
+import java.util.Dictionary;
+import java.util.Properties;
 
 
 /**
@@ -47,7 +45,7 @@ public final class PsicquicActivator implements BundleActivator {
 
         UniversalPsicquicClient client = new UniversalPsicquicClient("http://www.ebi.ac.uk/intact/psicquic/webservices/psicquic");
         System.out.println("CLIENT INSTANCE: "+client);
-        final SearchResult<BinaryInteraction> searchResult = client.getByQuery("*", 0, 0);
+        final MitabSearchResult searchResult = client.getByQuery("*", 0, 0);
         System.out.println("Found:" +searchResult.getTotalCount());
     }
 

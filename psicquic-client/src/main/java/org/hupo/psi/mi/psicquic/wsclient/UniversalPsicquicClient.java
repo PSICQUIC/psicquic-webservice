@@ -15,8 +15,7 @@
  */
 package org.hupo.psi.mi.psicquic.wsclient;
 
-import psidev.psi.mi.tab.PsimiTabReader;
-import psidev.psi.mi.tab.model.BinaryInteraction;
+import psidev.psi.mi.tab.model.builder.PsimiTabVersion;
 
 /**
  * Universal client for PSICQUIC. It uses the PSI-MI TAB format behind the scenes.
@@ -24,17 +23,89 @@ import psidev.psi.mi.tab.model.BinaryInteraction;
  * @author Bruno Aranda (baranda@ebi.ac.uk)
  * @version $Id$
  */
-public class UniversalPsicquicClient extends AbstractMitabPsicquicClient<BinaryInteraction>{
+public class UniversalPsicquicClient extends AbstractMitabPsicquicClient{
 
+    /**
+     * Create a new UniversalPsicquicClient. By default, it does not use a proxy to connect to the webservice and
+     * is querying fro mitab 2.5 results
+     * @param serviceAddress : address of the webservice
+     */
     public UniversalPsicquicClient(String serviceAddress) {
         super(serviceAddress);
     }
 
+    /**
+     * Create a new UniversalPsicquicClient. By default, it does not use a proxy to connect to the webservice and
+     * is querying fro mitab 2.5 results
+     * @param serviceAddress : address of the webservice
+     * @param timeout : connection timeout
+     */
     public UniversalPsicquicClient(String serviceAddress, long timeout) {
         super(serviceAddress, timeout);
     }
 
-    public PsimiTabReader newPsimiTabReader() {
-        return new PsimiTabReader(false);
+    /**
+     * Create a new UniversalPsicquicClient. By default, it is querying fro mitab 2.5 results.
+     * The client will use a proxy to connect to the webservice
+     * @param serviceAddress : address of the webservice
+     * @param proxyHost : proxy host
+     * @param proxyPort : proxy port
+     */
+    public UniversalPsicquicClient(String serviceAddress, String proxyHost, Integer proxyPort) {
+        super(serviceAddress, proxyHost, proxyPort);
+    }
+
+    /**
+     * Create a new UniversalPsicquicClient. By default, it is querying fro mitab 2.5 results.
+     * The client will use a proxy to connect to the webservice.
+     * @param serviceAddress : address of the webservice
+     * @param timeout : connection timeout
+     * @param proxyHost : proxy host
+     * @param proxyPort : proxy port
+     */
+    public UniversalPsicquicClient(String serviceAddress, long timeout, String proxyHost, Integer proxyPort) {
+        super(serviceAddress, timeout, proxyHost, proxyPort);
+    }
+
+    /**
+     *
+     * @param serviceAddress : address of the webservice
+     * @param version : the mitab version of the results (will contain more or less information depending on the service)
+     */
+    public UniversalPsicquicClient(String serviceAddress, PsimiTabVersion version) {
+        super(serviceAddress, version);
+    }
+
+    /**
+     *
+     * @param serviceAddress : address of the webservice
+     * @param timeout : connection timeout
+     * @param version : the mitab version of the results (will contain more or less information depending on the service)
+     */
+    protected UniversalPsicquicClient(String serviceAddress, long timeout, PsimiTabVersion version) {
+        super(serviceAddress, timeout, version);
+    }
+
+    /**
+     *
+     * @param serviceAddress : address of the webservice
+     * @param proxyHost : proxy host
+     * @param proxyPort : proxy port
+     * @param version : the mitab version of the results (will contain more or less information depending on the service)
+     */
+    public UniversalPsicquicClient(String serviceAddress, String proxyHost, Integer proxyPort, PsimiTabVersion version) {
+        super(serviceAddress, proxyHost, proxyPort, version);
+    }
+
+    /**
+     *
+     * @param serviceAddress : address of the webservice
+     * @param timeout : connection timeout
+     * @param proxyHost : proxy host
+     * @param proxyPort : proxy port
+     * @param version : the mitab version of the results (will contain more or less information depending on the service)
+     */
+    public UniversalPsicquicClient(String serviceAddress, long timeout, String proxyHost, Integer proxyPort, PsimiTabVersion version) {
+        super(serviceAddress, timeout, proxyHost, proxyPort, version);
     }
 }
