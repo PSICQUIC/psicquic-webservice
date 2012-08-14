@@ -5,14 +5,14 @@
     <artifactId>psicquic-simple-client</artifactId>
     <packaging>jar</packaging>
 
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
 
     <name>PSI :: PSICQUIC Simple Client</name>
 
     <scm>
-        <connection>scm:svn:http://psicquic.googlecode.com/svn/trunk/psicquic-simple-client</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-simple-client</developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-simple-client</url>
+        <connection>scm:svn:http://psicquic.googlecode.com/svn/tags/psicquic-simple-client-1.1</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-simple-client-1.1</developerConnection>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/tags/psicquic-simple-client-1.1</url>
     </scm>
 
     <build>
