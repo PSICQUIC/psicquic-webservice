@@ -51,7 +51,6 @@
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
             <version>1.8.0-SNAPSHOT</version>
-            <scope>test</scope>
         </dependency>
          <dependency>
             <groupId>commons-logging</groupId>
@@ -73,6 +72,13 @@
         </snapshotRepository>
 
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
 
 
 
