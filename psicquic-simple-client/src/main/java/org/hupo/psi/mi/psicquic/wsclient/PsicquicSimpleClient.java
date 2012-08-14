@@ -15,8 +15,6 @@
  */
 package org.hupo.psi.mi.psicquic.wsclient;
 
-import sun.net.www.protocol.http.HttpURLConnection;
-
 import java.io.*;
 import java.net.*;
 
@@ -29,8 +27,19 @@ public class PsicquicSimpleClient {
     public static final String XML25 = "xml25";
     public static final String MITAB25 = "tab25";
     public static final String MITAB25_COMPRESSED = "tab25-bin";
+    public static final String MITAB26 = "tab26";
+    public static final String MITAB26_COMPRESSED = "tab26-bin";
+    public static final String MITAB27 = "tab27";
+    public static final String MITAB27_COMPRESSED = "tab27-bin";
+    public static final String XGMML = "xgmml";
+    public static final String BIOPAX = "biopax";
+    public static final String BIOPAX_L2 = "biopax-L2";
+    public static final String BIOPAX_L3 = "biopax-L3";
+    public static final String RDF_XML = "rdf-xml";
+    public static final String RDF_XML_ABBREV = "rdf-xml-abbrev";
+    public static final String RDF_N3 = "rdf-n3";
+    public static final String RDF_TURTLE = "rdf-turtle";
     public static final String COUNT = "count";
-
 
     private String serviceRestUrl;
     private int connectionTimeout = 5000;
@@ -47,15 +56,15 @@ public class PsicquicSimpleClient {
     }
 
     public InputStream getByQuery(String query) throws IOException {
-        return getByQuery(query, "tab25");
+        return getByQuery(query, MITAB25);
     }
 
     public InputStream getByInteractor(String query) throws IOException {
-        return getByQuery(query, "tab25");
+        return getByQuery(query, MITAB25);
     }
 
     public InputStream getByInteraction(String query) throws IOException {
-        return getByQuery(query, "tab25");
+        return getByQuery(query, MITAB25);
     }
 
     public InputStream getByQuery(String query, String format) throws IOException {
@@ -95,24 +104,33 @@ public class PsicquicSimpleClient {
     }
 
     private InputStream getBy(String queryType, String query, String format, int firstResult, int maxResults) throws IOException {
+        HttpURLConnection connection = null;
         final String encodedQuery = encodeQuery(query);
+        InputStream inputStream = null;
+        try {
 
-        URL url = createUrl(queryType, encodedQuery, format, firstResult, maxResults);
+            URL url = createUrl(queryType, encodedQuery, format, firstResult, maxResults);
+            if (this.proxy == null){
+                connection = (HttpURLConnection) url.openConnection();
+            }
+            else {
+                connection = (HttpURLConnection) url.openConnection(this.proxy);
+            }
 
-        final URLConnection urlConnection;
-        
-        if (proxy == null) {
-        urlConnection = url.openConnection();
-        } else {
-            urlConnection = url.openConnection(proxy);
+            connection.setConnectTimeout(connectionTimeout);
+            connection.setReadTimeout(readTimeout);
+
+            connection.connect();
+
+            inputStream = connection.getInputStream();
+
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
-        
-        urlConnection.setReadTimeout(readTimeout);
-        urlConnection.setConnectTimeout(connectionTimeout);
 
-        urlConnection.connect();
-
-        return urlConnection.getInputStream();
+        return inputStream;
     }
 
     private long countBy(String queryType, String query) throws IOException {
