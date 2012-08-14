@@ -107,28 +107,21 @@ public class PsicquicSimpleClient {
         HttpURLConnection connection = null;
         final String encodedQuery = encodeQuery(query);
         InputStream inputStream = null;
-        try {
 
-            URL url = createUrl(queryType, encodedQuery, format, firstResult, maxResults);
-            if (this.proxy == null){
-                connection = (HttpURLConnection) url.openConnection();
-            }
-            else {
-                connection = (HttpURLConnection) url.openConnection(this.proxy);
-            }
-
-            connection.setConnectTimeout(connectionTimeout);
-            connection.setReadTimeout(readTimeout);
-
-            connection.connect();
-
-            inputStream = connection.getInputStream();
-
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
+        URL url = createUrl(queryType, encodedQuery, format, firstResult, maxResults);
+        if (this.proxy == null){
+            connection = (HttpURLConnection) url.openConnection();
         }
+        else {
+            connection = (HttpURLConnection) url.openConnection(this.proxy);
+        }
+
+        connection.setConnectTimeout(connectionTimeout);
+        connection.setReadTimeout(readTimeout);
+
+        connection.connect();
+
+        inputStream = connection.getInputStream();
 
         return inputStream;
     }
