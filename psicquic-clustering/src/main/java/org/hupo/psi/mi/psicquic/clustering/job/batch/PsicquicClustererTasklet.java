@@ -14,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.search.Searcher;
 import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
+import psidev.psi.mi.tab.model.builder.MitabWriterUtils;
+import psidev.psi.mi.tab.model.builder.PsimiTabVersion;
 import uk.ac.ebi.enfin.mi.cluster.ClusterContext;
 import uk.ac.ebi.enfin.mi.cluster.Encore2Binary;
 import uk.ac.ebi.enfin.mi.cluster.EncoreInteraction;
@@ -112,8 +113,6 @@ public class PsicquicClustererTasklet implements Tasklet {
         Map<Integer, EncoreInteraction> interactionMapping = iC.getInteractionMapping();
         Encore2Binary iConverter = new Encore2Binary( iC.getMappingIdDbNames() );
 
-        MitabDocumentDefinition documentDefinition = new MitabDocumentDefinition();
-
         if ( log.isDebugEnabled() ) log.debug( "-------- CLUSTERED MITAB (" + interactionMapping.size() + ") --------" );
 
         final File jobDirectory = new File( dataLocationFile, jobId );
@@ -136,10 +135,10 @@ public class PsicquicClustererTasklet implements Tasklet {
         for ( Map.Entry<Integer, EncoreInteraction> entry : interactionMapping.entrySet() ) {
             final EncoreInteraction ei = entry.getValue();
             final BinaryInteraction bi = iConverter.getBinaryInteraction( ei );
-            final String mitab = documentDefinition.interactionToString( bi );
+            final String mitab = MitabWriterUtils.buildLine(bi, PsimiTabVersion.v2_5);
 
             log.trace( mitab );
-            out.write( mitab + NEW_LINE );
+            out.write( mitab );
         }
         out.flush();
         out.close();

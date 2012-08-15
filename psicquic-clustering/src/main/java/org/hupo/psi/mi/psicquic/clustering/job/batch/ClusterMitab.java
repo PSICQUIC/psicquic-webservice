@@ -3,7 +3,8 @@ package org.hupo.psi.mi.psicquic.clustering.job.batch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
+import psidev.psi.mi.tab.model.builder.MitabWriterUtils;
+import psidev.psi.mi.tab.model.builder.PsimiTabVersion;
 import uk.ac.ebi.enfin.mi.cluster.ClusterContext;
 import uk.ac.ebi.enfin.mi.cluster.Encore2Binary;
 import uk.ac.ebi.enfin.mi.cluster.EncoreInteraction;
@@ -54,8 +55,6 @@ public class ClusterMitab {
         Map<Integer, EncoreInteraction> interactionMapping = iC.getInteractionMapping();
         Encore2Binary iConverter = new Encore2Binary( iC.getMappingIdDbNames() );
 
-        MitabDocumentDefinition documentDefinition = new MitabDocumentDefinition();
-
         log.debug( "-------- CLUSTERED MITAB (" + interactionMapping.size() + ") --------" );
 
 
@@ -76,10 +75,10 @@ public class ClusterMitab {
         for ( Map.Entry<Integer, EncoreInteraction> entry : interactionMapping.entrySet() ) {
             final EncoreInteraction ei = entry.getValue();
             final BinaryInteraction bi = iConverter.getBinaryInteraction( ei );
-            final String mitab = documentDefinition.interactionToString( bi );
+            final String mitab = MitabWriterUtils.buildLine(bi, PsimiTabVersion.v2_5);
 
             log.trace( mitab );
-            out.write( mitab + "\n" );
+            out.write( mitab);
         }
     }
 }
