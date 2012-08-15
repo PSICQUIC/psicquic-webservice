@@ -7,10 +7,10 @@ import org.hupo.psi.calimocho.tab.util.MitabDocumentDefinitionFactory;
 import org.hupo.psi.calimocho.xgmml.XGMMLDocumentDefinition;
 import org.hupo.psi.mi.rdf.PsimiRdfConverter;
 import org.hupo.psi.mi.rdf.RdfFormat;
+import psidev.psi.mi.tab.PsimiTabException;
+import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.converter.tab2xml.Tab2Xml;
 import psidev.psi.mi.tab.converter.tab2xml.XmlConversionException;
-import psidev.psi.mi.tab.PsimiTabReader;
-import psidev.psi.mi.xml.converter.ConverterException;
 import psidev.psi.mi.xml.model.EntrySet;
 
 import java.io.*;
@@ -58,7 +58,7 @@ public class PsicquicSearchResults {
         return numberResults;
     }
 
-    public EntrySet createEntrySet() throws ConverterException, IOException, XmlConversionException, IllegalAccessException {
+    public EntrySet createEntrySet() throws PsimiTabException, IOException, XmlConversionException, IllegalAccessException {
         if (this.numberResults == 0 || this.results.size() == 0) {
             return new EntrySet();
         }
@@ -123,7 +123,7 @@ public class PsicquicSearchResults {
         return rdfFormat;
     }
 
-    public InputStream createRDFOrBiopax(String format) throws ConverterException, IOException, XmlConversionException, IllegalAccessException {
+    public InputStream createRDFOrBiopax(String format) throws PsimiTabException, IOException, XmlConversionException, IllegalAccessException {
 
         if (format == null || format.length() < 4){
             return null;

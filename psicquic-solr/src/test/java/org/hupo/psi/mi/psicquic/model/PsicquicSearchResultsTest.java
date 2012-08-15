@@ -17,10 +17,10 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import psidev.psi.mi.tab.converter.tab2xml.XmlConversionException;
+import psidev.psi.mi.tab.PsimiTabException;
 import psidev.psi.mi.tab.PsimiTabReader;
+import psidev.psi.mi.tab.converter.tab2xml.XmlConversionException;
 import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.xml.converter.ConverterException;
 import psidev.psi.mi.xml.model.Entry;
 import psidev.psi.mi.xml.model.EntrySet;
 
@@ -46,7 +46,7 @@ public class PsicquicSearchResultsTest  extends AbstractSolrServerTest {
     private SolrMitabIndexer solrMitabIndexer;
 
     @Test
-    public void test_create_mitab_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException {
+    public void test_create_mitab_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
@@ -72,7 +72,7 @@ public class PsicquicSearchResultsTest  extends AbstractSolrServerTest {
     }
 
     @Test
-    public void test_create_xml_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException, XmlConversionException, IllegalAccessException {
+    public void test_create_xml_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException, XmlConversionException, IllegalAccessException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
@@ -91,7 +91,7 @@ public class PsicquicSearchResultsTest  extends AbstractSolrServerTest {
     }
 
     @Test
-    public void test_create_xgmml_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException, XmlConversionException, IllegalAccessException, IllegalRowException, XMLStreamException, JAXBException {
+    public void test_create_xgmml_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException, XmlConversionException, IllegalAccessException, IllegalRowException, XMLStreamException, JAXBException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
@@ -107,7 +107,7 @@ public class PsicquicSearchResultsTest  extends AbstractSolrServerTest {
     }
 
     @Test
-    public void test_create_rdf_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException, XmlConversionException, IllegalAccessException {
+    public void test_create_rdf_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException, XmlConversionException, IllegalAccessException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
