@@ -5,6 +5,7 @@ import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.impl.memory.InMemoryClusteringServiceDaoFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 public class JobRunnerTest extends ClusteringTestCase {
 
     @Test
+    @Ignore
     public void runJob() throws Exception {
 
         Assert.assertTrue( getDaoFactory() instanceof InMemoryClusteringServiceDaoFactory );
