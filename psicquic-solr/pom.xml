@@ -124,6 +124,12 @@
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psi25-xml-rdf</artifactId>
             <version>1.7.11-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>woodstox</groupId>
+                    <artifactId>wstx-asl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
