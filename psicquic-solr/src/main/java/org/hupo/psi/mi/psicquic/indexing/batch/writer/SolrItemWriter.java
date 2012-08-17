@@ -93,6 +93,7 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             }
 
             solrServer.shutdown();
+            this.solrServer = null;
         }
     }
 
