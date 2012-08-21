@@ -1,5 +1,6 @@
 package org.hupo.psi.mi.psicquic.model;
 
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.common.SolrDocumentList;
 import org.hupo.psi.calimocho.io.IllegalRowException;
 import org.hupo.psi.calimocho.tab.model.ColumnBasedDocumentDefinition;
@@ -14,6 +15,8 @@ import psidev.psi.mi.tab.converter.tab2xml.XmlConversionException;
 import psidev.psi.mi.xml.model.EntrySet;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Contains the results of a psicquic search. It can create XML, XGMML or any RDF/Biopax format from these results
@@ -27,6 +30,7 @@ public class PsicquicSearchResults {
 
     private long numberResults;
     private SolrDocumentList results;
+    private List<FacetField> facetFields;
     private String [] fieldNames;
 
     private PsimiTabReader mitabReader;
@@ -44,6 +48,22 @@ public class PsicquicSearchResults {
         else {
             this.numberResults = 0;
         }
+    }
+
+    public PsicquicSearchResults(SolrDocumentList results, String [] fieldNames, List<FacetField> facetFields){
+        this.results = results;
+        this.fieldNames = fieldNames;
+        mitabReader = new PsimiTabReader();
+        rdfConverter = new PsimiRdfConverter();
+
+        if (results != null){
+            this.numberResults = results.getNumFound();
+        }
+        else {
+            this.numberResults = 0;
+        }
+
+        this.facetFields = facetFields;
     }
 
     public InputStream getMitab() {
@@ -151,5 +171,34 @@ public class PsicquicSearchResults {
         }
 
         return rdf;
+    }
+
+    /**
+     *
+     * @return the solr document list
+     */
+    public SolrDocumentList getSolrDocumentList() {
+        return results;
+    }
+
+    /**
+     *
+     * @return the list of facet fields that were matching query
+     */
+    public List<FacetField> getFacetFieldList() {
+        return facetFields != null ? facetFields : Collections.EMPTY_LIST;
+    }
+
+    /**
+     *
+     * @param facetFieldName
+     * @return the facet field with a specific name, null if it does not exist
+     */
+    public FacetField getFacetField(String facetFieldName){
+        if (this.facetFields==null || facetFieldName == null) return null;
+        for (FacetField f : this.facetFields) {
+            if (f.getName().equals(facetFieldName)) return f;
+        }
+        return null;
     }
 }

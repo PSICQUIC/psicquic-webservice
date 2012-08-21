@@ -14,6 +14,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import psidev.psi.mi.tab.PsimiTabException;
 import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.xml.converter.ConverterException;
 
@@ -129,7 +130,7 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
     }
 
     @Test
-    public void query_subset_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException {
+    public void query_subset_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
@@ -164,7 +165,7 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
     }
 
     @Test
-    public void query_using_filters() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException {
+    public void query_using_filters() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 

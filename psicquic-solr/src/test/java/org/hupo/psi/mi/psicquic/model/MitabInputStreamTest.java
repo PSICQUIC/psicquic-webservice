@@ -16,8 +16,8 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import psidev.psi.mi.tab.PsimiTabException;
 import psidev.psi.mi.tab.PsimiTabReader;
-import psidev.psi.mi.xml.converter.ConverterException;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -39,7 +39,7 @@ public class MitabInputStreamTest  extends AbstractSolrServerTest {
     private PsimiTabReader mitabReader = new PsimiTabReader();
 
     @Test
-    public void test_create_mitab25_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException {
+    public void test_create_mitab25_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
@@ -54,7 +54,7 @@ public class MitabInputStreamTest  extends AbstractSolrServerTest {
     }
 
     @Test
-    public void test_create_mitab26_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException {
+    public void test_create_mitab26_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
@@ -69,7 +69,7 @@ public class MitabInputStreamTest  extends AbstractSolrServerTest {
     }
 
     @Test
-    public void test_create_mitab27_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, ConverterException, IOException {
+    public void test_create_mitab27_results() throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException, SolrServerException, PsicquicSolrException, PsimiTabException, IOException {
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
