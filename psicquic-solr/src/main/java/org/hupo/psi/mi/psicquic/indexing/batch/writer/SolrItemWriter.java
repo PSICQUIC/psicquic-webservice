@@ -40,9 +40,6 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     // settings SOLRServer
     private int maxTotalConnections = 128;
     private int defaultMaxConnectionsPerHost = 32;
-    private int connectionTimeOut = 20000;
-    private int soTimeOut = 20000;
-    private boolean allowCompression = true;
 
     public SolrItemWriter(){
         solrConverter = new Converter();
@@ -118,10 +115,6 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             }
 
             solrServer = new HttpSolrServer(solrUrl, createHttpClient());
-
-            solrServer.setConnectionTimeout(connectionTimeOut);
-            solrServer.setSoTimeout(soTimeOut);
-            solrServer.setAllowCompression(allowCompression);
         }
 
         return solrServer;
@@ -157,30 +150,6 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     public void setDefaultMaxConnectionsPerHost(int defaultMaxConnectionsPerHost) {
         this.defaultMaxConnectionsPerHost = defaultMaxConnectionsPerHost;
-    }
-
-    public int getConnectionTimeOut() {
-        return connectionTimeOut;
-    }
-
-    public void setConnectionTimeOut(int connectionTimeOut) {
-        this.connectionTimeOut = connectionTimeOut;
-    }
-
-    public int getSoTimeOut() {
-        return soTimeOut;
-    }
-
-    public void setSoTimeOut(int soTimeOut) {
-        this.soTimeOut = soTimeOut;
-    }
-
-    public boolean isAllowCompression() {
-        return allowCompression;
-    }
-
-    public void setAllowCompression(boolean allowCompression) {
-        this.allowCompression = allowCompression;
     }
 
     public void setSolrUrl(String solrUrl) {
