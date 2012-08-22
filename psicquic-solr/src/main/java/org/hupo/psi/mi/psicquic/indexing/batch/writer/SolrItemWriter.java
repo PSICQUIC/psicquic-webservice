@@ -127,7 +127,7 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
         return solrServer;
     }
 
-    private HttpClient createHttpClient() {
+    protected HttpClient createHttpClient() {
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory
                 .getSocketFactory()));
