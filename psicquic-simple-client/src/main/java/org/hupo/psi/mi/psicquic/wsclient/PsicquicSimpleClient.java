@@ -17,6 +17,8 @@ package org.hupo.psi.mi.psicquic.wsclient;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Bruno Aranda (baranda@ebi.ac.uk)
@@ -101,6 +103,40 @@ public class PsicquicSimpleClient {
 
     public long countByInteraction(String query) throws IOException {
         return countBy("interaction", query);
+    }
+
+    public List<String> getFormats() throws IOException {
+
+        String strUrl = serviceRestUrl+"/formats";
+
+        HttpURLConnection connection = null;
+        InputStream result = null;
+
+        URL url;
+        try {
+            url = new URL(strUrl);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Problem creating URL: "+strUrl, e);
+        }
+
+        if (this.proxy == null){
+            connection = (HttpURLConnection) url.openConnection();
+        }
+        else {
+            connection = (HttpURLConnection) url.openConnection(this.proxy);
+        }
+
+        connection.setConnectTimeout(connectionTimeout);
+        connection.setReadTimeout(readTimeout);
+
+        connection.connect();
+
+        result = connection.getInputStream();
+
+        String formats = streamToString(result);
+
+        return Arrays.asList(formats.split("\n"));
+
     }
 
     private InputStream getBy(String queryType, String query, String format, int firstResult, int maxResults) throws IOException {
