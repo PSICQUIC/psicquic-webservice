@@ -107,7 +107,7 @@ public class PsicquicSimpleClient {
 
     public List<String> getFormats() throws IOException {
 
-        String strUrl = serviceRestUrl+"/formats";
+        String strUrl = serviceRestUrl+"formats";
 
         HttpURLConnection connection = null;
         InputStream result = null;
