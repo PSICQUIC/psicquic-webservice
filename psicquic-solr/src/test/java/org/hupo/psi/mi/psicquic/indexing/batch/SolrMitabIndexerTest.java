@@ -2,6 +2,7 @@ package org.hupo.psi.mi.psicquic.indexing.batch;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.Assert;
@@ -42,7 +43,7 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
 
         solrMitabIndexer.startJob("mitabIndexNegativeJob");
 
-        SolrServer server = solrJettyRunner.getSolrServer();
+        HttpSolrServer server = solrJettyRunner.getSolrServer();
 
         Assert.assertEquals(4L, server.query(new SolrQuery("*:*")).getResults().getNumFound());
         // two negative, two positive
@@ -139,7 +140,7 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
 
         solrMitabIndexer.startJob("mitabIndexParameterJob");
 
-        SolrServer server = solrJettyRunner.getSolrServer();
+        HttpSolrServer server = solrJettyRunner.getSolrServer();
 
         Assert.assertEquals(14L, server.query(new SolrQuery("*:*")).getResults().getNumFound());
         // two parameters

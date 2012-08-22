@@ -1,11 +1,17 @@
 package org.hupo.psi.mi.psicquic.model.server;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
@@ -31,7 +37,7 @@ public class SolrJettyRunner {
     private int port = 18080;
 
     protected Server server;
-    protected SolrServer solrServer;
+    protected HttpSolrServer solrServer;
 
     protected File workingDir;
     protected File solrHome;
@@ -104,10 +110,10 @@ public class SolrJettyRunner {
     }
 
     public void stop() throws Exception {
-        if (server != null) server.stop();
         if (solrServer != null){
-            ((HttpSolrServer) solrServer).shutdown();
+            solrServer.shutdown();
         }
+        if (server != null) server.stop();
     }
 
     public File getSolrHome() {
@@ -118,9 +124,30 @@ public class SolrJettyRunner {
         return "http://localhost:"+port+"/solr/";
     }
 
-    public SolrServer getSolrServer() {
-        solrServer = new HttpSolrServer(getSolrUrl());
+    public HttpSolrServer getSolrServer() {
+        solrServer = new HttpSolrServer(getSolrUrl(), createHttpClient());
+
+        solrServer.setConnectionTimeout(5000);
+        solrServer.setSoTimeout(5000);
+        solrServer.setAllowCompression(true);
+
         return solrServer;
+    }
+
+    protected HttpClient createHttpClient() {
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory
+                .getSocketFactory()));
+        schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory
+                .getSocketFactory()));
+
+        PoolingClientConnectionManager cm = new PoolingClientConnectionManager(schemeRegistry);
+        cm.setMaxTotal(128);
+        cm.setDefaultMaxPerRoute(32);
+
+        HttpClient httpClient = new DefaultHttpClient(cm);
+
+        return httpClient;
     }
 
     public int getPort() {

@@ -1,5 +1,12 @@
 package org.hupo.psi.mi.psicquic.indexing.batch.writer;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
@@ -29,6 +36,13 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     protected String solrUrl;
     protected HttpSolrServer solrServer;
     protected Converter solrConverter;
+
+    // settings SOLRServer
+    private int maxTotalConnections = 128;
+    private int defaultMaxConnectionsPerHost = 32;
+    private int connectionTimeOut = 100000;
+    private int soTimeOut = 100000;
+    private boolean allowCompression = true;
 
     public SolrItemWriter(){
         solrConverter = new Converter();
@@ -103,10 +117,70 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
                 throw new NullPointerException("No 'solr url' configured for SolrItemWriter");
             }
 
-            solrServer = new HttpSolrServer(solrUrl);
+            solrServer = new HttpSolrServer(solrUrl, createHttpClient());
+
+            solrServer.setConnectionTimeout(connectionTimeOut);
+            solrServer.setSoTimeout(soTimeOut);
+            solrServer.setAllowCompression(allowCompression);
         }
 
         return solrServer;
+    }
+
+    private HttpClient createHttpClient() {
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory
+                .getSocketFactory()));
+        schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory
+                .getSocketFactory()));
+
+        PoolingClientConnectionManager cm = new PoolingClientConnectionManager(schemeRegistry);
+        cm.setMaxTotal(maxTotalConnections);
+        cm.setDefaultMaxPerRoute(defaultMaxConnectionsPerHost);
+
+        HttpClient httpClient = new DefaultHttpClient(cm);
+
+        return httpClient;
+    }
+
+    public int getMaxTotalConnections() {
+        return maxTotalConnections;
+    }
+
+    public void setMaxTotalConnections(int maxTotalConnections) {
+        this.maxTotalConnections = maxTotalConnections;
+    }
+
+    public int getDefaultMaxConnectionsPerHost() {
+        return defaultMaxConnectionsPerHost;
+    }
+
+    public void setDefaultMaxConnectionsPerHost(int defaultMaxConnectionsPerHost) {
+        this.defaultMaxConnectionsPerHost = defaultMaxConnectionsPerHost;
+    }
+
+    public int getConnectionTimeOut() {
+        return connectionTimeOut;
+    }
+
+    public void setConnectionTimeOut(int connectionTimeOut) {
+        this.connectionTimeOut = connectionTimeOut;
+    }
+
+    public int getSoTimeOut() {
+        return soTimeOut;
+    }
+
+    public void setSoTimeOut(int soTimeOut) {
+        this.soTimeOut = soTimeOut;
+    }
+
+    public boolean isAllowCompression() {
+        return allowCompression;
+    }
+
+    public void setAllowCompression(boolean allowCompression) {
+        this.allowCompression = allowCompression;
     }
 
     public void setSolrUrl(String solrUrl) {
