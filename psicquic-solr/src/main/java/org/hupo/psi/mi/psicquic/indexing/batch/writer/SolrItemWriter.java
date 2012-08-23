@@ -10,7 +10,6 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.common.SolrInputDocument;
 import org.hupo.psi.calimocho.model.Row;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStream;
@@ -40,6 +39,9 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     // settings SOLRServer
     private int maxTotalConnections = 128;
     private int defaultMaxConnectionsPerHost = 32;
+    private int connectionTimeOut = 20000;
+    private boolean allowCompression = true;
+    private int socketTimeOut = 20000;
 
     public SolrItemWriter(){
         solrConverter = new Converter();
@@ -60,11 +62,9 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             return;
         }
 
-        for (Row binaryInteraction : items) {
+        SolrDocumentCalimochoRowIterator docIterator = new SolrDocumentCalimochoRowIterator(items, this.solrConverter);
+        solrServer.add(docIterator);
 
-            SolrInputDocument solrInputDoc = solrConverter.toSolrDocument(binaryInteraction);
-            solrServer.add(solrInputDoc);
-        }
     }
 
     public void open(ExecutionContext executionContext) throws ItemStreamException {
@@ -115,6 +115,11 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             }
 
             solrServer = new HttpSolrServer(solrUrl, createHttpClient());
+            solrServer.setMaxRetries(0);
+            solrServer.setAllowCompression(allowCompression);
+            solrServer.setConnectionTimeout(connectionTimeOut);
+            solrServer.setSoTimeout(socketTimeOut);
+
         }
 
         return solrServer;
@@ -154,5 +159,29 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     public void setSolrUrl(String solrUrl) {
         this.solrUrl = solrUrl;
+    }
+
+    public boolean isAllowCompression() {
+        return allowCompression;
+    }
+
+    public void setAllowCompression(boolean allowCompression) {
+        this.allowCompression = allowCompression;
+    }
+
+    public int getConnectionTimeOut() {
+        return connectionTimeOut;
+    }
+
+    public void setConnectionTimeOut(int connectionTimeOut) {
+        this.connectionTimeOut = connectionTimeOut;
+    }
+
+    public int getSocketTimeOut() {
+        return socketTimeOut;
+    }
+
+    public void setSocketTimeOut(int socketTimeOut) {
+        this.socketTimeOut = socketTimeOut;
     }
 }

@@ -50,7 +50,7 @@
 
             <batch:chunk reader="mitabReader"
                          writer="solrWriter"
-                         retry-limit="10" commit-interval="1000">
+                         retry-limit="10" commit-interval="5000">
                 <batch:streams>
                     <batch:stream ref="mitabReader"/>
                     <batch:stream ref="solrWriter"/>
