@@ -109,7 +109,7 @@ public class PsicquicSimpleClient {
         String queryType = "/formats";
 
         String strUrl = serviceRestUrl + queryType;
-        strUrl = strUrl.replaceAll("//"+ queryType, "/"+ queryType);
+        strUrl = strUrl.replaceAll("/"+ queryType, queryType);
 
         HttpURLConnection connection = null;
         InputStream result = null;
