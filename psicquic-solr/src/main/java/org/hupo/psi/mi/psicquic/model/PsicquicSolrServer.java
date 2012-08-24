@@ -267,8 +267,9 @@ public class PsicquicSolrServer {
                 solrQuery.setFacetLimit(maxFacet);
             } else {
                 solrQuery.setFacetLimit(Integer.MAX_VALUE - firstFacet);
-
             }
+
+            solrQuery.setFacetSort(FacetParams.FACET_SORT_COUNT);
         }
 
         // by default, if no return types is specified, it will return MITAB 2.5
