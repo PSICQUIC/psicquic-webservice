@@ -144,8 +144,8 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
 
         Assert.assertEquals(14L, server.query(new SolrQuery("*:*")).getResults().getNumFound());
         // two parameters
-        Assert.assertEquals(2L, server.query(new SolrQuery("param:true")).getResults().getNumFound());
-        Assert.assertEquals(12L, server.query(new SolrQuery("param:false")).getResults().getNumFound());
+        Assert.assertEquals(3L, server.query(new SolrQuery("param:true")).getResults().getNumFound());
+        Assert.assertEquals(11L, server.query(new SolrQuery("param:false")).getResults().getNumFound());
 
         // test spoke expansion
         Assert.assertEquals(8L, server.query(new SolrQuery("complex:\"MI:1060\"")).getResults().getNumFound());
