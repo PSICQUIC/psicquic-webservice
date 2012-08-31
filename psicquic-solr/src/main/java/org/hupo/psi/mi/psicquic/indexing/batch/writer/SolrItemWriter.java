@@ -10,6 +10,7 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.common.SolrInputDocument;
 import org.hupo.psi.calimocho.model.Row;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemStream;
@@ -60,9 +61,10 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             return;
         }
 
-        SolrDocumentCalimochoRowIterator docIterator = new SolrDocumentCalimochoRowIterator(items, this.solrConverter);
-        solrServer.add(docIterator);
-
+        for (Row row : items){
+            SolrInputDocument solrInputDoc = solrConverter.toSolrDocument(row);
+            solrServer.add(solrInputDoc);
+        }
     }
 
     public void open(ExecutionContext executionContext) throws ItemStreamException {
