@@ -29,7 +29,6 @@ import psidev.psi.mi.search.Searcher;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -175,6 +174,6 @@ public class IndexBasedPsicquicRestServiceTest {
         ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "biopax", "0", "5", "n");
 
         final String output = (String) response.getEntity();
-        Assert.assertEquals(5, StringUtils.countMatches(output, "<bp:MolecularInteraction "));
+        Assert.assertEquals(5, StringUtils.countMatches(output, "<j.0:MolecularInteraction "));
     }
 }
