@@ -154,8 +154,8 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest{
         //psi-mi:"MI:1060"(spoke expansion)
 
         // test stc
-        Assert.assertEquals(2L, server.query(new SolrQuery("stc:true")).getResults().getNumFound());
-        Assert.assertEquals(12L, server.query(new SolrQuery("stc:false")).getResults().getNumFound());
+        Assert.assertEquals(3L, server.query(new SolrQuery("stc:true")).getResults().getNumFound());
+        Assert.assertEquals(11L, server.query(new SolrQuery("stc:false")).getResults().getNumFound());
     }
 
     @Test
