@@ -30,7 +30,7 @@ import java.util.Iterator;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration( locations = {"classpath*:/META-INF/psicquic-spring.xml",
         "classpath*:/jobs/psicquic-indexing-spring-test.xml"})
-public class SolrMitabIndexerTest extends AbstractSolrServerTest{
+public class SolrMitabIndexerTest extends AbstractSolrServerTest {
 
     @Autowired
     private SolrMitabIndexer solrMitabIndexer;

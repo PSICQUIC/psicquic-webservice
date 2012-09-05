@@ -18,7 +18,7 @@ import java.util.Arrays;
  * @since <pre>16/07/12</pre>
  */
 
-public class SolrItemWriterUnitTest extends AbstractSolrServerTest{
+public class SolrItemWriterUnitTest extends AbstractSolrServerTest {
 
     @Test
     public void test_write_rows() throws Exception {

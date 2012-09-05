@@ -24,7 +24,7 @@ import psidev.psi.mi.calimocho.solr.converter.Converter;
  * @since <pre>12/07/12</pre>
  */
 
-public class SolrCleanerTaskletUnitTest extends AbstractSolrServerTest{
+public class SolrCleanerTaskletUnitTest extends AbstractSolrServerTest {
 
     @Test
     public void test_delete_all() throws Exception {

@@ -13,7 +13,7 @@ import org.junit.Before;
  * @since <pre>16/07/12</pre>
  */
 
-public class AbstractSolrServerTest {
+public abstract class AbstractSolrServerTest {
 
     protected SolrJettyRunner solrJettyRunner;
 
