@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 
 import javax.ws.rs.core.MediaType;
