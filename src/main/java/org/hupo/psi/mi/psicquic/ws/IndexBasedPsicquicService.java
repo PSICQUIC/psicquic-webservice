@@ -28,7 +28,8 @@ import psidev.psi.mi.search.engine.SearchEngine;
 import psidev.psi.mi.search.engine.impl.BinaryInteractionSearchEngine;
 import psidev.psi.mi.tab.converter.tab2xml.Tab2Xml;
 import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
+import psidev.psi.mi.tab.model.builder.MitabWriterUtils;
+import psidev.psi.mi.tab.model.builder.PsimiTabVersion;
 import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
 import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
 import psidev.psi.mi.xml254.jaxb.Attribute;
@@ -261,16 +262,13 @@ public class IndexBasedPsicquicService implements PsicquicService {
     }
 
     protected String createMitabResults(SearchResult searchResult) {
-        MitabDocumentDefinition docDef = new MitabDocumentDefinition();
-
         List<BinaryInteraction> binaryInteractions = searchResult.getData();
 
         StringBuilder sb = new StringBuilder(binaryInteractions.size() * 512);
 
         for (BinaryInteraction binaryInteraction : binaryInteractions) {
-            String binaryInteractionString = docDef.interactionToString(binaryInteraction);
+            String binaryInteractionString = MitabWriterUtils.buildLine(binaryInteraction, PsimiTabVersion.v2_5);
             sb.append(binaryInteractionString);
-            sb.append(NEW_LINE);
         }
         return sb.toString();
     }
