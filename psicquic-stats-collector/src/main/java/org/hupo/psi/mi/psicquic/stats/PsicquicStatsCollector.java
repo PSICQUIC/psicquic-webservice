@@ -16,16 +16,15 @@ import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.hupo.psi.mi.psicquic.registry.client.PsicquicRegistryClientException;
 import org.hupo.psi.mi.psicquic.registry.client.registry.DefaultPsicquicRegistryClient;
 import org.hupo.psi.mi.psicquic.registry.client.registry.PsicquicRegistryClient;
-import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import psidev.psi.mi.tab.PsimiTabException;
 import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.tab.model.CrossReference;
-import psidev.psi.mi.xml.converter.ConverterException;
 import uk.ac.ebi.intact.google.spreadsheet.SpreadsheetFacade;
 import uk.ac.ebi.intact.google.spreadsheet.WorksheetFacade;
 
@@ -489,7 +488,6 @@ public class PsicquicStatsCollector {
     /**
      * Update the given list of PSICQUIC services. that is their interaction count.
      * @param psicquicServices the list of services to update.
-     * @throws PsicquicClientException
      */
     public Map<String, Long> updatePsicquicInteractionsStats(List<PsicquicService> psicquicServices) {
         Map<String, Long> db2interactionCount = Maps.newHashMap();
@@ -587,7 +585,7 @@ public class PsicquicStatsCollector {
 
             try {
                 do {
-                    PsimiTabReader mitabReader = new PsimiTabReader(false);
+                    PsimiTabReader mitabReader = new PsimiTabReader();
                     try {
                         Collection<BinaryInteraction> binaryInteractions = processCountPublications(current, pmids, simpleClient, mitabReader);
                         current += binaryInteractions.size();
@@ -670,7 +668,7 @@ public class PsicquicStatsCollector {
         return db2publicationsCount;
     }
 
-    private Collection<BinaryInteraction> processCountPublications(int current, Set<String> pmids, PsicquicSimpleClient simpleClient, PsimiTabReader mitabReader) throws IOException, ConverterException {
+    private Collection<BinaryInteraction> processCountPublications(int current, Set<String> pmids, PsicquicSimpleClient simpleClient, PsimiTabReader mitabReader) throws IOException, PsimiTabException {
         InputStream result = simpleClient.getByQuery(config.getPublicationMiqlQuery(),"tab25", current, PSICQUIC_BATCH_SIZE);
 
         System.out.println(config.getPublicationMiqlQuery() + " / " + "tab25" + " / " + current + " / " + PSICQUIC_BATCH_SIZE);
