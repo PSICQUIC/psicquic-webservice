@@ -67,12 +67,12 @@
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-simple-client</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-client</artifactId>
-            <version>1.4-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
@@ -98,12 +98,12 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
-            <version>1.8.0-SNAPSHOT</version>
+            <version>1.8.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.8.0-SNAPSHOT</version>
+            <version>1.8.1-SNAPSHOT</version>
         </dependency>
 
         <!-- Spring batch -->
