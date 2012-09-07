@@ -216,4 +216,12 @@ public class PsicquicSimpleClient {
         }
         return sb.toString();
     }
+
+	public int getReadTimeout() {
+		return readTimeout;
+	}
+
+	public void setReadTimeout(int readTimeout) {
+		this.readTimeout = readTimeout;
+	}
 }
