@@ -1,18 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-solr</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>psicquic-solr</name>
 
     <scm>
-        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr</developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-solr</url>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-solr-1.0</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-solr-1.0</developerConnection>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/tags/psicquic-solr-1.0</url>
     </scm>
 
     <properties>
@@ -64,7 +63,7 @@
                                 <argument>-Xms256m</argument>
 
                                 <argument>-classpath</argument>
-                                <classpath/>
+                                <classpath />
 
                                 <argument>org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer</argument>
                             </arguments>
@@ -94,7 +93,7 @@
                                 <argument>-Xmx2024m</argument>
 
                                 <argument>-classpath</argument>
-                                <classpath/>
+                                <classpath />
 
                                 <argument>org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer</argument>
                                 <argument>${indexing.id}</argument>
