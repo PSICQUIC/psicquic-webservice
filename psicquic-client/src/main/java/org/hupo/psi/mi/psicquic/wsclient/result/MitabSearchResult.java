@@ -1,9 +1,9 @@
 package org.hupo.psi.mi.psicquic.wsclient.result;
 
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicClientException;
+import psidev.psi.mi.tab.PsimiTabException;
 import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.xml.converter.ConverterException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -56,7 +56,7 @@ public class MitabSearchResult implements Serializable {
                     this.data = new ArrayList<BinaryInteraction>(mitabReader.read(this.mitab));
                 } catch (IOException e) {
                     throw new PsicquicClientException("Problem converting the results to BinaryInteractions", e);
-                } catch (ConverterException e) {
+                } catch (PsimiTabException e) {
                     throw new PsicquicClientException("Problem converting the results to BinaryInteractions", e);
                 }
             }
