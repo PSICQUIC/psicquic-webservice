@@ -111,7 +111,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
@@ -122,7 +122,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psi25-xml-rdf</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>woodstox</groupId>
@@ -133,18 +133,18 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-solr</artifactId>
-            <version>2.3</version>
+            <version>2.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-tab</artifactId>
-            <version>2.3</version>
+            <version>2.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-xgmml</artifactId>
-            <version>2.3</version>
+            <version>2.4-SNAPSHOT</version>
         </dependency>
 
         <!-- Jetty -->
@@ -233,7 +233,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-tab</artifactId>
-            <version>2.3</version>
+            <version>2.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
