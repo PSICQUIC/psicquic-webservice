@@ -270,6 +270,10 @@ public class PsicquicSolrServer {
             }
 
             solrQuery.setFacetSort(FacetParams.FACET_SORT_COUNT);
+
+            // add facet fields
+            solrQuery.addFacetField(facets);
+
         }
 
         // by default, if no return types is specified, it will return MITAB 2.5
