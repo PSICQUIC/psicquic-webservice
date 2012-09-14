@@ -303,7 +303,7 @@ public class PsicquicSolrServer {
 
         if(originalQuery.getFields()!=null){
             // new array created here so the map solrFields is never changed
-            fields = (String[]) ArrayUtils.add(fields, originalQuery.getFields().split(","));
+            fields = (String[]) ArrayUtils.addAll(fields, originalQuery.getFields().split(","));
         }
 
         originalQuery.setFields(fields);
