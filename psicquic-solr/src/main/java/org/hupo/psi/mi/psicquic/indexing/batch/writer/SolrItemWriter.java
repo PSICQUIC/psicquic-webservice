@@ -39,7 +39,7 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     // settings SOLRServer
     private int maxTotalConnections = 128;
-    private int defaultMaxConnectionsPerHost = 32;
+    private int defaultMaxConnectionsPerHost = 24;
     private boolean allowCompression = true;
 
     public SolrItemWriter(){

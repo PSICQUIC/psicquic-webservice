@@ -143,7 +143,7 @@ public class SolrJettyRunner {
 
         PoolingClientConnectionManager cm = new PoolingClientConnectionManager(schemeRegistry);
         cm.setMaxTotal(128);
-        cm.setDefaultMaxPerRoute(32);
+        cm.setDefaultMaxPerRoute(24);
 
         HttpClient httpClient = new DefaultHttpClient(cm);
 
