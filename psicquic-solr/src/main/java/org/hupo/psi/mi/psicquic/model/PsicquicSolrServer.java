@@ -342,7 +342,12 @@ public class PsicquicSolrServer {
             query = sb.toString().trim();
         }
 
-        originalQuery.setQuery(query);
+        // replace and/or in lower case
+        originalQuery.setQuery(query
+                .replaceAll(" and ", " AND ")
+                .replaceAll(" or ", " OR ")
+                .replaceAll(" not ", " NOT ")
+                .replaceAll("^not ", "NOT "));
 
         org.apache.solr.client.solrj.response.QueryResponse solrResponse = solrServer.query(originalQuery);
 
