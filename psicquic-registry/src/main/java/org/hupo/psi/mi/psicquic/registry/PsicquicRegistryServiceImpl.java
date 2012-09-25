@@ -16,30 +16,20 @@
 package org.hupo.psi.mi.psicquic.registry;
 
 import freemarker.template.Configuration;
-import org.apache.commons.io.IOUtils;
 import org.hupo.psi.mi.psicquic.expressiontree.ExpressionTree;
 import org.hupo.psi.mi.psicquic.expressiontree.ParseExpressionException;
 import org.hupo.psi.mi.psicquic.ols.client.SelfDiscoveringOntologyTree;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig;
 import org.hupo.psi.mi.psicquic.registry.util.FreemarkerStreamingOutput;
 import org.hupo.psi.mi.psicquic.registry.util.RawTextStreamingOutput;
-import org.hupo.psi.mi.psicquic.wsclient.UniversalPsicquicClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import psidev.psi.mi.tab.model.BinaryInteraction;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,7 +54,7 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
     @Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;
-    
+
     @Autowired
     private SelfDiscoveringOntologyTree miOntologyTree;
 
@@ -222,11 +212,11 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
         }
 
     }
-    
+
     private class TagsFilter implements ServiceFilter {
-        
+
         private String expression;
-        
+
 
         public TagsFilter(String expression) {
             this.expression = expression;
@@ -234,7 +224,7 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 
 		public boolean accept(ServiceType service) {
 			boolean accept;
-			
+
 			if(expression != null && expression.trim().length() > 0) {
 				try {
                     ExpressionTree exTree = new ExpressionTree(expression, miOntologyTree,false);
@@ -245,7 +235,7 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService{
 			} else {
                 accept = true;
             }
-			
+
 			return accept;
 		}
     }
