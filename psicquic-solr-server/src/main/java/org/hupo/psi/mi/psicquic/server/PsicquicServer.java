@@ -105,8 +105,8 @@ public class PsicquicServer {
             .query( query, miqlx, firstResult, blockSize );
         
         ResultSet prs = 
-            new ResultSet( qrs.getFirstResult(), qrs.getMaxResult(),
-                           new ArrayList() );
+            new ResultSet( viewType, qrs.getFirstResult(),
+                           qrs.getMaxResult(), new ArrayList() );
         
         prs.setMeta( qrs.getMeta() );
 
@@ -126,6 +126,54 @@ public class PsicquicServer {
         }
         
         return prs;
+    }
+
+    //--------------------------------------------------------------------------
+
+    public String toString( ResultSet rset, boolean records, boolean meta ){
+        
+        String rstr = "";
+
+        // Records
+        //--------
+
+        if( records ){
+            rstr += psqContext.getActiveStore().toString( rset );
+        }
+        
+        // Meta info
+        //----------
+
+        if( meta  && rset.getMeta() != null ){
+            
+            if( rset.getMeta().get( "groups") != null ){
+                
+                Map<String,List<ValueCount>> groups = 
+                    (Map<String,List<ValueCount>>) rset.getMeta()
+                    .get( "groups");
+                
+                for( Iterator<Map.Entry<String,List<ValueCount>>> ig =
+                         groups.entrySet().iterator(); ig.hasNext(); ){
+
+                    Map.Entry<String,List<ValueCount>> me = ig.next();
+
+                    String field = me.getKey();
+
+                    for( Iterator<ValueCount> ivc = me.getValue().iterator();
+                         ivc.hasNext(); ){
+
+                        ValueCount vc = ivc.next();
+                        String value = vc.getValue();
+                        long count = vc.getCount();
+                        rstr += "#" + "miqlx:groupby" + "\t"
+                            + field + "\t"
+                            + value + "\t"
+                            + count + "\n";
+                    }
+                }
+            }
+        }
+        return rstr;
     }
     
     //--------------------------------------------------------------------------

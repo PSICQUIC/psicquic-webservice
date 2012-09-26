@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.regex.*;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
+import org.hupo.psi.mi.psicquic.server.*;
 import org.hupo.psi.mi.psicquic.server.store.*;
 
 import org.apache.commons.logging.Log;
@@ -271,6 +272,15 @@ public class DerbyRecordStore implements RecordStore{
     }
 
 
+    //--------------------------------------------------------------------------
+
+    public String toString( org.hupo.psi.mi.psicquic.server.ResultSet rset ){
+        
+        String rstr = "";
+        
+        return rstr;
+    }
+    
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
     

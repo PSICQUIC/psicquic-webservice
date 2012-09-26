@@ -19,6 +19,8 @@ import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.URIResolver;
+
 import javax.xml.bind.util.JAXBResult;
 
 import org.apache.solr.common.SolrInputDocument;
@@ -66,6 +68,13 @@ public class XsltTransformer implements PsqTransformer{
                 TransformerFactory
                     tFactory = TransformerFactory.newInstance();
                 
+                URIResolver defURIResolver = tFactory.getURIResolver(); 
+                URIResolver cpURIResolver = new ClassPathURIResolver( defURIResolver );
+
+                tFactory.setURIResolver( cpURIResolver );
+
+
+
                 psqtr = tFactory.newTransformer( xslDomSource );
             }
 	} catch( Exception ex ) {

@@ -89,18 +89,20 @@ public class PsicquicRestImpl implements PsicquicRest{
         log.info( "getByQuery: rs="+ qrs );
         log.info( "meta=" + qrs.getMeta() );
         
-        String mitab="";
+        String mitab = psqServer.toString( qrs, true, true );
 
         // Records
         //--------
 
-        for( Iterator i = qrs.getResultList().iterator(); i.hasNext(); ){
-            String record = (String) i.next();
-            mitab += record + "\n";
-        }
+        //for( Iterator i = qrs.getResultList().iterator(); i.hasNext(); ){
+        //    String record = (String) i.next();
+        //    mitab += record + "\n";
+        //}
       
         // Meta info 
         //----------
+
+        /*
         if( qrs.getMeta() != null ){
 
             if( qrs.getMeta().get( "groups") != null ){
@@ -129,7 +131,7 @@ public class PsicquicRestImpl implements PsicquicRest{
                 }
             }
         }
-        
+        */
         return mitab;        
     }
     

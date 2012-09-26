@@ -18,17 +18,33 @@ public class ResultSet{
     long firstResult;
     long maxResult;
 
+    String format;
+
     Map<String,Object> meta;
     
     public ResultSet(){
         firstResult = 0;
         maxResult = 0;
     }
-    
+
+    public ResultSet( String format ){
+        firstResult = 0;
+        maxResult = 0;
+        this.format = format;
+    }
+
     public ResultSet( long first, long max, List results ){
         resultList = results;
         firstResult = first;
         maxResult = max;
+    }
+
+    public ResultSet( String format, long first, long max, 
+                      List results ){
+        resultList = results;
+        firstResult = first;
+        maxResult = max;
+        this.format = format;
     }
 
     public List getResultList(){
@@ -56,6 +72,10 @@ public class ResultSet{
 
     public void setMaxResult( long max ){
         maxResult = max;
+    }
+
+    public String getFormat(){
+        return format;
     }
     
     public Map<String,Object> getMeta(){

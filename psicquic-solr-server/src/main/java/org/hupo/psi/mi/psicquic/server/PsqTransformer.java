@@ -20,4 +20,6 @@ public interface PsqTransformer{
     public boolean hasNext();
     public Map next();
 
+    //public Map toString( RecordSet rset );
+
 }

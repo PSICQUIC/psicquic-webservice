@@ -30,7 +30,7 @@ import org.apache.solr.client.solrj.response.*;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
 
-import org.hupo.psi.mi.psicquic.server.index.*;
+import org.hupo.psi.mi.psicquic.server.index.RecordIndex;
 import org.hupo.psi.mi.psicquic.server.*;
 
 import org.apache.commons.logging.Log;

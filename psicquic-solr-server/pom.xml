@@ -11,8 +11,8 @@
 
     <properties>
       <cxf.version>2.6.0</cxf.version>
-      <spring.version>3.0.5.RELEASE</spring.version>
-      <struts.version>2.3.4</struts.version>
+      <spring.version>3.1.2.RELEASE</spring.version>
+      <struts.version>2.3.4.1</struts.version>
       <solr.version>3.6.0</solr.version>
       <calimocho.version>2.2-SNAPSHOT</calimocho.version>
     </properties>
@@ -89,39 +89,11 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <!--
-        <dependency>
-            <groupId>org.springframework.batch</groupId>
-            <artifactId>spring-batch-core</artifactId>
-            <version>2.1.8.RELEASE</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>com.springsource.org.apache.commons.logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
-
-
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-solr</artifactId>
             <version>${calimocho.version}</version>
         </dependency>
-<!--
-        <dependency>
-            <groupId>psidev.psi.mi</groupId>
-            <artifactId>calimocho-tab</artifactId>
-            <version>${calimocho.version}</version>
-        </dependency>
--->
-
-         <dependency>
-           <groupId>org.springframework</groupId>
-           <artifactId>spring-web</artifactId>
-           <version>${spring.version}</version>
-         </dependency>
 
          <dependency>
            <groupId>org.apache.cxf</groupId>
@@ -227,9 +199,6 @@
           <version>2.3</version>
         </dependency>
     </dependencies>
-
-
-
 
     <build>
       <finalName>psicquic-solr-server</finalName>

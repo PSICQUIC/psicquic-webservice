@@ -22,7 +22,7 @@
         "mif254":{
              "type":"xslt", 
              "config":{
-                 "xslt":"etc/xsl/mif2index2-xpsq.xml"
+                 "xslt":"mif2solr2x.xml"
              }  
         },
         "mitab25":{
@@ -52,7 +52,7 @@
      "record-mgr": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr",
      "active":"solr",
      "rec-id":"uuId",
-     "view-default":"mitab27",
+     "view-default":"mitab28",
      "derby":{
         "derby-db":"derby/psq-store",
         "rec-id":"recId"
@@ -114,21 +114,21 @@
             {  "type":"xslt", 
                "view":"psi-mi/tab25", 
                "config":{
-                    "xslt":"etc/xsl/mif2mitab25view2-xpsq.xml"
+                    "xslt":"mif2mitab25view2-xpsq.xml"
                   },
                "active":true
             },
             {  "type":"xslt",
                "view":"psi-mi/tab27", 
                "config":{
-                    "xslt":"etc/xsl/mif2mitab25view2-xpsq.xml"
+                    "xslt":"mif2mitab25view2-xpsq.xml"
                   },
                "active":false
             },
             {  "type":"xslt",
                "format":"psi-mi/xml25", 
                "config":{
-                    "xslt":"etc/xsl/mif2mitab25view2-xpsq.xml"
+                    "xslt":"mif2mitab25view2-xpsq.xml"
                   },
                "active":false
             }

@@ -12,6 +12,8 @@ package org.hupo.psi.mi.psicquic.server.store;
 import java.util.List;
 import java.io.InputStream;
 
+import org.hupo.psi.mi.psicquic.server.*;
+
 public interface RecordStore{
     public void initialize();
     public void clear();
@@ -20,4 +22,6 @@ public interface RecordStore{
     public String getRecord( String id, String format );
     public void addFile( String fileName, String format, InputStream is );
     public List<String> getRecordList( List<String> id, String format );
+
+    public String toString( ResultSet rset );
 }

@@ -184,6 +184,23 @@ public class SolrRecordStore implements RecordStore{
         // NOTE: not implemented
         return recordList;        
     }
+    
+    public String toString( ResultSet rset ){
+
+        String rstr = "";
+        
+        String format = rset.getFormat();
+        
+        for( Iterator i = rset.getResultList().iterator(); i.hasNext(); ){
+            String record = (String) i.next();
+            rstr += record + "\n";
+        }
+        
+        return rstr;        
+    }
+
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
 
     private String convert( SolrDocument sdoc, String format ){
 
@@ -193,8 +210,7 @@ public class SolrRecordStore implements RecordStore{
         if( viewMap == null ){
             initialize();
         }
-
-
+        
         Map vconf = ((Map) ((Map) viewMap.get( format )).get("config"));
 
         
@@ -222,4 +238,5 @@ public class SolrRecordStore implements RecordStore{
         }
         return res.substring( 0, res.length() - 1 ) + "\n";
     }
+
 }

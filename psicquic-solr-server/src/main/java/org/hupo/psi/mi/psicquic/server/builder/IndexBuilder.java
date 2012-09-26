@@ -64,8 +64,7 @@ public class IndexBuilder{
     //--------------------------------------------------------------------------
     
     PsqContext psqContext = null;
-    
-    
+        
     public PsqContext getPsqContext(){
         return psqContext;
     }
@@ -76,10 +75,11 @@ public class IndexBuilder{
                          String format, boolean zip ){
         
         InputStream isCtx = null;
+        this.log = LogFactory.getLog( this.getClass() );
         try{
             isCtx = new FileInputStream( ctx );
         } catch( Exception ex ){
-            ex.printStackTrace();
+            log.info( ex.getMessage(), ex );
         }
         
         this._IndexBuilder( isCtx, host, btc, stc, format, zip );          
@@ -87,7 +87,8 @@ public class IndexBuilder{
     
     public IndexBuilder( InputStream isCtx, String host, int btc, int stc,
                          String format, boolean zip ){
-        
+
+        this.log = LogFactory.getLog( this.getClass() );
         this._IndexBuilder( isCtx, host, btc, stc, format, zip );
     }
 
@@ -98,7 +99,6 @@ public class IndexBuilder{
         this.format = format;
         this.source = source;
         
-        this.log = LogFactory.getLog( this.getClass() );
         log.info( " initilizing IndexBuilder: threads=" + builderTCount );
         
         // get context
@@ -106,11 +106,10 @@ public class IndexBuilder{
 
         JsonContext jsq = new JsonContext();
         
-        try{                     
+        try{                                
             jsq.readJsonConfigDef( isCtx );
-            Map jctx = (Map) getPsqContext().getJsonConfig();            
         } catch( Exception ex ){
-            ex.printStackTrace();
+            log.info( ex.getMessage(), ex );
         }        
 
         psqContext = new PsqContext( jsq );
@@ -173,7 +172,7 @@ public class IndexBuilder{
                 recordStore.clear();
             }
         } catch( MalformedURLException mux ){
-            mux.printStackTrace();
+            log.info( mux.getMessage(), mux );
         }              
     }
 
@@ -185,8 +184,8 @@ public class IndexBuilder{
             String cpath = srcFl.getCanonicalPath();
             this.root = cpath;
             enqueue( cpath, srcFl );        
-        } catch( IOException ex ){
-            ex.printStackTrace();
+        } catch( IOException ex ){ 
+            log.info( ex.getMessage(), ex );
         }
     }
     
@@ -195,7 +194,7 @@ public class IndexBuilder{
         try{
             processFiles( dirFl.getCanonicalPath(), dirFl, desc );
         } catch( Exception ex ){
-            ex.printStackTrace();
+            log.info( ex.getMessage(), ex );
         }
     }
     
@@ -291,7 +290,7 @@ public class IndexBuilder{
 	    log.info( "IndexBuilder: all threads terminated");
             
         } catch( InterruptedException ix ){
-            ix.printStackTrace();
+            log.info( ix.getMessage(), ix );
         }
     }
 
@@ -318,7 +317,7 @@ public class IndexBuilder{
                                  is );
             
         }catch( Exception ex ){
-            ex.printStackTrace();
+            log.info( ex.getMessage(), ex );
         }
         
         // transform/add -> datastore
@@ -340,7 +339,7 @@ public class IndexBuilder{
                                  is );
             
         }catch( Exception ex ){
-            ex.printStackTrace();
+            log.info( ex.getMessage(), ex );
         }       
     }
 
@@ -434,7 +433,9 @@ class IndexThread extends Thread{
                 } else {
                     is = new FileInputStream( file );
                 }
-                
+                                
+                log.info( "IndexThread: format=" + format + " file=" + file + " is=" + is   );
+                log.info( "IndexThread: recordIndex=" + recordIndex);
                 recordIndex
                     .addFile( format,
                               file.getCanonicalPath().replace( root, "" ),
