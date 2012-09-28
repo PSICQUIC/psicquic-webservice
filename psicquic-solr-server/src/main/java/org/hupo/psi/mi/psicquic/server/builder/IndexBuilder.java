@@ -168,7 +168,7 @@ public class IndexBuilder{
 
             if( activeStoreName.equals( "derby" ) ){
                 recordStore = new DerbyRecordStore( psqContext );
-                recordStore.initialize();
+                //recordStore.initialize();
                 recordStore.clear();
             }
         } catch( MalformedURLException mux ){
@@ -298,23 +298,28 @@ public class IndexBuilder{
         
         System.out.println( file );
         
+        String compress = zip ? "zip" : "";
+        
         // transform/add -> index
         //-----------------------
 
         try{
-
-            InputStream is = null;
             
-            if( zip ){
-                ZipFile zf = new ZipFile( file );
-                is = zf.getInputStream( zf.entries().nextElement() );
-            } else {
-                is = new FileInputStream( file );  
-            }
+            InputStream iis = null;
+            
+            //if( zip ){
+            //    ZipFile zf = new ZipFile( file );
+            //    iis = zf.getInputStream( zf.entries().nextElement() );
+            //} else {
+            //    iis = new FileInputStream( file );  
+            //}
 
-            recordIndex.addFile( format, 
-                                 file.getCanonicalPath().replace( root, "" ), 
-                                 is );
+            //recordIndex.addFile( format, 
+            //                     file.getCanonicalPath().replace( root, "" ), 
+            //                     iis );
+                        
+            recordIndex.addFile( file, file.getCanonicalPath().replace( root, "" ), 
+                                 format, compress );
             
         }catch( Exception ex ){
             log.info( ex.getMessage(), ex );
@@ -324,19 +329,10 @@ public class IndexBuilder{
         //---------------------------
 
         try{
-            
-            InputStream is = null;
-            
-            if( zip ){
-                ZipFile zf = new ZipFile( file );
-                is = zf.getInputStream( zf.entries().nextElement() );
-            } else {
-                is = new FileInputStream( file );  
-            }
-            
-            recordStore.addFile( format,
-                                 file.getCanonicalPath().replace( root, "" ), 
-                                 is );
+
+            recordStore
+                .addFile( file, file.getCanonicalPath().replace( root, "" ),
+                          format, compress );
             
         }catch( Exception ex ){
             log.info( ex.getMessage(), ex );
@@ -407,6 +403,8 @@ class IndexThread extends Thread{
  
         Log log = LogFactory.getLog( this.getClass() );
         log.info( "IndexThread: processing fileq:" + fileq );
+
+        String compress = zip ? "zip" : "";
         
         for( Iterator<File> fi = fileq.iterator(); fi.hasNext(); ){
             
@@ -424,7 +422,7 @@ class IndexThread extends Thread{
             //-----------------------
 
             try{
-                
+                /*
                 InputStream is = null;
 
                 if( zip ){
@@ -440,6 +438,11 @@ class IndexThread extends Thread{
                     .addFile( format,
                               file.getCanonicalPath().replace( root, "" ),
                               is );
+
+                */
+
+                recordIndex.addFile( file, file.getCanonicalPath().replace( root, "" ),
+                                     format, compress );
                 
             }catch( Exception ex ){
                 ex.printStackTrace();
@@ -449,8 +452,9 @@ class IndexThread extends Thread{
             //---------------------------
             
             try{
+                /*
+                
                 InputStream is = null;
-
                 if( zip ){
                     ZipFile zf = new ZipFile( file );
                     is = zf.getInputStream( zf.entries().nextElement() );
@@ -458,11 +462,14 @@ class IndexThread extends Thread{
                     is = new FileInputStream( file );
                 }
                 
-                recordStore
-                    .addFile( format, 
+                recordStore.addFile( format, 
                               file.getCanonicalPath().replace( root, "" ),
                               is );
+                */
                 
+                recordStore.addFile( file, file.getCanonicalPath().replace( root, "" ),
+                                     format, compress );
+
             }catch( Exception ex ){
                 ex.printStackTrace();
             }

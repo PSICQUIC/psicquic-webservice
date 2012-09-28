@@ -17,10 +17,12 @@
 <!--                                                                         -->
 <!-- ======================================================================= -->
 
-  <xsl:include href="mif2xpsq.xml"/> 
+  <xsl:param name="debug">false</xsl:param>
   <xsl:param name="format">2.6</xsl:param>
   <xsl:param name="natext">-</xsl:param>
 
+  <xsl:include href="mif2xpsq.xml"/> 
+  
   <!-- ===================================================================== -->
   <!-- build document/complex-record                                         -->
   <!-- ===================================================================== -->
@@ -99,7 +101,7 @@
 
           <xsl:element name="doc">
            <xsl:element name="field">
-             <xsl:attribute name="name">pid</xsl:attribute>
+             <xsl:attribute name="name">recId</xsl:attribute>
              <xsl:if test="$epid = 'false'">
               <xsl:value-of select="concat($fep,':',$evd/@id)"/>
              </xsl:if>
@@ -143,7 +145,7 @@
     <xsl:param name="b" />
     <xsl:param name="expand" />
     <xsl:param name="debug">true</xsl:param> 
-  
+
     <xsl:call-template name="p9t-id-col">
       <xsl:with-param name="debug" select='$debug'/>
       <xsl:with-param name="tag">::idA</xsl:with-param>

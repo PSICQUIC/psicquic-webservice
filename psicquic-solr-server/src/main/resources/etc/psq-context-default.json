@@ -50,7 +50,7 @@
   },
   "store":{
      "record-mgr": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr",
-     "active":"solr",
+     "active":"derby",
      "rec-id":"uuId",
      "view-default":"mitab28",
      "derby":{
@@ -114,23 +114,35 @@
             {  "type":"xslt", 
                "view":"psi-mi/tab25", 
                "config":{
-                    "xslt":"mif2mitab25view2-xpsq.xml"
+                    "xslt":"mif2mitab2x.xml",
+                    "param":{
+                       "format":"2.5",
+                       "debug":"false"
+                    }
+                  },
+               "active":true
+            },
+            {  "type":"xslt",
+               "view":"psi-mi/tab26", 
+               "config":{
+                    "xslt":"mif2mitab2x.xml",
+                    "param":{
+                       "format":"2.6",
+                       "debug":"false"
+                    }
                   },
                "active":true
             },
             {  "type":"xslt",
                "view":"psi-mi/tab27", 
                "config":{
-                    "xslt":"mif2mitab25view2-xpsq.xml"
+                    "xslt":"mif2mitab2x.xml",
+                    "param":{
+                       "format":"2.7",
+                       "debug":"false"
+                    }
                   },
-               "active":false
-            },
-            {  "type":"xslt",
-               "format":"psi-mi/xml25", 
-               "config":{
-                    "xslt":"mif2mitab25view2-xpsq.xml"
-                  },
-               "active":false
+               "active":true
             }
         ],
         "mitab25":[

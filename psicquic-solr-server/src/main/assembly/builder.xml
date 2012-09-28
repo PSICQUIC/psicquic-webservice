@@ -24,6 +24,14 @@
       </includes>      
     </fileSet>
 
+    <fileSet>    
+      <directory>src/main/resources/builder</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>**/*.properties</include>
+      </includes>      
+    </fileSet>
+
     <fileSet>
       <directory>${project.build.directory}/classes</directory>
       <outputDirectory>/</outputDirectory>
@@ -79,6 +87,7 @@
         <include>org.apache.httpcomponents:httpcore</include>
         <include>org.apache.httpcomponents:httpclient</include>
         <include>org.apache.httpcomponents:httpmime</include>
+        <include>org.apache.derby:derby</include>
       </includes>
       <unpack>true</unpack>
       <scope>runtime</scope>

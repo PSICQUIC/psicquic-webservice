@@ -135,14 +135,20 @@ public class RecordMgrAction extends ActionSupport
                 psqContext.getActiveStore().addRecord( pid, vv, vt );
                 vv="";
             }
+            return ActionSupport.SUCCESS;
         }
         
         if( op != null && op.equals( "get" ) ){
             if( pid != null && vt!= null ){
                 vv = psqContext.getActiveStore().getRecord( pid, vt );
             }
-
+            return ActionSupport.SUCCESS;
         }
+
+        if( op != null && op.equals( "clear" ) ){
+            psqContext.getActiveStore().clearLocal();
+        }
+        
         return ActionSupport.SUCCESS;
     }
 

@@ -36,10 +36,14 @@ public class XsltTransformer implements PsqTransformer{
     private NodeList domList = null;
     private int domPos = -1;
     private int nextPos = -1;
+
+    private Log log;
     
     public XsltTransformer( Map config ){
-	
-	try {
+
+        log = LogFactory.getLog( this.getClass() );
+
+        try {
 	    DocumentBuilderFactory
 		dbf = DocumentBuilderFactory.newInstance();
 	    dbf.setNamespaceAware( true );
@@ -69,13 +73,31 @@ public class XsltTransformer implements PsqTransformer{
                     tFactory = TransformerFactory.newInstance();
                 
                 URIResolver defURIResolver = tFactory.getURIResolver(); 
-                URIResolver cpURIResolver = new ClassPathURIResolver( defURIResolver );
+                URIResolver cpURIResolver 
+                    = new ClassPathURIResolver( defURIResolver );
 
                 tFactory.setURIResolver( cpURIResolver );
-
-
-
+                
                 psqtr = tFactory.newTransformer( xslDomSource );
+
+                // set parameters
+
+                if( config.get("param") != null ){
+                    Map<String,String> paramap 
+                        = (Map<String,String>) config.get("param");
+
+                    for( Iterator<Map.Entry<String,String>> 
+                             ip = paramap.entrySet().iterator(); 
+                         ip.hasNext(); ){    
+                        
+                        Map.Entry<String,String> ee = ip.next();
+                        psqtr.setParameter(ee.getKey(), ee.getValue());
+
+                        log.info("param: name=" + ee.getKey() 
+                                 + " value=" + ee.getValue() ); 
+
+                    }
+                } 
             }
 	} catch( Exception ex ) {
 	    ex.printStackTrace();
@@ -100,7 +122,7 @@ public class XsltTransformer implements PsqTransformer{
             //transform into dom
             //------------------
             
-            psqtr.clearParameters();
+            //psqtr.clearParameters();
             psqtr.setParameter( "file", fileName );
             psqtr.transform( ssNative, domResult );
             

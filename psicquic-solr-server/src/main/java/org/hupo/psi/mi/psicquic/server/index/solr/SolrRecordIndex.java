@@ -18,7 +18,7 @@ import java.net.MalformedURLException;
 
 import java.io.*;
 import java.util.*;
-import java.util.zip.CRC32;
+import java.util.zip.*;
 
 import java.util.regex.*;
 
@@ -528,6 +528,128 @@ public class SolrRecordIndex implements RecordIndex{
     }
     
     //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
+    public void addFile( File f, String name, String format, String compress){
+        
+	Log log = LogFactory.getLog( this.getClass() );
+        Map rtr = ricon.get( format );
+        
+        List<SolrInputDocument> output = new ArrayList<SolrInputDocument>();
+
+        // Known record transformers (add more when implemented)
+        //------------------------------------------------------
+        
+        if( inTransformer.get( format ) == null ){
+            if( ((String) rtr.get("type")).equalsIgnoreCase( "XSLT" ) ){
+        
+                log.info( " Initializing transformer: format=" + format
+                          + " type=XSLT config=" + rtr.get( "config" ) );
+                
+                PsqTransformer recTr = 
+                    new XsltTransformer( (Map) rtr.get("config") );
+                
+                inTransformer.put( format, recTr );
+                log.info( " Initializing transformer(" + format
+                          + "): new=" + inTransformer.get( format ) );
+            }    
+        
+            if( ((String) rtr.get("type")).equalsIgnoreCase( "CALIMOCHO" ) ){
+            		
+                log.info( " Initializing transformer: format=" + format
+                          + " type=CALIMOCHO config=" + rtr.get("config") );
+                
+                PsqTransformer recTr = 
+                    new CalimochoTransformer( (Map) rtr.get( "config" ) );
+                inTransformer.put( format, recTr );
+                log.info( " Initializing transformer(" + format 
+                          + "): new=" + inTransformer.get( format ) );                
+            }
+        }    
+
+        PsqTransformer rt = (PsqTransformer) inTransformer.get( format );
+        
+        if( rt == null ){
+            // NOTE: throw unknown transformer exception ?
+        }
+        
+        try{
+            if( compress!= null
+                && compress.equalsIgnoreCase("zip") ){
+                
+                processZipFile( rt, name, new ZipFile( f ));
+            } else {
+                processFile( rt, name, new FileInputStream( f ));
+            }
+
+        } catch( Exception ex ){
+            log.info( ex.getMessage(), ex );
+            return;
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    private void processZipFile( PsqTransformer rt,
+                                 String fileName,  ZipFile zf  )
+        throws java.io.IOException{
+        
+        for( Enumeration zfe = zf.entries(); zfe.hasMoreElements(); ){
+            
+            ZipEntry ze = (ZipEntry) zfe.nextElement();
+            
+            if( !ze.isDirectory() ){
+                InputStream is = zf.getInputStream( ze );
+                processFile( rt,
+                             fileName + "::" + ze.getName() , is );
+            }
+        }
+    }
+    
+    //--------------------------------------------------------------------------
+    
+    private void processFile( PsqTransformer rt,
+                              String fileName,  InputStream is ){
+
+        Log log = LogFactory.getLog( this.getClass() );
+        rt.start( fileName, is );
+        
+        log.info( " SolrRecordIndex(add): transformation start (" 
+                  + fileName + ")..." + rt );
+
+        while( rt.hasNext() ){
+            
+            Map cdoc= rt.next();
+		
+            String recId = (String) cdoc.get("recId");;
+            SolrInputDocument doc 
+                = (SolrInputDocument) cdoc.get("solr");
+            log.debug( " SolrRecordIndex(add): recId=" + recId );
+            log.debug( " SolrRecordIndex(add): SIDoc=" + doc );
+            
+            try{
+                if( shSolr.size() > 1 ){
+                    
+                    int shard = this.shardSelect( recId );
+                    int shMax = shSolr.size() - 1;
+                    
+                    log.debug( " SolrRecordIndex(add): recId=" + recId +
+                               " shard= " + shard + " (max= " + shMax +")" );
+                    
+                    log.debug( " SolrRecordIndex(add): document START");
+                    log.debug( doc );
+                    log.debug( " SolrRecordIndex(add): document END");
+                    
+                    this.add( shard, doc );
+                } else {
+                    this.add( doc );
+                }
+            } catch(Exception ex){
+                ex.printStackTrace();
+            }                    
+        }
+    }
+    
     //--------------------------------------------------------------------------
 
     public void addFile( String format, String fileName, InputStream is ){

@@ -10,6 +10,8 @@ package org.hupo.psi.mi.psicquic.server.store.solr;
  #=========================================================================== */
 
 import java.util.*;
+import java.util.zip.*;
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 
@@ -100,9 +102,18 @@ public class SolrRecordStore implements RecordStore{
 
     private void connect(){}
     public void clear(){}
+    public void clearLocal(){}
     public void shutdown(){}
     public void addRecord( String rid, String record, String format ){}
-    public void addFile( String fileName, String format, InputStream is ){
+
+
+    //public void addFile( String fileName, String format, InputStream is ){
+    //    Log log = LogFactory.getLog( this.getClass() );
+    //    log.info( " SolrRecordStore: addFile(dummy) file=" + fileName );        
+    //}
+
+    public void addFile( File file, String fileName, 
+                         String format, String compress ){
         Log log = LogFactory.getLog( this.getClass() );
         log.info( " SolrRecordStore: addFile(dummy) file=" + fileName );        
     }

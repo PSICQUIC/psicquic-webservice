@@ -26,6 +26,7 @@ import org.hupo.psi.mi.psicquic.server.store.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.zip.*;
 
 import java.util.regex.*;
 
@@ -64,7 +65,7 @@ public class DerbyRecordStore implements RecordStore{
     public DerbyRecordStore( PsqContext context ){
 
         this.psqContext = context;
-
+        log = LogFactory.getLog( this.getClass() );
         try{
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
         } catch( Exception ex ){
@@ -75,7 +76,7 @@ public class DerbyRecordStore implements RecordStore{
     public DerbyRecordStore( PsqContext context, String host ){
         
         this.psqContext = context;
-        
+        log = LogFactory.getLog( this.getClass() );
         if( host != null ){
             this.host = host;
         }
@@ -94,26 +95,7 @@ public class DerbyRecordStore implements RecordStore{
     public void initialize(){
         
     }
-
-    public void clear(){
-
-        log = LogFactory.getLog( this.getClass() );
-        if( dbcon == null ){
-            connect();
-        }
-
-        try{
-            Statement st = dbcon.createStatement();
-            st.setQueryTimeout(5);
-            st.executeQuery( "truncate table record");
-            log.info( "record table truncated" );
-        } catch( Exception ex ){
-            // missing table ?
-            log.info( "creating record table" );
-            create();
-        }        
-    }
-
+    
     private void connect(){
         
         if( dbcon == null ){
@@ -190,6 +172,11 @@ public class DerbyRecordStore implements RecordStore{
     //--------------------------------------------------------------------------
 
     public void addRecord( String rid, String record, String format ){
+
+        Log log = LogFactory.getLog( this.getClass() );
+        log.debug("rid=" + rid + " format=" + format 
+                  + " record(length)=" + record.length() );
+        
         connect();
         try{
             PreparedStatement pst = dbcon
@@ -219,20 +206,25 @@ public class DerbyRecordStore implements RecordStore{
 
         try{
             PreparedStatement pst = dbcon
-                .prepareStatement( "select rid, record from record" +
+                .prepareStatement( "select rid, record, format from record" +
                                    " where rid = ? and format= ?" );
             
             pst.setString( 1, rid );
             pst.setString( 2, format );
             ResultSet rs =  pst.executeQuery();
+
+            String rt = "";
+
             while( rs.next() ){
                 Clob rc = rs.getClob( 2 );
                 record = rc.getSubString( 1L, 
                                           new Long(rc.length()).intValue() );
+                rt = rs.getString(3);
             } 
 
-	log.info( "DerbyRecordDao(getRecord): recId=" + rid + "  record=" + record );
-
+	log.info( "DerbyRecordDao(getRecord): recId=" + rid + " rt=" + rt 
+                  + "  record=" + record );
+        
         }catch( Exception ex ){
             ex.printStackTrace();
         }
@@ -284,84 +276,133 @@ public class DerbyRecordStore implements RecordStore{
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
     
-    public void addFile( String format, String fileName, 
-                         InputStream is ){
-
-
+    public void addFile( File file, String fileName, 
+                         String format, String compress){
+                
         Map trCfg = (Map) ((Map) psqContext.getJsonConfig().get("store"))
             .get("transform");
         
         List rtrList = (List) trCfg.get( format );
 
-
+        log.debug( "DerbyRecordStore:addFile: file=" + file + " name=" + fileName );
+        log.debug( "DerbyRecordStore:addFile: format=" + format + " trl=" + rtrList );
+        
         if( inTransformerMap == null ){
             inTransformerMap 
-                = new HashMap<String,Map<String,PsqTransformer>>();
-            
+                = new HashMap<String,Map<String,PsqTransformer>>();            
         }
         
         Map<String,PsqTransformer> itm = inTransformerMap.get( format );
+        if( itm == null ){
+            itm = new HashMap<String,PsqTransformer>();
+            inTransformerMap.put( format, itm );
+            itm = inTransformerMap.get( format );
+        }
         
         if( rtrList != null ){
             for( Iterator it = rtrList.iterator(); it.hasNext(); ){
                 
                 Map itr = (Map) it.next();
-
+                log.debug( "DerbyRecordStore:addFile: view=" + itr.get( "view" ) );
                 if( ((String) itr.get("type")).equalsIgnoreCase("XSLT") &&
                     (Boolean) itr.get("active") ){
 
-                   
-                    //if( itr.get( "transformer" ) == null ){ 
                     if( itm.get( itr.get("view") ) == null ){            
+                        
+                    // initialize transformer
+                    //-----------------------
                         
                         log.info( " Initializing transformer: format=" + format
                                   + " type=XSLT config=" + itr.get("config") );
                         
                         PsqTransformer rt =
                             new XsltTransformer( (Map) itr.get("config") );
-                        //itr.put( "transformer", rt );
+                        
                         itm.put( (String) itr.get("view"), rt );
                     }
 
-                    PsqTransformer rt = itm.get( itr.get("view") ); 
-                    //            = (PsqTransformer) itr.get( "transformer" );
-                    rt.start( fileName, is );
-
-		    while( rt.hasNext() ){
-					
-			Map cdoc= rt.next();
-			String recId = (String) cdoc.get( "recId" );
-			NodeList fl = (NodeList) cdoc.get( "dom" );
-		       
-			String vStr = null;
-			String vType = (String) itr.get("view");
-
-			for( int j = 0; j< fl.getLength() ;j++ ){
-			    if( fl.item(j).getNodeName().equals( "field") ){
-				Element fe = (Element) fl.item(j);
-				String name = fe.getAttribute("name");
-				String value = fe.getFirstChild().getNodeValue();
-				
-				if( name.equals( "recId" ) ){
-				    recId = value;
-				}
-				if( name.equals( "view" ) ){
-				    vStr= value;
-				}
-			    }
-			}
-			
-			try{
-			    this.add( recId, vType, vStr );
-			}catch( Exception ex ){
-			    ex.printStackTrace();
-			}
-		    }
-		}
+                    PsqTransformer rt = itm.get( itr.get("view") );                     
+                    
+                    try{
+                        if( compress!= null 
+                            && compress.equalsIgnoreCase("zip") ){
+                            
+                            processZipFile( rt, (String) itr.get( "view" ), 
+                                            fileName, new ZipFile( file ));                            
+                        } else {
+                            processFile( rt, (String) itr.get( "view" ),
+                                         fileName, new FileInputStream( file ));
+                        }
+                        
+                    } catch( Exception ex ){
+                        log.info( ex.getMessage(), ex );
+                        return;
+                    }
+                }                
             }            
         }
     }
 
+    //--------------------------------------------------------------------------
+
+    private void processZipFile( PsqTransformer rt, String viewName,
+                                 String fileName,  ZipFile zf )
+        throws java.io.IOException{
+        
+        for( Enumeration zfe = zf.entries(); zfe.hasMoreElements(); ){
+            
+            ZipEntry ze = (ZipEntry) zfe.nextElement();
+            if( !ze.isDirectory() ){   
+                InputStream is = zf.getInputStream( ze );
+                processFile( rt, viewName,
+                             fileName + "::" + ze.getName() , is );
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    private void processFile( PsqTransformer rt, String viewName, 
+                              String fileName, InputStream is ){
+        
+        rt.start( fileName, is );
+
+        while( rt.hasNext() ){
+					
+            Map cdoc= rt.next();
+            String recId = (String) cdoc.get( "recId" );
+            NodeList fl = (NodeList) cdoc.get( "dom" );
+                            
+            String vStr = null;
+            
+            for( int j = 0; j< fl.getLength() ;j++ ){
+                if( fl.item(j).getNodeName().equals( "field") ){
+                    Element fe = (Element) fl.item(j);
+                    String name = fe.getAttribute("name");
+                    String value = fe.getFirstChild().getNodeValue();
+                    
+                    log.debug( " Node: name=" + name 
+                               + " length(value)="+ value.length() );
+                    
+                    if( name.equals( "recId" ) ){
+                        recId = value;
+                    }
+                    if( name.equals( "view" ) ){
+                        vStr = value;
+                    }
+                }
+            }
+            
+            try{
+                this.add( recId, viewName, vStr );
+            }catch( Exception ex ){
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    
     private void add( String pid, String vType, String view ){
         
         log.info( "PID=" + pid ); 
@@ -416,6 +457,73 @@ public class DerbyRecordStore implements RecordStore{
         }
     }
 
+    //--------------------------------------------------------------------------
+
+    public void clear(){
+
+        log = LogFactory.getLog( this.getClass() );
+        
+        try{
+            String postData = URLEncoder.encode("op", "UTF-8") + "="
+                + URLEncoder.encode( "clear", "UTF-8");
+            
+            if( rmgrURL == null ){
+                rmgrURL = (String) 
+                    ((Map) psqContext.getJsonConfig().get("store"))
+                    .get("record-mgr");            
+
+                if( host != null ){
+                    rmgrURL = hostReset( rmgrURL, host );
+                }
+            }
+            
+            URL url = new URL( rmgrURL );
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput( true );
+            OutputStreamWriter wr =
+                new OutputStreamWriter( conn.getOutputStream() );
+            wr.write(postData);
+            wr.flush();
+            
+            // Get the response
+            BufferedReader rd =
+                new BufferedReader( new InputStreamReader( conn
+                                                           .getInputStream()));
+            String line;
+            
+            log.info( "  Response:" );
+            while ((line = rd.readLine()) != null) {           
+                log.info( line );
+            }
+            wr.close();
+            rd.close();
+        } catch (Exception e) {
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    
+    public void clearLocal(){
+        
+        log = LogFactory.getLog( this.getClass() );
+        
+        if( dbcon == null ){
+            connect();
+        }
+
+        try{
+            Statement st = dbcon.createStatement();
+            st.setQueryTimeout(60);
+            st.executeUpdate( "truncate table record");
+            log.info( "record table truncated" );
+        } catch( Exception ex ){
+            // missing table ?
+            log.info( ex.getMessage(), ex );
+            log.info( "creating record table" );
+            create();
+        }
+    }
+    
     //--------------------------------------------------------------------------
 
     private String hostReset( String url, String newHost ){

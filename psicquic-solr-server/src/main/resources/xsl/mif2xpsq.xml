@@ -21,7 +21,7 @@
  <xsl:param name="file"/>
  <xsl:param name="expand"/>
  <xsl:param name="complex"/>
- <xsl:param name="debug">false</xsl:param>
+<!--  <xsl:param name="debug">false</xsl:param> -->
 
  <xsl:template match="/mif:entrySet">
   <xsl:text>&#xA;</xsl:text>
