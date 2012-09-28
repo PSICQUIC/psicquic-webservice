@@ -144,8 +144,7 @@ public class PsicquicServer {
         // Meta info
         //----------
 
-        if( meta  && rset.getMeta() != null ){
-            
+        if( meta && rset.getMeta() != null ){
             if( rset.getMeta().get( "groups") != null ){
                 
                 Map<String,List<ValueCount>> groups = 
@@ -154,11 +153,11 @@ public class PsicquicServer {
                 
                 for( Iterator<Map.Entry<String,List<ValueCount>>> ig =
                          groups.entrySet().iterator(); ig.hasNext(); ){
-
+                    
                     Map.Entry<String,List<ValueCount>> me = ig.next();
-
+                    
                     String field = me.getKey();
-
+                    
                     for( Iterator<ValueCount> ivc = me.getValue().iterator();
                          ivc.hasNext(); ){
 
@@ -267,4 +266,15 @@ public class PsicquicServer {
         return sb.toString();
     }
 
+    //--------------------------------------------------------------------------
+
+    public String getHeader( String viewType ){
+        return psqContext.getHeader( viewType );         
+    }
+
+    //--------------------------------------------------------------------------
+
+    public String getFooter( String viewType ){
+        return psqContext.getFooter( viewType );
+    }
 }

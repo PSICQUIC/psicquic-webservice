@@ -101,13 +101,16 @@ public class PsicquicSoapImpl implements PsqPort {
         QueryResponse qr = psqOF.createQueryResponse();
         qr.setResultSet( psqOF.createResultSet() );
         
-        String mitab="";
+        String mitab =  psqServer.getHeader( viewType );
+        
 	log.info( "getByQuery: rs="+ qrs); 
         
         for( Iterator i = qrs.getResultList().iterator(); i.hasNext(); ){
             String record = (String) i.next();
             mitab += record + "\n";
         }
+        mitab += psqServer.getFooter( viewType );
+
         qr.getResultSet().setMitab( mitab );     
 
         return qr;

@@ -192,6 +192,11 @@ Configuration
       'derby' store  configration:
            derby-db - location of the derby data directory
 
+           view - configuration of the views offered by the derby store. 
+                each view ("psi-mi/tab25","psi-mi/tab26","psi-mi/tab27")
+                can be customized by adding header footer blocks defined
+                by 'header' and 'footer' parameters; 
+
        'solr' store configuration:
            url, shard - same as for solr index; in the simplest case 
                solr index and solr record store should be identical.
@@ -202,8 +207,10 @@ Configuration
               each view ("psi-mi/tab25","psi-mi/tab26","psi-mi/tab27")
               is defined by "col" parameter that lists the solr index 
               fields to be concatenated while building the view of 
-              a single index record and "col-sep" parameter
-              that defines column separator (typically tab or comma)
+              a single index record, "col-sep" parameter that defines 
+              column separator (typically tab or comma) and "header"/
+              "footer" parameters that specify blocks of text that
+              preceed/follow retrieved records 
    
   Service Configuration
   ---------------------

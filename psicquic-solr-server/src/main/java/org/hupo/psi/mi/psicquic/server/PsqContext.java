@@ -89,6 +89,48 @@ public class PsqContext{
             ((Map) getJsonConfig().get( "store" )).get( "view-default" );
     }
 
+    public String getHeader( String viewType ){
+        
+        if( viewType == null || viewType.equals( "" ) ){
+            viewType = this.getDefaultView();
+        }
+
+        System.out.println( "vt:" + viewType + "::");
+
+        Map stConfig = (Map) 
+            ((Map) getJsonConfig().get( "store" )).get( getActiveStoreName() );
+        
+        System.out.println( getActiveStoreName() + " :: " + stConfig);
+        
+        Map viewConfig = (Map)
+            ((Map) ((Map) stConfig.get("view")).get( viewType) ).get("config");
+
+        if( viewConfig.get( "header" ) != null ){
+            return (String) viewConfig.get( "header" );
+        } else {
+            return "";
+        }
+    }
+
+    public String getFooter( String viewType ){
+        
+        if( viewType == null || viewType.equals( "" ) ){
+            viewType = getDefaultView();
+        }
+
+        Map stConfig = (Map) 
+            ((Map) getJsonConfig().get( "store" )).get( getActiveStoreName() );
+        
+        Map viewConfig = (Map)
+            ((Map) ((Map) stConfig.get("view")).get(viewType)).get("config");
+
+        if( viewConfig.get( "footer" ) != null ){
+            return (String) viewConfig.get( "footer" );
+        } else {
+            return "";
+        }
+    }
+    
     public long getDefaultFirstResult(){
         return (Long)
             ((Map) getJsonConfig().get( "index" )).get( "first-result" );

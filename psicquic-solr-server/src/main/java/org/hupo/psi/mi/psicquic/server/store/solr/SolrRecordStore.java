@@ -106,18 +106,12 @@ public class SolrRecordStore implements RecordStore{
     public void shutdown(){}
     public void addRecord( String rid, String record, String format ){}
 
-
-    //public void addFile( String fileName, String format, InputStream is ){
-    //    Log log = LogFactory.getLog( this.getClass() );
-    //    log.info( " SolrRecordStore: addFile(dummy) file=" + fileName );        
-    //}
-
     public void addFile( File file, String fileName, 
                          String format, String compress ){
         Log log = LogFactory.getLog( this.getClass() );
         log.info( " SolrRecordStore: addFile(dummy) file=" + fileName );        
     }
-    
+     
     //-------------------------------------------------------------------------
     //-------------------------------------------------------------------------
 

@@ -648,6 +648,14 @@ public class SolrRecordIndex implements RecordIndex{
                 ex.printStackTrace();
             }                    
         }
+
+        try{
+            // NOTE: commit every n (configurable) records ?
+            this.commit();
+            log.info( " SolrRecordIndex(add): commit DONE");
+        }catch( Exception ex ){
+            ex.printStackTrace();
+        }
     }
     
     //--------------------------------------------------------------------------
@@ -736,7 +744,8 @@ public class SolrRecordIndex implements RecordIndex{
 
         try{
             // NOTE: commit every n (configurable) records ? 
-            this.commit();   
+            this.commit();
+            log.info( " SolrRecordIndex(add): commit DONE");
         }catch( Exception ex ){
             ex.printStackTrace();
         }

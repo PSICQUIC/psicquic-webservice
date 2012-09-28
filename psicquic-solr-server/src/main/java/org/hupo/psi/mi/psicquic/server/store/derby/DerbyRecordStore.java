@@ -7,6 +7,7 @@ package org.hupo.psi.mi.psicquic.server.store.derby;
  #
  # DerbyRecordStore: apache derby-backed RecordStore implementation
  #
+ #
  #=========================================================================== */
 
 import java.sql.Connection;
@@ -40,6 +41,10 @@ import org.apache.commons.logging.LogFactory;
 //------------------------------------------------------------------------------
 
 public class DerbyRecordStore implements RecordStore{
+
+    public static final int TIMEOUT_LONG = 30;
+    public static final int TIMEOUT_SHORT = 5;
+
 
     Log log;
     Connection dbcon = null;
@@ -104,9 +109,10 @@ public class DerbyRecordStore implements RecordStore{
             log.info( "DerbyRecordDao:connect" );
             
             if( psqContext != null && psqContext.getJsonConfig() != null ){
-                
-                Map derbyCfg = (Map)
-                    ((Map) psqContext.getJsonConfig().get("store")).get("derby");
+
+                Map derbyCfg = 
+                    (Map) ((Map) psqContext.getJsonConfig().get("store"))
+                    .get("derby");
                 try{
                     String derbydb = (String) derbyCfg.get("derby-db");
                     log.info( "               location: " + derbydb );
@@ -114,14 +120,13 @@ public class DerbyRecordStore implements RecordStore{
                     dbcon = 
                         DriverManager.getConnection( "jdbc:derby:" + 
                                                      derbydb + ";create=true");
-                    
                 } catch( Exception ex ){
                     ex.printStackTrace();
                 }
                 
                 try{
                     Statement st = dbcon.createStatement();
-                    st.setQueryTimeout(5);
+                    st.setQueryTimeout( TIMEOUT_SHORT );
                     ResultSet rs = 
                         st.executeQuery( " select count(*) from record" );
                     while( rs.next() ){
@@ -141,22 +146,23 @@ public class DerbyRecordStore implements RecordStore{
 
     private void create(){
         try{
-            Statement statement = dbcon.createStatement();
-            statement.setQueryTimeout(30);  // set timeout to 30 sec.
+            Statement st = dbcon.createStatement();
+            st.setQueryTimeout( TIMEOUT_LONG ); 
             
-            statement.executeUpdate( "create table record " +
-                                     "(pk int generated always as identity," +
-                                     " rid varchar(256),"+
-                                     " format varchar(32), record clob )");
-
-            statement.executeUpdate( "create index r_rid on record (rid)" );
-            statement.executeUpdate( "create index r_ft on record (format)" );
+            st.executeUpdate( "create table record " +
+                              "(pk int generated always as identity," +
+                              " rid varchar(256),"+
+                              " format varchar(32), record clob )");
+            
+            st.executeUpdate( "create index r_rid on record (rid)" );
+            
+            st.executeUpdate( "create index r_ft on record (format)" );
             
         } catch( Exception ex ){
             ex.printStackTrace();
         }
     }
-
+    
     public void shutdown(){
         if( dbcon != null ){      
             try{
@@ -259,7 +265,6 @@ public class DerbyRecordStore implements RecordStore{
         } catch( Exception ex ){
             ex.printStackTrace();
         }
-
         return recordList;
     }
 
@@ -284,8 +289,10 @@ public class DerbyRecordStore implements RecordStore{
         
         List rtrList = (List) trCfg.get( format );
 
-        log.debug( "DerbyRecordStore:addFile: file=" + file + " name=" + fileName );
-        log.debug( "DerbyRecordStore:addFile: format=" + format + " trl=" + rtrList );
+        log.debug( "DerbyRecordStore:" 
+                   + " addFile: file=" + file + " name=" + fileName );
+        log.debug( "DerbyRecordStore:"
+                   + " addFile: format=" + format + " trl=" + rtrList );
         
         if( inTransformerMap == null ){
             inTransformerMap 
@@ -303,7 +310,8 @@ public class DerbyRecordStore implements RecordStore{
             for( Iterator it = rtrList.iterator(); it.hasNext(); ){
                 
                 Map itr = (Map) it.next();
-                log.debug( "DerbyRecordStore:addFile: view=" + itr.get( "view" ) );
+                log.debug( "DerbyRecordStore:" +
+                           " addFile: view=" + itr.get( "view" ) );
                 if( ((String) itr.get("type")).equalsIgnoreCase("XSLT") &&
                     (Boolean) itr.get("active") ){
 
@@ -442,10 +450,11 @@ public class DerbyRecordStore implements RecordStore{
             wr.flush();
             
             // Get the response
-            BufferedReader rd =
-                new BufferedReader( new InputStreamReader( conn
-                                                           .getInputStream()));
-            String line;
+
+            InputStreamReader isr = 
+                new InputStreamReader( conn.getInputStream() );
+            BufferedReader rd = new BufferedReader( isr );
+            String line = null;
 
             log.info( "  Response:" );
             while ((line = rd.readLine()) != null) {           

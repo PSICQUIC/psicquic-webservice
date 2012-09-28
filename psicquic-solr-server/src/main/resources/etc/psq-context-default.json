@@ -9,7 +9,7 @@
             "127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
             "127.0.0.1:8080/psicquic-solr-server/solr/psq-02"
         ],
-        "rec-id":"uuId",
+        "rec-id":"recId",
         "param-default":{
            "defType":"edismax",
            "start":"0",
@@ -51,27 +51,49 @@
   "store":{
      "record-mgr": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr",
      "active":"derby",
-     "rec-id":"uuId",
-     "view-default":"mitab28",
+     "rec-id":"recId",
+     "view-default":"psi-mi/tab27",
      "derby":{
         "derby-db":"derby/psq-store",
-        "rec-id":"recId"
+        "rec-id":"recId",
+        "view":{
+           "psi-mi/tab25":{
+               "config":{
+                 "header":"#psi-mi/tab25\n",
+                 "footer":"#\n"
+               }
+           },
+           "psi-mi/tab26":{
+               "config":{
+                 "header":"#psi-mi/tab26\n",
+                 "footer":"#\n"
+               }
+           },
+           "psi-mi/tab27":{
+               "config":{
+                 "header":"#psi-mi/tab27\n",
+                 "footer":"#\n"
+               }
+           }
+         }
      },    
      "solr":{
         "solr-index":"solr",
-        "rec-id":"uuId",
+        "rec-id":"recId",
         "view":{
-           "mitab25":{
+           "psi-mi/tab25":{
                "config":{
                  "col":["idA_o","idB_o","altidA_o","altidB_o",
                         "aliasA_o","aliasB_o","detmethod_o","pubauth_o",
                         "pubid_o","taxidA_o","taxidB_o","type_o","source_o",
                         "interaction_id_o","confidence_o"
                  ],
-                 "col-sep":"\t"
+                 "col-sep":"\t",
+                 "header":"#psi-mi/tab25\n",
+                 "footer":"#\n"
                }
             },
-            "mitab26":{
+            "psi-mi/tab26":{
                "config":{
                  "col":["idA_o","idB_o","altidA_o","altidB_o", 
                         "aliasA_o","aliasB_o","detmethod_o","pubauth_o", 
@@ -84,10 +106,12 @@
                         "checksumA_o","checksumB_o","checksumI_o",
                         "negative"
                  ],               
-                 "col-sep":"\t"
+                 "col-sep":"\t",
+                 "header":"#psi-mi/tab26\n",
+                 "footer":"#\n"
                },
             },
-            "mitab27":{
+            "psi-mi/tab27":{
                "config":{
                  "col":[ "idA_o","idB_o","altidA_o","altidB_o", 
                         "aliasA_o","aliasB_o","detmethod_o","pubauth_o", 
@@ -101,7 +125,9 @@
                         "negative","ftypeA_o","ftypeB_o","stcA_o","stcB_o",
                         "pmethodA_o","pmethodB_o"
                  ],
-                 "col-sep":"\t"
+                 "col-sep":"\t",
+                 "header":"#psi-mi/tab27\n",
+                 "footer":"#\n"
                }
             }
         }
@@ -200,6 +226,7 @@
           },
         "supported-return-type":[
            "psi-mi/tab25",
+           "psi-mi/tab26",
            "psi-mi/tab27",
            "psi-mi/xml25" ],
         "supported-db-ac":[ 
@@ -214,9 +241,10 @@
            "last-protein-update":"01-Jan-12"
         },
         "supported-return-type":[
-           "mitab25",
-           "mitab27",
-           "mif25" ],
+           "psi-mi/tab25",
+           "psi-mi/tab26",
+           "psi-mi/tab27",
+           "psi-mi/xml25" ],
         "supported-db-ac":[
            "MI:0670",
            "MI:0481",

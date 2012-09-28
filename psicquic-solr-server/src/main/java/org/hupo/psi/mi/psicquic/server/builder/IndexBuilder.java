@@ -94,7 +94,6 @@ public class IndexBuilder{
 
     private void _IndexBuilder( InputStream isCtx,  String host, 
                                 int btc, int stc, String format, boolean zip ){
-        
         this.zip = zip;
         this.format = format;
         this.source = source;
@@ -168,7 +167,6 @@ public class IndexBuilder{
 
             if( activeStoreName.equals( "derby" ) ){
                 recordStore = new DerbyRecordStore( psqContext );
-                //recordStore.initialize();
                 recordStore.clear();
             }
         } catch( MalformedURLException mux ){
@@ -210,8 +208,7 @@ public class IndexBuilder{
         
         for( File sfile : filesDirs) {
             if ( ! sfile.isFile() && desc) {
-                
-                //recursive call: must be a directory to descend      
+                //recursive call: only when directory       
                 processFiles( root, sfile, desc );
             } else {
                 enqueue( root, sfile );                
@@ -294,51 +291,32 @@ public class IndexBuilder{
         }
     }
 
-    public void index( String root, File file ){
+    public void index( String root, File file ) throws IOException{
+                
+        String name = null;
         
-        System.out.println( file );
+        name = file.getCanonicalPath().replace( root, "" );
+        
+        log.info( "index: processing file:" + file );
+        log.info( "index: file("
+                  + "canonical=" + file.getCanonicalPath()
+                  + "): " + name );
+        log.info( "index: root:" + root );
         
         String compress = zip ? "zip" : "";
         
         // transform/add -> index
         //-----------------------
 
-        try{
-            
-            InputStream iis = null;
-            
-            //if( zip ){
-            //    ZipFile zf = new ZipFile( file );
-            //    iis = zf.getInputStream( zf.entries().nextElement() );
-            //} else {
-            //    iis = new FileInputStream( file );  
-            //}
-
-            //recordIndex.addFile( format, 
-            //                     file.getCanonicalPath().replace( root, "" ), 
-            //                     iis );
-                        
-            recordIndex.addFile( file, file.getCanonicalPath().replace( root, "" ), 
-                                 format, compress );
-            
-        }catch( Exception ex ){
-            log.info( ex.getMessage(), ex );
+        if( recordIndex!= null ){
+            recordIndex.addFile( file, name, format, compress );
         }
-        
         // transform/add -> datastore
         //---------------------------
-
-        try{
-
-            recordStore
-                .addFile( file, file.getCanonicalPath().replace( root, "" ),
-                          format, compress );
-            
-        }catch( Exception ex ){
-            log.info( ex.getMessage(), ex );
-        }       
+        if( recordStore!= null ){
+            recordStore.addFile( file, name, format, compress );       
+        }
     }
-
 }
 
 //------------------------------------------------------------------------------
@@ -346,8 +324,8 @@ public class IndexBuilder{
 
 class IndexThread extends Thread{
 
-    RecordIndex recordIndex;
-    RecordStore recordStore;
+    RecordIndex recordIndex = null;
+    RecordStore recordStore = null;
 
     boolean zip = false;
     String root;
@@ -382,12 +360,6 @@ class IndexThread extends Thread{
             
             String activeStoreName =  psqContext.getActiveStoreName();
             
-            if( activeStoreName.equals( "solr" ) ){
-                //recordStore = new SolrRecordStore( psqContext, host );
-                //recordStore.initialize();
-                recordStore = new SolrRecordStore();
-            }
-            
             if( activeStoreName.equals( "derby" ) ){
                 recordStore = new DerbyRecordStore( psqContext, host );
                 recordStore.initialize();
@@ -407,72 +379,34 @@ class IndexThread extends Thread{
         String compress = zip ? "zip" : "";
         
         for( Iterator<File> fi = fileq.iterator(); fi.hasNext(); ){
-            
-            File file = fi.next();
+
             try{
+                
+                File file = fi.next();
+                String name = file.getCanonicalPath().replace( root, "" );
+
                 log.info( "IndexThread: processing file:" + file );
-                log.info( "IndexThread: canonical:" + file.getCanonicalPath() );
+                log.info( "IndexThread: file("
+                          + "canonical=" + file.getCanonicalPath() 
+                          + "): " + name );
                 log.info( "IndexThread: root:" + root );
-            } catch(  Exception ex ){
-                ex.printStackTrace();
-            }
-
-
-            // transform/add -> index
-            //-----------------------
-
-            try{
-                /*
-                InputStream is = null;
-
-                if( zip ){
-                    ZipFile zf = new ZipFile( file );
-                    is = zf.getInputStream( zf.entries().nextElement() );
-                } else {
-                    is = new FileInputStream( file );
+                
+                // transform/add -> index
+                //-----------------------
+                
+                if( recordIndex != null){
+                    recordIndex.addFile( file, name, format, compress );      
                 }
-                                
-                log.info( "IndexThread: format=" + format + " file=" + file + " is=" + is   );
-                log.info( "IndexThread: recordIndex=" + recordIndex);
-                recordIndex
-                    .addFile( format,
-                              file.getCanonicalPath().replace( root, "" ),
-                              is );
 
-                */
-
-                recordIndex.addFile( file, file.getCanonicalPath().replace( root, "" ),
-                                     format, compress );
-                
-            }catch( Exception ex ){
-                ex.printStackTrace();
-            }
-
-            // transform/add -> datastore
-            //---------------------------
-            
-            try{
-                /*
-                
-                InputStream is = null;
-                if( zip ){
-                    ZipFile zf = new ZipFile( file );
-                    is = zf.getInputStream( zf.entries().nextElement() );
-                } else {
-                    is = new FileInputStream( file );
+                // transform/add -> datastore
+                //---------------------------
+                if( recordStore != null){  
+                    recordStore.addFile( file, name, format, compress );
                 }
-                
-                recordStore.addFile( format, 
-                              file.getCanonicalPath().replace( root, "" ),
-                              is );
-                */
-                
-                recordStore.addFile( file, file.getCanonicalPath().replace( root, "" ),
-                                     format, compress );
-
             }catch( Exception ex ){
-                ex.printStackTrace();
+                log.info( ex.getMessage(), ex );
             }
         }
+        
     }
 }
