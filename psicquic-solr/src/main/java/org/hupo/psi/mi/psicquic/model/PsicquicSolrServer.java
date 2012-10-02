@@ -349,6 +349,11 @@ public class PsicquicSolrServer {
                 .replaceAll(" not ", " NOT ")
                 .replaceAll("^not ", "NOT "));
 
+        // if someone wants to download
+        if (returnType == null || returnType.equals(RETURN_TYPE_MITAB25)){
+            originalQuery.addFilterQuery(SolrFieldName.negative+":false");
+        }
+
         org.apache.solr.client.solrj.response.QueryResponse solrResponse = solrServer.query(originalQuery);
 
         if (solrResponse == null){
