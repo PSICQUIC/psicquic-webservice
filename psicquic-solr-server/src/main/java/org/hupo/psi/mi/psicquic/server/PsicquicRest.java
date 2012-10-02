@@ -55,7 +55,14 @@ public interface PsicquicRest {
         throws PsicquicServiceException,
                NotSupportedMethodException,
                NotSupportedTypeException;
-    
+
+    @POST @Path("/query")
+        @Consumes("application/json")
+        Object getByPostQuery( String request) 
+        throws PsicquicServiceException,
+               NotSupportedMethodException,
+               NotSupportedTypeException;
+
     @GET @Path("/formats")
         Object getSupportedFormats() throws PsicquicServiceException,
                                             NotSupportedMethodException;

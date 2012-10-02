@@ -20,6 +20,8 @@ import javax.ws.rs.*;
 import org.hupo.psi.mi.*;
 import org.hupo.psi.mi.psq.*;
 
+import org.json.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -54,6 +56,53 @@ public class PsicquicRestImpl implements PsicquicRest{
     //==========================================================================
     // REST SERVICE OPERATIONS
     //========================
+
+    public Object getByPostQuery(String  request)
+        throws PsicquicServiceException,
+               NotSupportedMethodException,
+               NotSupportedTypeException{
+        
+        Log log = LogFactory.getLog( this.getClass() );
+        log.info( "PsqRestImpl: getByPostQuery: context =" + psqContext);
+        log.info( "PsqRestImpl: getByPostQuery: q=" + request );
+
+        JSONObject jRequest = null;
+
+        String query = "";
+        String format = "psi-mi/tab25";
+        String firstResult = "0";
+        String maxResults = "500";
+        
+        try{
+            jRequest = new JSONObject( request );
+        } catch( JSONException jx ){
+            throw new PsicquicServiceException( "Wrong parameter format", 
+                                                null );
+        }
+        
+        if( jRequest == null ){
+            throw new PsicquicServiceException( "Missing parameters", 
+                                                null );            
+        }
+        
+        try{
+            query = jRequest.getString( "query" );
+        } catch( JSONException jx ){}
+
+        try{
+            format = jRequest.getString( "format" );
+        } catch( JSONException jx ){}
+
+        try{
+            firstResult = jRequest.getString( "firstResult" );
+        } catch( JSONException jx ){}
+        
+        try{
+            maxResults = jRequest.getString( "maxResults" );
+        } catch( JSONException jx ){} 
+       
+        return this.getByQuery( query, format, firstResult, maxResults );
+    }
     
     public Object getByQuery( String query, String format,
                               String firstResult, String maxResults ) 
