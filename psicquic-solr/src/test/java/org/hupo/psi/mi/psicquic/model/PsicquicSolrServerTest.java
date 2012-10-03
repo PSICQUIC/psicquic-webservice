@@ -50,7 +50,7 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
         PsicquicSearchResults results = psicquicServer.search("*", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results);
-        Assert.assertEquals(4L, results.getNumberResults());
+        Assert.assertEquals(2L, results.getNumberResults());
     }
 
     @Test
@@ -66,28 +66,28 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
         PsicquicSearchResults results = psicquicServer.search("P07228", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results);
-        Assert.assertEquals(2L, results.getNumberResults());
+        Assert.assertEquals(1L, results.getNumberResults());
 
         // default fields altidA and altidB
         PsicquicSearchResults results2 = psicquicServer.search("EBI-5606437", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results2);
-        Assert.assertEquals(2L, results2.getNumberResults());
+        Assert.assertEquals(1L, results2.getNumberResults());
 
         // default fields aliasA and aliasB
         PsicquicSearchResults results3 = psicquicServer.search("ITGB1", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results3);
-        Assert.assertEquals(4L, results3.getNumberResults());
+        Assert.assertEquals(2L, results3.getNumberResults());
 
         // default fields pub id
         PsicquicSearchResults results4 = psicquicServer.search("9722563", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results4);
-        Assert.assertEquals(4L, results4.getNumberResults());
+        Assert.assertEquals(2L, results4.getNumberResults());
 
         // default fields pub author
-        PsicquicSearchResults results51 = psicquicServer.search("\"Loo DT et al.(1998)\"", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results51 = psicquicServer.search("\"Loo DT et al.(1998)\" AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results51);
         Assert.assertEquals(1L, results51.getNumberResults());
@@ -104,26 +104,26 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
         PsicquicSearchResults results61 = psicquicServer.search("human-jurkat", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results61);
-        Assert.assertEquals(2L, results61.getNumberResults());
+        Assert.assertEquals(1L, results61.getNumberResults());
         PsicquicSearchResults results62 = psicquicServer.search("9606", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results62);
-        Assert.assertEquals(4L, results62.getNumberResults());
+        Assert.assertEquals(2L, results62.getNumberResults());
 
         // default fields detection method
-        PsicquicSearchResults results7 = psicquicServer.search("\"two hybrid\"", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results7 = psicquicServer.search("\"two hybrid\" AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results7);
         Assert.assertEquals(1L, results7.getNumberResults());
 
         // default fields interaction type
-        PsicquicSearchResults results8 = psicquicServer.search("\"direct interaction\"", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results8 = psicquicServer.search("\"direct interaction\" AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results8);
         Assert.assertEquals(1L, results8.getNumberResults());
 
         // default fields interaction identifier
-        PsicquicSearchResults results9 = psicquicServer.search("EBI-5630468", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results9 = psicquicServer.search("EBI-5630468 AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results9);
         Assert.assertEquals(1L, results9.getNumberResults());
@@ -140,25 +140,25 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
         PsimiTabReader mitabReader = new PsimiTabReader();
 
         // query start is 2. Only 2 results are expected
-        PsicquicSearchResults results = psicquicServer.search("*", 2, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results = psicquicServer.search("negative:(true OR false)", 2, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(2L, mitabReader.read(results.getMitab()).size());
 
         // query max is 3. Only 3 results are expected
-        PsicquicSearchResults results2 = psicquicServer.search("*", null, 3, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results2 = psicquicServer.search("negative:(true OR false)", null, 3, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results2);
         Assert.assertEquals(3L, mitabReader.read(results2.getMitab()).size());
 
         // query rows is 1 and query start = 2. Only 1 results are expected
-        PsicquicSearchResults results3 = psicquicServer.search("*", 2, 1, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results3 = psicquicServer.search("negative:(true OR false)", 2, 1, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results3);
         Assert.assertEquals(1L, mitabReader.read(results3.getMitab()).size());
 
         // query rows is 2 and query start = 3. Only 1 results are expected because number max of results = 4
-        PsicquicSearchResults results4 = psicquicServer.search("*", 3, 2, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results4 = psicquicServer.search("negative:(true OR false)", 3, 2, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results4);
         Assert.assertEquals(1L, mitabReader.read(results4.getMitab()).size());
@@ -175,25 +175,25 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
         PsimiTabReader mitabReader = new PsimiTabReader();
 
         // identifier:P07228 is matching two results but with the query filter on participant detection method, only one result is expected
-        PsicquicSearchResults results = psicquicServer.search("identifier:P07228", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, "pmethod:\"predetermined participant\"");
+        PsicquicSearchResults results = psicquicServer.search("identifier:P07228 AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, "pmethod:\"predetermined participant\"");
 
         Assert.assertNotNull(results);
         Assert.assertEquals(1, mitabReader.read(results.getMitab()).size());
 
         // identifier:P21333 is matching four results but with the query filter on detection method + on negative, only one result is expected
-        PsicquicSearchResults results2 = psicquicServer.searchWithFilters("identifier:P21333", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, new String[]{"detmethod:\"anti bait coimmunoprecipitation\"", "negative:true"});
+        PsicquicSearchResults results2 = psicquicServer.searchWithFilters("identifier:P21333 AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, new String[]{"detmethod:\"anti bait coimmunoprecipitation\"", "negative:true"});
 
         Assert.assertNotNull(results2);
         Assert.assertEquals(1, mitabReader.read(results2.getMitab()).size());
 
         // 9722563 is matching four results (default query in pubid is working) but with the query filter on detection method + on negative, only one result is expected
-        PsicquicSearchResults results3 = psicquicServer.searchWithFilters("9722563", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, new String[]{"detmethod:\"anti bait coimmunoprecipitation\"", "negative:true"});
+        PsicquicSearchResults results3 = psicquicServer.searchWithFilters("9722563 AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, new String[]{"detmethod:\"anti bait coimmunoprecipitation\"", "negative:true"});
 
         Assert.assertNotNull(results3);
         Assert.assertEquals(1, mitabReader.read(results3.getMitab()).size());
 
         // western blot is not matching two results (default query in pmethod is not allowed)
-        PsicquicSearchResults results4 = psicquicServer.searchWithFilters("\"western blot\"", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, new String[]{"detmethod:\"anti bait coimmunoprecipitation\"", "negative:true"});
+        PsicquicSearchResults results4 = psicquicServer.searchWithFilters("\"western blot\" AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, new String[]{"detmethod:\"anti bait coimmunoprecipitation\"", "negative:true"});
 
         Assert.assertNotNull(results4);
         Assert.assertEquals(0, mitabReader.read(results4.getMitab()).size());
@@ -275,19 +275,19 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
         PsicquicSolrServer psicquicServer = new PsicquicSolrServer(server);
 
         // should return 4 lines because P0* can match both P07228 and P05556
-        PsicquicSearchResults results = psicquicServer.search("P0*", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results = psicquicServer.search("P0* AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(4L, results.getNumberResults());
 
         // should return 4 lines because P0* can match both P07228 and P05556
-        PsicquicSearchResults results2 = psicquicServer.search("identifier:P0*", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results2 = psicquicServer.search("identifier:P0* AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results2);
         Assert.assertEquals(4L, results2.getNumberResults());
 
         // should return 2 lines because P0* can match both P07228 and P05556
-        PsicquicSearchResults results3 = psicquicServer.search("idA:P0*", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+        PsicquicSearchResults results3 = psicquicServer.search("idA:P0* AND negative:(true OR false)", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
 
         Assert.assertNotNull(results3);
         Assert.assertEquals(2L, results3.getNumberResults());

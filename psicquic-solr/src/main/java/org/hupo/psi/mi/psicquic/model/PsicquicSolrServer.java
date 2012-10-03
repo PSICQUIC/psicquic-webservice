@@ -349,8 +349,9 @@ public class PsicquicSolrServer {
                 .replaceAll(" not ", " NOT ")
                 .replaceAll("^not ", "NOT "));
 
-        // if someone wants to download
-        if (returnType == null || returnType.equals(RETURN_TYPE_MITAB25)){
+        // By default filter negative interactions. If a neagtive field is specified in the query, then the filter which excludes negative
+        // interactions is removed
+        if (!containsNegativeFilter(originalQuery) || returnType == null || (returnType != null && RETURN_TYPE_MITAB25.equals(returnType))){
             originalQuery.addFilterQuery(SolrFieldName.negative+":false");
         }
 
@@ -361,6 +362,26 @@ public class PsicquicSolrServer {
         }
 
         return createSearchResults(solrResponse.getResults(), returnType, solrResponse.getFacetFields());
+    }
+
+    private boolean containsNegativeFilter(SolrQuery query){
+        if (query.getQuery() != null && query.getQuery().contains(SolrFieldName.negative+":")){
+            return true;
+        }
+
+        String[] queries = query.getFilterQueries();
+
+        if (queries == null || queries.length == 0){
+            return false;
+        }
+
+        for (String filter : queries){
+            if (filter.contains(SolrFieldName.negative+":")){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
