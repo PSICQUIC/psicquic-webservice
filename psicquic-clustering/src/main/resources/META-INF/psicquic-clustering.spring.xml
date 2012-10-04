@@ -32,7 +32,9 @@
 
     <!-- Batch Jobs -->
 
-    <bean id="clusteringTask" class="org.hupo.psi.mi.psicquic.clustering.job.batch.PsicquicClustererTasklet"/>
+    <bean id="clusteringTask" class="org.hupo.psi.mi.psicquic.clustering.job.batch.PsicquicClustererTasklet">
+        <property name="registryUrl" value="${registry.url}"/>
+    </bean>
 
     <batch:job id="clusteringJob" job-repository="jobRepository" restartable="false">
         <batch:step id="clusteringStep">

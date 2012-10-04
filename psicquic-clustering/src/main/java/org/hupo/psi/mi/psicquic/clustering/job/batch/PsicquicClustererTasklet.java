@@ -43,6 +43,8 @@ public class PsicquicClustererTasklet implements Tasklet {
     @Autowired
     private ClusteringContext clusteringContext;
 
+    private String registryUrl;
+
 
     ////////////////
     // Tasklet
@@ -100,6 +102,9 @@ public class PsicquicClustererTasklet implements Tasklet {
 
         // Setup up enfin clustering
         InteractionCluster iC = new InteractionCluster();
+        // set registryUrl
+        iC.setRegistryUrl(this.registryUrl);
+
         iC.addQueryAcc( miql );
         for ( String service : services ) {
             iC.addQuerySource( service );
@@ -176,5 +181,13 @@ public class PsicquicClustererTasklet implements Tasklet {
         jobDao.update( job );
 
         return RepeatStatus.FINISHED;
+    }
+
+    public String getRegistryUrl() {
+        return registryUrl;
+    }
+
+    public void setRegistryUrl(String registryUrl) {
+        this.registryUrl = registryUrl;
     }
 }
