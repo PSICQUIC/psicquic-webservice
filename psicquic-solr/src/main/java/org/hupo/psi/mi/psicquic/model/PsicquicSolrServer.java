@@ -300,15 +300,16 @@ public class PsicquicSolrServer {
     protected PsicquicSearchResults search(SolrQuery originalQuery, String returnType) throws PsicquicSolrException, SolrServerException {
 
         String[] fields = solrFields.containsKey(returnType) ? solrFields.get(returnType) : new String[]{};
+        SolrQuery copy = originalQuery.getCopy();
 
-        if(originalQuery.getFields()!=null){
+        if(copy.getFields()!=null){
             // new array created here so the map solrFields is never changed
-            fields = (String[]) ArrayUtils.addAll(fields, originalQuery.getFields().split(","));
+            fields = (String[]) ArrayUtils.addAll(fields, copy.getFields().split(","));
         }
 
-        originalQuery.setFields(fields);
+        copy.setFields(fields);
 
-        String query = originalQuery.getQuery();
+        String query = copy.getQuery();
         // if using a wildcard query we convert to lower case
         // as of http://mail-archives.apache.org/mod_mbox/lucene-solr-user/200903.mbox/%3CFD3AFB65-AEC1-40B2-A0A4-7E14A519AB05@ehatchersolutions.com%3E
         if (query.contains("*")) {
@@ -343,7 +344,7 @@ public class PsicquicSolrServer {
         }
 
         // replace and/or in lower case
-        originalQuery.setQuery(query
+        copy.setQuery(query
                 .replaceAll(" and ", " AND ")
                 .replaceAll(" or ", " OR ")
                 .replaceAll(" not ", " NOT ")
@@ -351,11 +352,11 @@ public class PsicquicSolrServer {
 
         // By default filter negative interactions. If a neagtive field is specified in the query, then the filter which excludes negative
         // interactions is removed
-        if (!containsNegativeFilter(originalQuery) || returnType == null || (returnType != null && RETURN_TYPE_MITAB25.equals(returnType))){
-            originalQuery.addFilterQuery(SolrFieldName.negative+":false");
+        if (!containsNegativeFilter(copy) || returnType == null || (returnType != null && RETURN_TYPE_MITAB25.equals(returnType))){
+            copy.addFilterQuery(SolrFieldName.negative+":false");
         }
 
-        org.apache.solr.client.solrj.response.QueryResponse solrResponse = solrServer.query(originalQuery);
+        org.apache.solr.client.solrj.response.QueryResponse solrResponse = solrServer.query(copy);
 
         if (solrResponse == null){
             return null;
