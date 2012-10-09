@@ -42,6 +42,8 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     private int defaultMaxConnectionsPerHost = 24;
     private boolean allowCompression = true;
 
+    private boolean needToCommitOnClose;
+
     public SolrItemWriter(){
         solrConverter = new Converter();
     }
@@ -65,6 +67,8 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
             SolrInputDocument solrInputDoc = solrConverter.toSolrDocument(row);
             solrServer.add(solrInputDoc);
         }
+
+        needToCommitOnClose = true;
     }
 
     public void open(ExecutionContext executionContext) throws ItemStreamException {
@@ -87,6 +91,7 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
         if (solrServer != null){
             try {
                 solrServer.commit();
+                needToCommitOnClose = false;
             } catch (SolrServerException e) {
                 throw new ItemStreamException("Problem committing the results.", e);
             } catch (IOException e) {
@@ -98,6 +103,9 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
     public void close() throws ItemStreamException {
         if (solrServer != null){
             try {
+                if (needToCommitOnClose){
+                    solrServer.commit();
+                }
                 solrServer.optimize();
             } catch (Exception e) {
                 throw new ItemStreamException("Problem closing solr server", e);
