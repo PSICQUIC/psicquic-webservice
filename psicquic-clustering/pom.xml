@@ -19,7 +19,6 @@
     <properties>
         <spring.version>3.1.2.RELEASE</spring.version>
         <spring.batch.version>2.1.8.RELEASE</spring.batch.version>
-        <registry.url></registry.url>
     </properties>
 
     <build>
