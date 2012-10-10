@@ -11,7 +11,7 @@
     <context:annotation-config/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations" value="classpath*:/clustering.properties"/>
+        <property name="locations" value="${config.file}"/>
     </bean>
 
     <bean id="autowired" class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />

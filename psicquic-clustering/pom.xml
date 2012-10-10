@@ -19,6 +19,7 @@
     <properties>
         <spring.version>3.1.2.RELEASE</spring.version>
         <spring.batch.version>2.1.8.RELEASE</spring.batch.version>
+        <config.file>classpath*:/clustering.properties</config.file>
     </properties>
 
     <build>
