@@ -16,14 +16,15 @@
 package uk.ac.ebi.intact.view.webapp.util;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import psidev.psi.mi.tab.converter.tab2graphml.AliasByTypeComparator;
+import psidev.psi.mi.tab.converter.tab2graphml.AliasComparator;
+import psidev.psi.mi.tab.model.Alias;
 import psidev.psi.mi.tab.model.CrossReference;
 import psidev.psi.mi.tab.model.Interactor;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -110,7 +111,7 @@ public final class MitabFunctions {
         } else {
             Set<String> rolesSymbol = new HashSet<String>();
             Set<String> rolesDesc = new HashSet<String>();
-           
+
             for ( CrossReference crossReference : crossReferences ) {
                 if ( crossReference.getText() != null && !"unspecified role".equals( crossReference.getText() ) ) {
                     String symbol = getFirstLetterofEachToken( crossReference.getText());
@@ -151,20 +152,20 @@ public final class MitabFunctions {
         return s;
     }
 
-    public static String getIntactIdentifierFromCrossReferences(Collection xrefs) {
+    public static String getIntactIdentifierFromCrossReferences(Collection<CrossReference> xrefs) {
         return getIdentifierFromCrossReferences(xrefs, "intact");
     }
 
-     public static String getUniprotIdentifierFromCrossReferences(Collection xrefs) {
+     public static String getUniprotIdentifierFromCrossReferences(Collection<CrossReference> xrefs) {
         return getIdentifierFromCrossReferences(xrefs, "uniprotkb");
     }
 
-    public static String getChebiIdentifierFromCrossReferences(Collection xrefs) {
+    public static String getChebiIdentifierFromCrossReferences(Collection<CrossReference> xrefs) {
         return getIdentifierFromCrossReferences(xrefs, "chebi");
     }
 
-    public static String getIdentifierFromCrossReferences(Collection xrefs, String databaseLabel) {
-        for (CrossReference xref : (Collection<CrossReference>) xrefs) {
+    public static String getIdentifierFromCrossReferences(Collection<CrossReference> xrefs, String databaseLabel) {
+        for (CrossReference xref : xrefs) {
             if (databaseLabel.equals(xref.getDatabase())) {
                 return xref.getIdentifier();
             }
@@ -181,20 +182,43 @@ public final class MitabFunctions {
         return false;
     }
 
-    public static Collection getFilteredCrossReferences( Collection xrefs, String filter ) {
+    public static Collection getFilteredCrossReferences( Collection<CrossReference> xrefs, String filter ) {
         if ( filter == null ) {
-            throw new NullPointerException( "You must give a non null filter" );
+//            throw new NullPointerException( "You must give a non null filter" );
+			return xrefs;
         }
 
         List<CrossReference> filteredList = new ArrayList<CrossReference>();
 
-        for ( CrossReference xref : ( Collection<CrossReference> ) xrefs ) {
+        for ( CrossReference xref : xrefs ) {
             if ( filter.equals( xref.getText() ) ) {
                 filteredList.add( xref );
             }
         }
         return filteredList;
     }
+
+	public static Collection getFilteredCrossReferencesByChecksum( Collection<CrossReference> xrefs) {
+		List<CrossReference> filteredList = new ArrayList<CrossReference>();
+
+//		final List<String> checksumNames = new ArrayList<String>(Arrays.asList(new String[]
+//				{"checksum", "smiles string", "standard inchi", "inchi key",
+//						"standard inchi key", "rogid", "rigid", "crogid", "crc", "crc64"}));
+
+		final List<String> checksumNames = new ArrayList<String>(Arrays.asList(new String[]
+				{"checksum", "rogid", "rigid", "crogid", "crc", "crc64"}));
+
+		final String IREFINDEX = "irefindex";
+
+
+		for ( CrossReference xref : xrefs ) {
+			String aux = xref.getDatabase();
+			if (!checksumNames.contains(aux) && !IREFINDEX.equalsIgnoreCase(aux)) {
+				filteredList.add( xref );
+			}
+		}
+		return filteredList;
+	}
 
     /**
      * Filter the given collection by removing any xref that have any of the two filters.
@@ -203,22 +227,66 @@ public final class MitabFunctions {
      * @param textFilter
      * @return
      */
-    public static Collection getExclusionFilteredCrossReferences( Collection xrefs, String databaseFilter, String textFilter ) {
+    public static Collection getExclusionFilteredCrossReferences( Collection<CrossReference> xrefs, String textFilter, String databaseFilter) {
         if ( databaseFilter == null && textFilter == null) {
-            throw new NullPointerException( "You must give at least one non null filter" );
+//            throw new NullPointerException( "You must give at least one non null filter" );
+			return xrefs;
         }
+
 
         List<CrossReference> filteredList = new ArrayList<CrossReference>();
 
-        for ( CrossReference xref : ( Collection<CrossReference> ) xrefs ) {
-            if ( (databaseFilter != null && !databaseFilter.equals( xref.getDatabase() ))
-                 &&
-                 (textFilter != null && !textFilter.equals( xref.getText() ) ) ) {
+        for ( CrossReference xref : xrefs ) {
+            if ((databaseFilter!=null && !databaseFilter.equals( xref.getDatabase())) && (textFilter!=null && !textFilter.equals(xref.getText()))){
                 filteredList.add( xref );
             }
         }
         return filteredList;
     }
+
+	public static Collection getExclusionFilteredAliases( Collection<Alias> aliases ) {
+
+		List<Alias> filteredList = new ArrayList<Alias>();
+
+		for ( Alias alias : aliases ) {
+			if ( alias.getAliasType() == null ||
+					(alias.getAliasType() != null && !alias.getAliasType().equals("display_short") && !alias.getAliasType().equals("display_long")) ) {
+				filteredList.add( alias );
+			}
+		}
+		return filteredList;
+	}
+
+	public static Collection getSortedAliases( Collection<Alias> aliases ) {
+
+		final AliasComparator comparator = new AliasByTypeComparator();
+		Collections.sort((List<Alias>) aliases, comparator);
+
+		return aliases;
+	}
+
+	public static boolean hasOrganism(Interactor interactor){
+		if (interactor == null){
+			return false;
+		}
+
+		return interactor.getOrganism() != null;
+	}
+
+	public static CrossReference getUniqueOrganismXref(Collection<CrossReference> identifiers) {
+		CrossReference currentCrossReference = null;
+		for (CrossReference identifier : identifiers){
+
+			if (currentCrossReference == null){
+				currentCrossReference = identifier;
+			}
+			if (identifier.getText() != null && currentCrossReference.getText().length() < identifier.getText().length()){
+				currentCrossReference = identifier;
+			}
+		}
+
+		return currentCrossReference;
+	}
 
     public static boolean getSelectedFromMap( Map columnMap, String columnName ) {
 
@@ -243,4 +311,5 @@ public final class MitabFunctions {
         }
         return s;
     }
+
 }

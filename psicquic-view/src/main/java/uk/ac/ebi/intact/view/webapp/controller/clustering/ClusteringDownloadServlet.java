@@ -5,17 +5,19 @@ import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.QueryResponse;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringServiceException;
 import org.hupo.psi.mi.psicquic.clustering.InteractionClusteringService;
+import org.hupo.psi.mi.psicquic.model.PsicquicSolrServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import uk.ac.ebi.intact.view.webapp.io.DownloadUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Servlet to download the data stored in the local index holding clustered data.
@@ -30,29 +32,65 @@ public class ClusteringDownloadServlet extends HttpServlet {
     private static final Log log = LogFactory.getLog(ClusteringDownloadServlet.class);
 
     private InteractionClusteringService clusteringService;
+	private final DownloadUtils clusteringDownloadUtils = new ClusteringDownloadUtils();
 
-    @Override
+
+	@Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
         clusteringService = (InteractionClusteringService) ctx.getBean( "defaultInteractionClusteringService" );
     }
 
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@Override
+	protected void doGet(
+			HttpServletRequest aRequest, HttpServletResponse aResponse
+	) throws ServletException, IOException {
+		processRequest(aRequest, aResponse);
+	}
+
+	@Override
+	protected void doPost(
+			HttpServletRequest aRequest, HttpServletResponse aResponse
+	) throws ServletException, IOException {
+		processRequest(aRequest, aResponse);
+	}
+
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         final String jobId = request.getParameter( "jobId" );
-        String query = request.getParameter( "query" );
+		if( jobId == null) {
+			log.error("The jobId is not provided, the file can not be downloaded.");
+			return;
+		}
+
+		String query = request.getParameter( "query" );
         if( query == null) {
-            query = "*";
-        }
-        String format = request.getParameter( "format" );
-        if( format == null) {
-            format = InteractionClusteringService.RETURN_TYPE_MITAB25;
+			log.warn("The query parameter is not provided, it will be used * by default");
+			query = "*";
         }
 
-        response.setContentType( "text/plain" );
-        final ServletOutputStream stream = response.getOutputStream();
+		String format = request.getParameter( "format" );
+
+        if( format == null) {
+			log.warn("The format parameter is not provided, it will be used MITAB 25 by default");
+			format = PsicquicSolrServer.RETURN_TYPE_MITAB25;
+        }
+
+		String filename = getFileName(query);
+		String extension = getExtension(format);
+		String contentType = getContentType(format);
+
+		response.reset();
+
+		if (contentType != null){
+			response.setContentType(contentType);
+		}
+
+		response.setHeader("Content-Disposition",
+				"attachment; filename=\"" + filename + "." + extension + "\"");
+
+		final OutputStream stream = response.getOutputStream();
 
         try {
             int current = 0;
@@ -84,4 +122,20 @@ public class ClusteringDownloadServlet extends HttpServlet {
             stream.close();
         }
     }
+
+	private String getFileName(String query) {
+		return clusteringDownloadUtils.getFileName(query);
+	}
+
+	private String getExtension(String format) {
+		return clusteringDownloadUtils.getExtension(format);
+	}
+
+	private String getContentType(String format) {
+		return clusteringDownloadUtils.getContentType(format);
+	}
+
+	private String getDateTime() {
+		return  clusteringDownloadUtils.getDateTime();
+	}
 }

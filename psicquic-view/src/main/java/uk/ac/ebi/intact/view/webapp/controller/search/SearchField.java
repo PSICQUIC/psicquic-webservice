@@ -27,7 +27,7 @@ public class SearchField {
     private String displayName;
     private Object autocompleteMethod;
 
-    public SearchField(String name, String displayName) {
+	public SearchField(String name, String displayName) {
         this.name = name;
         this.displayName = displayName;
     }

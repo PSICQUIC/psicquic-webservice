@@ -26,7 +26,7 @@
             <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/userstyles.css" type="text/css"/>
             <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/sidebars.css" type="text/css"/>
 
-            <trh:script source="#{ebisf:absoluteEbiUrl()}/inc/js/contents.js" type="text/javascript"/>
+            <trh:script source="#{ebisf:absoluteEbiUrl()}/inc/js/contents.js"/>
 
             <!--<script type="text/javascript"-->
             <!--src="http://o.aolcdn.com/dojo/1.0.0/dojo/dojo.xd.js"></script>-->
@@ -87,7 +87,7 @@
 
                 <hr/>
 
-                <tr:commandButton text="Refresh Application" actionListener="#{searchBean.refresh}"/>
+                <tr:commandButton text="Refresh Application" actionListener="#{searchBean.refreshApp}"/>
 
             </tr:form>
         </trh:body>

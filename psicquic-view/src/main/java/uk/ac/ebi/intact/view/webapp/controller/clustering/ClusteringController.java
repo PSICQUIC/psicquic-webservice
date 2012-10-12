@@ -124,7 +124,8 @@ public class ClusteringController extends BaseController {
                 searchController.setJob( job );
                 searchController.setClusterSelected( true );
 
-                searchController.doBinarySearchAction();
+//                searchController.doBinarySearchAction();
+				searchController.doNewBinarySearch();
             }
         } catch ( DaoException e ) {
             final String msg = "Failed to list currently clustered queries";

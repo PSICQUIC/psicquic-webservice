@@ -44,28 +44,6 @@ function hide(id){
     }
 }
 
-function selectTableTab() {
-    document.getElementById('graphLabel').style.fontWeight='normal';
-    document.getElementById('tableLabel').style.fontWeight='bold';
-
-    hide('cytoscapeweb');
-    hide('graphController');
-    show('interactionResults');
-
-    _gaq.push(['_trackEvent', 'Table', '#{searchBean.selectedServiceName}', '#{searchBean.userQuery.searchQuery}']);
-}
-
-function selectGraphTab() {
-    document.getElementById('graphLabel').style.fontWeight='bold';
-    document.getElementById('tableLabel').style.fontWeight='normal';
-
-    hide('interactionResults');
-    show('cytoscapeweb');
-    show('graphController');
-
-    _gaq.push(['_trackEvent', 'Graph', '#{searchBean.selectedServiceName}', '#{searchBean.userQuery.searchQuery}']);
-}
-
 ///////////////////////////////
 // Cytoscape Web interactions
 
@@ -109,12 +87,14 @@ function selectCircleLayout() {
 function graphResize() {
     var heigth = $(window).height() - 330;
     var x = document.getElementById('cytoscapeweb');
-    x.style.height = heigth + 'px';
+    if(x!=null){
+        x.style.height = heigth + 'px';
+    }
 }
 
 function psicquic_selectAll(serviceCount) {
     for (i=0; i<serviceCount; i++) {
-        var checkbox = document.getElementById('serviceSel'+i);
+        var checkbox = document.getElementById('serviceSel_'+i);
 
         if (!checkbox.disabled) {
             checkbox.checked = true;
@@ -124,7 +104,7 @@ function psicquic_selectAll(serviceCount) {
 
 function psicquic_selectNone(serviceCount) {
     for (i=0; i<serviceCount; i++) {
-        document.getElementById('serviceSel'+i).checked = false;
+        document.getElementById('serviceSel_'+i).checked = false;
     }
 }
 

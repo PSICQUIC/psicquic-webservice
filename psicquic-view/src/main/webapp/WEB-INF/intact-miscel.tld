@@ -26,7 +26,11 @@
             <name>value</name>
             <required>true</required>
         </attribute>
+        <attribute>
+            <name>colon</name>
+        </attribute>
     </tag>
+
     <tag>
         <name>customShowDetail</name>
         <attribute>
@@ -91,5 +95,5 @@
             <name>required</name>
         </attribute>
     </tag>
-    
+
 </taglib>

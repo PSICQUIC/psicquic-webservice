@@ -143,13 +143,23 @@
 
     <context-param>
         <param-name>org.apache.myfaces.trinidad.ALTERNATE_VIEW_HANDLER</param-name>
-        <param-value>com.sun.facelets.FaceletViewHandler</param-value>
+        <!-- TrinidadFaceletViewHander must be the alternate view handler if SessionChangeManager is used -->
+        <param-value>org.apache.myfaces.trinidadinternal.facelets.TrinidadFaceletViewHandler</param-value>
+    </context-param>
+
+    <context-param>
+        <!--Unfortunately, Facelets provides no hook for plugging the PageResolver into the logic
+              handling "facelets.VIEW_MAPPINGS". You should leave "facelets.VIEW_MAPPINGS"
+              unset and use "org.apache.myfaces.trinidad.FACELETS_VIEW_MAPPINGS" instead.-->
+        <param-name>org.apache.myfaces.trinidad.FACELETS_VIEW_MAPPINGS</param-name>
+        <param-value>*.xhtml</param-value>
     </context-param>
 
     <context-param>
         <param-name>facelets.DEVELOPMENT</param-name>
         <param-value>false</param-value>
     </context-param>
+
 
     <!-- Spring resources -->
     <context-param>
@@ -242,7 +252,7 @@
             automatic compression of style class names.
         </description>
         <param-name>org.apache.myfaces.trinidad.DISABLE_CONTENT_COMPRESSION</param-name>
-        <param-value>true</param-value>
+        <param-value>false</param-value>
     </context-param>
 
     <context-param>
@@ -255,6 +265,10 @@
         <param-name>org.apache.myfaces.trinidad.ENABLE_LIGHTWEIGHT_DIALOGS</param-name>
         <param-value>true</param-value>
     </context-param>
+    <!--<context-param> JSF 2.0 -->
+    <!--<param-name>javax.faces.PROJECT_STAGE</param-name>-->
+    <!--<param-value>Production</param-value>-->
+    <!--</context-param>-->
 
     <!-- Orchestra Filter -->
     <filter>
@@ -332,13 +346,22 @@
 
     <servlet>
         <servlet-name>graphmlDownload</servlet-name>
-        <servlet-class>uk.ac.ebi.intact.view.webapp.visualisation.GraphmlServlet</servlet-class>
+        <servlet-class>uk.ac.ebi.intact.view.webapp.cytoscape.GraphmlServlet</servlet-class>
     </servlet>
 
-    <!-- Faces Servlet Mappings -->
     <servlet-mapping>
         <servlet-name>graphmlDownload</servlet-name>
         <url-pattern>/graphmlDownload</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>binaryDownload</servlet-name>
+        <servlet-class>uk.ac.ebi.intact.view.webapp.io.FileDownloadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>binaryDownload</servlet-name>
+        <url-pattern>/binaryDownload</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -346,62 +369,70 @@
         <servlet-class>uk.ac.ebi.intact.view.webapp.controller.clustering.ClusteringDownloadServlet</servlet-class>
     </servlet>
 
-    <!-- Faces Servlet Mappings -->
     <servlet-mapping>
         <servlet-name>clusterDownload</servlet-name>
         <url-pattern>/download</url-pattern>
     </servlet-mapping>
 
-
-    <!-- PrimeFaces resources -->
-    <!--<servlet>-->
-        <!--<servlet-name>Resource Servlet</servlet-name>-->
-        <!--<servlet-class>-->
-            <!--org.primefaces.ui.resource.ResourceServlet-->
-        <!--</servlet-class>-->
-        <!--<load-on-startup>1</load-on-startup>-->
-    <!--</servlet>-->
-
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>Resource Servlet</servlet-name>-->
-        <!--<url-pattern>/primefaces_resources/*</url-pattern>-->
-    <!--</servlet-mapping>-->
-
-    <!-- News feed -->
     <servlet>
-        <servlet-name>feed</servlet-name>
-        <servlet-class>uk.ac.ebi.faces.webapp.NewsFeedServlet</servlet-class>
+        <servlet-name>appHeaderSpecific</servlet-name>
+        <servlet-class>uk.ac.ebi.intact.view.webapp.controller.servlet.AppHeaderSpecificServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>feed</servlet-name>
-        <url-pattern>/feed</url-pattern>
+        <servlet-name>appHeaderSpecific</servlet-name>
+        <url-pattern>/appHeaderSpecific</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>appMainHeader</servlet-name>
+        <servlet-class>uk.ac.ebi.intact.view.webapp.controller.servlet.AppMainHeaderServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>appMainHeader</servlet-name>
+        <url-pattern>/appMainHeader</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>appMainFooter</servlet-name>
+        <servlet-class>uk.ac.ebi.intact.view.webapp.controller.servlet.AppMainFooterServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>appMainFooter</servlet-name>
+        <url-pattern>/appMainFooter</url-pattern>
+    </servlet-mapping>
+
+      <!-- News feed -->
+    <!--<servlet>-->
+        <!--<servlet-name>feed</servlet-name>-->
+        <!--<servlet-class>uk.ac.ebi.faces.webapp.NewsFeedServlet</servlet-class>-->
+    <!--</servlet>-->
+
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>feed</servlet-name>-->
+        <!--<url-pattern>/feed</url-pattern>-->
+    <!--</servlet-mapping>-->
 
     <!-- Welcome files -->
     <welcome-file-list>
-        <welcome-file>/index.jsp</welcome-file>
+        <welcome-file>/index.html</welcome-file>
     </welcome-file-list>
 
+   <!-- Handling of the HTTP error 404(Not found) and 500(internal server error)-->
+    <!--<error-page>-->
+    <!--<error-code>404</error-code>-->
+    <!--<location>/error/404.xhtml</location>-->
+    <!--</error-page>-->
+
+    <!--<error-page>-->
+    <!--<error-code>500</error-code>-->
+    <!--<location>/error/500.xhtml</location>-->
+    <!--</error-page>-->
+
     <session-config>
-        <session-timeout>60</session-timeout>
+        <session-timeout>120</session-timeout>
     </session-config>
-
-    <!-- Handling of the HTTP error 404(Not found) and 500(internal server error)-->
-    <!--<error-page>-->
-        <!--<error-code>404</error-code>-->
-        <!--<location>/error/404.xhtml</location>-->
-    <!--</error-page>-->
-
-    <!--<error-page>-->
-        <!--<error-code>500</error-code>-->
-        <!--<location>/error/500.xhtml</location>-->
-    <!--</error-page>-->
-
-    <!--<error-page>-->
-    <!--<exception-type>uk.ac.ebi.intact.view.webapp.PsicquicViewExceptionon</exception-type>-->
-    <!--<location>/main.xhtml</location>-->
-    <!--</error-page>-->
-
 
 </web-app>

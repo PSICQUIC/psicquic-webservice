@@ -83,6 +83,23 @@
     </tag>
 
     <tag>
+        <name>xrefDataItem</name>
+        <attribute>
+            <name>disableLinks</name>
+        </attribute>
+        <attribute>
+            <name>onlyText</name>
+        </attribute>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>linkType</name>
+        </attribute>
+    </tag>
+
+    <tag>
         <name>queryLink</name>
         <attribute>
             <name>rendered</name>

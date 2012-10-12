@@ -48,7 +48,7 @@ public class UserQuery extends BaseController {
 
     private String searchQuery = "*";
 
-    private Map<String, String> termMap = new HashMap<String,String>();
+    private Map<String, String> termMap = new HashMap<String, String>();
 
     //for sorting and ordering
     private static final String DEFAULT_SORT_COLUMN = "rigid";
@@ -57,7 +57,7 @@ public class UserQuery extends BaseController {
     private String userSortColumn = DEFAULT_SORT_COLUMN;
     private boolean userSortOrder = DEFAULT_SORT_ORDER;
 
-    private int pageSize = 30;
+    private int pageSize = 25;
 
     private boolean showNewFieldPanel;
     private QueryToken newQueryToken;
@@ -66,7 +66,7 @@ public class UserQuery extends BaseController {
     private SearchField[] searchFields;
 
     private List<SelectItem> searchFieldSelectItems;
-    private Map<String,SearchField> searchFieldsMap;
+    private Map<String, SearchField> searchFieldsMap;
 
     public UserQuery() {
     }
@@ -92,29 +92,63 @@ public class UserQuery extends BaseController {
 
         searchFields = new SearchField[]{
                 new SearchField("", "All"),
-                new SearchField("id", "Participant Id"),
-                new SearchField("interaction_id", "Interaction Id"),
-                new SearchField("detmethod", "Detection method"),
-                new SearchField("type", "Interaction type"),
-                new SearchField("species", "Organism"),
-                new SearchField("pubid", "Pubmed Id"),
-                new SearchField("pubauth", "Author")
-        };
+                new SearchField("id", "Interactor id (Ex: P74565)"),
+                new SearchField("alias", "Interactor alias (Ex: KHDRBS1)"),
+                new SearchField("identifier", "Interactor id or alias"),
+                new SearchField("pubauth", "Author (Ex: scott)"),
+                new SearchField("pubid", "Publication id (Ex: 10837477)"),
+                new SearchField("species", "Organism (Ex: human)"),
+                new SearchField("type", "Interaction type (Ex: physical association)"),
+                new SearchField("detmethod", "Interaction detection method (Ex: pull down)"),
+                new SearchField("interaction_id", "Interaction Id (Ex: EBI-761050)"),
+                new SearchField("pbiorole", "Biological roles (Ex: enzyme)"),
+                new SearchField("ptype", "Interactor type (Ex: protein)"),
+                new SearchField("pxref", "Interactor xref (Ex: GO:0003824)"),
+                new SearchField("xref", "Interaction xref (Ex: nuclear pore)"),
+                new SearchField("annot", "Interaction annotation (Ex: imex curation)"),
+                new SearchField("udate", "Last update date (Ex: [YYYYMMDD TO YYYYMMDD])"),
+                new SearchField("negative", "Negative interaction (Ex: true)", listNegativeSelectItems()),
+                new SearchField("complex", "Complex expansion (Ex: spoke)"),
+                new SearchField("ftype", "Interactor feature (Ex: binding site)"),
+                new SearchField("pmethod", "Interactor identification method (Ex: western blot)"),
+                new SearchField("stc", "Stoichiometry (Ex: true)", listStoichiometrySelectItems()),
+                new SearchField("param", "Interaction parameter (Ex: true)", listParametersSelectItems())
+		};
+
 
         searchFieldSelectItems = new ArrayList<SelectItem>(searchFields.length);
+        searchFieldsMap = new HashMap<String, SearchField>();
 
         for (SearchField searchField : searchFields) {
             searchFieldSelectItems.add(new SelectItem(searchField.getName(), searchField.getDisplayName()));
+            searchFieldsMap.put(searchField.getName(), searchField);
         }
 
-        searchFieldsMap = new HashMap<String, SearchField>();
+   }
 
-        for (SearchField field : searchFields) {
-            searchFieldsMap.put(field.getName(), field);
-        }
-    }
+	private List<SelectItem> listNegativeSelectItems() {
+		List<SelectItem> negativeItems = new ArrayList<SelectItem>(3);
+		negativeItems.add(new SelectItem("true", "Only negative interactions"));
+		negativeItems.add(new SelectItem("(true OR false)", "Include negative interactions"));
+		negativeItems.add(new SelectItem("false", "Only positive interactions (default)"));
+		return negativeItems;
+	}
 
-    public void clearSearchFilters(ActionEvent evt) {
+	private List<SelectItem> listParametersSelectItems() {
+		List<SelectItem> parameters = new ArrayList<SelectItem>(2);
+		parameters.add(new SelectItem("true", "Only interactions having parameters available"));
+		parameters.add(new SelectItem("false", "Excludes interactions having parameters available"));
+		return parameters;
+	}
+
+	private List<SelectItem> listStoichiometrySelectItems() {
+		List<SelectItem> stoichiometry = new ArrayList<SelectItem>(2);
+		stoichiometry.add(new SelectItem("true", "Only interactions having stoichiometry information"));
+		stoichiometry.add(new SelectItem("false", "Excludes interactions having stoichiometry information"));
+		return stoichiometry;
+	}
+
+	public void clearSearchFilters(ActionEvent evt) {
         clearFilters();
     }
 
@@ -135,7 +169,7 @@ public class UserQuery extends BaseController {
                 searchQuery = queryToken.toQuerySyntax(true);
             } else {
                 searchQuery = surroundByBracesIfNecessary(searchQuery);
-                searchQuery = searchQuery + " "+queryToken.toQuerySyntax();
+                searchQuery = searchQuery + " " + queryToken.toQuerySyntax();
             }
         }
 
@@ -147,12 +181,12 @@ public class UserQuery extends BaseController {
     }
 
     private boolean isWildcardQuery(String query) {
-        return (query == null || query.trim().length() == 0 || "*".equals(query) || "*:*".equals(query));
+        return (query == null || query.trim().length() == 0 || "*".equals(query) || STAR_QUERY.equals(query));
     }
 
     private String surroundByBracesIfNecessary(String query) {
         if (query.contains(" AND ") || query.contains(" OR ")) {
-            query = "("+query+")";
+            query = "(" + query + ")";
         }
 
         return query;
@@ -172,7 +206,7 @@ public class UserQuery extends BaseController {
     }
 
     public String getSearchQuery() {
-        if ("".equals(searchQuery) || "*:*".equals(searchQuery)) {
+        if ("".equals(searchQuery) || STAR_QUERY.equals(searchQuery)) {
             searchQuery = "*";
         }
         return searchQuery;
@@ -182,13 +216,13 @@ public class UserQuery extends BaseController {
         String query = getSearchQuery();
         String miqlFilterQuery = config.getMiqlFilterQuery();
 
-         if (miqlFilterQuery == null || miqlFilterQuery.length() == 0) {
+        if (miqlFilterQuery == null || miqlFilterQuery.length() == 0) {
             return query;
         } else {
             if (query.equals("*") || query.length() == 0) {
                 query = miqlFilterQuery;
             } else {
-                query = "("+query+") AND ("+miqlFilterQuery+")";
+                query = "(" + query + ") AND (" + miqlFilterQuery + ")";
             }
         }
 
@@ -200,15 +234,15 @@ public class UserQuery extends BaseController {
         this.searchQuery = searchQuery;
     }
 
-    public void resetSearchQuery(){
+    public void resetSearchQuery() {
         this.searchQuery = null;
     }
 
     public String getUserSortColumn() {
         return userSortColumn;
     }
-            
-    public void setUserSortColumn( String userSortColumn ) {
+
+    public void setUserSortColumn(String userSortColumn) {
         this.userSortColumn = userSortColumn;
     }
 
@@ -216,7 +250,7 @@ public class UserQuery extends BaseController {
         return userSortOrder;
     }
 
-    public void setUserSortOrder( boolean userSortOrder ) {
+    public void setUserSortOrder(boolean userSortOrder) {
         this.userSortOrder = userSortOrder;
     }
 
@@ -232,11 +266,11 @@ public class UserQuery extends BaseController {
         return termMap;
     }
 
-    public void setTermMap( Map<String, String> termMap ) {
+    public void setTermMap(Map<String, String> termMap) {
         this.termMap = termMap;
     }
 
-       public List<SelectItem> getSearchFieldSelectItems() {
+    public List<SelectItem> getSearchFieldSelectItems() {
         return searchFieldSelectItems;
     }
 

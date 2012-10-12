@@ -9,38 +9,48 @@
         xmlns:sf="http://www.ebi.ac.uk/faces/site"
         xmlns:ebi="http://ebi.ac.uk/faces/components">
 
-        <ui:component rendered="#{rendered != null? sf:convertToBoolean(rendered) : true}">
+        <ui:component rendered="#{rendered != null ? sf:convertToBoolean(rendered) : true}">
 
-            <div id="iam_content_undisclosed_${id}"
-                 style="display:#{sf:convertToBoolean(disclosed)? 'none' : 'inline'}">
+	        <c:set var="colon" value="#{colon == null ? false : sf:convertToBoolean(colon)}"/>
+
+
+	        <div id="iam_content_undisclosed_${id}" style="display:#{sf:convertToBoolean(disclosed)? 'none' : 'block'};">
                 <tr:iterator var="item" value="#{value}" varStatus="rowStatus"
                              rows="#{maxShown}">
                     <ui:insert/>
-                    <tr:outputText value="; " rendered="#{rowStatus.count lt fn:length(value)}"/>
+                    <!--<tr:outputText value="; " rendered="#{rowStatus.count lt fn:length(value) and colon}"/>-->
+	                <tr:outputText value="#{colon ? '; ' : ' '}" rendered="#{rowStatus.count lt fn:length(value)}"/>
                 </tr:iterator>
             </div>
 
-            <div id="iam_content_disclosed_${id}"
-                 style="display:#{sf:convertToBoolean(disclosed)? 'inline' : 'none'}">
+            <div id="iam_content_disclosed_${id}" style="display:#{sf:convertToBoolean(disclosed)? 'block' : 'none'};">
                 <tr:iterator var="item" value="#{value}" varStatus="rowStatus"
                              rows="0">
                     <ui:insert/>
-                    <tr:outputText value="; " rendered="#{rowStatus.count lt fn:length(value)}"/>
+	                <tr:outputText value="#{colon ? '; ' : ' '}" rendered="#{rowStatus.count lt fn:length(value)}"/>
                 </tr:iterator>
             </div>
 
-            <h:panelGroup rendered="#{maxShown lt fn:length(value)}">
-                <div id="iam_disclosed_${id}"
-                     style="display:#{sf:convertToBoolean(disclosed)? 'inline' : 'none'}"
-                     onclick="document.getElementById('iam_content_disclosed_${id}').style.display = 'none'; document.getElementById('iam_content_undisclosed_${id}').style.display = 'inline'; document.getElementById('iam_undisclosed_${id}').style.display='inline'; this.style.display = 'none'; return false;">
+            <tr:panelGroupLayout rendered="#{maxShown lt fn:length(value)}">
+                <span id="iam_disclosed_${id}"
+                     style="display:#{sf:convertToBoolean(disclosed)? 'block' : 'none'}"
+                     onclick="document.getElementById('iam_content_disclosed_${id}').style.display = 'none';
+                                document.getElementById('iam_content_undisclosed_${id}').style.display = 'block';
+                                document.getElementById('iam_undisclosed_${id}').style.display='block';
+                                this.style.display = 'none';
+                                return false;">
                     <a href="#">[-]</a>
-                </div>
-                <div id="iam_undisclosed_${id}"
-                     style="display:#{sf:convertToBoolean(disclosed)? 'none' : 'inline'}"
-                     onclick="document.getElementById('iam_content_disclosed_${id}').style.display = 'inline'; document.getElementById('iam_content_undisclosed_${id}').style.display = 'none'; document.getElementById('iam_disclosed_${id}').style.display='inline'; this.style.display = 'none'; return false;">
+                </span>
+                <span id="iam_undisclosed_${id}"
+                     style="display:#{sf:convertToBoolean(disclosed)? 'none' : 'block'}"
+                     onclick="document.getElementById('iam_content_disclosed_${id}').style.display = 'block';
+                      document.getElementById('iam_content_undisclosed_${id}').style.display = 'none';
+                      document.getElementById('iam_disclosed_${id}').style.display='block';
+                      this.style.display = 'none';
+                      return false;">
                     <a href="#">[+]</a>
-                </div>
-            </h:panelGroup>
+                </span>
+            </tr:panelGroupLayout>
 
         </ui:component>
 

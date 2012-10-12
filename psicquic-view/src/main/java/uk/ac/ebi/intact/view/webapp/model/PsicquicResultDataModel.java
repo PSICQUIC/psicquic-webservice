@@ -21,18 +21,18 @@ import org.apache.myfaces.trinidad.model.SortCriterion;
 import org.apache.myfaces.trinidad.model.SortableModel;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 import psidev.psi.mi.search.SearchResult;
+import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.tab.model.builder.DocumentDefinition;
-import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
+import uk.ac.ebi.intact.view.webapp.util.FlipInteractors;
 
-import javax.faces.model.DataModelEvent;
-import javax.faces.model.DataModelListener;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.net.SocketTimeoutException;
+import java.util.*;
 
 /**
  * DataModel for dar retreived from PSICQUIC services.
@@ -42,217 +42,267 @@ import java.util.zip.GZIPInputStream;
  */
 public class PsicquicResultDataModel extends SortableModel implements Serializable {
 
-    private static final Log log = LogFactory.getLog(PsicquicResultDataModel.class);
+	private static final Log log = LogFactory.getLog(PsicquicResultDataModel.class);
 
-    private static String DEFAULT_SORT_COLUMN = "rigid";
+	private static String DEFAULT_SORT_COLUMN = "rigid";
 
-    private String query;
-    private PsicquicSimpleClient psicquicClient;
+	private String query;
+	private PsicquicSimpleClient psicquicClient;
 
-    private SearchResult<BinaryInteraction> result;
-    private int rowIndex = -1;
-    private int firstResult = 0;
-    private int maxResults = 50;
+	private SearchResult<BinaryInteraction> result;
+	private int rowIndex = -1;
+	private int firstResult = 0;
+	private int maxResults = 50;
+	private String version;
 
-    private String sortColumn = DEFAULT_SORT_COLUMN;
-    private Boolean ascending = true;
+	private String sortColumn = DEFAULT_SORT_COLUMN;
 
-    private Map<String,Boolean> columnSorts;
-    
-    private DocumentDefinition mitabDocumentDefinition;
+	private static final int UNEXPECTED_ERROR = -2;
+	private static final int TIME_OUT_EXCEPTION = -1;
 
-    public PsicquicResultDataModel(PsicquicSimpleClient psicquicClient, String query) throws IOException {
-        if (psicquicClient == null) {
-            throw new IllegalArgumentException("Trying to create data model with a null Psicquic client");
-        }
-        if (query == null) {
-            throw new IllegalArgumentException("Trying to create data model with a null query");
-        }
+	private Boolean ascending = true;
 
-        this.psicquicClient = psicquicClient;
-        this.query = query;
-        this.mitabDocumentDefinition = new MitabDocumentDefinition();
+	private Map<String, Boolean> columnSorts;
 
-        columnSorts = new HashMap<String, Boolean>(16);
+	private FlipInteractors flipInteractors = new FlipInteractors();
 
-        setRowIndex(0);
-        fetchResults();
+	//TODO Fix the SortableModel
+	public PsicquicResultDataModel(PsicquicSimpleClient psicquicClient, String query, String format) throws IOException {
+		if (psicquicClient == null) {
+			throw new IllegalArgumentException("Trying to create data model with a null Psicquic client");
+		}
+		if (query == null) {
+			throw new IllegalArgumentException("Trying to create data model with a null query");
+		}
 
-        setWrappedData(result);
-    }
+		this.psicquicClient = psicquicClient;
+		this.query = query;
+		this.version = format;
 
-    protected void fetchResults() throws IOException {
-        if (query == null) {
-            throw new IllegalStateException("Trying to fetch results for a null query");
-        }
+		columnSorts = new HashMap<String, Boolean>(16);
 
+		setRowIndex(-1);
+		firstResult = 0;
+		maxResults = 50;
+		fetchResults();
 
-        if (log.isDebugEnabled()) log.debug("Fetching results: "+ query);
+		setWrappedData(result);
+	}
 
-        int totalCount = Long.valueOf(psicquicClient.countByQuery(query)).intValue();
-
-        List<BinaryInteraction> binaryInteractions = new ArrayList<BinaryInteraction>(maxResults);
-
-        InputStream gzippedStream = psicquicClient.getByQuery(query, PsicquicSimpleClient.MITAB25_COMPRESSED, firstResult, maxResults);
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(gzippedStream)));
-        String str;
-        while ((str = in.readLine()) != null) {
-            BinaryInteraction interaction = toBinaryInteraction(str);
-            binaryInteractions.add(interaction);
-        }
-        in.close();
-        gzippedStream.close();
-        
-        result = new SearchResult<BinaryInteraction>(binaryInteractions, totalCount, firstResult, maxResults, null);
-    }
-
-    private BinaryInteraction toBinaryInteraction(String str) {
-        return mitabDocumentDefinition.interactionFromString(str);
-    }
-
-    public int getRowCount() {
-        return Long.valueOf(result.getTotalCount()).intValue();
-    }
-
-    public Object getRowData() {
-        if (result == null) {
-            return null;
-        }
-
-        if (!isRowWithinResultRange()) {
-            firstResult = getRowIndex();
-            try {
-                fetchResults();
-            } catch (IOException e) {
-                throw new IllegalStateException("Problem running psicquic", e);
-            }
-        }
-
-        if (!isRowAvailable()) {
-            throw new IllegalArgumentException("row is unavailable");
-        }
-
-        final BinaryInteraction binaryInteraction = result.getData().get(rowIndex - firstResult);
-        return binaryInteraction;
-    }
-
-    public int getRowIndex() {
-        return rowIndex;
-    }
-
-    public Object getWrappedData() {
-        return result;
-    }
-
-    public boolean isRowAvailable() {
-        if (result == null) {
-            return false;
-        }
-
-        return rowIndex >= 0 && rowIndex < result.getTotalCount();
-    }
-
-    protected boolean isRowWithinResultRange() {
-        return (getRowIndex() >= firstResult) && (getRowIndex() < (firstResult+maxResults));
-    }
-
-    public void setRowIndex(int rowIndex) {
-        if (rowIndex < -1) {
-            throw new IllegalArgumentException("illegal rowIndex " + rowIndex);
-        }
-        int oldRowIndex = rowIndex;
-        this.rowIndex = rowIndex;
-        if (result != null && oldRowIndex != this.rowIndex) {
-            Object data = isRowAvailable() ? getRowData() : null;
-            DataModelEvent event = new DataModelEvent(this, this.rowIndex, data);
-            DataModelListener[] listeners = getDataModelListeners();
-            for (int i = 0; i < listeners.length; i++) {
-                listeners[i].rowSelected(event);
-            }
-        }
-    }
-
-    @Override
-       public void setSortCriteria(List<SortCriterion> criteria) {
-           if ((criteria == null) || (criteria.isEmpty())) {
-               this.sortColumn = DEFAULT_SORT_COLUMN;
-               columnSorts.clear();
-           }
-           else {
-               // only use the first criterion
-               SortCriterion criterion = criteria.get(0);
-
-               this.sortColumn = criterion.getProperty();
-
-               if (columnSorts.containsKey(sortColumn)) {
-                   this.ascending = !columnSorts.get(sortColumn);
-               } else {
-                   this.ascending = criterion.isAscending();
-               }
-               columnSorts.put(sortColumn, ascending);
-
-               if (log.isDebugEnabled())
-                   log.debug("\tSorting by '" + criterion.getProperty() + "' " + (criterion.isAscending() ? "ASC" : "DESC"));
-           }
-
-        try {
-            fetchResults();
-        } catch (IOException e) {
-            throw new RuntimeException("Problem fetching results using psicquic", e);
-        }
-    }
+	protected void fetchResults() {
+		if (query == null) {
+			throw new IllegalStateException("Trying to fetch results for a null query");
+		}
 
 
-    /**
-     * Checks to see if the underlying collection is sortable by the given property.
-     *
-     * @param property The name of the property to sort the underlying collection by.
-     * @return true, if the property implements java.lang.Comparable
-     */
-    @Override
-    public boolean isSortable(String property) {
-        return true;
-    }
+		if (log.isDebugEnabled()) log.debug("Fetching results: " + query);
+		InputStreamReader in = null;
+		InputStream inputStream = null;
+		int totalCount = -1;
+		List<BinaryInteraction> binaryInteractions = new ArrayList<BinaryInteraction>(maxResults);
 
-    @Override
-    public Object getRowKey() {
-        return isRowAvailable()
-               ? getRowIndex()
-               : null;
-    }
+		try {
+			psicquicClient.setReadTimeout(30000);
+			totalCount = Long.valueOf(psicquicClient.countByQuery(query)).intValue();
 
-    @Override
-    public void setRowKey(Object key) {
-        if (key == null) {
-            setRowIndex(-1);
-        } else {
-            setRowIndex((Integer) key);
-        }
-    }
+			inputStream = psicquicClient.getByQuery(query, version, firstResult, maxResults);
+
+			in = new InputStreamReader(inputStream);
+			PsimiTabReader reader = new PsimiTabReader();
+			Iterator<BinaryInteraction> iterator;
+
+			iterator = reader.iterate(in);
+			while (iterator.hasNext()) {
+				BinaryInteraction interaction = iterator.next();
+				flipIfNecessary(interaction, getSearchQuery());
+				binaryInteractions.add(interaction);
+			}
+		} catch (IOException e) {
+			binaryInteractions.clear();
+			if (e instanceof SocketTimeoutException) {
+				totalCount = TIME_OUT_EXCEPTION;
+			} else {
+				totalCount = UNEXPECTED_ERROR;
+			}
+			FacesContext context = FacesContext.getCurrentInstance();
+			String msg = "Temporarily impossible to retrieve results";
+			String details = "Error while building results based on the query: '" + query + "'";
+
+			if (context != null) {
+				FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, details);
+				context.addMessage(null, facesMessage);
+			}
+			log.error(details + " SERVICE RESPONSE: " + e.getMessage());
+
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+				if (inputStream != null) {
+					inputStream.close();
+				}
+			} catch (IOException e) {
+				//keep it silence
+			}
+		}
 
 
-    public SearchResult<BinaryInteraction> getResult() {
-        return result;
-    }
+		result = new SearchResult<BinaryInteraction>(binaryInteractions, totalCount, firstResult, maxResults, null);
+	}
 
-    public String getSearchQuery() {
-        return query;
-    }
+	private void flipIfNecessary(BinaryInteraction interaction, String searchQuery) {
+		flipInteractors.flipIfNecessary(interaction, searchQuery);
+	}
 
-    public String getSortColumn() {
-        return sortColumn;
-    }
+	public int getRowCount() {
+		return Long.valueOf(result.getTotalCount()).intValue();
+	}
 
-    public void setSortColumn(String sortColumn) {
-        this.sortColumn = sortColumn;
-    }
+	public Object getRowData() {
+		if (result == null) {
+			return null;
+		}
 
-    public int getFirstResult() {
-        return firstResult;
-    }
+		if (!isRowWithinResultRange()) {
+			firstResult = getRowIndex();
 
-    public boolean isAscending() {
-        return ascending;
-    }
+			fetchResults();
+
+		}
+
+		if (!isRowAvailable()) {
+//			throw new IllegalArgumentException("row is unavailable");
+			FacesContext context = FacesContext.getCurrentInstance();
+			String msg = "Temporarily impossible to retrieve results";
+			String details = "Error while building results based on the query: '" + query + "'";
+
+			if (context != null) {
+				FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, details);
+				context.addMessage(null, facesMessage);
+			}
+			log.error("Row is unavailable");
+			return null;
+		}
+
+		final BinaryInteraction binaryInteraction = result.getData().get(rowIndex - firstResult);
+		return binaryInteraction;
+	}
+
+	public int getRowIndex() {
+		return rowIndex;
+	}
+
+	public Object getWrappedData() {
+		return result;
+	}
+
+	public boolean isRowAvailable() {
+		if (result == null) {
+			return false;
+		}
+
+		return rowIndex >= 0 && rowIndex < result.getTotalCount();
+	}
+
+	protected boolean isRowWithinResultRange() {
+		return (getRowIndex() >= firstResult) && (getRowIndex() < (firstResult + maxResults));
+	}
+
+	public void setRowIndex(int rowIndex) {
+		if (rowIndex < -1) {
+			throw new IllegalArgumentException("illegal rowIndex " + rowIndex);
+		}
+//		int oldRowIndex = rowIndex;
+		this.rowIndex = rowIndex;
+//		if (result != null && oldRowIndex != this.rowIndex) {
+//			Object data = isRowAvailable() ? getRowData() : null;
+//			DataModelEvent event = new DataModelEvent(this, this.rowIndex, data);
+//			DataModelListener[] listeners = getDataModelListeners();
+//			for (int i = 0; i < listeners.length; i++) {
+//				listeners[i].rowSelected(event);
+//			}
+//		}
+	}
+
+	@Override
+	public void setSortCriteria(List<SortCriterion> criteria) {
+		if ((criteria == null) || (criteria.isEmpty())) {
+			this.sortColumn = DEFAULT_SORT_COLUMN;
+			columnSorts.clear();
+		} else {
+			// only use the first criterion
+			SortCriterion criterion = criteria.get(0);
+
+			this.sortColumn = criterion.getProperty();
+
+			if (columnSorts.containsKey(sortColumn)) {
+				this.ascending = !columnSorts.get(sortColumn);
+			} else {
+				this.ascending = criterion.isAscending();
+			}
+			columnSorts.put(sortColumn, ascending);
+
+			if (log.isDebugEnabled())
+				log.debug("\tSorting by '" + criterion.getProperty() + "' " + (criterion.isAscending() ? "ASC" : "DESC"));
+		}
+
+
+		fetchResults();
+
+	}
+
+
+	/**
+	 * Checks to see if the underlying collection is sortable by the given property.
+	 *
+	 * @param property The name of the property to sort the underlying collection by.
+	 * @return true, if the property implements java.lang.Comparable
+	 */
+	@Override
+	public boolean isSortable(String property) {
+		return true;
+	}
+
+	@Override
+	public Object getRowKey() {
+		return isRowAvailable()
+				? getRowIndex()
+				: null;
+	}
+
+	@Override
+	public void setRowKey(Object key) {
+		if (key == null) {
+			setRowIndex(-1);
+		} else {
+			setRowIndex((Integer) key);
+		}
+	}
+
+
+	public SearchResult<BinaryInteraction> getResult() {
+		return result;
+	}
+
+	public String getSearchQuery() {
+		return query;
+	}
+
+	public String getSortColumn() {
+		return sortColumn;
+	}
+
+	public void setSortColumn(String sortColumn) {
+		this.sortColumn = sortColumn;
+	}
+
+	public int getFirstResult() {
+		return firstResult;
+	}
+
+	public boolean isAscending() {
+		return ascending;
+	}
+
 }

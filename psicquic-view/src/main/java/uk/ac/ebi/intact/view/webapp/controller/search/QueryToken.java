@@ -87,29 +87,30 @@ public class QueryToken {
     }
 
     public String toQuerySyntax(boolean excludeOperand) {
-        String operandStr;
+		StringBuffer queryString = new StringBuffer();
 
-        if (excludeOperand) {
-            operandStr = isNotQuery() ? "NOT " : "";
-        } else {
-           operandStr = (operand == BooleanOperand.AND) ? (isNotQuery() ? "AND NOT " : "AND ") : (isNotQuery() ? "OR NOT " : "OR ");
-        }
+		if (excludeOperand) {
+			queryString.append(isNotQuery() ? "NOT " : "");
+		} else {
+			queryString.append((operand == BooleanOperand.AND) ? (isNotQuery() ? "AND NOT " : "AND ") : (isNotQuery() ? "OR NOT " : "OR "));
+		}
 
-        return operandStr
-                +(field != null? field+":" : "")+surroundByQuotesIfNecessary(query);
+		queryString.append((field != null? field+":" : ""));
+
+		// close any opened parenthesis in field name. For instance : interaction_id:"GO
+		if (field.contains("\"")){
+
+			queryString.append(query).append("\"");
+		}
+		else {
+			UserQueryUtils.escapeIfNecessary(query, queryString);
+		}
+		return queryString.toString();
     }
 
     @Override
     public String toString() {
         return toQuerySyntax();
-    }
-
-    public String surroundByQuotesIfNecessary(String query) {
-        if (query.contains(" ") || query.contains(":") || query.contains("(") || query.contains(")")) {
-            query = "\""+query+"\"";
-        }
-
-        return query;
     }
 
     @Override

@@ -23,8 +23,6 @@ import org.springframework.stereotype.Controller;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * Application scope bean, with configuration stuff
@@ -59,14 +57,5 @@ public class RequestConfigBean implements Serializable {
 
     public String getAbsoluteContextPath() {
         return absoluteContextPath;
-    }
-
-    public String getEncodedCallBackUrl(){
-        String callback = getAbsoluteContextPath() + "/pages/interactions/interactions.xhtml?query=id:\"*\"";
-        try {
-            return URLEncoder.encode( callback, "UTF-8" );
-        } catch ( UnsupportedEncodingException e ) {
-            throw new RuntimeException( "Could not encode callback URL", e );
-        }
     }
 }

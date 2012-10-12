@@ -10,8 +10,9 @@
     <f:view>
 
         <ui:component rendered="#{rendered == null? true : sf:convertToBoolean(rendered)}">
-            <c:set var="searchQueryUrl" value="#{requestConfigBean.absoluteContextPath}/pages/interactions/interactions.xhtml?query="/>
-            
+            <!--<c:set var="searchQueryUrl" value="#{requestConfigBean.absoluteContextPath}/pages/interactions/interactions.xhtml?query="/>-->
+            <c:set var="searchQueryUrl" value="#{requestConfigBean.absoluteContextPath}/main.xhtml?query="/>
+
             <tr:goLink destination="#{searchQueryUrl}#{sf:urlEncode(value)}" text="#{value}" targetFrame="_top"/>
 
         </ui:component>

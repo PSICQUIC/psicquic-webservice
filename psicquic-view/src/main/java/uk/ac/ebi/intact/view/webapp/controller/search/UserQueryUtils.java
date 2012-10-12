@@ -25,18 +25,49 @@ package uk.ac.ebi.intact.view.webapp.controller.search;
  */
 public class UserQueryUtils {
 
-    public static String escapeIfNecessary( String query ) {
-        query = query.trim();
+	public static void escapeIfNecessary(String query, StringBuffer queryString) {
+		if (query.equals(UserQuery.STAR_QUERY)){
+			queryString.append(query);
+			return;
+		}
 
-         if (query.startsWith("\"") && query.endsWith("\"")) {
-             return query;
-         }
+		// range query, do nothing
+		if (query.startsWith("[") && query.endsWith("]")){
+			queryString.append(query);
+		}
+		else if (query.contains(" ") ||
+				query.contains(":") ||
+				query.contains("(") ||
+				query.contains(")") ||
+				query.contains("-") ||
+				query.contains("+")) {
 
-        if (query.contains(":") || query.contains("(") || query.contains(")") || query.contains(" ")) {
-            query = "\"" + query + "\"";
-        }
-
-        return query;
-    }
+			// deal with wild search
+			if (query.contains("*")){
+				queryString.append(query.toLowerCase()
+						.replaceAll(" ", "\\\\ ")
+						.replaceAll(":", "\\\\:")
+						.replaceAll("\\(", "\\\\(")
+						.replaceAll("\\)", "\\\\)")
+						.replaceAll("-", "\\\\-")
+						.replaceAll("\\+", "\\\\+"));
+			}
+			else if (query.contains("(") ||
+					query.contains(")") ||
+					query.contains("-") ||
+					query.contains("+")){
+				queryString.append(query);
+			}
+			else {
+				queryString.append("\""+query+"\"");
+			}
+		}
+		else if (query.contains("*")){
+			queryString.append(query.toLowerCase());
+		}
+		else {
+			queryString.append(query);
+		}
+	}
 
 }

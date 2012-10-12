@@ -7,7 +7,6 @@ package uk.ac.ebi.intact.view.webapp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.h2.tools.Server;
 import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

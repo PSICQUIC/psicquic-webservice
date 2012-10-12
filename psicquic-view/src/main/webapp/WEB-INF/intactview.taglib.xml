@@ -34,10 +34,9 @@
         <tag-name>xrefDataList</tag-name>
         <source>facelets/components/view/XrefDataList.xhtml</source>
     </tag>
-
     <tag>
-        <tag-name>displayXrefs</tag-name>
-        <source>facelets/components/view/XrefDataList.xhtml</source>
+        <tag-name>xrefDataItem</tag-name>
+        <source>facelets/components/view/XrefDataItem.xhtml</source>
     </tag>
 
     <function>

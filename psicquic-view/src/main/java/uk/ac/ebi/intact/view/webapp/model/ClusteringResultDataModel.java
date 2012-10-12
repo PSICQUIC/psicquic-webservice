@@ -27,8 +27,10 @@ import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.model.BinaryInteraction;
-import psidev.psi.mi.xml.converter.ConverterException;
+import uk.ac.ebi.intact.view.webapp.util.FlipInteractors;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.model.DataModelEvent;
 import javax.faces.model.DataModelListener;
 import java.io.IOException;
@@ -66,7 +68,10 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
 
     private InteractionClusteringService clusteringService;
 
-    public ClusteringResultDataModel(InteractionClusteringService clusteringService, ClusteringJob job, String query) {
+	private FlipInteractors flipInteractors = new FlipInteractors();
+
+
+	public ClusteringResultDataModel(InteractionClusteringService clusteringService, ClusteringJob job, String query) {
         if (job == null) {
             throw new IllegalArgumentException("Trying to create data model with a null job");
         }
@@ -94,10 +99,12 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
             throw new IllegalArgumentException("Trying to fetch results for a null query");
         }
 
-        if (log.isDebugEnabled()) log.debug("Fetching results: "+ query);
+        log.debug("Fetching results: " + query);
 
         // search Lucene index and wrap the data
         final InteractionClusteringService ics = new DefaultInteractionClusteringService();
+
+		//The parameter query in this case retrives all the values in the clustered file
         try {
             final QueryResponse response = clusteringService.query( job.getJobId(),
                                                                     query,
@@ -105,20 +112,31 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
                                                                     maxResults,
                                                                     InteractionClusteringService.RETURN_TYPE_MITAB25 );
 
+			String originalQuery = job.getMiql();
+
             // convert to a list of BinaryInteraction
             String mitab = response.getResultSet().getMitab();
-            
+
             // job exists and some data are associated with it
             if (mitab != null){
-                PsimiTabReader reader = new PsimiTabReader( false );
-                final List<BinaryInteraction> interactions;
-                interactions = new ArrayList<BinaryInteraction>( reader.read( mitab ) );
+                PsimiTabReader reader = new PsimiTabReader();
+                final List<BinaryInteraction> binaryInteractions = new ArrayList<BinaryInteraction>(maxResults);
 
-                result = new SearchResult<BinaryInteraction>( interactions,
+				Iterator<BinaryInteraction> iterator;
+
+				iterator = reader.iterate(mitab);
+				while (iterator.hasNext()) {
+					BinaryInteraction interaction = iterator.next();
+					//We use the original query only to flip, because we ask the index all the results (query is *);
+					flipIfNecessary(interaction, originalQuery);
+					binaryInteractions.add(interaction);
+				}
+
+                result = new SearchResult<BinaryInteraction>( binaryInteractions,
                         response.getResultInfo().getTotalResults(),
                         firstResult,
                         maxResults,
-                        null ); 
+                        null );
             }
             else {
                 result = new SearchResult<BinaryInteraction>( Collections.EMPTY_LIST,
@@ -129,18 +147,22 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
             }
         } catch ( IOException e ) {
             throw new IllegalStateException( "Could not parse clustered MITAB data", e );
-        } catch ( ConverterException e ) {
-            throw new IllegalStateException( "Could not parse clustered MITAB data", e );
         } catch ( ClusteringServiceException e ) {
             throw new IllegalStateException( "Could not query clustered service", e );
         }
     }
 
+	private void flipIfNecessary(BinaryInteraction interaction, String searchQuery) {
+		flipInteractors.flipIfNecessary(interaction, searchQuery);
+	}
+
+	@Override
     public int getRowCount() {
         return Long.valueOf(result.getTotalCount()).intValue();
     }
 
-    public Object getRowData() {
+	@Override
+	public Object getRowData() {
         if (result == null) {
             return null;
         }
@@ -151,22 +173,35 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
         }
 
         if (!isRowAvailable()) {
-            throw new IllegalArgumentException("row is unavailable");
+			FacesContext context = FacesContext.getCurrentInstance();
+			String msg = "Temporarily impossible to retrieve results";
+			String details = "Error while building results based on the query: '" + query + "'";
+
+			if (context != null) {
+				FacesMessage facesMessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, details);
+				context.addMessage(null, facesMessage);
+			}
+			log.error("Row is unavailable");
+			return null;
+//            throw new IllegalArgumentException("row is unavailable");
         }
 
         final BinaryInteraction binaryInteraction = result.getData().get(rowIndex - firstResult);
         return binaryInteraction;
     }
 
-    public int getRowIndex() {
+	@Override
+	public int getRowIndex() {
         return rowIndex;
     }
 
-    public Object getWrappedData() {
+	@Override
+	public Object getWrappedData() {
         return result;
     }
 
-    public boolean isRowAvailable() {
+	@Override
+	public boolean isRowAvailable() {
         if (result == null) {
             return false;
         }
@@ -178,7 +213,8 @@ public class ClusteringResultDataModel extends SortableModel implements Serializ
         return (getRowIndex() >= firstResult) && (getRowIndex() < (firstResult+maxResults));
     }
 
-    public void setRowIndex(int rowIndex) {
+	@Override
+	public void setRowIndex(int rowIndex) {
         if (rowIndex < -1) {
             throw new IllegalArgumentException("illegal rowIndex " + rowIndex);
         }

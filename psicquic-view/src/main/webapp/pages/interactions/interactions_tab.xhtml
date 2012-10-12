@@ -14,18 +14,16 @@
                 xmlns:iax="http://intact.ebi.ac.uk/extlinks"
                 xmlns:iamf="http://intact.ebi.ac.uk/mitabfunctions"
                 xmlns:ot="http://myfaces.apache.org/orchestra"
-
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://myfaces.apache.org/trinidad"
                 xsi:schemaLocation="http://intact.ebi.ac.uk/miscel /WEB-INF/intact-miscel.tld">
 
 
-
+<div style="overflow:auto;height:500px;margin-top:10px">
 <!-- RESULTS TABLE -->
-
-<tr:table id="interactionResults" value="#{results}" var="binaryInteraction" varStatus="status"
+<tr:table id="interactionResults" value="#{results}" var="binaryInteraction" varStatus="tableStatus"
           summary="Binary Interactions"
           emptyText="No interactions found matching the query."
-          rows="#{userQuery.pageSize}" rowBandingInterval="1">
+          rows="#{userQuery.pageSize}" rowBandingInterval="1" first="0" immediate="true">
 
 <f:facet name="actions">
     <tr:panelHorizontalLayout>
@@ -34,34 +32,51 @@
         </f:facet>
 
         <tr:panelGroupLayout layout="horizontal">
-            <tr:panelButtonBar rendered="#{service.restUrl != null}">
-                <h:outputText value="Export: "/>
+            <tr:panelButtonBar>
+                <tr:panelPopup id="columnsPopUp" text="Show/Hide Columns" height="400" width="250" position="hover">
+                    <tr:outputLabel value="Select:"/>
+                    <tr:commandLink id="selectMinimalColumns" text="Minimal"
+                                    actionListener="#{columnContext.selectedMinimalColumns}"
+                                    partialTriggers="columnsSelection"/>
+                    <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
+                    <tr:commandLink id="selectBasicColumns" text="Basic"
+                                    actionListener="#{columnContext.selectedBasicColumns}"
+                                    partialTriggers="columnsSelection"/>
+                    <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
+                    <tr:commandLink id="selectDeafaultColumns" text="Default"
+                                    actionListener="#{columnContext.selectedDefaultColumns}"
+                                    partialTriggers="columnsSelection"/>
+                    <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
+                    <tr:commandLink id="selectAllColumns" text="All"
+                                    actionListener="#{columnContext.selectedAllColumns}"
+                                    partialTriggers="columnsSelection"/>
+                    <hr/>
 
-                <tr:group rendered="#{searchBean.clusterSelected}">
-                   <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;"
-                              destination="#{service.restUrl}">
-                       <tr:image source="/images/mitab.png"/>
-                   </tr:goLink>
-                </tr:group>
+                    <tr:selectManyCheckbox id="columnsSelection"
+                                           valueChangeListener="#{columnContext.selectedColumnsChanged}"
+                                           required="true"
+                                           onchange="submit()"
+                                           autoSubmit="true"
+                                           partialTriggers="interactionResults"
+                                           value="#{columnContext.selectedColumns}"
+                                           layout="pageDirection">
+                        <f:selectItems value="#{columnContext.columnsSelectItems}"/>
 
-                <tr:group rendered="#{not searchBean.clusterSelected}">
-                    <ot:separateConversationContext>
-                       <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;"
-                                  destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}">
-                           <tr:image source="/images/mitab.png"/>
-                       </tr:goLink>
-                    </ot:separateConversationContext>
-                </tr:group>
+                    </tr:selectManyCheckbox>
+                </tr:panelPopup>
 
-                <tr:group rendered="#{not searchBean.clusterSelected}">
-                    <ot:separateConversationContext>
-                       <tr:goLink targetFrame="_blank" inlineStyle="white-space: pre;" disabled="#{searchBean.resultCountMap[service.name] gt 200}"
-                                  destination="#{service.restUrl}query/#{userQuery.filteredSearchQuery}?format=xml25">
-                           <tr:image source="/images/psi25#{searchBean.resultCountMap[service.name] gt 200? '_disabled' : ''}.png"
-                                     shortDesc="Exports data to PSI-MI XML 2.5.4 if less that 200 interactions are present"/>
-                       </tr:goLink>
-                    </ot:separateConversationContext>
-                </tr:group>
+
+                <tr:commandButton id="downloadDialogButton"
+                                  text="Download..."
+                                  useWindow="true"
+                                  action="dialog:download"
+
+                                  windowWidth="600" windowHeight="500"
+                                  rendered="#{service.restUrl != null}"
+                                  partialSubmit="true"
+                                  returnListener="#{fileDownload.forward}"
+
+                        />
 
             </tr:panelButtonBar>
         </tr:panelGroupLayout>
@@ -70,174 +85,604 @@
 
 </f:facet>
 
-<tr:column>
-    <tr:outputText value="#{status.index + 1}"/>
+<tr:column id="c0" styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':''}">
+    <tr:outputText value="#{tableStatus.index + 1}"/>
 </tr:column>
 
-<tr:column headerText="#{messages['moleculeA.name']}" styleClass="cellTextCompound">
-    <iav:xrefDataList value="#{binaryInteraction.interactorA.identifiers}" onlyText="false" linkType="molecule.A"/>
-    <br/>
- </tr:column>
+<tr:column id="c1" headerText="#{messages['moleculeA.name']}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.name']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}">
 
-<tr:column headerText="#{messages['moleculeA.links']}" styleClass="cellTextCompound">
-    <tr:iterator var="xref" value="#{binaryInteraction.interactorA.identifiers}" varStatus="rowStatus"
-                 rows="0">
-        <tr:switcher facetName="#{xref.database}">
-            <f:facet name="uniprotkb">
-                <h:panelGroup>
-                    <iax:goUniprot query="#{xref.identifier}" onlyLogo="true"/>
-                    <br/>
-                </h:panelGroup>
-            </f:facet>
-            <f:facet name="chebi">
-                <h:panelGroup>
-                    <iax:goChebi query="#{xref.identifier}" onlyLogo="true"/>
-                    <br/>
-                </h:panelGroup>
-            </f:facet>
-            <f:facet name="drugbank">
-                <h:panelGroup>
-                    <iax:goDrugbank query="#{xref.identifier}" onlyLogo="true"/>
-                    <br/>
-                </h:panelGroup>
-            </f:facet>
-            <f:facet name="chembl">
-                <h:panelGroup>
-                    <iax:goChemblCompound query="#{xref.identifier}" onlyLogo="true"/>
-                    <br/>
-                </h:panelGroup>
-            </f:facet>
-        </tr:switcher>
-    </tr:iterator>
-</tr:column>
-
-<tr:column headerText="#{messages['moleculeB.name']}" styleClass="cellTextTarget">
-    <iav:xrefDataList value="#{binaryInteraction.interactorB.identifiers}" onlyText="false" linkType="molecule.B"/>
-</tr:column>
-
-<tr:column headerText="#{messages['moleculeB.links']}" styleClass="cellTextTarget">
-    <tr:iterator var="xref" value="#{binaryInteraction.interactorB.identifiers}"
-                 varStatus="rowStatus" rows="0">
-        <tr:switcher facetName="#{xref.database}">
-            <f:facet name="uniprotkb">
-                <h:panelGroup>
-                    <iax:goUniprot query="#{xref.identifier}" onlyLogo="true"/>
-                    <br/>
-                </h:panelGroup>
-            </f:facet>
-            <f:facet name="chebi">
-                <h:panelGroup>
-                    <iax:goChebi query="#{xref.identifier}" onlyLogo="true"/>
-                    <br/>
-                </h:panelGroup>
-            </f:facet>
-           <f:facet name="drugbank">
-                <h:panelGroup>
-                    <iax:goDrugbank query="#{xref.identifier}" onlyLogo="true"/>
-                    <br/>
-                </h:panelGroup>
-            </f:facet>
-           <f:facet name="chembl">
-                <h:panelGroup>
-                    <iax:goChemblTarget query="#{xref.identifier}" onlyLogo="true"/>
-                    <br/>
-                </h:panelGroup>
-            </f:facet>
-        </tr:switcher>
-    </tr:iterator>
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iav:xrefDataList value="${binaryInteraction.interactorA.identifiers}"
+                          linkType="molecule.A"/>
+    </h:panelGroup>
 
 </tr:column>
 
-<tr:column headerText="Alt. identifiers molecule A" styleClass="cellTextCompound">
-    <iav:xrefDataList value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorA.alternativeIdentifiers,null,'rogid')}"
-                      itemPerLine="false" disableLinks="true"/>
-</tr:column>
+<tr:column id="c3" headerText="#{messages['moleculeB.name']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.name']}"
+        >
 
-<tr:column headerText="Alt. identifiers molecule B" styleClass="cellTextTarget">
-    <iav:xrefDataList value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorB.alternativeIdentifiers,null,'rogid')}"
-                      itemPerLine="false" disableLinks="true"/>
-</tr:column>
-
-    <tr:column headerText="#{messages['moleculeA.aliases']}" styleClass="cellTextCompound">
-
-                <tr:iterator var="alias" value="#{binaryInteraction.interactorA.aliases}"
-                             varStatus="rowStatus" rows="0">
-                    <tr:outputText value="#{alias.name}"/>
-                    <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.aliases)}"/>
-                </tr:iterator>
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iav:xrefDataList
+                value="${binaryInteraction.interactorB.identifiers}"
+                linkType="molecule.B"/>
+    </h:panelGroup>
 
 </tr:column>
 
-<tr:column headerText="#{messages['moleculeB.aliases']}" styleClass="cellTextTarget">
-     <tr:iterator var="alias" value="#{binaryInteraction.interactorB.aliases}"
-                             varStatus="rowStatus" rows="0">
-                    <tr:outputText value="#{alias.name}"/>
-                    <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.aliases)}"/>
-                </tr:iterator>
+<tr:column id="c5" headerText="#{messages['moleculeA.altids']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.altids']}"
+        >
+
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iam:collapsibleIterator disclosed="false" id="ciAltIdsA_${tableStatus.index + 1}" maxShown="3"
+                                 value="${iamf:getFilteredCrossReferencesByChecksum(binaryInteraction.interactorA.alternativeIdentifiers)}"
+                                 colon="true">
+            <iav:xrefDataItem value="${item}" disableLinks="false"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+    <!--<iav:xrefDataList-->
+    <!--value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorA.alternativeIdentifiers,null,'rogid')}"-->
+    <!--itemPerLine="false" disableLinks="true"/>-->
 </tr:column>
 
-<tr:column headerText="#{messages['moleculeA.species']}" styleClass="cellTextCompound">
-            <tr:iterator var="organism" value="#{binaryInteraction.interactorA.organism}" rows="0">
-                <tr:iterator var="xref" value="#{organism.identifiers}"
-                             varStatus="rowStatus" rows="0">
-                    <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
-                </tr:iterator>
-                <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(organism.identifiers)}"/>
+<tr:column id="c6" headerText="#{messages['moleculeB.altids']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.altids']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iam:collapsibleIterator disclosed="false" id="ciAltIdsB_${tableStatus.index + 1}" maxShown="3"
+                                 value="${iamf:getFilteredCrossReferencesByChecksum(binaryInteraction.interactorB.alternativeIdentifiers)}"
+                                 colon="true">
+            <iav:xrefDataItem value="${item}" disableLinks="false"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+    <!--<iav:xrefDataList-->
+    <!--value="#{iamf:getExclusionFilteredCrossReferences(binaryInteraction.interactorB.alternativeIdentifiers,null,'rogid')}"-->
+    <!--itemPerLine="false" disableLinks="true" />-->
+
+</tr:column>
+
+<tr:column id="c7" headerText="#{messages['moleculeA.aliases']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.aliases']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iam:collapsibleIterator disclosed="false" id="ciAliasA_${tableStatus.index + 1}" maxShown="1"
+                                 value="#{iamf:getExclusionFilteredAliases(iamf:getSortedAliases(binaryInteraction.interactorA.aliases))}"
+                                 colon="false">
+            <tr:outputText value="#{item.name}" inlineStyle="display: block; white-space: nowrap;"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+    <!--<iam:collapsibleIterator disclosed="false" id="ciAliasA_${tableStatus.index + 1}" maxShown="1"-->
+    <!--value="#{iamf:getExclusionFilteredAliases(binaryInteraction.interactorA.aliases)}" colon="false">-->
+    <!--<tr:outputText value="#{item.name}" inlineStyle="display: block; white-space: nowrap;" />-->
+    <!--</iam:collapsibleIterator>-->
+
+</tr:column>
+
+<tr:column id="c8" headerText="#{messages['moleculeB.aliases']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.aliases']}"
+        >
+
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iam:collapsibleIterator disclosed="false" id="ciAliasB_${tableStatus.index + 1}" maxShown="1"
+                                 value="#{iamf:getExclusionFilteredAliases(iamf:getSortedAliases(binaryInteraction.interactorB.aliases))}"
+                                 colon="false">
+            <tr:outputText value="#{item.name}" inlineStyle="display: block; white-space: nowrap;"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c9" headerText="#{messages['moleculeA.species']}" sortProperty="taxidA_s"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.species']}" inlineStyle="white-space: nowrap;"
+        >
+
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <tr:iterator var="organism" value="#{binaryInteraction.interactorA.organism}">
+            <tr:iterator var="xref" value="#{iamf:getUniqueOrganismXref(organism.identifiers)}">
+                <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
             </tr:iterator>
+        </tr:iterator>
+    </h:panelGroup>
+
 </tr:column>
 
-<tr:column headerText="#{messages['moleculeB.species']}" sortProperty="taxidB_s" styleClass="cellTextTarget">
-            <tr:iterator var="organism" value="#{binaryInteraction.interactorB.organism}"
-                         varStatus="rowStatus" rows="0">
-                <tr:iterator var="xref" value="#{organism.identifiers}" rows="0">
-                    <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
-                </tr:iterator>
-                <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(organism.identifiers)}"/>
-            </tr:iterator>  
+<tr:column id="c10" headerText="#{messages['moleculeB.species']}" sortProperty="taxidB_s"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.species']}" inlineStyle="white-space: nowrap;"
+        >
+
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <tr:iterator var="organism" value="#{binaryInteraction.interactorB.organism}">
+            <tr:iterator var="xref" value="#{iamf:getUniqueOrganismXref(organism.identifiers)}">
+                <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
+            </tr:iterator>
+        </tr:iterator>
+    </h:panelGroup>
+
 </tr:column>
 
-<tr:column headerText="#{messages['interaction.firstauthor']}"  sortProperty="pubauth_s" styleClass="cellTextInteraction" >
+<tr:column id="c11" headerText="#{messages['interaction.firstauthor']}" sortProperty="pubauth_s"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.firstauthor']}" inlineStyle="white-space: nowrap;"
+        >
     <tr:iterator var="author" value="#{binaryInteraction.authors}" rows="0">
-            <span style="display:block">
-                <nobr>
-                    <tr:outputText value="#{author.name}"/>
-                </nobr>
-            </span>
-
+        <tr:outputText value="#{author.name}" inlineStyle="display:block;"/>
     </tr:iterator>
+
 </tr:column>
 
-<tr:column headerText="#{messages['interaction.pubmedid']}" sortProperty="pubid_s" styleClass="cellTextInteraction">
+<tr:column id="c12" headerText="#{messages['interaction.pubmedid']}" sortProperty="pubid_s"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.pubmedid']}"
+        >
+
     <iav:xrefDataList value="#{binaryInteraction.publications}" itemPerLine="true"/>
 </tr:column>
 
-<tr:column headerText="#{messages['interaction.interactiontype']}" sortProperty="type_s" styleClass="cellTextInteraction">
+<tr:column id="c13" headerText="#{messages['interaction.interactiontype']}" sortProperty="type_s"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.interactiontype']}"
+        >
+
     <iav:xrefDataList value="#{binaryInteraction.interactionTypes}" onlyText="true" itemPerLine="true"/>
 </tr:column>
 
-<tr:column headerText="#{messages['interaction.detectionmethod']}" styleClass="cellTextInteraction">
+<tr:column id="c14" headerText="#{messages['interaction.detectionmethod']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.detectionmethod']}"
+        >
+
     <iav:xrefDataList value="#{binaryInteraction.detectionMethods}" onlyText="true" itemPerLine="true"/>
 </tr:column>
 
-<tr:column headerText="#{messages['interaction.sourcedb']}" styleClass="cellTextInteraction">
+<tr:column id="c15" headerText="#{messages['interaction.sourcedb']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.sourcedb']}"
+        >
+
     <iav:xrefDataList value="#{binaryInteraction.sourceDatabases}" itemPerLine="true" onlyText="true"/>
 </tr:column>
 
-<tr:column headerText="#{messages['interaction.ac']}" styleClass="cellTextInteraction">
+<tr:column id="c16" headerText="#{messages['interaction.ac']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.ac']}"
+        >
+
     <iav:xrefDataList value="#{binaryInteraction.interactionAcs}" itemPerLine="true" linkType="interaction"/>
 </tr:column>
 
-<tr:column headerText="#{messages['interaction.confidencevalue']}"
-           styleClass="cellTextInteraction">
+<tr:column id="c17" headerText="#{messages['interaction.confidencevalue']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.confidencevalue']}"
+        >
     <tr:iterator var="confidence" value="#{binaryInteraction.confidenceValues}" rows="0">
             <span style="display:block">
-                <nobr>
-                    <tr:outputText value="#{confidence.type}:#{confidence.value}"/>
-                </nobr>
+                    <tr:outputText value="#{confidence.type}" inlineStyle="font-weight: bold; white-space: nowrap"/>
+                    <tr:outputText value=":#{confidence.value}"/>
             </span>
     </tr:iterator>
 </tr:column>
 
-</tr:table>
+<tr:column id="c18" headerText="#{messages['interaction.expansionmethod']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.expansionmethod']}"
+        >
+    <iav:xrefDataList value="#{binaryInteraction.complexExpansion}" onlyText="true" itemPerLine="true"/>
+</tr:column>
 
+<tr:column id="c19" headerText="#{messages['moleculeA.biorole']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.biorole']}"
+        >
+    <!--<tr:iterator var="bioRole" value="#{binaryInteraction.interactorA.biologicalRoles}" varStatus="rowStatus" rows="0">-->
+    <!--<iax:goOls query="#{bioRole.identifier}" termName="#{bioRole.text}"/>-->
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.biologicalRoles)}"/>-->
+    <!--</tr:iterator>-->
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iav:xrefDataList value="#{binaryInteraction.interactorA.biologicalRoles}" onlyText="true" itemPerLine="true"/>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c20" headerText="#{messages['moleculeB.biorole']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.biorole']}"
+        >
+    <!--<tr:iterator var="bioRole" value="#{binaryInteraction.interactorB.biologicalRoles}" varStatus="rowStatus" rows="0">-->
+    <!--<iax:goOls query="#{bioRole.identifier}" termName="#{bioRole.text}"/>-->
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.biologicalRoles)}"/>-->
+    <!--</tr:iterator>-->
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iav:xrefDataList value="#{binaryInteraction.interactorB.biologicalRoles}" onlyText="true" itemPerLine="true"/>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c21" headerText="#{messages['moleculeA.exprole']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.exprole']}"
+        >
+    <!--<tr:iterator var="exRole" value="#{binaryInteraction.interactorA.experimentalRoles}" varStatus="rowStatus" rows="0">-->
+    <!--<iax:goOls query="#{exRole.identifier}" termName="#{exRole.text}"/>-->
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.experimentalRoles)}"/>-->
+    <!--</tr:iterator>-->
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iav:xrefDataList value="#{binaryInteraction.interactorA.experimentalRoles}" onlyText="true"
+                          itemPerLine="true"/>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c22" headerText="#{messages['moleculeB.exprole']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.exprole']}"
+        >
+    <!--<tr:iterator var="exRole" value="#{binaryInteraction.interactorB.experimentalRoles}" varStatus="rowStatus" rows="0">-->
+    <!--<iax:goOls query="#{exRole.identifier}" termName="#{exRole.text}"/>-->
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.experimentalRoles)}"/>-->
+    <!--</tr:iterator>-->
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iav:xrefDataList value="#{binaryInteraction.interactorB.experimentalRoles}" onlyText="true"
+                          itemPerLine="true"/>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c23" headerText="#{messages['moleculeA.interactortype']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.interactortype']}"
+        >
+    <!--<tr:iterator var="iType" value="#{binaryInteraction.interactorA.interactorTypes}" varStatus="rowStatus" rows="0">-->
+    <!--<iax:goOls query="#{iType.identifier}" termName="#{iType.text}"/>-->
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.interactorTypes)}"/>-->
+    <!--</tr:iterator>-->
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iav:xrefDataList value="#{binaryInteraction.interactorA.interactorTypes}" onlyText="true" itemPerLine="true"/>
+    </h:panelGroup>
+
+
+</tr:column>
+
+<tr:column id="c24" headerText="#{messages['moleculeB.interactortype']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.interactortype']}"
+        >
+    <!--<tr:iterator var="iType" value="#{binaryInteraction.interactorB.interactorTypes}" varStatus="rowStatus" rows="0">-->
+    <!--<iax:goOls query="#{iType.identifier}" termName="#{iType.text}"/>-->
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.interactorTypes)}"/>-->
+    <!--</tr:iterator>-->
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iav:xrefDataList value="#{binaryInteraction.interactorB.interactorTypes}" onlyText="true" itemPerLine="true"/>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c25" headerText="#{messages['moleculeA.xrefs']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.xrefs']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iam:collapsibleIterator disclosed="false" id="xrefsA_${tableStatus.index + 1}" maxShown="5"
+                                 value="#{binaryInteraction.interactorA.xrefs}">
+            <iav:xrefDataItem value="#{item}"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+    <!--<iav:xrefDataList value="#{binaryInteraction.interactorA.xrefs}" itemPerLine="true"/>-->
+
+    <!--<ui:param name="xrefUrl" value="#{iav:xrefUrl(appConfigBean.linkContext, item)}"/>-->
+    <!--<h:outputLink value="#{xrefUrl}" title="#{item.text}"-->
+    <!--target="_blank" disabled="#{xrefUrl == null or xrefUrl == '#'}">#{item.identifier}</h:outputLink>-->
+</tr:column>
+
+<tr:column id="c26" headerText="#{messages['moleculeB.xrefs']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.xrefs']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iam:collapsibleIterator disclosed="false" id="xrefsB_${tableStatus.index + 1}" maxShown="5"
+                                 value="#{binaryInteraction.interactorB.xrefs}">
+            <iav:xrefDataItem value="#{item}"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c27" headerText="#{messages['interaction.xrefs']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.xrefs']}"
+        >
+    <iam:collapsibleIterator disclosed="false" id="xrefsI_${tableStatus.index + 1}" maxShown="5"
+                             value="#{binaryInteraction.xrefs}" colon="false">
+        <iav:xrefDataList value="#{item}" itemPerLine="true"/>
+    </iam:collapsibleIterator>
+</tr:column>
+
+<tr:column id="c28" headerText="#{messages['moleculeA.annotations']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.annotations']}"
+        >
+
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iam:collapsibleIterator disclosed="false" id="ciAnnoA_${tableStatus.index + 1}" maxShown="1"
+                                 value="#{binaryInteraction.interactorA.annotations}">
+            <tr:outputText value="#{item.topic}" inlineStyle="font-weight: bold; white-space: nowrap"/>
+            <tr:outputText value=":"/>
+            <tr:outputText value="#{item.text}"/>
+            <tr:outputText value="; "
+                           rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.annotations)}"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c29" headerText="#{messages['moleculeB.annotations']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.annotations']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iam:collapsibleIterator disclosed="false" id="ciAnnoB_${tableStatus.index + 1}" maxShown="1"
+                                 value="#{binaryInteraction.interactorB.annotations}">
+            <tr:outputText value="#{item.topic}" inlineStyle="font-weight: bold; white-space: nowrap"/>
+            <tr:outputText value=":"/>
+            <tr:outputText value="#{item.text}"/>
+            <tr:outputText value="; "
+                           rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.annotations)}"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c30" headerText="#{messages['interaction.annotations']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.annotations']}"
+        >
+    <iam:collapsibleIterator disclosed="false" id="ciAnnoI_${tableStatus.index + 1}" maxShown="1"
+                             value="#{binaryInteraction.annotations}">
+        <tr:outputText value="#{item.topic}" inlineStyle="font-weight: bold; white-space: nowrap"/>
+        <tr:outputText value=":"/>
+        <tr:outputText value="#{item.text}"/>
+        <tr:outputText value="; "
+                       rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.annotations)}"/>
+    </iam:collapsibleIterator>
+
+</tr:column>
+
+<tr:column id="c31" headerText="#{messages['interaction.hostorganism']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.hostorganism']}" inlineStyle="white-space: nowrap;"
+        >
+    <tr:iterator var="organism" value="#{binaryInteraction.hostOrganism}">
+        <tr:iterator var="xref" value="#{iamf:getUniqueOrganismXref(organism.identifiers)}">
+            <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
+        </tr:iterator>
+    </tr:iterator>
+</tr:column>
+
+<tr:column id="c32" headerText="#{messages['interaction.parameters']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.parameters']}"
+        >
+    <!--<tr:iterator var="parameter" value="#{binaryInteraction.parameters}" varStatus="rowStatus" rows="0">-->
+    <!--<tr:outputText value="#{parameter.type}"/>-->
+    <!--<tr:outputText value=":"/>-->
+    <!--<tr:outputText value="#{parameter.value}" inlineStyle="font-style: italic;"/>-->
+    <!--<tr:outputText value=" (#{parameter.unit})" rendered="#{parameter.unit != null}"/>-->
+
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.parameters)}"/>-->
+    <!--</tr:iterator>-->
+
+    <iam:collapsibleIterator id="ciPI_${tableStatus.index + 1}" maxShown="3"
+                             value="#{binaryInteraction.parameters}">
+        <tr:outputText value="#{item.type}"
+                       inlineStyle="font-weight: bold; white-space: nowrap"/>
+        <tr:outputText value=":"/>
+        <tr:outputText value="#{item.value} " inlineStyle="white-space: nowrap"/>
+        <tr:outputText value="(#{item.unit})" rendered="#{item.unit != null}" inlineStyle="font-style: italic;"/>
+    </iam:collapsibleIterator>
+</tr:column>
+
+<tr:column id="c33" headerText="#{messages['interaction.creationdate']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.creationdate']}"
+        >
+    <tr:iterator var="date" value="#{binaryInteraction.creationDate}" varStatus="rowStatus" rows="0">
+        <tr:inputDate value="#{date}" readOnly="true"/>
+        <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.creationDate)}"/>
+    </tr:iterator>
+</tr:column>
+
+<tr:column id="c34" headerText="#{messages['interaction.updatedate']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.updatedate']}"
+        >
+    <tr:iterator var="date" value="#{binaryInteraction.updateDate}" varStatus="rowStatus" rows="0">
+        <tr:inputDate value="#{date}" readOnly="true"/>
+        <tr:outputText value="; " rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.updateDate)}"/>
+    </tr:iterator>
+</tr:column>
+
+<tr:column id="c35" headerText="#{messages['moleculeA.checksum']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.checksum']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <tr:iterator var="checksum" value="#{binaryInteraction.interactorA.checksums}" varStatus="rowStatus" rows="0">
+            <tr:outputText value="#{checksum.methodName}"
+                           rendered="#{checksum.methodName != null}"
+                           inlineStyle="font-weight: bold; white-space: nowrap"/>
+            <tr:outputText value=":" rendered="#{checksum.methodName!=null}"/>
+            <tr:outputText value="#{checksum.checksum}"/>
+            <tr:outputText value="; "
+                           rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.checksums)}"/>
+        </tr:iterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c36" headerText="#{messages['moleculeB.checksum']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.checksum']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <tr:iterator var="checksum" value="#{binaryInteraction.interactorB.checksums}" varStatus="rowStatus" rows="0">
+            <tr:outputText value="#{checksum.methodName}"
+                           rendered="#{checksum.methodName != null}"
+                           inlineStyle="font-weight: bold; white-space: nowrap"/>
+            <tr:outputText value=":" rendered="#{checksum.methodName!=null}"/>
+            <tr:outputText value="#{checksum.checksum}"/>
+            <tr:outputText value="; "
+                           rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.checksums)}"/>
+        </tr:iterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c37" headerText="#{messages['interaction.checksum']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.checksum']}"
+        >
+    <tr:iterator var="checksum" value="#{binaryInteraction.checksums}" varStatus="rowStatus" rows="0">
+        <tr:outputText value="#{checksum.methodName}"
+                       rendered="#{checksum.methodName != null}"
+                       inlineStyle="font-weight: bold; white-space: nowrap"/>
+        <tr:outputText value=":" rendered="#{checksum.methodName != null}"/>
+        <tr:outputText value="#{checksum.checksum}"/>
+        <tr:outputText value="; "
+                       rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.checksums)}"/>
+    </tr:iterator>
+</tr:column>
+
+<tr:column id="c38" headerText="#{messages['interaction.negative']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
+           rendered="#{columnContext.selectedColumnsMap['interaction.negative']}">
+    <tr:outputText value="#{binaryInteraction.negativeInteraction}"/>
+</tr:column>
+
+<tr:column id="c39" headerText="#{messages['moleculeA.features']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.features']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iam:collapsibleIterator id="ciFA_${tableStatus.index + 1}" maxShown="3"
+                                 value="${binaryInteraction.interactorA.features}"
+                                 colon="true">
+            <tr:outputText value="#{item.featureType}"
+                           inlineStyle="font-weight: bold; white-space: nowrap"/>
+            <tr:outputText value=":"/>
+            <tr:outputText value="#{item.ranges}" inlineStyle="font-style: italic;white-space: nowrap"/>
+            <tr:outputText value=" (#{item.text})" rendered="#{item.text != null}"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c40" headerText="#{messages['moleculeB.features']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.features']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iam:collapsibleIterator id="ciFB_${tableStatus.index + 1}" maxShown="3"
+                                 value="${binaryInteraction.interactorB.features}"
+                                 colon="true">
+            <tr:outputText value="#{item.featureType}"
+                           inlineStyle="font-weight: bold; white-space: nowrap"/>
+            <tr:outputText value=":"/>
+            <tr:outputText value="#{item.ranges}" inlineStyle="font-style: italic;white-space: nowrap"/>
+            <tr:outputText value=" (#{item.text})" rendered="#{item.text != null}"/>
+            <tr:outputText value="; "
+                           rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.features)}"/>
+        </iam:collapsibleIterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c41" headerText="#{messages['moleculeA.stoichiometry']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.stoichiometry']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <tr:iterator var="stoich" value="#{binaryInteraction.interactorA.stoichiometry}" varStatus="rowStatus" rows="0">
+            <tr:outputText value="#{stoich}"/>
+            <tr:outputText value="; "
+                           rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.stoichiometry)}"/>
+        </tr:iterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c42" headerText="#{messages['moleculeB.stoichiometry']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.stoichiometry']}"
+        >
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <tr:iterator var="stoich" value="#{binaryInteraction.interactorB.stoichiometry}" varStatus="rowStatus" rows="0">
+            <tr:outputText value="#{stoich}"/>
+            <tr:outputText value="; "
+                           rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.stoichiometry)}"/>
+        </tr:iterator>
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c43" headerText="#{messages['moleculeA.partidentmethod']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeA.partidentmethod']}"
+        >
+    <!--<tr:iterator var="partDet" value="#{binaryInteraction.interactorA.participantIdentificationMethods}"-->
+    <!--varStatus="rowStatus" rows="0">-->
+    <!--<iax:goOls query="#{partDet.identifier}" termName="#{partDet.text}"/>-->
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.participantIdentificationMethods)}"/>-->
+    <!--</tr:iterator>-->
+    <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
+        <iav:xrefDataList value="${binaryInteraction.interactorA.participantIdentificationMethods}"
+                          itemPerLine="true"
+                          onlyText="true"/>
+
+    </h:panelGroup>
+
+</tr:column>
+
+<tr:column id="c44" headerText="#{messages['moleculeB.partidentmethod']}"
+           styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextTarget'}"
+           rendered="#{columnContext.selectedColumnsMap['moleculeB.partidentmethod']}"
+        >
+
+    <!--<tr:iterator var="partDet" value="#{binaryInteraction.interactorB.participantIdentificationMethods}"-->
+    <!--varStatus="rowStatus" rows="0">-->
+
+    <!--<iax:goOls query="#{partDet.identifier}" termName="#{partDet.text}"/>-->
+    <!--<tr:outputText value="; "-->
+    <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.participantIdentificationMethods)}"/>-->
+    <!--</tr:iterator>-->
+    <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
+        <iav:xrefDataList value="${binaryInteraction.interactorB.participantIdentificationMethods}"
+                          itemPerLine="true"
+                          onlyText="true"/>
+    </h:panelGroup>
+
+</tr:column>
+
+</tr:table>
+</div>
 </ui:composition>

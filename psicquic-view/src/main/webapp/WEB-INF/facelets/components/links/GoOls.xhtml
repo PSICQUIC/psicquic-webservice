@@ -10,14 +10,15 @@
                 xmlns:ebisf="http://www.ebi.ac.uk/faces/site"
                 xmlns:iaf="http://intact.ebi.ac.uk/functions">
 
-    <h:panelGroup style="white-space:nowrap;">
-        <h:outputText value="#{termName} (" rendered="#{termName != null}"/>
+    <!--<h:panelGroup style="white-space:nowrap;">-->
+	<h:panelGroup>
+	<tr:outputText value="#{termName} (" rendered="#{termName != null}"/>
 
         <ui:param name="disabled" value="#{disabled? disabled : fn:startsWith(query, '-')}"/>
 
         <tr:goLink targetFrame="uniprot" text="#{(text != null)? text : query}" disabled="#{disabled != null? disabled : false}"
                 destination="http://www.ebi.ac.uk/ontology-lookup/?termId=#{query}"/>
 
-        <h:outputText value=")" rendered="#{termName != null}"/>
+        <tr:outputText value=")" rendered="#{termName != null}"/>
     </h:panelGroup>
 </ui:composition>

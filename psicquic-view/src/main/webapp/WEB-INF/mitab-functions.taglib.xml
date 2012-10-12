@@ -51,7 +51,13 @@
      <function>
         <function-name>getExclusionFilteredCrossReferences</function-name>
         <function-class>uk.ac.ebi.intact.view.webapp.util.MitabFunctions</function-class>
-        <function-signature>java.util.Collection getExclusionFilteredCrossReferences(java.util.Collection,java.lang.String,java.lang.String)</function-signature>
+        <function-signature>java.util.Collection getExclusionFilteredCrossReferences(java.util.Collection,java.lang.String, java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <function-name>getFilteredCrossReferencesByChecksum</function-name>
+        <function-class>uk.ac.ebi.intact.view.webapp.util.MitabFunctions</function-class>
+        <function-signature>java.util.Collection getFilteredCrossReferencesByChecksum(java.util.Collection)</function-signature>
     </function>
 
      <function>
@@ -71,6 +77,29 @@
         </function-signature>
     </function>
 
+    <function>
+        <function-name>getExclusionFilteredAliases</function-name>
+        <function-class>uk.ac.ebi.intact.view.webapp.util.MitabFunctions</function-class>
+        <function-signature>java.util.Collection getExclusionFilteredAliases(java.util.Collection)</function-signature>
+    </function>
+
+    <function>
+        <function-name>getSortedAliases</function-name>
+        <function-class>uk.ac.ebi.intact.view.webapp.util.MitabFunctions</function-class>
+        <function-signature>java.util.Collection getSortedAliases(java.util.Collection)</function-signature>
+    </function>
+
+    <function>
+        <function-name>getUniqueOrganismXref</function-name>
+        <function-class>uk.ac.ebi.intact.view.webapp.util.MitabFunctions</function-class>
+        <function-signature>psidev.psi.mi.tab.model.CrossReference getUniqueOrganismXref(java.util.Collection)</function-signature>
+    </function>
+
+    <function>
+        <function-name>hasOrganism</function-name>
+        <function-class>uk.ac.ebi.intact.view.webapp.util.MitabFunctions</function-class>
+        <function-signature>boolean hasOrganism(psidev.psi.mi.tab.model.Interactor)</function-signature>
+    </function>
 
      <function>
         <function-name>encodeURL</function-name>
