@@ -4,7 +4,7 @@
   "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
 
 <facelet-taglib>
-    <namespace>http://intact.ebi.ac.uk/extlinks</namespace>
+    <namespace>http://psicquic.mi.psi.hupo.org/extlinks</namespace>
 
     <tag>
         <tag-name>goCitexplore</tag-name>

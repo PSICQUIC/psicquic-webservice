@@ -114,22 +114,28 @@
 <!--</header>-->
 
 <!--<div id="content" role="main" class="grid_24 clearfix">-->
+<tr:form id="mainForm" inlineStyle="width: 100%">
 
 <tr:panelGroupLayout layout="vertical" inlineStyle="padding-left:10px; padding-right: 10px;">
 
-<trh:tableLayout inlineStyle="#{backImage}">
-    <trh:rowLayout>
-        <trh:cellFormat inlineStyle="width:2%">
-            <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}"/>
+<trh:tableLayout inlineStyle="#{backImage}" width="100%">
+    <trh:rowLayout width="100%">
+        <trh:cellFormat inlineStyle="width: 100px">
+            <tr:commandLink id="titleLink"
+                           onclick="queryTxt = document.getElementById('queryTxt'); queryTxt.value = ''; queryTxt.focus()"
+                           action="#{searchBean.doNewBinarySearch}">
+                <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}" inlineStyle="width: 100px"/>
+            </tr:commandLink>
         </trh:cellFormat>
+        <tr:spacer width="2px"/>
         <trh:cellFormat inlineStyle="vertical-align: bottom" rendered="#{not empty config.title}">
-            <h1><tr:outputFormatted value="&#160;#{config.title}"/></h1>
+            <h1><tr:outputText value="#{config.title}"/></h1>
         </trh:cellFormat>
     </trh:rowLayout>
 </trh:tableLayout>
 
 
-<tr:form id="mainForm" inlineStyle="width: 100%">
+
 
 <!-- To avoid expired sessions, poll every 15 mins -->
 <tr:poll interval="#{15*60*1000}"/>
@@ -183,10 +189,10 @@
                     <tr:outputText
                             value="Use the check boxes to include or excludes services from the search and cluster operations - Select: "/>
                     <h:commandLink value="All"
-                                    onclick="psicquic_selectAll(#{fn:length(searchBean.allServiceNames)})"/>
+                                   onclick="psicquic_selectAll(#{fn:length(searchBean.allServiceNames)})"/>
                     <tr:outputText value=", "/>
                     <h:commandLink value="None"
-                                    onclick="psicquic_selectNone(#{fn:length(searchBean.allServiceNames)})"/>
+                                   onclick="psicquic_selectNone(#{fn:length(searchBean.allServiceNames)})"/>
                 </h:panelGroup>
 
                 <tr:spacer height="16px"/>
@@ -374,9 +380,9 @@
 <!--<tr:separator/>-->
 <!--</tr:panelGroupLayout>-->
 
-</tr:form>
 </tr:panelGroupLayout>
 
+</tr:form>
 
 <!--</div>-->
 <!--<footer>-->

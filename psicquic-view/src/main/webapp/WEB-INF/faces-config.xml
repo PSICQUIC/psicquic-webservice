@@ -6,7 +6,7 @@
 
 
     <application>
-        <view-handler>uk.ac.ebi.intact.view.webapp.application.CustomViewHandler</view-handler>
+        <view-handler>org.hupo.psi.mi.psicquic.view.webapp.application.CustomViewHandler</view-handler>
         <default-render-kit-id>
             org.apache.myfaces.trinidad.core
         </default-render-kit-id>
@@ -14,24 +14,24 @@
             org.springframework.web.jsf.el.SpringBeanFacesELResolver
         </el-resolver>
         <resource-bundle>
-            <base-name>uk.ac.ebi.intact.IntactView</base-name>
-            <var>intactView</var>
+            <base-name>org.hupo.psi.mi.psicquic.PsicquicView</base-name>
+            <var>PsicquicView</var>
         </resource-bundle>
         <resource-bundle>
-            <base-name>uk.ac.ebi.intact.Messages</base-name>
+            <base-name>org.hupo.psi.mi.psicquic.Messages</base-name>
             <var>messages</var>
         </resource-bundle>
     </application>
 
     <managed-bean>
         <managed-bean-name>psicquicThreadConfig</managed-bean-name>
-        <managed-bean-class>uk.ac.ebi.intact.view.webapp.application.PsicquicThreadConfig</managed-bean-class>
+        <managed-bean-class>org.hupo.psi.mi.psicquic.view.webapp.application.PsicquicThreadConfig</managed-bean-class>
         <managed-bean-scope>application</managed-bean-scope>
     </managed-bean>
 
     <lifecycle>
-    <!--<phase-listener>uk.ac.ebi.intact.view.webapp.application.SearchConfigCheckPhaseListener</phase-listener>-->
-    <phase-listener>uk.ac.ebi.intact.view.webapp.application.CacheControlPhaseListener</phase-listener>
+    <!--<phase-listener>org.hupo.psi.mi.psicquic.intact.view.webapp.application.SearchConfigCheckPhaseListener</phase-listener>-->
+    <phase-listener>org.hupo.psi.mi.psicquic.view.webapp.application.CacheControlPhaseListener</phase-listener>
     </lifecycle>
 
     <navigation-rule>

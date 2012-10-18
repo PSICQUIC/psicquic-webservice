@@ -9,13 +9,13 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:sf="http://www.ebi.ac.uk/faces/site"
                 xmlns:ebi="http://ebi.ac.uk/faces/components"
-                xmlns:iav="http://intact.ebi.ac.uk/view"
-                xmlns:iam="http://intact.ebi.ac.uk/miscel"
-                xmlns:iax="http://intact.ebi.ac.uk/extlinks"
-                xmlns:iamf="http://intact.ebi.ac.uk/mitabfunctions"
+                xmlns:psv="http://psicquic.mi.psi.hupo.org/view"
+                xmlns:psm="http://psicquic.mi.psi.hupo.org/miscel"
+                xmlns:psx="http://psicquic.mi.psi.hupo.org/extlinks"
+                xmlns:psmf="http://psicquic.mi.psi.hupo.org/mitabfunctions"
                 xmlns:ot="http://myfaces.apache.org/orchestra"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://myfaces.apache.org/trinidad"
-                xsi:schemaLocation="http://intact.ebi.ac.uk/miscel /WEB-INF/intact-miscel.tld">
+                xsi:schemaLocation="http://psicquic.mi.psi.hupo.org/miscel /WEB-INF/psicquic-miscel.tld">
 
 
 <div style="overflow:auto;height:500px;margin-top:10px">
@@ -94,7 +94,7 @@
            styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextCompound'}">
 
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iav:xrefDataList value="${binaryInteraction.interactorA.identifiers}"
+        <psv:xrefDataList value="${binaryInteraction.interactorA.identifiers}"
                           linkType="molecule.A"/>
     </h:panelGroup>
 
@@ -106,7 +106,7 @@
         >
 
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iav:xrefDataList
+        <psv:xrefDataList
                 value="${binaryInteraction.interactorB.identifiers}"
                 linkType="molecule.B"/>
     </h:panelGroup>
@@ -119,11 +119,11 @@
         >
 
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iam:collapsibleIterator disclosed="false" id="ciAltIdsA_${tableStatus.index + 1}" maxShown="3"
-                                 value="${iamf:getFilteredCrossReferencesByChecksum(binaryInteraction.interactorA.alternativeIdentifiers)}"
+        <psm:collapsibleIterator disclosed="false" id="ciAltIdsA_${tableStatus.index + 1}" maxShown="3"
+                                 value="${psmf:getFilteredCrossReferencesByChecksum(binaryInteraction.interactorA.alternativeIdentifiers)}"
                                  colon="true">
-            <iav:xrefDataItem value="${item}" disableLinks="false"/>
-        </iam:collapsibleIterator>
+            <psv:xrefDataItem value="${item}" disableLinks="false"/>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
     <!--<iav:xrefDataList-->
@@ -136,11 +136,11 @@
            rendered="#{columnContext.selectedColumnsMap['moleculeB.altids']}"
         >
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iam:collapsibleIterator disclosed="false" id="ciAltIdsB_${tableStatus.index + 1}" maxShown="3"
-                                 value="${iamf:getFilteredCrossReferencesByChecksum(binaryInteraction.interactorB.alternativeIdentifiers)}"
+        <psm:collapsibleIterator disclosed="false" id="ciAltIdsB_${tableStatus.index + 1}" maxShown="3"
+                                 value="${psmf:getFilteredCrossReferencesByChecksum(binaryInteraction.interactorB.alternativeIdentifiers)}"
                                  colon="true">
-            <iav:xrefDataItem value="${item}" disableLinks="false"/>
-        </iam:collapsibleIterator>
+            <psv:xrefDataItem value="${item}" disableLinks="false"/>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
     <!--<iav:xrefDataList-->
@@ -154,11 +154,11 @@
            rendered="#{columnContext.selectedColumnsMap['moleculeA.aliases']}"
         >
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iam:collapsibleIterator disclosed="false" id="ciAliasA_${tableStatus.index + 1}" maxShown="1"
-                                 value="#{iamf:getExclusionFilteredAliases(iamf:getSortedAliases(binaryInteraction.interactorA.aliases))}"
+        <psm:collapsibleIterator disclosed="false" id="ciAliasA_${tableStatus.index + 1}" maxShown="1"
+                                 value="#{psmf:getExclusionFilteredAliases(psmf:getSortedAliases(binaryInteraction.interactorA.aliases))}"
                                  colon="false">
             <tr:outputText value="#{item.name}" inlineStyle="display: block; white-space: nowrap;"/>
-        </iam:collapsibleIterator>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
     <!--<iam:collapsibleIterator disclosed="false" id="ciAliasA_${tableStatus.index + 1}" maxShown="1"-->
@@ -174,11 +174,11 @@
         >
 
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iam:collapsibleIterator disclosed="false" id="ciAliasB_${tableStatus.index + 1}" maxShown="1"
-                                 value="#{iamf:getExclusionFilteredAliases(iamf:getSortedAliases(binaryInteraction.interactorB.aliases))}"
+        <psm:collapsibleIterator disclosed="false" id="ciAliasB_${tableStatus.index + 1}" maxShown="1"
+                                 value="#{psmf:getExclusionFilteredAliases(psmf:getSortedAliases(binaryInteraction.interactorB.aliases))}"
                                  colon="false">
             <tr:outputText value="#{item.name}" inlineStyle="display: block; white-space: nowrap;"/>
-        </iam:collapsibleIterator>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
 </tr:column>
@@ -190,8 +190,8 @@
 
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
         <tr:iterator var="organism" value="#{binaryInteraction.interactorA.organism}">
-            <tr:iterator var="xref" value="#{iamf:getUniqueOrganismXref(organism.identifiers)}">
-                <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
+            <tr:iterator var="xref" value="#{psmf:getUniqueOrganismXref(organism.identifiers)}">
+                <psx:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
             </tr:iterator>
         </tr:iterator>
     </h:panelGroup>
@@ -205,8 +205,8 @@
 
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
         <tr:iterator var="organism" value="#{binaryInteraction.interactorB.organism}">
-            <tr:iterator var="xref" value="#{iamf:getUniqueOrganismXref(organism.identifiers)}">
-                <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
+            <tr:iterator var="xref" value="#{psmf:getUniqueOrganismXref(organism.identifiers)}">
+                <psx:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
             </tr:iterator>
         </tr:iterator>
     </h:panelGroup>
@@ -228,7 +228,7 @@
            rendered="#{columnContext.selectedColumnsMap['interaction.pubmedid']}"
         >
 
-    <iav:xrefDataList value="#{binaryInteraction.publications}" itemPerLine="true"/>
+    <psv:xrefDataList value="#{binaryInteraction.publications}" itemPerLine="true"/>
 </tr:column>
 
 <tr:column id="c13" headerText="#{messages['interaction.interactiontype']}" sortProperty="type_s"
@@ -236,7 +236,7 @@
            rendered="#{columnContext.selectedColumnsMap['interaction.interactiontype']}"
         >
 
-    <iav:xrefDataList value="#{binaryInteraction.interactionTypes}" onlyText="true" itemPerLine="true"/>
+    <psv:xrefDataList value="#{binaryInteraction.interactionTypes}" onlyText="true" itemPerLine="true"/>
 </tr:column>
 
 <tr:column id="c14" headerText="#{messages['interaction.detectionmethod']}"
@@ -244,7 +244,7 @@
            rendered="#{columnContext.selectedColumnsMap['interaction.detectionmethod']}"
         >
 
-    <iav:xrefDataList value="#{binaryInteraction.detectionMethods}" onlyText="true" itemPerLine="true"/>
+    <psv:xrefDataList value="#{binaryInteraction.detectionMethods}" onlyText="true" itemPerLine="true"/>
 </tr:column>
 
 <tr:column id="c15" headerText="#{messages['interaction.sourcedb']}"
@@ -252,7 +252,7 @@
            rendered="#{columnContext.selectedColumnsMap['interaction.sourcedb']}"
         >
 
-    <iav:xrefDataList value="#{binaryInteraction.sourceDatabases}" itemPerLine="true" onlyText="true"/>
+    <psv:xrefDataList value="#{binaryInteraction.sourceDatabases}" itemPerLine="true" onlyText="true"/>
 </tr:column>
 
 <tr:column id="c16" headerText="#{messages['interaction.ac']}"
@@ -260,7 +260,7 @@
            rendered="#{columnContext.selectedColumnsMap['interaction.ac']}"
         >
 
-    <iav:xrefDataList value="#{binaryInteraction.interactionAcs}" itemPerLine="true" linkType="interaction"/>
+    <psv:xrefDataList value="#{binaryInteraction.interactionAcs}" itemPerLine="true" linkType="interaction"/>
 </tr:column>
 
 <tr:column id="c17" headerText="#{messages['interaction.confidencevalue']}"
@@ -279,7 +279,7 @@
            styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
            rendered="#{columnContext.selectedColumnsMap['interaction.expansionmethod']}"
         >
-    <iav:xrefDataList value="#{binaryInteraction.complexExpansion}" onlyText="true" itemPerLine="true"/>
+    <psv:xrefDataList value="#{binaryInteraction.complexExpansion}" onlyText="true" itemPerLine="true"/>
 </tr:column>
 
 <tr:column id="c19" headerText="#{messages['moleculeA.biorole']}"
@@ -292,7 +292,7 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.biologicalRoles)}"/>-->
     <!--</tr:iterator>-->
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iav:xrefDataList value="#{binaryInteraction.interactorA.biologicalRoles}" onlyText="true" itemPerLine="true"/>
+        <psv:xrefDataList value="#{binaryInteraction.interactorA.biologicalRoles}" onlyText="true" itemPerLine="true"/>
     </h:panelGroup>
 
 </tr:column>
@@ -307,7 +307,7 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.biologicalRoles)}"/>-->
     <!--</tr:iterator>-->
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iav:xrefDataList value="#{binaryInteraction.interactorB.biologicalRoles}" onlyText="true" itemPerLine="true"/>
+        <psv:xrefDataList value="#{binaryInteraction.interactorB.biologicalRoles}" onlyText="true" itemPerLine="true"/>
     </h:panelGroup>
 
 </tr:column>
@@ -322,7 +322,7 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.experimentalRoles)}"/>-->
     <!--</tr:iterator>-->
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iav:xrefDataList value="#{binaryInteraction.interactorA.experimentalRoles}" onlyText="true"
+        <psv:xrefDataList value="#{binaryInteraction.interactorA.experimentalRoles}" onlyText="true"
                           itemPerLine="true"/>
     </h:panelGroup>
 
@@ -338,7 +338,7 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.experimentalRoles)}"/>-->
     <!--</tr:iterator>-->
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iav:xrefDataList value="#{binaryInteraction.interactorB.experimentalRoles}" onlyText="true"
+        <psv:xrefDataList value="#{binaryInteraction.interactorB.experimentalRoles}" onlyText="true"
                           itemPerLine="true"/>
     </h:panelGroup>
 
@@ -354,7 +354,7 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.interactorTypes)}"/>-->
     <!--</tr:iterator>-->
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iav:xrefDataList value="#{binaryInteraction.interactorA.interactorTypes}" onlyText="true" itemPerLine="true"/>
+        <psv:xrefDataList value="#{binaryInteraction.interactorA.interactorTypes}" onlyText="true" itemPerLine="true"/>
     </h:panelGroup>
 
 
@@ -370,7 +370,7 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.interactorTypes)}"/>-->
     <!--</tr:iterator>-->
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iav:xrefDataList value="#{binaryInteraction.interactorB.interactorTypes}" onlyText="true" itemPerLine="true"/>
+        <psv:xrefDataList value="#{binaryInteraction.interactorB.interactorTypes}" onlyText="true" itemPerLine="true"/>
     </h:panelGroup>
 
 </tr:column>
@@ -380,10 +380,10 @@
            rendered="#{columnContext.selectedColumnsMap['moleculeA.xrefs']}"
         >
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iam:collapsibleIterator disclosed="false" id="xrefsA_${tableStatus.index + 1}" maxShown="5"
+        <psm:collapsibleIterator disclosed="false" id="xrefsA_${tableStatus.index + 1}" maxShown="5"
                                  value="#{binaryInteraction.interactorA.xrefs}">
-            <iav:xrefDataItem value="#{item}"/>
-        </iam:collapsibleIterator>
+            <psv:xrefDataItem value="#{item}"/>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
     <!--<iav:xrefDataList value="#{binaryInteraction.interactorA.xrefs}" itemPerLine="true"/>-->
@@ -398,10 +398,10 @@
            rendered="#{columnContext.selectedColumnsMap['moleculeB.xrefs']}"
         >
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iam:collapsibleIterator disclosed="false" id="xrefsB_${tableStatus.index + 1}" maxShown="5"
+        <psm:collapsibleIterator disclosed="false" id="xrefsB_${tableStatus.index + 1}" maxShown="5"
                                  value="#{binaryInteraction.interactorB.xrefs}">
-            <iav:xrefDataItem value="#{item}"/>
-        </iam:collapsibleIterator>
+            <psv:xrefDataItem value="#{item}"/>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
 </tr:column>
@@ -410,10 +410,10 @@
            styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
            rendered="#{columnContext.selectedColumnsMap['interaction.xrefs']}"
         >
-    <iam:collapsibleIterator disclosed="false" id="xrefsI_${tableStatus.index + 1}" maxShown="5"
+    <psm:collapsibleIterator disclosed="false" id="xrefsI_${tableStatus.index + 1}" maxShown="5"
                              value="#{binaryInteraction.xrefs}" colon="false">
-        <iav:xrefDataList value="#{item}" itemPerLine="true"/>
-    </iam:collapsibleIterator>
+        <psv:xrefDataList value="#{item}" itemPerLine="true"/>
+    </psm:collapsibleIterator>
 </tr:column>
 
 <tr:column id="c28" headerText="#{messages['moleculeA.annotations']}"
@@ -422,14 +422,14 @@
         >
 
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iam:collapsibleIterator disclosed="false" id="ciAnnoA_${tableStatus.index + 1}" maxShown="1"
+        <psm:collapsibleIterator disclosed="false" id="ciAnnoA_${tableStatus.index + 1}" maxShown="1"
                                  value="#{binaryInteraction.interactorA.annotations}">
             <tr:outputText value="#{item.topic}" inlineStyle="font-weight: bold; white-space: nowrap"/>
             <tr:outputText value=":"/>
             <tr:outputText value="#{item.text}"/>
             <tr:outputText value="; "
                            rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.annotations)}"/>
-        </iam:collapsibleIterator>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
 </tr:column>
@@ -439,14 +439,14 @@
            rendered="#{columnContext.selectedColumnsMap['moleculeB.annotations']}"
         >
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iam:collapsibleIterator disclosed="false" id="ciAnnoB_${tableStatus.index + 1}" maxShown="1"
+        <psm:collapsibleIterator disclosed="false" id="ciAnnoB_${tableStatus.index + 1}" maxShown="1"
                                  value="#{binaryInteraction.interactorB.annotations}">
             <tr:outputText value="#{item.topic}" inlineStyle="font-weight: bold; white-space: nowrap"/>
             <tr:outputText value=":"/>
             <tr:outputText value="#{item.text}"/>
             <tr:outputText value="; "
                            rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.annotations)}"/>
-        </iam:collapsibleIterator>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
 </tr:column>
@@ -455,14 +455,14 @@
            styleClass="#{binaryInteraction.negativeInteraction ? 'cellTextNegativeInteraction':'cellTextInteraction'}"
            rendered="#{columnContext.selectedColumnsMap['interaction.annotations']}"
         >
-    <iam:collapsibleIterator disclosed="false" id="ciAnnoI_${tableStatus.index + 1}" maxShown="1"
+    <psm:collapsibleIterator disclosed="false" id="ciAnnoI_${tableStatus.index + 1}" maxShown="1"
                              value="#{binaryInteraction.annotations}">
         <tr:outputText value="#{item.topic}" inlineStyle="font-weight: bold; white-space: nowrap"/>
         <tr:outputText value=":"/>
         <tr:outputText value="#{item.text}"/>
         <tr:outputText value="; "
                        rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.annotations)}"/>
-    </iam:collapsibleIterator>
+    </psm:collapsibleIterator>
 
 </tr:column>
 
@@ -471,8 +471,8 @@
            rendered="#{columnContext.selectedColumnsMap['interaction.hostorganism']}" inlineStyle="white-space: nowrap;"
         >
     <tr:iterator var="organism" value="#{binaryInteraction.hostOrganism}">
-        <tr:iterator var="xref" value="#{iamf:getUniqueOrganismXref(organism.identifiers)}">
-            <iax:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
+        <tr:iterator var="xref" value="#{psmf:getUniqueOrganismXref(organism.identifiers)}">
+            <psx:goOls query="#{xref.identifier}" termName="#{xref.text}"/>
         </tr:iterator>
     </tr:iterator>
 </tr:column>
@@ -491,14 +491,14 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.parameters)}"/>-->
     <!--</tr:iterator>-->
 
-    <iam:collapsibleIterator id="ciPI_${tableStatus.index + 1}" maxShown="3"
+    <psm:collapsibleIterator id="ciPI_${tableStatus.index + 1}" maxShown="3"
                              value="#{binaryInteraction.parameters}">
         <tr:outputText value="#{item.type}"
                        inlineStyle="font-weight: bold; white-space: nowrap"/>
         <tr:outputText value=":"/>
         <tr:outputText value="#{item.value} " inlineStyle="white-space: nowrap"/>
         <tr:outputText value="(#{item.unit})" rendered="#{item.unit != null}" inlineStyle="font-style: italic;"/>
-    </iam:collapsibleIterator>
+    </psm:collapsibleIterator>
 </tr:column>
 
 <tr:column id="c33" headerText="#{messages['interaction.creationdate']}"
@@ -583,7 +583,7 @@
            rendered="#{columnContext.selectedColumnsMap['moleculeA.features']}"
         >
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iam:collapsibleIterator id="ciFA_${tableStatus.index + 1}" maxShown="3"
+        <psm:collapsibleIterator id="ciFA_${tableStatus.index + 1}" maxShown="3"
                                  value="${binaryInteraction.interactorA.features}"
                                  colon="true">
             <tr:outputText value="#{item.featureType}"
@@ -591,7 +591,7 @@
             <tr:outputText value=":"/>
             <tr:outputText value="#{item.ranges}" inlineStyle="font-style: italic;white-space: nowrap"/>
             <tr:outputText value=" (#{item.text})" rendered="#{item.text != null}"/>
-        </iam:collapsibleIterator>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
 </tr:column>
@@ -601,7 +601,7 @@
            rendered="#{columnContext.selectedColumnsMap['moleculeB.features']}"
         >
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iam:collapsibleIterator id="ciFB_${tableStatus.index + 1}" maxShown="3"
+        <psm:collapsibleIterator id="ciFB_${tableStatus.index + 1}" maxShown="3"
                                  value="${binaryInteraction.interactorB.features}"
                                  colon="true">
             <tr:outputText value="#{item.featureType}"
@@ -609,9 +609,7 @@
             <tr:outputText value=":"/>
             <tr:outputText value="#{item.ranges}" inlineStyle="font-style: italic;white-space: nowrap"/>
             <tr:outputText value=" (#{item.text})" rendered="#{item.text != null}"/>
-            <tr:outputText value="; "
-                           rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.features)}"/>
-        </iam:collapsibleIterator>
+        </psm:collapsibleIterator>
     </h:panelGroup>
 
 </tr:column>
@@ -655,7 +653,7 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorA.participantIdentificationMethods)}"/>-->
     <!--</tr:iterator>-->
     <h:panelGroup rendered="#{binaryInteraction.interactorA != null}">
-        <iav:xrefDataList value="${binaryInteraction.interactorA.participantIdentificationMethods}"
+        <psv:xrefDataList value="${binaryInteraction.interactorA.participantIdentificationMethods}"
                           itemPerLine="true"
                           onlyText="true"/>
 
@@ -676,7 +674,7 @@
     <!--rendered="#{rowStatus.index + 1 lt fn:length(binaryInteraction.interactorB.participantIdentificationMethods)}"/>-->
     <!--</tr:iterator>-->
     <h:panelGroup rendered="#{binaryInteraction.interactorB != null}">
-        <iav:xrefDataList value="${binaryInteraction.interactorB.participantIdentificationMethods}"
+        <psv:xrefDataList value="${binaryInteraction.interactorB.participantIdentificationMethods}"
                           itemPerLine="true"
                           onlyText="true"/>
     </h:panelGroup>

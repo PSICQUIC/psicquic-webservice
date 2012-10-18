@@ -7,7 +7,7 @@
     xmlns:tr="http://myfaces.apache.org/trinidad"
     xmlns:trh="http://myfaces.apache.org/trinidad/html"
     xmlns:c="http://java.sun.com/jstl/core"
-    xmlns:iam="http://intact.ebi.ac.uk/miscel">
+    xmlns:psm="http://psicquic.mi.psi.hupo.org/miscel">
 
     <c:set var="jsIdPrefix" value=""/>
     <c:if test="#{not empty parentId}">
@@ -34,7 +34,7 @@
 
     <tr:inputHidden id="#{id}" value="#{value}" />
     <f:subview id="#{autocompleteSubformId}">
-        <trh:script type="text/javascript">
+        <trh:script>
 
             var #{timeoutVar}=null;
             var #{lineArrayVar}=null;
@@ -185,7 +185,7 @@
                         <h:outputText value="#{row[locateVisibleFieldName]}" rendered="#{not empty locateVisibleFieldName}"/>
                         <h:outputText value="#{row[locateValueFieldName]}" rendered="#{empty locateVisibleFieldName}"/>
                      </ui:insert>
-                    
+
                 </div>
             </tr:column>
         </tr:table>

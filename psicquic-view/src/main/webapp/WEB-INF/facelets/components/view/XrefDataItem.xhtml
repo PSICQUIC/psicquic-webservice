@@ -7,14 +7,15 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:sf="http://www.ebi.ac.uk/faces/site"
                 xmlns:ebi="http://ebi.ac.uk/faces/components"
-                xmlns:iav="http://intact.ebi.ac.uk/view" xmlns:ox="http://myfaces.apache.org/orchestra"
-                xsi:schemaLocation="http://intact.ebi.ac.uk/view /WEB-INF/intactview.taglib.xml">
+                xmlns:psv="http://psicquic.mi.psi.hupo.org/view"
+                xmlns:ox="http://myfaces.apache.org/orchestra"
+                xsi:schemaLocation="http://psicquic.mi.psi.hupo.org/view /WEB-INF/psicquicview.taglib.xml">
 
 <ui:component rendered="#{rendered == null? true : sf:convertToBoolean(rendered)}">
 
 		<c:set var="xref" value="#{value}"/>
 
-		<c:set var="xrefUrl" value="#{iav:xrefUrl(appConfigBean.linkContext, xref, linkType)}"/>
+		<c:set var="xrefUrl" value="#{psv:xrefUrl(appConfigBean.linkContext, xref, linkType)}"/>
 		<c:set var="onlyText" value="#{onlyText == null ? false : sf:convertToBoolean(onlyText)}"/>
 		<c:set var="itemPerLine" value="#{itemPerLine == null ? false : sf:convertToBoolean(itemPerLine)}"/>
 		<c:set var="itemDisabled" value="#{disableLinks == null ? false : sf:convertToBoolean(disableLinks)}"/>
@@ -26,10 +27,10 @@
 		<!--<h:panelGroup style="text-justify:inter-word;">-->
         <ox:separateConversationContext>
             <tr:goLink
-                    text="#{xrefUrl == null? iav:xrefToString(xref, !onlyText, !onlyText, onlyText) : text}"
+                    text="#{xrefUrl == null? psv:xrefToString(xref, !onlyText, !onlyText, onlyText) : text}"
                     shortDesc="#{xref.text}" inlineStyle="white-space: pre;"
                     targetFrame="_blank"
-                    destination="#{iav:xrefUrl(appConfigBean.linkContext, xref, linkType)}"
+                    destination="#{psv:xrefUrl(appConfigBean.linkContext, xref, linkType)}"
                     disabled="#{xrefUrl == null or xrefUrl == '#' or itemDisabled}"/>
         </ox:separateConversationContext>
 	<!--</h:panelGroup>-->
