@@ -16,6 +16,9 @@
 
     <properties>
         <solr.url>http://localhost:8983/solr</solr.url>
+        <calimocho.version>2.4</calimocho.version>
+        <psimi.version>1.8.2</psimi.version>
+        <spring.version>3.1.2.RELEASE</spring.version>
     </properties>
 
     <build>
@@ -34,6 +37,14 @@
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
         </plugins>
@@ -111,7 +122,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
-            <version>1.8.2-SNAPSHOT</version>
+            <version>${psimi.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
@@ -122,7 +133,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psi25-xml-rdf</artifactId>
-            <version>1.8.2-SNAPSHOT</version>
+            <version>${psimi.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>woodstox</groupId>
@@ -133,18 +144,18 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-solr</artifactId>
-            <version>2.4-SNAPSHOT</version>
+            <version>${calimocho.version}</version>
         </dependency>
 
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-tab</artifactId>
-            <version>2.4-SNAPSHOT</version>
+            <version>${calimocho.version}</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-xgmml</artifactId>
-            <version>2.4-SNAPSHOT</version>
+            <version>${calimocho.version}</version>
         </dependency>
 
         <!-- Jetty -->
@@ -198,7 +209,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>3.1.2.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <!-- Commons -->
@@ -217,12 +228,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>3.1.2.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>3.1.2.RELEASE</version>
+            <version>${spring.version}</version>
         </dependency>
         <!-- Spring -->
         <dependency>
@@ -240,7 +251,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>3.1.2.RELEASE</version>
+            <version>${spring.version}</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>
