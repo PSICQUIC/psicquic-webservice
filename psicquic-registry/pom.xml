@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.ac.ebi.intact.service.psicquic</groupId>
+    <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-registry</artifactId>
     <packaging>war</packaging>
 
@@ -24,6 +24,8 @@
         <psicquic.registry.url />
 
     </properties>
+
+    <!-- TODO Clean the pom and check the source generator -->
 
     <build>
         <finalName>${artifactId}-${version}</finalName>
@@ -57,8 +59,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <attach>false</attach>
                     <descriptors>
-                        <descriptor>src/main/assembly/descriptor.xml</descriptor>
+                        <descriptor>src/main/assembly/bin-with-dependencies.xml</descriptor>
                     </descriptors>
                 </configuration>
             </plugin>
@@ -247,7 +250,7 @@
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-client</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.1-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
