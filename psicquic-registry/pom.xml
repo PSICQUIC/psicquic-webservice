@@ -1,19 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.ebi.intact.service.psicquic</groupId>
     <artifactId>psicquic-registry</artifactId>
     <packaging>war</packaging>
 
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>PSI :: PSICQUIC Registry Service</name>
 
     <scm>
-        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-registry</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-registry</developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-registry</url>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-registry-1.1.0</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-registry-1.1.0</developerConnection>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/tags/psicquic-registry-1.1.0</url>
     </scm>
 
     <properties>
@@ -22,7 +21,7 @@
 
         <!-- configurable bits -->
 
-        <psicquic.registry.url/>
+        <psicquic.registry.url />
 
     </properties>
 
@@ -149,7 +148,7 @@
                             <executable>java</executable>
                             <arguments>
                                 <argument>-classpath</argument>
-                                <classpath/>
+                                <classpath />
                                 <argument>org.hupo.psi.mi.psicquic.registry.util.MitabIndexer</argument>
                                 <argument>${psicquic.index}</argument>
                                 <argument>${mitabFile}</argument>
