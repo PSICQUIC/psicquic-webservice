@@ -28,11 +28,8 @@ public class PsicquicSimpleClient {
 
     public static final String XML25 = "xml25";
     public static final String MITAB25 = "tab25";
-    public static final String MITAB25_COMPRESSED = "tab25-bin";
     public static final String MITAB26 = "tab26";
-    public static final String MITAB26_COMPRESSED = "tab26-bin";
     public static final String MITAB27 = "tab27";
-    public static final String MITAB27_COMPRESSED = "tab27-bin";
     public static final String XGMML = "xgmml";
     public static final String BIOPAX = "biopax";
     public static final String BIOPAX_L2 = "biopax-L2";
