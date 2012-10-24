@@ -73,7 +73,7 @@
       <name>InnateDB</name>
       <soapUrl>http://imex.innatedb.com/psicquic-ws/webservices/psicquic</soapUrl>
       <restUrl>http://imex.innatedb.com/psicquic-ws/webservices/current/search/</restUrl>
-      <restExample>http://imex.innatedb.com/psicquic-ws/webservices/current/search/query/*:*?firstResult=0&amp;maxResults=10</restExample>   
+      <restExample>http://imex.innatedb.com/psicquic-ws/webservices/current/search/query/*:*?firstResult=0&amp;maxResults=10</restExample>
       <organizationUrl>http://www.innatedb.com</organizationUrl>
       <tag>MI:1047</tag> <!-- protein-protein-->
       <tag>MI:1055</tag> <!-- internally-curated -->
@@ -85,9 +85,9 @@
 
   <service>
       <name>IntAct</name>
-      <soapUrl>http://ves-hx-47.ebi.ac.uk:8100/Tools/webservices/psicquic/intact/webservices/psicquic</soapUrl>
-      <restUrl> http://ves-hx-47.ebi.ac.uk:8100/Tools/webservices/psicquic/intact/webservices/current/search/</restUrl>
-      <restExample>http://ves-hx-47.ebi.ac.uk:8100/Tools/webservices/psicquic/intact/webservices/psicquic/query/species:human?firstResult=0&amp;maxResults=100</restExample>
+      <soapUrl>http://wwwdev.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic</soapUrl>
+      <restUrl>http://wwwdev.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/</restUrl>
+      <restExample>http://wwwdev.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic/query/species:human?firstResult=0&amp;maxResults=100</restExample>
       <organizationUrl>http://www.ebi.ac.uk/intact</organizationUrl>
       <restricted>false</restricted>
       <tag>MI:1047</tag> <!-- protein-protein-->
@@ -95,7 +95,7 @@
       <tag>MI:1049</tag> <!-- nucleicacid-protein-->
       <tag>MI:1055</tag> <!-- internally-curated -->
       <tag>MI:1058</tag> <!-- imported -->
-      <tag>MI:0959</tag> <!-- imex curation --> 
+      <tag>MI:0959</tag> <!-- imex curation -->
       <tag>MI:0960</tag> <!-- mimix -->
       <tag>MI:1060</tag> <!-- spoke -->
       <tag>MI:1051</tag> <!-- evidence -->
@@ -124,7 +124,7 @@
       <tag>MI:1047</tag> <!-- protein-protein-->
       <tag>MI:1048</tag> <!-- smallmolecule-protein -->
       <tag>MI:1055</tag> <!-- internally-curated -->
-      <tag>MI:0959</tag> <!-- imex curation --> 
+      <tag>MI:0959</tag> <!-- imex curation -->
       <tag>MI:0960</tag> <!-- mimix -->
       <tag>MI:1060</tag> <!-- spoke -->
       <tag>MI:1051</tag> <!-- evidence -->
@@ -139,7 +139,7 @@
       <restricted>false</restricted>
       <tag>MI:1047</tag> <!-- protein-protein-->
       <tag>MI:1055</tag> <!-- internally-curated -->
-      <tag>MI:0959</tag> <!-- imex curation --> 
+      <tag>MI:0959</tag> <!-- imex curation -->
       <tag>MI:0960</tag> <!-- mimix -->
       <tag>MI:1060</tag> <!-- spoke -->
       <tag>MI:1051</tag> <!-- evidence -->
