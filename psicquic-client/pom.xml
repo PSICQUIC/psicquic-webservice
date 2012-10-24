@@ -23,6 +23,7 @@
         <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-client</url>
     </scm>
 
+    <!-- TODO Clean the pom and review the source plugin -->
     <build>
         <finalName>${artifactId}-${version}</finalName>
 
@@ -111,15 +112,33 @@
                 </configuration>
             </plugin>
 
+            <!--<plugin>-->
+                <!--<artifactId>maven-assembly-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<descriptorRefs>-->
+                        <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
+                    <!--</descriptorRefs>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
+                    <attach>false</attach>
+                    <descriptors>
+                        <descriptor>src/main/assembly/bin-with-dependencies.xml</descriptor>
+                    </descriptors>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
@@ -224,8 +243,8 @@
               <artifactId>org.apache.servicemix.specs.stax-api-1.0</artifactId>
               <version>2.0.0</version>
             </dependency>
-        
-  
+
+
         <!-- Apache CXF -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
