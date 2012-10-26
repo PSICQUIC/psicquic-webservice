@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-stats-collector</artifactId>
     <packaging>jar</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
 
     <name>PSICQUIC :: PSICQUIC Statistics Collector</name>
 
@@ -18,10 +17,10 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://psicquic.googlecode.com/svn/trunk/psicquic-stats-collector</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-stats-collector
+        <connection>scm:svn:http://psicquic.googlecode.com/svn/tags/psicquic-stats-collector-0.1.0</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-stats-collector-0.1.0
         </developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-stats-collector</url>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/tags/psicquic-stats-collector-0.1.0</url>
     </scm>
 
     <build>
@@ -76,7 +75,7 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <!-- automatically creates the classpath using all project dependencies, also adding the project build directory -->
-                                <classpath/>
+                                <classpath />
                                 <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
                             </arguments>
                         </configuration>
@@ -105,7 +104,7 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <!-- automatically creates the classpath using all project dependencies, also adding the project build directory -->
-                                <classpath/>
+                                <classpath />
                                 <argument>org.hupo.psi.mi.psicquic.stats.PsicquicStatsCollector</argument>
                                 <argument>-Dpsicquic.interaction.miql.query="interaction_id:imex"</argument>
                                 <argument>-Dpsicquic.publication.miql.query="pubid:imex"</argument>
@@ -139,7 +138,7 @@
                                 <argument>-classpath</argument>
                                 <!-- automatically creates the classpath using all project dependencies,
                                      also adding the project build directory -->
-                                <classpath/>
+                                <classpath />
                                 <argument>org.hupo.psi.mi.psicquic.stats.cluster.BuildCache</argument>
 
                             </arguments>
@@ -172,7 +171,7 @@
                                 <argument>-classpath</argument>
                                 <!-- automatically creates the classpath using all project dependencies,
                                      also adding the project build directory -->
-                                <classpath/>
+                                <classpath />
                                 <argument>org.hupo.psi.mi.psicquic.stats.cluster.ComputeStats</argument>
 
                             </arguments>
