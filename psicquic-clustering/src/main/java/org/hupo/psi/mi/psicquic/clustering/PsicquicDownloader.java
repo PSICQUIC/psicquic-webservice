@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 
 /**
@@ -65,12 +64,9 @@ public class PsicquicDownloader {
             System.out.println( "-----------------------------------------" );
 
             try {
-                final InputStream result = client.getByQuery( query, PsicquicSimpleClient.MITAB25_COMPRESSED );
+                final InputStream result = client.getByQuery( query, PsicquicSimpleClient.MITAB25 );
 
-                // compressed inputstream
-                final GZIPInputStream compressedResult = new GZIPInputStream( result );
-
-                BufferedReader in = new BufferedReader( new InputStreamReader( compressedResult ) );
+                BufferedReader in = new BufferedReader( new InputStreamReader( result ) );
 
                 String line;
 
