@@ -4,16 +4,16 @@
 
     <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-clustering</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <packaging>jar</packaging>
 
     <name>PSI :: PSICQUIC Clustering</name>
 
     <scm>
-        <connection>scm:svn:http://psicquic.googlecode.com/svn/trunk/psicquic-clustering</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-clustering</developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-clustering</url>
+        <connection>scm:svn:http://psicquic.googlecode.com/svn/tags/psicquic-clustering-1.0.0</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-clustering-1.0.0</developerConnection>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/tags/psicquic-clustering-1.0.0</url>
     </scm>
 
     <properties>
