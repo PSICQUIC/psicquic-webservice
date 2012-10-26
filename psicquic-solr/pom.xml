@@ -9,8 +9,8 @@
     <name>psicquic-solr</name>
 
     <scm>
-        <connection>scm:svn:https://psicquic.googlecode.com/trunk/psicquic-solr/</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr</developerConnection>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr/</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr/</developerConnection>
         <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-solr</url>
     </scm>
 
