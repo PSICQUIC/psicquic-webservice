@@ -9,9 +9,9 @@
     <name>psicquic-solr</name>
 
     <scm>
-        <connection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-solr-1.2.1</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-solr-1.2.1</developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/tags/psicquic-solr-1.2.1</url>
+        <connection>scm:svn:https://psicquic.googlecode.com/trunk/psicquic-solr/</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-solr</developerConnection>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-solr</url>
     </scm>
 
     <properties>
