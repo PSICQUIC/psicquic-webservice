@@ -149,12 +149,12 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.8.2</version>
+            <version>1.8.0</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psi25-xml-rdf</artifactId>
-            <version>1.8.2</version>
+            <version>1.8.0</version>
         </dependency>
 
         <dependency>
