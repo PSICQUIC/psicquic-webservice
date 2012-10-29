@@ -114,16 +114,14 @@
 <!--</header>-->
 
 <!--<div id="content" role="main" class="grid_24 clearfix">-->
-<tr:form id="mainForm" inlineStyle="width: 100%">
-
-<tr:panelGroupLayout layout="vertical" inlineStyle="padding-left:10px; padding-right: 10px;">
-
+<tr:form id="headerForm" inlineStyle="width: 100%">
 <trh:tableLayout inlineStyle="#{backImage}" width="100%">
     <trh:rowLayout width="100%">
         <trh:cellFormat inlineStyle="width: 100px">
             <tr:commandLink id="titleLink"
-                           onclick="queryTxt = document.getElementById('queryTxt'); queryTxt.value = ''; queryTxt.focus()"
-                           action="#{searchBean.doNewBinarySearch}">
+                            onclick="queryTxt = document.getElementById('queryTxt'); queryTxt.value = ''; queryTxt.focus()"
+                            action="#{searchBean.doNewBinarySearch}"
+                    >
                 <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}" inlineStyle="width: 100px"/>
             </tr:commandLink>
         </trh:cellFormat>
@@ -133,7 +131,11 @@
         </trh:cellFormat>
     </trh:rowLayout>
 </trh:tableLayout>
+</tr:form>
 
+<tr:form id="mainForm" inlineStyle="width: 100%">
+
+<tr:panelGroupLayout layout="vertical" inlineStyle="padding-left:10px; padding-right: 10px;">
 
 
 
@@ -237,6 +239,15 @@
                                                              target="#{searchBean.selectedServiceName}"/>
                                 <ui:param name="service" value="#{searchBean.servicesMap[name]}"/>
                             </h:commandLink>
+                            <tr:spacer width="2px"/>
+
+                            <h:outputLink id="serviceURL_${status.index}"
+                                          value="#{searchBean.servicesMap[name].organizationUrl}" target="_blank">
+                                <tr:image source="/images/external_link.gif"
+                                          shortDesc="Organization URL"/>
+                            </h:outputLink>
+                            <tr:spacer width="2px"/>
+
                             <h:panelGroup id="resultsCounts" rendered="#{searchBean.resultCountMap[name] != null}">
                                 &#160;-&#160;
                                 <tr:outputText value="#{searchBean.resultCountMap[name]}" styleClass="resultCount"
@@ -247,8 +258,8 @@
                                                rendered="#{searchBean.resultCountMap[name] == '-1'}"/>
                                 <tr:outputText value="Error" styleClass="resultCount"
                                                rendered="#{searchBean.resultCountMap[name] == '-2'}"/>
-                                <tr:spacer width="5px"/>
                             </h:panelGroup>
+                            <tr:spacer width="5px"/>
 
                         </tr:panelHorizontalLayout>
                     </c:forEach>
@@ -268,8 +279,8 @@
                                         rendered="#{searchBean.totalResults > 0}"
                                         windowWidth="600" windowHeight="500" immediate="true"
                                         useWindow="true">
-                            <tr:image source="/images/question.jpeg"
-                                      shortDesc="#{ clusteringBean.clusterButtonHelpMessage}"/>
+                            <tr:image source="/images/question.jpeg" inlineStyle="vertical-align:middle;"
+                                      shortDesc="#{clusteringBean.clusterButtonHelpMessage}"/>
                         </tr:commandLink>
                     </tr:panelGroupLayout>
                     <tr:panelGroupLayout>

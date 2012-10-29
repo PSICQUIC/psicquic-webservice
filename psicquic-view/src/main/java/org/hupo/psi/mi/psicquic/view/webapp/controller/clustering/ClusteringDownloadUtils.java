@@ -2,6 +2,8 @@ package org.hupo.psi.mi.psicquic.view.webapp.controller.clustering;
 
 import org.hupo.psi.mi.psicquic.model.PsicquicSolrServer;
 import org.hupo.psi.mi.psicquic.view.webapp.io.DownloadUtils;
+import psidev.psi.mi.tab.model.builder.MitabWriterUtils;
+import psidev.psi.mi.tab.model.builder.PsimiTabVersion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,7 @@ public class ClusteringDownloadUtils extends DownloadUtils {
 	public ClusteringDownloadUtils() {
 	}
 
+	@Override
 	public String getExtension(String format) {
 		if (extensionByFormat == null) {
 			initializeExtensionByFormat();
@@ -38,6 +41,7 @@ public class ClusteringDownloadUtils extends DownloadUtils {
 
 	}
 
+	@Override
 	public String getContentType(String format) {
 		if (contentTypeByFormat == null) {
 			initializeContentTypeByFormat();
@@ -46,8 +50,30 @@ public class ClusteringDownloadUtils extends DownloadUtils {
 		return contentTypeByFormat.get(format);
 	}
 
+	@Override
 	public String getFileName(String query) {
 		return "clusteredQuery_" + truncateFileName(query, FILE_NAME_LENGHT) + getDateTime();
+	}
+
+	@Override
+	public String writeHeaderInMitab(String format) {
+		String header = null;
+
+		if(format==null || format.isEmpty()){
+			return header;
+		}
+
+		if(format.equalsIgnoreCase(PsicquicSolrServer.RETURN_TYPE_MITAB25)){
+			header = MitabWriterUtils.buildHeader(PsimiTabVersion.v2_5);
+		}
+		else if (format.equalsIgnoreCase(PsicquicSolrServer.RETURN_TYPE_MITAB26)){
+			header = MitabWriterUtils.buildHeader(PsimiTabVersion.v2_6);
+		}
+		else if(format.equalsIgnoreCase(PsicquicSolrServer.RETURN_TYPE_MITAB27)){
+			header = MitabWriterUtils.buildHeader(PsimiTabVersion.v2_7);
+		}
+
+		return header;
 	}
 
 	static void initializeContentTypeByFormat() {

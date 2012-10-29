@@ -1,18 +1,12 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:jsp="http://java.sun.com/JSP/Page"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
-                xmlns:c="http://java.sun.com/jstl/core"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                xmlns:ebi="http://ebi.ac.uk/faces/components"
                 xmlns:psv="http://psicquic.mi.psi.hupo.org/view">
 
 <tr:document>
 
-<tr:panelHeader text="MIQL Syntax Reference">
-
+<tr:panelHeader text="Search Help">
 <tr:group>
     <tr:outputText
             value="To do a search you can use the "/>
@@ -21,7 +15,7 @@
                targetFrame="_blank"/>
 
     <tr:outputText
-        value=" which is based on "/>
+            value=" which is based on "/>
 
     <tr:goLink text="Lucene's syntax."
                destination="http://lucene.apache.org/core/3_6_0/queryparsersyntax.html#Terms"
@@ -47,6 +41,12 @@
             <li>Nothing in front of the term. Equivalent to OR. e.g. P12345</li>
         </ul>
     </li>
+
+    <li>Implicit fields are used when no field is specified (simple search). For instance, if you put
+        <i>'P12345'</i> in the simple query box,
+       this will mean the same as <i>  identifier:P12345 OR pubid:P12345 OR pubauth:P12345 OR species:P12345
+        OR type:P12345 OR detmethod:P12345 OR interaction_id:P12345</i></li>
+
 </ul>
 
 <tr:separator/>

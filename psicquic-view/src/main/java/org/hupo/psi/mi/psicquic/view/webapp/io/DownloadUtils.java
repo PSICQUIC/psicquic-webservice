@@ -19,6 +19,8 @@ public abstract class DownloadUtils {
 
 	public abstract String getFileName(String query);
 
+	public abstract String writeHeaderInMitab(String format);
+
 	public String getDateTime() {
 		DateFormat df = new SimpleDateFormat("_ddMMyyyy_hhmm");
 		return df.format(new Date());

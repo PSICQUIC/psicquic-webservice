@@ -10,7 +10,6 @@ import org.hupo.psi.mi.psicquic.view.webapp.io.DownloadUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.hupo.psi.mi.psicquic.view.webapp.io.DownloadUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -97,6 +96,14 @@ public class ClusteringDownloadServlet extends HttpServlet {
             int current = 0;
             final int batchSize = 200;
             QueryResponse resp;
+
+			String header = clusteringDownloadUtils.writeHeaderInMitab(format);
+
+			if(header!=null){
+				stream.write(header.getBytes());
+				stream.flush();   // Write system dependent end of line.
+			}
+
             do {
                 // query local data
                 resp = clusteringService.query(jobId, query, current, batchSize, format );
@@ -134,9 +141,5 @@ public class ClusteringDownloadServlet extends HttpServlet {
 
 	private String getContentType(String format) {
 		return clusteringDownloadUtils.getContentType(format);
-	}
-
-	private String getDateTime() {
-		return  clusteringDownloadUtils.getDateTime();
 	}
 }

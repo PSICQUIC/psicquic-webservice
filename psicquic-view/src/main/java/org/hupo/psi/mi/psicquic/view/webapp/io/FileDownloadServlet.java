@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.config.DetectProxy;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
-import org.hupo.psi.mi.psicquic.view.webapp.controller.config.DetectProxy;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -136,6 +135,14 @@ public class FileDownloadServlet extends HttpServlet {
 			out = new BufferedWriter(new OutputStreamWriter(outputStream));
 			in = new BufferedReader(new InputStreamReader(inputStream));
 
+			String header = fileDownloadUtils.writeHeaderInMitab(format);
+
+			if(header!=null){
+				out.write(header);
+				out.newLine();   // Write system dependent end of line.
+			}
+
+			//TODO Read by chunks instead of lines
 			while ((userInput = in.readLine()) != null) {
 				out.write(userInput);
 				out.newLine();   // Write system dependent end of line.
@@ -177,7 +184,5 @@ public class FileDownloadServlet extends HttpServlet {
 	private String getContentType(String format) {
 		return fileDownloadUtils.getContentType(format);
 	}
-
-
 
 }
