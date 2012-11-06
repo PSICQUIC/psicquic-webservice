@@ -114,25 +114,24 @@
 <!--</header>-->
 
 <!--<div id="content" role="main" class="grid_24 clearfix">-->
-<tr:form id="headerForm" inlineStyle="width: 100%">
-<trh:tableLayout inlineStyle="#{backImage}" width="100%">
-    <trh:rowLayout width="100%">
-        <trh:cellFormat inlineStyle="width: 100px">
-            <tr:commandLink id="titleLink"
-                            onclick="queryTxt = document.getElementById('queryTxt'); queryTxt.value = ''; queryTxt.focus()"
-                            action="#{searchBean.doNewBinarySearch}"
-                    >
-                <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}" inlineStyle="width: 100px"/>
-            </tr:commandLink>
-        </trh:cellFormat>
-        <tr:spacer width="2px"/>
-        <trh:cellFormat inlineStyle="vertical-align: bottom" rendered="#{not empty config.title}">
-            <h1><tr:outputText value="#{config.title}"/></h1>
-        </trh:cellFormat>
-    </trh:rowLayout>
-</trh:tableLayout>
+<tr:form id="headerForm" inlineStyle="padding-left:10px; padding-right: 10px;">
+    <trh:tableLayout inlineStyle="#{backImage}" width="100%">
+        <trh:rowLayout width="100%">
+            <trh:cellFormat inlineStyle="width: 120px">
+                <tr:commandLink id="titleLink"
+                                onclick="queryTxt = document.getElementById('queryTxt'); queryTxt.value = ''; queryTxt.focus()"
+                                action="#{searchBean.doNewBinarySearch}"
+                        >
+                    <tr:image source="#{config.logoUrl}" rendered="#{not empty config.logoUrl}" inlineStyle="width: 120px"/>
+                </tr:commandLink>
+            </trh:cellFormat>
+            <tr:spacer width="1px"/>
+            <trh:cellFormat inlineStyle="vertical-align: middle" rendered="#{not empty config.title}">
+                <h1><tr:outputText value="#{config.title}"/></h1>
+            </trh:cellFormat>
+        </trh:rowLayout>
+    </trh:tableLayout>
 </tr:form>
-
 <tr:form id="mainForm" inlineStyle="width: 100%">
 
 <tr:panelGroupLayout layout="vertical" inlineStyle="padding-left:10px; padding-right: 10px;">
@@ -190,10 +189,10 @@
                 <h:panelGroup>
                     <tr:outputText
                             value="Use the check boxes to include or excludes services from the search and cluster operations - Select: "/>
-                    <h:commandLink value="All"
+                    <tr:commandLink id="selectAllLink" text="All"
                                    onclick="psicquic_selectAll(#{fn:length(searchBean.allServiceNames)})"/>
                     <tr:outputText value=", "/>
-                    <h:commandLink value="None"
+                    <tr:commandLink id="selectNoneLink" text="None"
                                    onclick="psicquic_selectNone(#{fn:length(searchBean.allServiceNames)})"/>
                 </h:panelGroup>
 
@@ -266,6 +265,18 @@
                 </tr:panelFormLayout>
             </td>
             <td style="vertical-align: middle; text-align: center">
+                <!--Download All Button-->
+                <tr:commandButton id="downloadAllButtonMain"
+                                  shortDesc="This button will is enable with less than 300.000 interactions"
+                                  action="dialog:download.all"
+                                  useWindow="true"
+                                  windowWidth="600" windowHeight="500"
+                                  partialSubmit="true"
+                                  returnListener="#{downloadAllController.forward}"
+                                  disabled="#{searchBean.totalResults lt 0 or searchBean.totalResults gt 300000 or searchBean.clusterSelected}"
+                                  text="Download All"/>
+            </td>
+            <td style="vertical-align: middle; text-align: center">
                 <!--Cluster Button-->
                 <tr:panelFormLayout rows="2" maxColumns="1">
                     <tr:panelGroupLayout inlineStyle="height: 100%; width: 100% ;">
@@ -331,7 +342,7 @@
                             <h:panelGroup>
                                 <tr:outputText value="Total: "/>
                                 <tr:outputText value="#{searchBean.totalResults} "
-                                               inlineStyle="background-color:white; font-weight: bold; ">
+                                               inlineStyle="background-color:white; font-weight: bold; " >
                                     <f:convertNumber pattern="#,###"/>
                                 </tr:outputText>
                                 <tr:outputText

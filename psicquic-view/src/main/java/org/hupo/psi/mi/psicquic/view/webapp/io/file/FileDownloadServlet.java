@@ -1,8 +1,9 @@
-package org.hupo.psi.mi.psicquic.view.webapp.io;
+package org.hupo.psi.mi.psicquic.view.webapp.io.file;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.config.DetectProxy;
+import org.hupo.psi.mi.psicquic.view.webapp.io.DownloadUtils;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 
 import javax.faces.application.FacesMessage;
@@ -135,7 +136,7 @@ public class FileDownloadServlet extends HttpServlet {
 			out = new BufferedWriter(new OutputStreamWriter(outputStream));
 			in = new BufferedReader(new InputStreamReader(inputStream));
 
-			String header = fileDownloadUtils.writeHeaderInMitab(format);
+			String header = writeHeaderInMitab(format);
 
 			if(header!=null){
 				out.write(header);
@@ -185,4 +186,7 @@ public class FileDownloadServlet extends HttpServlet {
 		return fileDownloadUtils.getContentType(format);
 	}
 
+	private String writeHeaderInMitab(String format) {
+		return fileDownloadUtils.writeHeaderInMitab(format);
+	}
 }

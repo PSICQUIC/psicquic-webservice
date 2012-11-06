@@ -28,6 +28,8 @@
         <managed-bean-scope>application</managed-bean-scope>
     </managed-bean>
 
+
+
     <lifecycle>
     <!--<phase-listener>org.hupo.psi.mi.psicquic.intact.view.webapp.application.SearchConfigCheckPhaseListener</phase-listener>-->
     <phase-listener>org.hupo.psi.mi.psicquic.view.webapp.application.CacheControlPhaseListener</phase-listener>
@@ -61,6 +63,14 @@
         <navigation-case>
             <from-outcome>dialog:download</from-outcome>
             <to-view-id>/pages/download/download.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+
+    <!-- download all dialog -->
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>dialog:download.all</from-outcome>
+            <to-view-id>/pages/download/allDownload.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
 

@@ -36,6 +36,9 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
 	private static final Log log = LogFactory.getLog(PsicquicViewConfig.class);
 
+	public static final String TEMP_DIR = System.getProperty( "java.io.tmpdir" );
+	public static final String FILE_SEPARATOR = System.getProperty( "file.separator" );
+
 	public static final int DEFAULT_CLUSTERING_SIZE_LIMIT = 5000;
 	public static final String REGISTRY_URL = "http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/";
 
@@ -51,6 +54,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 	private int serviceRows;
 	private int clusteringSizeLimit;
 	private Proxy proxy;
+	private String downloadAllLocation;
 
 	public PsicquicViewConfig() {
 	}
@@ -91,6 +95,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 		excludedServices = properties.getProperty("services.excluded");
 
 		registryURL = loadProperty(properties, "registry.url", REGISTRY_URL);
+		downloadAllLocation = loadProperty(properties, "download.all.storage.location", buildDefaultDir());
 		clusteringSizeLimit = loadIntProperty(properties, "clustering.limit.count", DEFAULT_CLUSTERING_SIZE_LIMIT);
 
 		final String strRows = properties.getProperty("services.rows");
@@ -144,6 +149,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 		setProperty(properties, "services.excluded", excludedServices);
 		setProperty(properties, "clustering.limit.count", String.valueOf(clusteringSizeLimit));
 		setProperty(properties, "services.rows", String.valueOf(serviceRows));
+		setProperty(properties, "download.all.storage.location", downloadAllLocation);
 
 		OutputStream outputStream = new FileOutputStream(configFile);
 		properties.store(outputStream, "Configuration updated: " + new Date());
@@ -256,5 +262,41 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
 	public Proxy getProxy() {
 		return proxy;
+	}
+
+
+	private String buildDefaultDir() {
+		String defaultLocation = TEMP_DIR;
+		if( ! defaultLocation.endsWith( FILE_SEPARATOR ) ) {
+			defaultLocation += FILE_SEPARATOR;
+		}
+		defaultLocation += "download-cache";
+		createDirectoryIfNotExist( defaultLocation );
+		return defaultLocation;
+	}
+
+	private File createDirectoryIfNotExist( String dir ) {
+		File file = new File( dir );
+		if(!file.exists()) {
+			file.mkdirs();
+		}
+		return file;
+	}
+
+	public String getDownloadAllLocation() {
+		if( downloadAllLocation == null ) {
+			downloadAllLocation = buildDefaultDir();
+		}
+		return downloadAllLocation;
+	}
+
+	public File getDownloadAllLocationFile() {
+		return new File(getDownloadAllLocation());
+	}
+
+	public void setDownloadAllLocation( String downloadAllLocation) {
+		File file = createDirectoryIfNotExist( downloadAllLocation );
+		this.downloadAllLocation = file.getAbsolutePath();
+		log.warn( "Setting download all location to: " + this.downloadAllLocation );
 	}
 }

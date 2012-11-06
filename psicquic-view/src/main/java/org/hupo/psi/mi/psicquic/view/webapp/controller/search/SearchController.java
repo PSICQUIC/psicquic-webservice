@@ -286,7 +286,7 @@ public class SearchController extends BaseController {
 		service.setName(serviceName);
 
 		// Enable download of clustered data via table via a servlet
-		service.setRestUrl("/download?jobId=" + jobId + "&query=*");
+		service.setRestUrl("/clusterDownload?jobId=" + jobId + "&query=*");
 
 		servicesMap.put(serviceName, service);
 		int totalCount = job.getClusteredInteractionCount();
@@ -858,5 +858,13 @@ public class SearchController extends BaseController {
 
 	public Integer getXmlLimit() {
 		return XML_INTERACTIONS_LIMIT;
+	}
+
+	public ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
+
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
 	}
 }

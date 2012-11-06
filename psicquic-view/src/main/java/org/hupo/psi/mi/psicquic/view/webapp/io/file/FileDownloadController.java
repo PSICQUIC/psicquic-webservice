@@ -1,14 +1,13 @@
-package org.hupo.psi.mi.psicquic.view.webapp.io;
+package org.hupo.psi.mi.psicquic.view.webapp.io.file;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.trinidad.context.RequestContext;
 import org.apache.myfaces.trinidad.event.ReturnEvent;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.BaseController;
+import org.hupo.psi.mi.psicquic.view.webapp.controller.search.SearchController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.hupo.psi.mi.psicquic.view.webapp.controller.BaseController;
-import org.hupo.psi.mi.psicquic.view.webapp.controller.search.SearchController;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
@@ -35,8 +34,10 @@ public class FileDownloadController extends BaseController {
 	private List<SelectItem> selectItems;
 	private List<SelectItem> selectClusteredItems;
 
+
 	@Autowired
 	private SearchController searchController;
+
 	private String selectedFormat;
 
 
@@ -49,6 +50,7 @@ public class FileDownloadController extends BaseController {
 	public FileDownloadController() {
 		this.selectItems = new ArrayList<SelectItem>();
 		this.selectClusteredItems = new ArrayList<SelectItem>();
+
 	}
 
 	void checkDownloads(){
@@ -104,7 +106,7 @@ public class FileDownloadController extends BaseController {
 		ResourceBundle rb = ResourceBundle.getBundle("org.hupo.psi.mi.psicquic.Messages");
 		String format = "tab25";
 
-		this.selectClusteredItems.add(new SelectItem(format, rb.getString("tab25").trim()));
+		this.selectClusteredItems.add(new SelectItem(format, rb.getString(format).trim()));
 		setSelectedFormat(format);
 	}
 
@@ -180,6 +182,8 @@ public class FileDownloadController extends BaseController {
 			String query = searchController.getUserQuery().getSearchQuery();
 
 			if (value.contentEquals("binary")) {
+
+
 
 				String url = baseURL + "/binaryDownload?" +
 						"&serviceURL=" + serviceURL +

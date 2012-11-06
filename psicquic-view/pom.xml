@@ -40,13 +40,14 @@
         <clustering.storage.directory>cluster-cache</clustering.storage.directory>
         <clustering.limit.count>5000</clustering.limit.count>
 
+        <download.all.storage.directory>download-cache</download.all.storage.directory>
 
         <spring.version>3.1.2.RELEASE</spring.version>
         <spring.security.version>3.1.2.RELEASE</spring.security.version>
     </properties>
 
     <build>
-        <finalName>${service.name}-view-${pom.version}-${buildNumber}</finalName>
+        <finalName>${service.name}-view-${project.version}-${buildNumber}</finalName>
 
         <resources>
             <resource>

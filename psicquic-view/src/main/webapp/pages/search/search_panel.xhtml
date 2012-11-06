@@ -20,7 +20,7 @@
             <tr:commandLink text="Help" action="dialog:help.search"
                             windowWidth="600" windowHeight="500"
                             useWindow="true"
-                            partialSubmit="true">
+                    >
                 <tr:image source="/images/question.jpeg" inlineStyle="vertical-align:middle;"
                           shortDesc="Search Help"/>
             </tr:commandLink>
@@ -60,7 +60,7 @@
 
                 <tr:selectOneChoice id="selectOneAndOr" value="#{userQuery.newQueryToken.operandStr}"
                                     disabled="#{userQuery.wildcardQuery}"
-                         >
+                        >
                     <f:selectItem id="andItem" itemValue="AND" itemLabel="AND" />
                     <f:selectItem id="orItem" itemValue="OR" itemLabel="OR" itemDisabled="#{empty userQuery.searchQuery or
                                                                                     userQuery.searchQuery eq '*:*'}"/>
@@ -69,17 +69,22 @@
                 <tr:selectBooleanCheckbox id="notCheckbox" text="NOT" value="#{userQuery.newQueryToken.notQuery}" />
 
                 <tr:selectOneChoice id="newQueryField" label="Field: " value="#{userQuery.newQueryToken.field}"
-                                    immediate="true">
+                                    immediate="true" autoSubmit="true">
                     <f:selectItems value="#{userQuery.searchFieldSelectItems}"/>
                 </tr:selectOneChoice>
 
                 <tr:panelGroupLayout id="newQueryValue" partialTriggers="newQueryField">
-                    <tr:inputText id="newQueryValueTxt" value="#{userQuery.newQueryToken.query}" columns="50" immediate="true"
+                    <tr:inputText id="newQueryValueTxt" value="#{userQuery.newQueryToken.query}" columns="50"
+                                  immediate="true"
+                                  autoSubmit="true"
+                                  partialTriggers="newQueryField"
                                   rendered="#{not userQuery.searchFieldsMap[userQuery.newQueryToken.field].autocompleteCapable}"/>
 
                     <tr:selectOneChoice id="autocompleteList" value="#{userQuery.newQueryToken.query}"
                                         unselectedLabel="Select one"
                                         immediate="true"
+                                        autoSubmit="true"
+                                        partialTriggers="newQueryField"
                                         rendered="#{userQuery.searchFieldsMap[userQuery.newQueryToken.field].autocompleteCapable}">
                         <f:selectItems id="autocompleteItemsList"
                                        value="#{userQuery.searchFieldsMap[userQuery.newQueryToken.field].autocompleteMethod}"/>
@@ -88,7 +93,6 @@
 
                 <tr:commandButton id="addSearchBtn"
                                   text="Add &amp; Search"
-                                  partialTriggers="newQueryField"
                                   actionListener="#{userQuery.doAddFieldToQuery}"
                                   action="#{searchBean.doNewBinarySearch}"/>
 
