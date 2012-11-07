@@ -127,6 +127,12 @@ public class PsicquicSolrServerTest extends AbstractSolrServerTest {
 
         Assert.assertNotNull(results9);
         Assert.assertEquals(1L, results9.getNumberResults());
+
+        // free text search, at least one which matches
+        PsicquicSearchResults results10 = psicquicServer.search("P21333 P05556", null, null, PsicquicSolrServer.RETURN_TYPE_MITAB27, null);
+
+        Assert.assertNotNull(results10);
+        Assert.assertEquals(2L, results10.getNumberResults());
     }
 
     @Test

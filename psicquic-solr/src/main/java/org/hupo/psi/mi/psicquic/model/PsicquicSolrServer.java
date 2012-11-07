@@ -39,6 +39,7 @@ public class PsicquicSolrServer {
     public static final String RETURN_TYPE_DEFAULT = RETURN_TYPE_MITAB25;
     private final static String DISMAX_PARAM_NAME = "qf";
     private final static String DEFAULT_PARAM_NAME = "df";
+    private final static String DEFAULT_MM_PARAM = "mm";
     private final static String DISMAX_TYPE = "edismax";
     private final static String QUERY_TYPE = "defType";
 
@@ -152,6 +153,7 @@ public class PsicquicSolrServer {
         //solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString(), SolrFieldName.pubid.toString(), SolrFieldName.pubauth.toString(), SolrFieldName.species.toString(), SolrFieldName.detmethod.toString(), SolrFieldName.type.toString(), SolrFieldName.interaction_id.toString());
         solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString()+" "+SolrFieldName.pubid.toString()+" "+SolrFieldName.pubauth.toString()+" "+SolrFieldName.species.toString()+" "+SolrFieldName.detmethod.toString()+" "+SolrFieldName.type.toString()+" "+SolrFieldName.interaction_id.toString());
         solrQuery.setParam(QUERY_TYPE, DISMAX_TYPE);
+        solrQuery.setParam(DEFAULT_MM_PARAM, "1");
 
         // set first result
         if (firstResult != null)
@@ -221,6 +223,7 @@ public class PsicquicSolrServer {
         //solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString(), SolrFieldName.pubid.toString(), SolrFieldName.pubauth.toString(), SolrFieldName.species.toString(), SolrFieldName.detmethod.toString(), SolrFieldName.type.toString(), SolrFieldName.interaction_id.toString());
         solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString()+" "+SolrFieldName.pubid.toString()+" "+SolrFieldName.pubauth.toString()+" "+SolrFieldName.species.toString()+" "+SolrFieldName.detmethod.toString()+" "+SolrFieldName.type.toString()+" "+SolrFieldName.interaction_id.toString());
         solrQuery.setParam(QUERY_TYPE, DISMAX_TYPE);
+        solrQuery.setParam(DEFAULT_MM_PARAM, "1");
 
         // set first result
         if (firstResult != null)
