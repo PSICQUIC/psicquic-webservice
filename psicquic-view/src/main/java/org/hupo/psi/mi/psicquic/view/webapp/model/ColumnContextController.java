@@ -14,6 +14,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -25,7 +26,7 @@ import java.util.*;
  */
 @Controller("columnContext")
 @Scope("session")
-public class ColumnContextController {
+public class ColumnContextController implements Serializable{
 
 	private static final Log log = LogFactory.getLog(ColumnContextController.class);
 
