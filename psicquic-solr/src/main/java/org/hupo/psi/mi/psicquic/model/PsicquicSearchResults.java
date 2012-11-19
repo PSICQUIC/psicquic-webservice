@@ -12,6 +12,7 @@ import psidev.psi.mi.tab.PsimiTabException;
 import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.converter.tab2xml.Tab2Xml;
 import psidev.psi.mi.tab.converter.tab2xml.XmlConversionException;
+import psidev.psi.mi.xml.PsimiXmlVersion;
 import psidev.psi.mi.xml.model.EntrySet;
 
 import java.io.*;
@@ -84,7 +85,22 @@ public class PsicquicSearchResults {
         }
 
         Tab2Xml tab2Xml = new Tab2Xml();
-        return tab2Xml.convert(mitabReader.read(getMitab()));
+        InputStream inputStream = getMitab();
+        EntrySet entrySet = null;
+        try{
+            if (inputStream != null){
+                entrySet = tab2Xml.convert(mitabReader.read(inputStream));
+            }
+            else {
+                entrySet = new EntrySet(PsimiXmlVersion.VERSION_25_UNDEFINED);
+            }
+        }
+        finally {
+            if (inputStream != null){
+                inputStream.close();
+            }
+        }
+        return entrySet;
     }
 
     public InputStream createXGMML() throws IOException, IllegalRowException {
@@ -103,9 +119,6 @@ public class PsicquicSearchResults {
                 xgmmlDefinition.writeDocument(xgmmlWriter, mitabOs, mitab25Definition);
                 xgmml = new ByteArrayInputStream(xgmmlOutput.toByteArray());
 
-                // close stringWriter now
-                xgmmlWriter.close();
-
             }
             finally {
                 // close stringWriter now
@@ -115,7 +128,9 @@ public class PsicquicSearchResults {
         }
         finally {
             // close mitabOs now
-            mitabOs.close();
+            if (mitabOs != null){
+                mitabOs.close();
+            }
         }
 
         return xgmml;
