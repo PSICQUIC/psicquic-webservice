@@ -262,11 +262,12 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                     CompressedStreamingOutput streamingOutput = new CompressedStreamingOutput(inputStream);
                     responseBuilder.entity(streamingOutput);
 
-                    baos.close();
-                    inputStream.close();
-
                 } catch (Throwable e) {
                     throw new IOException("Problem marshalling XML", e);
+                }
+                finally {
+                    baos.close();
+                    inputStream.close();
                 }
 
             } else {
