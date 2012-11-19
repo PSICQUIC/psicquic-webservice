@@ -32,6 +32,7 @@ import psidev.psi.mi.xml.converter.ConverterException;
 import psidev.psi.mi.xml.converter.impl254.EntrySetConverter;
 import psidev.psi.mi.xml.dao.inMemory.InMemoryDAOFactory;
 import psidev.psi.mi.xml.io.impl.PsimiXmlWriter254;
+import psidev.psi.mi.xml254.jaxb.Entry;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 
 import javax.ws.rs.core.MediaType;
@@ -133,9 +134,12 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
             if (RETURN_TYPE_XML25.equalsIgnoreCase(format)) {
                 final EntrySet entrySet = getByQueryXml(query, firstResult, maxResults);
                 int count = 0;
-
-                if (entrySet != null && !entrySet.getEntries().isEmpty()){
-                    count = entrySet.getEntries().iterator().next().getInteractionList().getInteractions().size();
+                if (entrySet.getEntries() != null && !entrySet.getEntries().isEmpty()){
+                    for (Entry entry : entrySet.getEntries()){
+                        if (entry.getInteractionList() != null && entry.getInteractionList().getInteractions() != null && !entry.getInteractionList().getInteractions().isEmpty()){
+                            count += entry.getInteractionList().getInteractions().size();
+                        }
+                    }
                 }
 
                 return prepareResponse(Response.status(200).type(MediaType.APPLICATION_XML), entrySet, count, isCompressed).build();
@@ -157,8 +161,12 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                         return formatNotSupportedResponse(format);
                     }
 
-                    if (!entrySet.getEntries().isEmpty()){
-                        count = entrySet.getEntries().iterator().next().getInteractions().size();
+                    if (entrySet.getEntries() != null && !entrySet.getEntries().isEmpty()){
+                        for (psidev.psi.mi.xml.model.Entry entry : entrySet.getEntries()){
+                            if (entry.getInteractions() != null && !entry.getInteractions().isEmpty()){
+                                count += entry.getInteractions().size();
+                            }
+                        }
                     }
                 }
 
@@ -175,41 +183,44 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 if (RETURN_TYPE_COUNT.equalsIgnoreCase(format)) {
                     return count(query);
                 } else if (RETURN_TYPE_XGMML.equalsIgnoreCase(format)) {
-                    PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, Math.min(MAX_XGMML_INTERACTIONS, maxResults));
-
-                    count = result.countResults();
+                    PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, MAX_XGMML_INTERACTIONS);
 
                     ByteArrayOutputStream mitabOs = new ByteArrayOutputStream();
-                    result.write(mitabOs);
-                    
-                    boolean tooManyResults = false;
-                    
-                    if (count > MAX_XGMML_INTERACTIONS) {
-                        tooManyResults = true;
+                    String xgmml="";
+
+                    try {
+                        result.write(mitabOs);
+
+                        boolean tooManyResults = false;
+
+                        if (count > MAX_XGMML_INTERACTIONS) {
+                            tooManyResults = true;
+                        }
+
+                        DocumentDefinition mitabDefinition = MitabDocumentDefinitionFactory.mitab25();
+                        DocumentDefinition xgmmlDefinition = new XGMMLDocumentDefinition("PSICQUIC", "Query: "+query+((tooManyResults? " / MORE THAN "+MAX_XGMML_INTERACTIONS+" RESULTS WERE RETURNED. FILE LIMITED TO THE FIRST "+MAX_XGMML_INTERACTIONS : "")), "http://psicquic.googlecode.com");
+
+                        Reader mitabReader = new StringReader(mitabOs.toString());
+                        Writer xgmmlWriter = new StringWriter();
+
+                        try{
+
+                            DocumentConverter converter = new DocumentConverter( mitabDefinition, xgmmlDefinition );
+                            converter.convert( mitabReader, xgmmlWriter );
+                            xgmml = xgmmlWriter.toString();
+                        }
+                        finally {
+                            mitabReader.close();
+                            xgmmlWriter.close();
+                        }
                     }
-                    
-                    DocumentDefinition mitabDefinition = MitabDocumentDefinitionFactory.mitab25();
-                    DocumentDefinition xgmmlDefinition = new XGMMLDocumentDefinition("PSICQUIC", "Query: "+query+((tooManyResults? " / MORE THAN "+MAX_XGMML_INTERACTIONS+" RESULTS WERE RETURNED. FILE LIMITED TO THE FIRST "+MAX_XGMML_INTERACTIONS : "")), "http://psicquic.googlecode.com");
+                    finally {
+                        mitabOs.close();
+                    }
 
-                    Reader mitabReader = new StringReader(mitabOs.toString());
-                    Writer xgmmlWriter = new StringWriter();
-
-                    DocumentConverter converter = new DocumentConverter(mitabDefinition, xgmmlDefinition);
-                    converter.convert(mitabReader, xgmmlWriter);
-
-                    // close mitabOs now
-                    mitabOs.close();
-                    // close mitab reader now
-                    mitabReader.close();
-
-                    Response resp = prepareResponse(Response.status(200).type("application/xgmml"),
-                            xgmmlWriter.toString(), count, isCompressed)
+                    return prepareResponse(Response.status(200).type(MediaType.APPLICATION_XML),
+                            xgmml, count, isCompressed)
                             .build();
-
-                    // close stringWriter now
-                    xgmmlWriter.close();
-
-                    return resp;
                 } else if (RETURN_TYPE_MITAB25.equalsIgnoreCase(format) || format == null) {
                     PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults, isCompressed);
                     return prepareResponse(Response.status(200).type(MediaType.TEXT_PLAIN), result,
