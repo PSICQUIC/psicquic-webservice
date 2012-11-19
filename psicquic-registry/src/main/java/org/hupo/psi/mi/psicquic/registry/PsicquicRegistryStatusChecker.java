@@ -16,18 +16,22 @@
 package org.hupo.psi.mi.psicquic.registry;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig;
+import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryThreadConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * Checks the state of the services every 5 mins
@@ -38,64 +42,124 @@ import java.util.concurrent.TimeUnit;
 @Controller
 public class PsicquicRegistryStatusChecker {
 
-    @Autowired
-    private PsicquicRegistryConfig config;
+	private static final Log log = LogFactory.getLog(PsicquicRegistryStatusChecker.class);
 
-    private Date lastRefreshed = new Date();
+	@Autowired
+	private PsicquicRegistryConfig config;
 
-    @Scheduled(fixedDelay = 5 * 60 * 1000) // every 5 mins
-    public void refreshServices() {
-        final ExecutorService executorService = Executors.newCachedThreadPool();
+	@Autowired
+	PsicquicRegistryThreadConfig threadConfig;
 
-        for (final ServiceType serviceStatus : config.getRegisteredServices()) {
-            Runnable runnable = new Runnable() {
-                public void run() {
-                    checkStatus(serviceStatus);
-                }
-            };
-            executorService.submit(runnable);
+	private Date lastRefreshed = new Date();
 
-        }
-        executorService.shutdown();
+	private int threadTimeOut = 10;
 
-        try {
-            executorService.awaitTermination(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+	private List<Future> runningTasks;
 
-        lastRefreshed = new Date();
-    }
+	public PsicquicRegistryStatusChecker() {
+		this.runningTasks = new ArrayList<Future>(40);
+	}
 
-    private void checkStatus(ServiceType serviceStatus) {
-        try {
-            final URL versionUrl = new URL(serviceStatus.getRestUrl() + "version");
-            final HttpURLConnection urlConnection = (HttpURLConnection) versionUrl.openConnection();
-            int code = urlConnection.getResponseCode();
+	@Scheduled(fixedDelay = 5 * 60 * 1000) // every 5 mins
+	public void refreshServices() {
 
-            urlConnection.connect();
+		ExecutorService executorService = threadConfig.getExecutorService();
 
-            if (HttpURLConnection.HTTP_OK == code) {
-                serviceStatus.setActive(true);
-                final String version = IOUtils.toString((InputStream) urlConnection.getContent());
+		runningTasks.clear();
 
-                serviceStatus.setVersion(version);
+		for (final ServiceType serviceStatus : config.getRegisteredServices()) {
+			Runnable runnable = new Runnable() {
+				public void run() {
+					checkStatus(serviceStatus);
+				}
+			};
+			runningTasks.add(executorService.submit(runnable));
+		}
 
-                final URL countURL = new URL(serviceStatus.getRestUrl() + "query/*?format=count");
-                final String strCount = IOUtils.toString(countURL.openStream());
-                serviceStatus.setCount(Long.valueOf(strCount));
-            } else {
-                serviceStatus.setActive(false);
-            }
+		checkAndResumeRegistryTasks();
+
+		lastRefreshed = new Date();
+	}
+
+	private void checkAndResumeRegistryTasks() {
+
+		for (Future f : runningTasks) {
+			try {
+				f.get(threadTimeOut, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				log.error("The registry task was interrupted, we cancel the task.", e);
+				if (!f.isCancelled()) {
+					f.cancel(true);
+				}
+			} catch (ExecutionException e) {
+				log.error("The registry task could not be executed, we cancel the task.", e);
+				if (!f.isCancelled()) {
+					f.cancel(true);
+				}
+			} catch (TimeoutException e) {
+				log.error("Service task stopped because of time out " + threadTimeOut + "seconds.", e);
+
+				if (!f.isCancelled()) {
+					f.cancel(true);
+				}
+			}
+		}
+
+		runningTasks.clear();
+	}
+
+	private void checkStatus(ServiceType serviceStatus) {
+		try {
+
+			final URL versionUrl = new URL(serviceStatus.getRestUrl() + "version");
+			final URL countURL = new URL(serviceStatus.getRestUrl() + "query/*?format=count");
+
+			final HttpURLConnection urlConnection = (HttpURLConnection) versionUrl.openConnection();
+			int code = urlConnection.getResponseCode();
+
+			urlConnection.connect();
+
+			if (HttpURLConnection.HTTP_OK == code) {
+
+				serviceStatus.setActive(true);
+
+				final String version;
+				final String strCount;
+
+				InputStream contentStream = null;
+				InputStream countStream = null;
+
+				try {
+
+					contentStream = (InputStream) urlConnection.getContent();
+					version = IOUtils.toString(contentStream);
+					serviceStatus.setVersion(version);
+
+					countStream = countURL.openStream();
+					strCount = IOUtils.toString(countStream);
+					serviceStatus.setCount(Long.valueOf(strCount));
+
+				} finally {
+					if(contentStream!=null){
+						contentStream.close();
+					}
+					if(countStream!=null){
+						countStream.close();
+					}
+				}
+			} else {
+				serviceStatus.setActive(false);
+			}
 
 
-        } catch (Throwable e) {
-            serviceStatus.setActive(false);
-        }
+		} catch (Throwable e) {
+			serviceStatus.setActive(false);
+		}
 
-    }
 
-    public Date getLastRefreshed() {
-        return lastRefreshed;
-    }
+	}
+
+	public Date getLastRefreshed() {
+		return lastRefreshed;
+	}
 }

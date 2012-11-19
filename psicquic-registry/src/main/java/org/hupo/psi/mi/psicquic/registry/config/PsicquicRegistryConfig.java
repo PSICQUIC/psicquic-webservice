@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
@@ -39,29 +40,39 @@ public class PsicquicRegistryConfig {
     private long serviceCheckTimeout;
     private String registryXmlUrl;
 	private List<ServiceType> registeredServices;
-	
+
 	@Autowired
 	private ApplicationContext springContext ;
-	
+
 
     public PsicquicRegistryConfig() {
         this.serviceCheckTimeout = 1000L;
     }
-    
+
     @PostConstruct
     public void setup(){
         Registry registry;
-        
+
         if (registryXmlUrl != null && registryXmlUrl.trim().length() > 0) {
             final URL url;
-            try {
+			InputStream input = null;
+
+			try {
                 url = new URL(registryXmlUrl);
-                InputStream input = url.openStream();
-                registry = RegistryUtil.readRegistry(input);
-                input.close();
+				input = url.openStream();
+				registry = RegistryUtil.readRegistry(input);
+
             } catch (Throwable e) {
                 throw new RuntimeException("Problem reading registry XML file: "+registryXmlUrl, e);
-            }
+            } finally {
+				if(input!=null){
+					try {
+						input.close();
+					} catch (IOException e) {
+						//Keep it quiet
+					}
+				}
+			}
         } else {
             registry = RegistryUtil.readRegistry(PsicquicRegistryConfig.class.getResourceAsStream("/META-INF/psicquic-registry-default.xml"));
         }
@@ -92,7 +103,7 @@ public class PsicquicRegistryConfig {
     public void setServiceCheckTimeout(long serviceCheckTimeout) {
         this.serviceCheckTimeout = serviceCheckTimeout;
     }
-    
+
     public String getRegistryXmlUrl() {
 		return registryXmlUrl;
 	}
@@ -100,18 +111,18 @@ public class PsicquicRegistryConfig {
 	public void setRegistryXmlUrl(String registryXmlUrl) {
 		this.registryXmlUrl = registryXmlUrl;
 	}
-	
+
 	public void refreshTagOntology(){
-		
+
 		//Cast to the concrete object representation
 		SelfDiscoveringOntologyTree miOntologyTree = (SelfDiscoveringOntologyTree)springContext.getBean("miOntologyTree");
 		miOntologyTree.clearDiscovered();
 	}
-	
-	
+
+
 	public void refreshRegisteredServices(){
-		
+
 		setup();
 	}
-    
+
 }

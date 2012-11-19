@@ -21,7 +21,7 @@
 
         <!-- configurable bits -->
 
-        <psicquic.registry.url />
+        <psicquic.registry.url></psicquic.registry.url>
 
     </properties>
 
