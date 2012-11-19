@@ -176,8 +176,12 @@ public class MitabInputStream extends InputStream{
     }
 
     @Override
-    public void close(){
-        mitabLineInputStream = null;
+    public void close() throws IOException {
         mitabLineBuffer.setLength(0);
+
+        if (mitabLineInputStream != null){
+            mitabLineInputStream.close();
+        }
+        mitabLineInputStream = null;
     }
 }
