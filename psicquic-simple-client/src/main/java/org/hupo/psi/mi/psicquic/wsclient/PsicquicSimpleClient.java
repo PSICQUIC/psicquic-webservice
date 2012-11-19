@@ -205,11 +205,21 @@ public class PsicquicSimpleClient {
 
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
+            try {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
             }
+            finally{
+                if (reader != null){
+                    reader.close();
+                }
+            }
+
         } finally {
-            is.close();
+            if (is != null){
+                is.close();
+            }
         }
         return sb.toString();
     }
