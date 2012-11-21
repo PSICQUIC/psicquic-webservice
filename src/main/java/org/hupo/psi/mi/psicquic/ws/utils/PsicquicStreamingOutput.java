@@ -111,7 +111,7 @@ public class PsicquicStreamingOutput implements StreamingOutput {
 
             totalResults = response.getResultInfo().getTotalResults();
 
-            firstResult = firstResult + response.getResultInfo().getBlockSize();
+            firstResult = firstResult + blockSize;
 
         } while (firstResult < totalResults && firstResult < max);
 
