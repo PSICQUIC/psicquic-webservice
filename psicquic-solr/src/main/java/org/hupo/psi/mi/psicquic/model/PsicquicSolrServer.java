@@ -151,7 +151,10 @@ public class PsicquicSolrServer {
 
         // use dismax parser for querying default fields
         //solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString(), SolrFieldName.pubid.toString(), SolrFieldName.pubauth.toString(), SolrFieldName.species.toString(), SolrFieldName.detmethod.toString(), SolrFieldName.type.toString(), SolrFieldName.interaction_id.toString());
-        solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString()+" "+SolrFieldName.pubid.toString()+" "+SolrFieldName.pubauth.toString()+" "+SolrFieldName.species.toString()+" "+SolrFieldName.detmethod.toString()+" "+SolrFieldName.type.toString()+" "+SolrFieldName.interaction_id.toString());
+        solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString()+" "+SolrFieldName.pubid.toString()+" "
+                +SolrFieldName.pubauth.toString()+" "+SolrFieldName.species.toString()+" "+SolrFieldName.detmethod.toString()
+                +" "+SolrFieldName.type.toString()+" "+SolrFieldName.interaction_id.toString()+" "+SolrFieldName.xref.toString()
+                +" "+SolrFieldName.pxrefA.toString()+" "+SolrFieldName.pxrefB.toString());
         solrQuery.setParam(QUERY_TYPE, DISMAX_TYPE);
         solrQuery.setParam(DEFAULT_MM_PARAM, "1");
 
@@ -221,8 +224,10 @@ public class PsicquicSolrServer {
 
         // use dismax parser for querying default fields
         //solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString(), SolrFieldName.pubid.toString(), SolrFieldName.pubauth.toString(), SolrFieldName.species.toString(), SolrFieldName.detmethod.toString(), SolrFieldName.type.toString(), SolrFieldName.interaction_id.toString());
-        solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString()+" "+SolrFieldName.pubid.toString()+" "+SolrFieldName.pubauth.toString()+" "+SolrFieldName.species.toString()+" "+SolrFieldName.detmethod.toString()+" "+SolrFieldName.type.toString()+" "+SolrFieldName.interaction_id.toString());
-        solrQuery.setParam(QUERY_TYPE, DISMAX_TYPE);
+        solrQuery.setParam(DISMAX_PARAM_NAME, SolrFieldName.identifier.toString()+" "+SolrFieldName.pubid.toString()+" "
+                +SolrFieldName.pubauth.toString()+" "+SolrFieldName.species.toString()+" "+SolrFieldName.detmethod.toString()
+                +" "+SolrFieldName.type.toString()+" "+SolrFieldName.interaction_id.toString()+" "+SolrFieldName.xref.toString()
+                +" "+SolrFieldName.pxrefA.toString()+" "+SolrFieldName.pxrefB.toString());        solrQuery.setParam(QUERY_TYPE, DISMAX_TYPE);
         solrQuery.setParam(DEFAULT_MM_PARAM, "1");
 
         // set first result
