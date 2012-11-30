@@ -250,7 +250,7 @@
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-client</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.5.2-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
