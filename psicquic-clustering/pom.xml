@@ -92,7 +92,7 @@
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-client</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.5.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
@@ -118,12 +118,12 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
-            <version>1.8.2</version>
+            <version>1.8.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.8.2</version>
+            <version>1.8.3-SNAPSHOT</version>
         </dependency>
 
         <!-- Spring batch -->
