@@ -50,24 +50,29 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
         final Template template = configuration.getTemplate("main.ftl");
         
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        Map root = new HashMap();
+        try{
+            Map root = new HashMap();
 
-        long totalCount = 0L;
-        int serviceCount = registry.getServices().size();
+            long totalCount = 0L;
+            int serviceCount = registry.getServices().size();
 
-        for (ServiceType service : registry.getServices()) {
-            totalCount += service.getCount();
+            for (ServiceType service : registry.getServices()) {
+                totalCount += service.getCount();
+            }
+
+            root.put("registry",registry);
+            root.put("totalCount", totalCount);
+            root.put("serviceCount", serviceCount);
+            root.put("termName", new TermName(miOntologyTree));
+
+            try {
+                template.process(root, writer);
+            } catch (TemplateException e) {
+                throw new RuntimeException("Problem processing freemarker template");
+            }
         }
-
-        root.put("registry",registry);
-        root.put("totalCount", totalCount);
-        root.put("serviceCount", serviceCount);
-        root.put("termName", new TermName(miOntologyTree));
-        
-        try {
-            template.process(root, writer);
-        } catch (TemplateException e) {
-            throw new RuntimeException("Problem processing freemarker template");
+        finally {
+            writer.close();
         }
 
         writer.close();

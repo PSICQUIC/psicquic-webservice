@@ -37,10 +37,13 @@ public class RawTextStreamingOutput implements StreamingOutput {
     public void write(OutputStream outputStream) throws IOException, WebApplicationException {
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
 
-        for (ServiceType service : registry.getServices()) {
-            writer.write(service.getName()+"="+service.getSoapUrl()+"\n");
+        try{
+            for (ServiceType service : registry.getServices()) {
+                writer.write(service.getName()+"="+service.getSoapUrl()+"\n");
+            }
         }
-
-        writer.close();
+        finally {
+            writer.close();
+        }
     }
 }

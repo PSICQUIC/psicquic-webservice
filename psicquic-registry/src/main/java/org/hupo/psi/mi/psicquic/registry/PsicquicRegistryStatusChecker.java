@@ -151,6 +151,7 @@ public class PsicquicRegistryStatusChecker {
 				serviceStatus.setActive(false);
 			}
 
+            urlConnection.disconnect();
 
 		} catch (Throwable e) {
 			serviceStatus.setActive(false);
