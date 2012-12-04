@@ -10,9 +10,9 @@
     <name>PSI :: PSICQUIC Registry Service</name>
 
     <scm>
-        <connection>scm:svn:https://psicquic.googlecode.com/svn/branches/psicquic-registry-1.1.2-SNAPSHOT</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/branches/psicquic-registry-1.1.2-SNAPSHOT</developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/branches/psicquic-registry-1.1.2-SNAPSHOT</url>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-registry</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-registry</developerConnection>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-registry</url>
     </scm>
 
     <properties>
