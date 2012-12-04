@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.util.EventListener;
+
 /**
  * Initializes the application.
  *
@@ -20,7 +22,7 @@ import org.springframework.stereotype.Component;
  * @version $Id$
  */
 @Component
-public class ApplicationInitializer implements InitializingBean {
+public class ApplicationInitializer implements InitializingBean, EventListener {
 
     public static final Log log = LogFactory.getLog( ApplicationInitializer.class);
 

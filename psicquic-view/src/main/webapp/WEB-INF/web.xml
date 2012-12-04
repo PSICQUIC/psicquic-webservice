@@ -17,11 +17,12 @@
  * specific language governing permissions and limitations
  * under the License.
 -->
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         metadata-complete="false"
-         version="2.5">
+<web-app
+        xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+        metadata-complete="false"
+        version="3.0">
 
 
     <!-- MyFaces -->
@@ -414,15 +415,15 @@
         <url-pattern>/appMainFooter</url-pattern>
     </servlet-mapping>
 
-      <!-- News feed -->
+    <!-- News feed -->
     <!--<servlet>-->
-        <!--<servlet-name>feed</servlet-name>-->
-        <!--<servlet-class>uk.ac.ebi.faces.webapp.NewsFeedServlet</servlet-class>-->
+    <!--<servlet-name>feed</servlet-name>-->
+    <!--<servlet-class>uk.ac.ebi.faces.webapp.NewsFeedServlet</servlet-class>-->
     <!--</servlet>-->
 
     <!--<servlet-mapping>-->
-        <!--<servlet-name>feed</servlet-name>-->
-        <!--<url-pattern>/feed</url-pattern>-->
+    <!--<servlet-name>feed</servlet-name>-->
+    <!--<url-pattern>/feed</url-pattern>-->
     <!--</servlet-mapping>-->
 
     <!-- Welcome files -->
@@ -430,7 +431,7 @@
         <welcome-file>/index.html</welcome-file>
     </welcome-file-list>
 
-   <!-- Handling of the HTTP error 404(Not found) and 500(internal server error)-->
+    <!-- Handling of the HTTP error 404(Not found) and 500(internal server error)-->
     <!--<error-page>-->
     <!--<error-code>404</error-code>-->
     <!--<location>/error/404.xhtml</location>-->
