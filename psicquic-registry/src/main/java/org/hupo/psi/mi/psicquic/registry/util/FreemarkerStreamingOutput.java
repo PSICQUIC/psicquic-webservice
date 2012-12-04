@@ -74,7 +74,5 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
         finally {
             writer.close();
         }
-
-        writer.close();
     }
 }
