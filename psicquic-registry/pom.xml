@@ -469,6 +469,22 @@
             <version>1.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
+            <version>2.2.4_2</version>
+        </dependency>
+
     </dependencies>
 
 
