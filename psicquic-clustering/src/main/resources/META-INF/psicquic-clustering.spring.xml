@@ -73,13 +73,15 @@
         <property name="repeatInterval" value="10000"/>
     </bean>
 
-    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" destroy-method="destroy">
         <property name="triggers">
             <list>
                 <ref bean="clusteringTrigger"/>
             </list>
         </property>
-        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
+        <property name="waitForJobsToCompleteOnShutdown">
+            <value>true</value>
+        </property>
     </bean>
 
     <!--Clustering beans-->
