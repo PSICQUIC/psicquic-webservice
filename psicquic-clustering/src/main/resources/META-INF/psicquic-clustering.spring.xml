@@ -79,6 +79,7 @@
                 <ref bean="clusteringTrigger"/>
             </list>
         </property>
+        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
     </bean>
 
     <!--Clustering beans-->
