@@ -59,12 +59,10 @@ public class PsicquicRegistryThreadConfig implements InitializingBean, Disposabl
         }
     }
 
-    @Override
     public void afterPropertiesSet() throws Exception {
         executorService = Executors.newFixedThreadPool(maxNumberThreads);
     }
 
-    @Override
     public void destroy() throws Exception {
         shutDownThreadContext();
     }
