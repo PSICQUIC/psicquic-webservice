@@ -36,6 +36,7 @@
     </lifecycle>
 
     <navigation-rule>
+        <from-view-id>*</from-view-id>
         <navigation-case>
             <from-outcome>main</from-outcome>
             <to-view-id>/main.xhtml</to-view-id>
@@ -45,6 +46,7 @@
 
     <!-- help dialogs -->
     <navigation-rule>
+        <from-view-id>*</from-view-id>
         <navigation-case>
             <from-outcome>dialog:help.clustering</from-outcome>
             <to-view-id>/pages/interactions/help_clustering.xhtml</to-view-id>
@@ -52,6 +54,7 @@
     </navigation-rule>
 
     <navigation-rule>
+        <from-view-id>*</from-view-id>
         <navigation-case>
             <from-outcome>dialog:help.search</from-outcome>
             <to-view-id>/pages/search/help_search.xhtml</to-view-id>
@@ -60,6 +63,7 @@
 
     <!-- download dialog -->
     <navigation-rule>
+        <from-view-id>*</from-view-id>
         <navigation-case>
             <from-outcome>dialog:download</from-outcome>
             <to-view-id>/pages/download/download.xhtml</to-view-id>
@@ -68,6 +72,7 @@
 
     <!-- download all dialog -->
     <navigation-rule>
+        <from-view-id>*</from-view-id>
         <navigation-case>
             <from-outcome>dialog:download.all</from-outcome>
             <to-view-id>/pages/download/allDownload.xhtml</to-view-id>

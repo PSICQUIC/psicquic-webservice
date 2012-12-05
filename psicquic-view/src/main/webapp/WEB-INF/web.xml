@@ -306,11 +306,6 @@
         <listener-class>org.hupo.psi.mi.psicquic.view.webapp.ApplicationInitializer</listener-class>
     </listener>
 
-    <!-- shutdown listener -->
-    <listener>
-        <listener-class>org.hupo.psi.mi.psicquic.view.webapp.application.ShutDownHook</listener-class>
-    </listener>
-
     <!-- Spring Framework 2.0 -->
     <listener>
         <listener-class>
