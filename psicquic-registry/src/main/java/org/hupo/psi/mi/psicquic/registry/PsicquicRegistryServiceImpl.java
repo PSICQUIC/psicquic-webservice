@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -89,20 +90,23 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService {
 		}
 
 		if ("xml".equals(format)) {
-			return Response.ok(registry, MediaType.APPLICATION_XML_TYPE).build();
+            GenericEntity<Registry> entity = new GenericEntity<Registry>(registry){};
+            return Response.ok().entity(entity).type(MediaType.APPLICATION_XML_TYPE).build();
 		}
 
 		if ("txt".equals(format)) {
-			return Response.ok(new RawTextStreamingOutput(registry), MediaType.TEXT_PLAIN_TYPE).build();
+            GenericEntity<RawTextStreamingOutput> entity = new GenericEntity<RawTextStreamingOutput>(new RawTextStreamingOutput(registry)){};
+			return Response.ok().entity(entity).type(MediaType.TEXT_PLAIN_TYPE).build();
 		}
 
 		if ("count".equals(format)) {
-			return Response.ok(registry.getServices().size(), MediaType.TEXT_PLAIN_TYPE).build();
+            GenericEntity<Integer> entity = new GenericEntity<Integer>(registry.getServices().size()){};
+			return Response.ok().entity(entity).type(MediaType.TEXT_PLAIN_TYPE).build();
 		}
 
 		final Configuration freemarkerCfg = freeMarkerConfigurer.getConfiguration();
-
-		return Response.ok(new FreemarkerStreamingOutput(registry, miOntologyTree, freemarkerCfg), MediaType.TEXT_HTML_TYPE).build();
+        GenericEntity<FreemarkerStreamingOutput> entity = new GenericEntity<FreemarkerStreamingOutput>(new FreemarkerStreamingOutput(registry, miOntologyTree, freemarkerCfg)){};
+        return Response.ok().entity(entity).type(MediaType.TEXT_HTML_TYPE).build();
 	}
 
 	private Registry createRegistry(final ServiceFilter... filters) {
