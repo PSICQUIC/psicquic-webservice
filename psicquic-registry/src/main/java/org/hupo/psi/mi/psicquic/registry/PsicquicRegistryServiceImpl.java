@@ -62,7 +62,7 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService {
 	private PsicquicRegistryStatusChecker statusChecker;
 
 
-	public Object executeAction(String action, String name, String url, String format, String showRestricted, String tags, String excluded) throws IllegalActionException {
+	public Response executeAction(String action, String name, String url, String format, String showRestricted, String tags, String excluded) throws IllegalActionException {
 		Registry registry;
 
 		if (ACTION_STATUS.equalsIgnoreCase(action)) {
