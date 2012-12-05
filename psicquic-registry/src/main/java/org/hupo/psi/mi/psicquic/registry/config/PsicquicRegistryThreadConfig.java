@@ -1,6 +1,7 @@
 package org.hupo.psi.mi.psicquic.registry.config;
 
 import org.apache.axis.utils.XMLUtils;
+import org.apache.axis.utils.cache.MethodCache;
 import org.apache.cxf.common.util.ReflectionUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Controller;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -70,6 +73,12 @@ public class PsicquicRegistryThreadConfig implements InitializingBean, Disposabl
         shutDownThreadContext();
 
         // clear axis thread local
+        Method getMc = ReflectionUtil.findMethod(MethodCache.class,
+                "getMethodCache");
+        Object theObject = MethodCache.getInstance();
+        Map mcMap = (Map) getMc.invoke(theObject, null);
+        mcMap.clear();
+
         Field dbfield =
                 ReflectionUtil.getDeclaredField(XMLUtils.class,
                         "documentBuilder");
