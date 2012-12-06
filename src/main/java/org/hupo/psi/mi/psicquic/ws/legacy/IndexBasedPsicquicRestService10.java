@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -46,17 +47,17 @@ public class IndexBasedPsicquicRestService10 implements PsicquicRestService10 {
     @Autowired
     private PsicquicService psicquicService;
 
-    public Object getByInteractor(String interactorAc, String db, String format, String firstResult, String maxResults) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    public Response getByInteractor(String interactorAc, String db, String format, String firstResult, String maxResults) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         String query = "id:"+createQueryValue(interactorAc, db)+ " OR alias:"+createQueryValue(interactorAc, db);
         return getByQuery(query, format, firstResult, maxResults);
     }
 
-    public Object getByInteraction(String interactionAc, String db, String format, String firstResult, String maxResults) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    public Response getByInteraction(String interactionAc, String db, String format, String firstResult, String maxResults) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         String query = "interaction_id:"+createQueryValue(interactionAc, db);
         return getByQuery(query, format, firstResult, maxResults);
     }
 
-    public Object getByQuery(String query, String format,
+    public Response getByQuery(String query, String format,
                                                  String firstResultStr,
                                                  String maxResultsStr) throws PsicquicServiceException,
                                                                  NotSupportedMethodException,
@@ -81,23 +82,26 @@ public class IndexBasedPsicquicRestService10 implements PsicquicRestService10 {
         }
 
         if (strippedMime(IndexBasedPsicquicRestService.RETURN_TYPE_XML25).equals(format)) {
-            return getByQueryXml(query, firstResult, maxResults);
+            return Response.status(200).type(MediaType.APPLICATION_XML).entity(new GenericEntity<EntrySet>(getByQueryXml(query, firstResult, maxResults)) {
+            }).build();
         } else if (IndexBasedPsicquicRestService.RETURN_TYPE_COUNT.equals(format)) {
-            return count(query);
+            return Response.status(200).type(MediaType.APPLICATION_XML).entity(new GenericEntity<Integer>(count(query)){}).build();
         } else if (strippedMime(IndexBasedPsicquicRestService.RETURN_TYPE_MITAB25_BIN).equals(format)) {
             PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults, true);
-            return Response.status(200).type("application/x-gzip").entity(result).build();
+            return Response.status(200).type("application/x-gzip").entity(new GenericEntity<PsicquicStreamingOutput>(result) {
+            }).build();
         } else if (strippedMime(IndexBasedPsicquicRestService.RETURN_TYPE_MITAB25).equals(format) || format == null) {
             PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
-            return Response.status(200).type(MediaType.TEXT_PLAIN).entity(result).build();
+            return Response.status(200).type(MediaType.TEXT_PLAIN).entity(new GenericEntity<PsicquicStreamingOutput>(result){}).build();
         } else {
-            return Response.status(406).type(MediaType.TEXT_PLAIN).entity("Format not supported").build();
+            return Response.status(406).type(MediaType.TEXT_PLAIN).entity(new GenericEntity<String>("Format not supported") {
+            }).build();
         }
 
 
     }
 
-    public Object getSupportedFormats() throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    public Response getSupportedFormats() throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         List<String> formats = new ArrayList<String>(IndexBasedPsicquicService.SUPPORTED_SOAP_RETURN_TYPES.size()+1);
         formats.add(strippedMime(IndexBasedPsicquicRestService.RETURN_TYPE_MITAB25_BIN));
 
@@ -107,7 +111,7 @@ public class IndexBasedPsicquicRestService10 implements PsicquicRestService10 {
 
         return Response.status(200)
                 .type(MediaType.TEXT_PLAIN)
-                .entity(StringUtils.join(formats, "\n")).build();
+                .entity(new GenericEntity<String>(StringUtils.join(formats, "\n")){}).build();
     }
 
     public String getVersion() {
