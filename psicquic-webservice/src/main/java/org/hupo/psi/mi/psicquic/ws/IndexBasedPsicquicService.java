@@ -68,6 +68,8 @@ public class IndexBasedPsicquicService implements PsicquicService {
     @Autowired
     private PsicquicConfig config;
 
+    private Tab2Xml tab2Xml;
+
     public IndexBasedPsicquicService() {
         BooleanQuery.setMaxClauseCount(200*1000);
     }
@@ -278,7 +280,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
             return new EntrySet();
         }
 
-        Tab2Xml tab2Xml = new Tab2Xml();
+        this.tab2Xml = new Tab2Xml();
         try {
             psidev.psi.mi.xml.model.EntrySet mEntrySet = tab2Xml.convert(searchResult.getData());
 
@@ -289,6 +291,9 @@ public class IndexBasedPsicquicService implements PsicquicService {
 
         } catch (Exception e) {
             throw new PsicquicServiceException("Problem converting results to PSI-MI XML", e);
+        }finally {
+            // remove thread local values for this request
+            tab2Xml.close();
         }
     }
 }

@@ -163,6 +163,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 }
                 finally {
                     sw.close();
+                    rdfConverter.close();
                 }
 
                 int count = 0;
