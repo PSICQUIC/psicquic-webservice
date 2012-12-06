@@ -195,7 +195,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
                         boolean tooManyResults = false;
 
-                        if (count > MAX_XGMML_INTERACTIONS) {
+                        if (count > MAX_XGMML_INTERACTIONS && maxResults > MAX_XGMML_INTERACTIONS) {
                             tooManyResults = true;
                         }
 
