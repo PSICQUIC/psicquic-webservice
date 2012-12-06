@@ -185,7 +185,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                             count, count, false)
                             .build();
                 } else if (RETURN_TYPE_XGMML.equalsIgnoreCase(format)) {
-                    PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, MAX_XGMML_INTERACTIONS);
+                    PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, Math.min(MAX_XGMML_INTERACTIONS, maxResults));
 
                     ByteArrayOutputStream mitabOs = new ByteArrayOutputStream();
                     String xgmml="";
