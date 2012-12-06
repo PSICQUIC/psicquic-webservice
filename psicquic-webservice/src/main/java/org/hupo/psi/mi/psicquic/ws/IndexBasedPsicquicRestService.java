@@ -35,6 +35,7 @@ import psidev.psi.mi.xml.io.impl.PsimiXmlWriter254;
 import psidev.psi.mi.xml254.jaxb.Entry;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
@@ -84,17 +85,17 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
     public IndexBasedPsicquicRestService() {
     }
 
-    public Object getByInteractor(String interactorAc, String db, String format, String firstResult, String maxResults, String compressed) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    public Response getByInteractor(String interactorAc, String db, String format, String firstResult, String maxResults, String compressed) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         String query = "identifier:"+createQueryValue(interactorAc, db);
         return getByQuery(query, format, firstResult, maxResults, compressed);
     }
 
-    public Object getByInteraction(String interactionAc, String db, String format, String firstResult, String maxResults, String compressed) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    public Response getByInteraction(String interactionAc, String db, String format, String firstResult, String maxResults, String compressed) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         String query = "interaction_id:"+createQueryValue(interactionAc, db);
         return getByQuery(query, format, firstResult, maxResults, compressed);
     }
 
-    public Object getByQuery(String query, String format,
+    public Response getByQuery(String query, String format,
                                                  String firstResultStr,
                                                  String maxResultsStr,
                                                  String compressed) throws PsicquicServiceException,
@@ -180,7 +181,9 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 int count = count(query);
                 
                 if (RETURN_TYPE_COUNT.equalsIgnoreCase(format)) {
-                    return count(query);
+                    return prepareResponse(Response.status(200).type(MediaType.TEXT_PLAIN),
+                            count, count, false)
+                            .build();
                 } else if (RETURN_TYPE_XGMML.equalsIgnoreCase(format)) {
                     PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, MAX_XGMML_INTERACTIONS);
 
@@ -236,19 +239,24 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
     }
 
     private Response formatNotSupportedResponse(String format) {
-        return Response.status(406).type(MediaType.TEXT_PLAIN).entity("Format not supported: "+format).build();
+        return Response.status(406).type(MediaType.TEXT_PLAIN).entity(new GenericEntity<String>("Format not supported: " + format) {
+        }).build();
     }
 
     private Response.ResponseBuilder prepareResponse(Response.ResponseBuilder responseBuilder, Object entity, long totalCount, boolean compressed) throws IOException {
         if (compressed) {
             if (entity instanceof InputStream) {
                 CompressedStreamingOutput streamingOutput = new CompressedStreamingOutput((InputStream)entity);
-                responseBuilder.entity(streamingOutput);
+                responseBuilder.entity(new GenericEntity<CompressedStreamingOutput>(streamingOutput){});
             } else if (entity instanceof String) {
                 ByteArrayInputStream inputStream = new ByteArrayInputStream(((String)entity).getBytes());
-                CompressedStreamingOutput streamingOutput = new CompressedStreamingOutput(inputStream);
-                responseBuilder.entity(streamingOutput);
-                inputStream.close();
+                try{
+                    CompressedStreamingOutput streamingOutput = new CompressedStreamingOutput(inputStream);
+                    responseBuilder.entity(new GenericEntity<CompressedStreamingOutput>(streamingOutput){});
+                }
+                finally {
+                    inputStream.close();
+                }
             } else if (entity instanceof EntrySet) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -259,24 +267,26 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                     ByteArrayInputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
                     try{
                         CompressedStreamingOutput streamingOutput = new CompressedStreamingOutput(inputStream);
-                        responseBuilder.entity(streamingOutput);
+                        responseBuilder.entity(new GenericEntity<CompressedStreamingOutput>(streamingOutput){});
                     }
                     finally {
-                        baos.close();
                         inputStream.close();
                     }
 
                 } catch (Throwable e) {
                     throw new IOException("Problem marshalling XML", e);
                 }
+                finally {
+                    baos.close();
+                }
 
             } else {
-                responseBuilder.entity(entity);
+                responseBuilder.entity(new GenericEntity<Object>(entity){});
             }
 
             responseBuilder.header("Content-Encoding", "gzip");
         } else {
-            responseBuilder.entity(entity);
+            responseBuilder.entity(new GenericEntity<Object>(entity){});
         }
 
         prepareHeaders(responseBuilder).header("X-PSICQUIC-Count", String.valueOf(totalCount));
@@ -324,10 +334,10 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
         return entrySet;
     }
 
-    public Object getSupportedFormats() throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    public Response getSupportedFormats() throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         return Response.status(200)
                 .type(MediaType.TEXT_PLAIN)
-                .entity(StringUtils.join(SUPPORTED_REST_RETURN_TYPES, "\n")).build();
+                .entity(new GenericEntity<String>(StringUtils.join(SUPPORTED_REST_RETURN_TYPES, "\n")){}).build();
     }
 
     public Object getProperty(String propertyName) {
@@ -336,15 +346,15 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
         if (val == null) {
             return Response.status(404)
                 .type(MediaType.TEXT_PLAIN)
-                .entity("Property not found: "+propertyName).build();
+                .entity(new GenericEntity<String>("Property not found: "+propertyName){}).build();
         }
 
          return Response.status(200)
                 .type(MediaType.TEXT_PLAIN)
-                .entity(val).build();
+                .entity(new GenericEntity<String>(val){}).build();
     }
 
-    public Object getProperties() {
+    public Response getProperties() {
         StringBuilder sb = new StringBuilder(256);
 
         for (Map.Entry entry : config.getProperties().entrySet()) {
@@ -353,7 +363,7 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
 
         return Response.status(200)
                 .type(MediaType.TEXT_PLAIN)
-                .entity(sb.toString()).build();
+                .entity(new GenericEntity<String>(sb.toString()){}).build();
     }
 
     public String getVersion() {

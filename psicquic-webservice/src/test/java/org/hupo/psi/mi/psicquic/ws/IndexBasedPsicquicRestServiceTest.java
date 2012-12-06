@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import psidev.psi.mi.search.Searcher;
 
+import javax.ws.rs.core.GenericEntity;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -63,7 +64,7 @@ public class IndexBasedPsicquicRestServiceTest {
         ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", "200", "n");
 
         System.out.println(response.getEntity());
-        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+        PsicquicStreamingOutput pso = ((GenericEntity<PsicquicStreamingOutput>) response.getEntity()).getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
@@ -75,7 +76,7 @@ public class IndexBasedPsicquicRestServiceTest {
     public void testGetByQuery_maxResults() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", "3", "n");
 
-        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+        PsicquicStreamingOutput pso = ((GenericEntity<PsicquicStreamingOutput>) response.getEntity()).getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
@@ -87,7 +88,7 @@ public class IndexBasedPsicquicRestServiceTest {
     public void testGetByQuery_maxResults_nolimit() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25", "0", String.valueOf(Integer.MAX_VALUE), "n");
 
-        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+        PsicquicStreamingOutput pso = ((GenericEntity<PsicquicStreamingOutput>) response.getEntity()).getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
@@ -99,7 +100,7 @@ public class IndexBasedPsicquicRestServiceTest {
     public void testGetByQuery_maxResults_above200() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("*", "tab25", "0", "305", "n");
 
-        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+        PsicquicStreamingOutput pso = ((GenericEntity<PsicquicStreamingOutput>) response.getEntity()).getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
@@ -111,7 +112,7 @@ public class IndexBasedPsicquicRestServiceTest {
     public void testGetByQuery_maxResults_above400() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("*", "tab25", "0", "405", "n");
 
-        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+        PsicquicStreamingOutput pso = ((GenericEntity<PsicquicStreamingOutput>) response.getEntity()).getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
@@ -123,7 +124,7 @@ public class IndexBasedPsicquicRestServiceTest {
     public void testGetByQuery_firstResult_above200() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("*", "tab25", "150", "255", "n");
 
-        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+        PsicquicStreamingOutput pso = ((GenericEntity<PsicquicStreamingOutput>) response.getEntity()).getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
@@ -135,7 +136,7 @@ public class IndexBasedPsicquicRestServiceTest {
     public void testGetByQuery_firstResult_above200_max() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("*", "tab25", "250", "500", "n");
 
-        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+        PsicquicStreamingOutput pso = ((GenericEntity<PsicquicStreamingOutput>) response.getEntity()).getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
@@ -147,7 +148,7 @@ public class IndexBasedPsicquicRestServiceTest {
     public void testGetByQuery_bin() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "tab25-bin", "0", String.valueOf(Integer.MAX_VALUE), "n");
 
-        PsicquicStreamingOutput pso = (PsicquicStreamingOutput) response.getEntity();
+        PsicquicStreamingOutput pso = ((GenericEntity<PsicquicStreamingOutput>) response.getEntity()).getEntity();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pso.write(baos);
@@ -173,7 +174,7 @@ public class IndexBasedPsicquicRestServiceTest {
     public void testGetByQuery_biopax() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "biopax", "0", "5", "n");
 
-        final String output = (String) response.getEntity();
+        final String output = ((GenericEntity<String>) response.getEntity()).getEntity();
         Assert.assertEquals(5, StringUtils.countMatches(output, "<j.0:MolecularInteraction "));
     }
 }
