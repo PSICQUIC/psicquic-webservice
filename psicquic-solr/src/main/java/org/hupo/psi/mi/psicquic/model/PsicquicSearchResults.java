@@ -99,6 +99,7 @@ public class PsicquicSearchResults {
             if (inputStream != null){
                 inputStream.close();
             }
+            tab2Xml.close();
         }
         return entrySet;
     }
@@ -183,6 +184,7 @@ public class PsicquicSearchResults {
             // close writer
             rdfWriter.close();
             rdfOutput.close();
+            rdfConverter.close();
         }
 
         return rdf;
