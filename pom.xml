@@ -149,7 +149,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.8.2.2</version>
+            <version>1.8.3-SNAPSHOT</version>
             <!-- avoids warning with tomcat 7 because is provided-->
             <exclusions>
                 <exclusion>
@@ -161,18 +161,18 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psi25-xml-rdf</artifactId>
-            <version>1.8.2.2</version>
+            <version>1.8.3-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-tab</artifactId>
-            <version>2.4</version>
+            <version>2.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-xgmml</artifactId>
-            <version>2.4.4</version>
+            <version>2.5-SNAPSHOT</version>
         </dependency>
 
         <!-- Logging -->
@@ -189,11 +189,6 @@
         </dependency>
 
         <!-- Spring -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -313,8 +308,13 @@
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.2.3</version>
+            <version>2.2.7</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2.6</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.soap</groupId>
