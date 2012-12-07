@@ -16,14 +16,11 @@
 package org.hupo.psi.mi.psicquic.ws;
 
 import org.apache.commons.lang.StringUtils;
-import org.hupo.psi.calimocho.io.DocumentConverter;
-import org.hupo.psi.calimocho.model.DocumentDefinition;
-import org.hupo.psi.calimocho.tab.util.MitabDocumentDefinitionFactory;
-import org.hupo.psi.calimocho.xgmml.XGMMLDocumentDefinition;
 import org.hupo.psi.mi.psicquic.*;
 import org.hupo.psi.mi.psicquic.ws.config.PsicquicConfig;
 import org.hupo.psi.mi.psicquic.ws.utils.CompressedStreamingOutput;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
+import org.hupo.psi.mi.psicquic.ws.utils.XgmmlStreamingOutput;
 import org.hupo.psi.mi.rdf.PsimiRdfConverter;
 import org.hupo.psi.mi.rdf.RdfFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +60,6 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
     public static final String RETURN_TYPE_RDF_N3 = "rdf-n3";
     public static final String RETURN_TYPE_RDF_TURTLE = "rdf-turtle";
     public static final String RETURN_TYPE_COUNT = "count";
-    private static final int MAX_XGMML_INTERACTIONS = 5000;
 
     @Autowired
     private PsicquicConfig config;
@@ -185,44 +181,13 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                             count, count, false)
                             .build();
                 } else if (RETURN_TYPE_XGMML.equalsIgnoreCase(format)) {
-                    PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, Math.min(MAX_XGMML_INTERACTIONS, maxResults));
-
-                    ByteArrayOutputStream mitabOs = new ByteArrayOutputStream();
-                    String xgmml="";
-
-                    try {
-                        result.write(mitabOs);
-
-                        boolean tooManyResults = false;
-
-                        if (count > MAX_XGMML_INTERACTIONS && maxResults > MAX_XGMML_INTERACTIONS) {
-                            tooManyResults = true;
-                        }
-
-                        DocumentDefinition mitabDefinition = MitabDocumentDefinitionFactory.mitab25();
-                        DocumentDefinition xgmmlDefinition = new XGMMLDocumentDefinition("PSICQUIC", "Query: "+query+((tooManyResults? " / MORE THAN "+MAX_XGMML_INTERACTIONS+" RESULTS WERE RETURNED. FILE LIMITED TO THE FIRST "+MAX_XGMML_INTERACTIONS : "")), "http://psicquic.googlecode.com");
-
-                        Reader mitabReader = new StringReader(mitabOs.toString());
-                        Writer xgmmlWriter = new StringWriter();
-
-                        try{
-
-                            DocumentConverter converter = new DocumentConverter( mitabDefinition, xgmmlDefinition );
-                            converter.convert( mitabReader, xgmmlWriter );
-                            xgmml = xgmmlWriter.toString();
-                        }
-                        finally {
-                            mitabReader.close();
-                            xgmmlWriter.close();
-                        }
-                    }
-                    finally {
-                        mitabOs.close();
-                    }
+                    XgmmlStreamingOutput xgmml = new XgmmlStreamingOutput(this.psicquicService, query, firstResult, maxResults);
 
                     return prepareResponse(Response.status(200).type(MediaType.APPLICATION_XML),
-                            xgmml, count, isCompressed)
+                            new GenericEntity<XgmmlStreamingOutput>(xgmml){}, count, isCompressed)
                             .build();
+
+
                 } else if (RETURN_TYPE_MITAB25.equalsIgnoreCase(format) || format == null) {
                     PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults, isCompressed);
                     return prepareResponse(Response.status(200).type(MediaType.TEXT_PLAIN), result,
