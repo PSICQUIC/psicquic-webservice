@@ -33,12 +33,12 @@ import java.util.zip.GZIPOutputStream;
  */
 public class PsicquicStreamingOutput implements StreamingOutput {
 
-    private PsicquicService psicquicService;
-    private String query;
-    private QueryResponse response;
-    private int firstResult;
-    private int maxResults;
-    private boolean gzip;
+    protected PsicquicService psicquicService;
+    protected String query;
+    protected QueryResponse response;
+    protected int firstResult;
+    protected int maxResults;
+    protected boolean gzip;
 
     public PsicquicStreamingOutput(PsicquicService psicquicService, String query, int firstResult, int maxResults) {
         this(psicquicService, query, firstResult, maxResults, false);
@@ -59,7 +59,7 @@ public class PsicquicStreamingOutput implements StreamingOutput {
 
         // count
         RequestInfo reqInfo = new RequestInfo();
-        reqInfo.setResultType("psi-mi/tab25");
+        reqInfo.setResultType("count");
         reqInfo.setFirstResult(0);
         reqInfo.setBlockSize(0);
 
@@ -93,12 +93,7 @@ public class PsicquicStreamingOutput implements StreamingOutput {
 
         do {
             reqInfo.setFirstResult(firstResult);
-
-            if (totalResults > 0 && max < firstResult+blockSize) {
-                blockSize = max - firstResult;
-            }
-
-            reqInfo.setBlockSize(blockSize);
+            reqInfo.setBlockSize(Math.min(blockSize, max-firstResult));
 
             try {
                 response = psicquicService.getByQuery(query, reqInfo);
