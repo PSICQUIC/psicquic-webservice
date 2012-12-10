@@ -54,6 +54,8 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
     public static final String RETURN_TYPE_MITAB25 = "tab25";
     public static final String RETURN_TYPE_MITAB25_BIN = "tab25-bin";
     public static final String RETURN_TYPE_BIOPAX = "biopax";
+    public static final String RETURN_TYPE_BIOPAX_l2 = "biopax-L2";
+    public static final String RETURN_TYPE_BIOPAX_l3 = "biopax-L3";
     public static final String RETURN_TYPE_XGMML = "xgmml";
     public static final String RETURN_TYPE_RDF_XML = "rdf-xml";
     public static final String RETURN_TYPE_RDF_XML_ABBREV = "rdf-xml-abbrev";
@@ -71,6 +73,8 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
             RETURN_TYPE_XML25,
             RETURN_TYPE_MITAB25,
             RETURN_TYPE_BIOPAX,
+            RETURN_TYPE_BIOPAX_l2,
+            RETURN_TYPE_BIOPAX_l3,
             RETURN_TYPE_XGMML,
             RETURN_TYPE_RDF_XML,
             RETURN_TYPE_RDF_XML_ABBREV,
