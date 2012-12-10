@@ -187,8 +187,20 @@ public class IndexBasedPsicquicRestService implements PsicquicRestService {
                 } else if (RETURN_TYPE_XGMML.equalsIgnoreCase(format)) {
                     XgmmlStreamingOutput xgmml = new XgmmlStreamingOutput(this.psicquicService, query, firstResult, maxResults);
 
-                    return prepareResponse(Response.status(200).type(MediaType.APPLICATION_XML),
-                            new GenericEntity<XgmmlStreamingOutput>(xgmml){}, count, isCompressed)
+                    String fixedQuery = query;
+                    if (fixedQuery.contains("&")){
+                        fixedQuery = query.substring(0, query.indexOf("&"));
+                    }
+                    fixedQuery = fixedQuery.replaceAll("q=", "");
+                    fixedQuery = fixedQuery.replaceAll(":","_");
+                    fixedQuery = fixedQuery.replaceAll(" ","_");
+                    fixedQuery = fixedQuery.replaceAll("\\(","");
+                    fixedQuery = fixedQuery.replaceAll("\\)","");
+
+                    String name = fixedQuery.substring(0, Math.min(10, fixedQuery.length())) + ".xgmml";
+
+                    return prepareResponse(Response.status(200).type(MediaType.APPLICATION_XML).header("Content-Disposition", "attachment; filename="+name),
+                            xgmml, count, isCompressed)
                             .build();
 
 
