@@ -274,7 +274,7 @@
     <!-- Orchestra Filter -->
     <filter>
         <filter-name>orchestraFilter</filter-name>
-        <filter-class>org.apache.myfaces.orchestra.conversation.jsf.filter.OrchestraServletFilter</filter-class>
+        <filter-class>org.apache.myfaces.orchestra.filter.OrchestraServletFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>orchestraFilter</filter-name>
