@@ -23,5 +23,10 @@ public class ShutDownHook implements ServletContextListener{
     public void contextDestroyed(ServletContextEvent sce) {
 
         ConnectionManagerDataSource.releaseAllBorrowedConnections();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
