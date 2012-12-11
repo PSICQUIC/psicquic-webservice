@@ -136,7 +136,7 @@
             it. (since 1.2.4-SNAPSHOT and 1.1.6-SNAPSHOT)
         </description>
         <param-name>org.apache.myfaces.ERROR_TEMPLATE_RESOURCE</param-name>
-        <param-value>/error/ebi-dev-error.xhtml</param-value>
+        <param-value>/error/ebi-dev-error.xml</param-value>
     </context-param>
 
 
