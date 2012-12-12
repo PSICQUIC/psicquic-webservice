@@ -10,13 +10,12 @@ import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.BaseController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Controller;
-import org.hupo.psi.mi.psicquic.view.webapp.controller.BaseController;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.config.PsicquicViewConfig;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.search.SearchController;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.search.UserQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -104,6 +103,7 @@ public class ClusteringController extends BaseController {
         for ( Map.Entry<String, Integer> entry : service2count.entrySet() ) {
             final String serviceName = entry.getKey();
             final Integer interactionCount = entry.getValue();
+            //TODO : NullPointerException after doing a second search+cluster
             if( interactionCount > 0 && searchController.getServiceSelectionMap().get(serviceName)) {
                 services.add( new Service( serviceName ) );
             }
