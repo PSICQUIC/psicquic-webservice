@@ -16,8 +16,8 @@
 
     <properties>
         <solr.url>http://localhost:8983/solr</solr.url>
-        <calimocho.version>2.5.0</calimocho.version>
-        <psimi.version>1.8.3</psimi.version>
+        <calimocho.version>2.5.1-SNAPSHOT</calimocho.version>
+        <psimi.version>1.8.4-SNAPSHOT</psimi.version>
         <spring.version>3.1.2.RELEASE</spring.version>
     </properties>
 
