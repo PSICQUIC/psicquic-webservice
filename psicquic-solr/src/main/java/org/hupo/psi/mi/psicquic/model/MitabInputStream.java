@@ -111,6 +111,10 @@ public class MitabInputStream extends InputStream{
             }
         }
 
+        if (numberCharRead == 0){
+           return -1;
+        }
+
         return numberCharRead;
     }
 
@@ -165,9 +169,7 @@ public class MitabInputStream extends InputStream{
                 }
             }
 
-            if (solrResultsIterator != null && solrResultsIterator.hasNext()){
-                mitabLineBuffer.append(NEW_LINE);
-            }
+            mitabLineBuffer.append(NEW_LINE);
 
             return IOUtils.toInputStream(mitabLineBuffer);
         }
