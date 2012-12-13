@@ -149,7 +149,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.8.3-SNAPSHOT</version>
+            <version>1.8.3</version>
             <!-- avoids warning with tomcat 7 because is provided-->
             <exclusions>
                 <exclusion>
@@ -161,18 +161,18 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psi25-xml-rdf</artifactId>
-            <version>1.8.3-SNAPSHOT</version>
+            <version>1.8.3</version>
         </dependency>
 
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-tab</artifactId>
-            <version>2.5-SNAPSHOT</version>
+            <version>2.5.0</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-xgmml</artifactId>
-            <version>2.5-SNAPSHOT</version>
+            <version>2.5.0</version>
         </dependency>
 
         <!-- Logging -->
