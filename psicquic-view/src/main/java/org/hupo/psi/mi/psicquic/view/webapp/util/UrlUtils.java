@@ -23,10 +23,10 @@ public class UrlUtils {
         if( url == null ) return url;
 
         url = url.replaceAll( " ", "%20" );
-//        url = url.replaceAll( "\"", "%22" );
-//        url = url.replaceAll( "\\(", "%28" );
-//        url = url.replaceAll( "\\)", "%29" );
-//        url = url.replaceAll( ":", "%3A" );
+        url = url.replaceAll( "\"", "%22" );
+        url = url.replaceAll( "\\(", "%28" );
+        url = url.replaceAll( "\\)", "%29" );
+        url = url.replaceAll( ":", "%3A" );
 
         return url;
     }
