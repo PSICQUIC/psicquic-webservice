@@ -5,7 +5,7 @@
     <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-stats-collector</artifactId>
     <packaging>jar</packaging>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>PSICQUIC :: PSICQUIC Statistics Collector</name>
 
@@ -17,10 +17,10 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://psicquic.googlecode.com/svn/trunk/psicquic-stats-collector</connection>
-        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-stats-collector
+        <connection>scm:svn:http://psicquic.googlecode.com/svn/tags/psicquic-stats-collector-1.0.0</connection>
+        <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/tags/psicquic-stats-collector-1.0.0
         </developerConnection>
-        <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-stats-collector</url>
+        <url>http://code.google.com/p/psicquic/source/browse/#svn/tags/psicquic-stats-collector-1.0.0</url>
     </scm>
 
     <build>
