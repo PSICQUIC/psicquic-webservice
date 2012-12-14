@@ -377,7 +377,7 @@
 
     <servlet-mapping>
         <servlet-name>clusterDownload</servlet-name>
-        <url-pattern>/download</url-pattern>
+        <url-pattern>/clusterDownload</url-pattern>
     </servlet-mapping>
 
     <servlet>
