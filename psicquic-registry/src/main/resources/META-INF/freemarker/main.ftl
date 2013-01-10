@@ -98,7 +98,7 @@
   <p>Check the documentation <a href="http://code.google.com/p/psicquic/wiki/Registry">here</a>
   on how to use this registry.</p>
 
-  <p>Want to add your PSICQUIC service here? Check <a href="http://code.google.com/p/psicquic/wiki/HowToInstall">this</a>.</p>
+  <p>Want to add your PSICQUIC service here? Check <a href="http://code.google.com/p/psicquic/wiki/HowToInstallPsicquicSolr">this</a>.</p>
 
 </body>
 </html>
