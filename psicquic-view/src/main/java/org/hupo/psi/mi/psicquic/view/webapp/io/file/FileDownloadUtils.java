@@ -21,6 +21,8 @@ public class FileDownloadUtils extends DownloadUtils {
 	private static final String RDF = "rdf";
 	private static final String XGMML = "xgmml";
 
+	private static final String MITAB25_BIN = "tab25-bin";
+
 	private static final int FILE_NAME_LENGHT = 20;
 
 	public FileDownloadUtils() {
@@ -88,7 +90,7 @@ public class FileDownloadUtils extends DownloadUtils {
 		contentTypeByFormat.put(PsicquicSimpleClient.RDF_N3, TEXT_PLAIN);
 		contentTypeByFormat.put(PsicquicSimpleClient.RDF_TURTLE, TEXT_PLAIN);
 		contentTypeByFormat.put(PsicquicSimpleClient.COUNT, TEXT_PLAIN);
-        contentTypeByFormat.put("tab25-bin", TEXT_PLAIN);
+        contentTypeByFormat.put(MITAB25_BIN, TEXT_PLAIN);
 	}
 
 	static void initializeExtensionByFormat() {
@@ -108,7 +110,7 @@ public class FileDownloadUtils extends DownloadUtils {
 		extensionByFormat.put(PsicquicSimpleClient.RDF_N3, TXT);
 		extensionByFormat.put(PsicquicSimpleClient.RDF_TURTLE, TXT);
 		extensionByFormat.put(PsicquicSimpleClient.COUNT, TXT);
-        contentTypeByFormat.put("tab25-bin", TXT);
+		extensionByFormat.put(MITAB25_BIN, TXT);
 
 	}
 }

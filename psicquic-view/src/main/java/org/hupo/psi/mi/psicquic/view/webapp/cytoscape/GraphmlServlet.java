@@ -62,5 +62,5 @@ public class GraphmlServlet extends HttpServlet {
 				is.close();
 			}
 		}
-	}
+	}//We don't have url
 }

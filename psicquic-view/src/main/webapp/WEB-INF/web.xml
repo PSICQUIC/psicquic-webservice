@@ -144,23 +144,13 @@
 
     <context-param>
         <param-name>org.apache.myfaces.trinidad.ALTERNATE_VIEW_HANDLER</param-name>
-        <!-- TrinidadFaceletViewHander must be the alternate view handler if SessionChangeManager is used -->
-        <param-value>org.apache.myfaces.trinidadinternal.facelets.TrinidadFaceletViewHandler</param-value>
-    </context-param>
-
-    <context-param>
-        <!--Unfortunately, Facelets provides no hook for plugging the PageResolver into the logic
-              handling "facelets.VIEW_MAPPINGS". You should leave "facelets.VIEW_MAPPINGS"
-              unset and use "org.apache.myfaces.trinidad.FACELETS_VIEW_MAPPINGS" instead.-->
-        <param-name>org.apache.myfaces.trinidad.FACELETS_VIEW_MAPPINGS</param-name>
-        <param-value>*.xhtml</param-value>
+        <param-value>com.sun.facelets.FaceletViewHandler</param-value>
     </context-param>
 
     <context-param>
         <param-name>facelets.DEVELOPMENT</param-name>
         <param-value>false</param-value>
     </context-param>
-
 
     <!-- Spring resources -->
     <context-param>
@@ -266,10 +256,6 @@
         <param-name>org.apache.myfaces.trinidad.ENABLE_LIGHTWEIGHT_DIALOGS</param-name>
         <param-value>true</param-value>
     </context-param>
-    <!--<context-param> JSF 2.0 -->
-    <!--<param-name>javax.faces.PROJECT_STAGE</param-name>-->
-    <!--<param-value>Production</param-value>-->
-    <!--</context-param>-->
 
     <!-- Orchestra Filter -->
     <filter>
@@ -390,6 +376,7 @@
         <url-pattern>/allDownload</url-pattern>
     </servlet-mapping>
 
+    <!-- Frontier guidelines servlets -->
     <servlet>
         <servlet-name>appHeaderSpecific</servlet-name>
         <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.controller.servlet.AppHeaderSpecificServlet</servlet-class>
