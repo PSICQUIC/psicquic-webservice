@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryConfig;
 import org.hupo.psi.mi.psicquic.registry.config.PsicquicRegistryThreadConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
@@ -97,7 +96,7 @@ public class PsicquicRegistryStatusChecker {
 					f.cancel(true);
 				}
 			} catch (TimeoutException e) {
-				log.error("Service task stopped because of time out " + threadTimeOut + "seconds.", e);
+				log.error("Service task stopped because of time out " + threadTimeOut + " seconds.", e);
 
 				if (!f.isCancelled()) {
 					f.cancel(true);
@@ -130,6 +129,9 @@ public class PsicquicRegistryStatusChecker {
 				InputStream countStream = null;
 
 				try {
+
+					//TODO Add a double check to know if the service is active
+					// or not add a catch block for the exceptions
 
 					contentStream = (InputStream) urlConnection.getContent();
 					version = IOUtils.toString(contentStream);

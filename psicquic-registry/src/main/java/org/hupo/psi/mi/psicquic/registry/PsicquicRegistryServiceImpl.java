@@ -63,51 +63,51 @@ public class PsicquicRegistryServiceImpl implements PsicquicRegistryService {
 	private PsicquicRegistryStatusChecker statusChecker;
 
 
-	public Response executeAction(String action, String name, String url, String format, String showRestricted, String tags, String excluded) throws IllegalActionException {
-		Registry registry;
+    public Response executeAction(String action, String name, String url, String format, String showRestricted, String tags, String excluded) throws IllegalActionException {
+        Registry registry;
 
-		if (ACTION_STATUS.equalsIgnoreCase(action)) {
-			registry = createRegistry(new NameFilter(name),
-					new RestrictedFilter(stringToBoolean(showRestricted)),
-					new TagsFilter(tags),
-					new ExclusionFilter(excluded.split(",")));
+        if (ACTION_STATUS.equalsIgnoreCase(action)) {
+            registry = createRegistry(new NameFilter(name),
+                    new RestrictedFilter(stringToBoolean(showRestricted)),
+                    new TagsFilter(tags),
+                    new ExclusionFilter(excluded.split(",")));
 
 
-		} else if (ACTION_ACTIVE.equalsIgnoreCase(action)) {
-			registry = createRegistry(new NameFilter(name),
-					new ActiveFilter(),
-					new RestrictedFilter(stringToBoolean(showRestricted)),
-					new TagsFilter(tags),
-					new ExclusionFilter(excluded.split(",")));
-		} else if (ACTION_INACTIVE.equalsIgnoreCase(action)) {
-			registry = createRegistry(new NameFilter(name),
-					new InactiveFilter(),
-					new RestrictedFilter(stringToBoolean(showRestricted)),
-					new TagsFilter(tags),
-					new ExclusionFilter(excluded.split(",")));
-		} else {
-			throw new IllegalActionException("Action not defined: " + action);
-		}
+        } else if (ACTION_ACTIVE.equalsIgnoreCase(action)) {
+            registry = createRegistry(new NameFilter(name),
+                    new ActiveFilter(),
+                    new RestrictedFilter(stringToBoolean(showRestricted)),
+                    new TagsFilter(tags),
+                    new ExclusionFilter(excluded.split(",")));
+        } else if (ACTION_INACTIVE.equalsIgnoreCase(action)) {
+            registry = createRegistry(new NameFilter(name),
+                    new InactiveFilter(),
+                    new RestrictedFilter(stringToBoolean(showRestricted)),
+                    new TagsFilter(tags),
+                    new ExclusionFilter(excluded.split(",")));
+        } else {
+            throw new IllegalActionException("Action not defined: " + action);
+        }
 
-		if ("xml".equals(format)) {
+        if ("xml".equals(format)) {
             GenericEntity<Registry> entity = new GenericEntity<Registry>(registry){};
             return Response.ok().entity(entity).type(MediaType.APPLICATION_XML_TYPE).build();
-		}
+        }
 
-		if ("txt".equals(format)) {
+        if ("txt".equals(format)) {
             GenericEntity<RawTextStreamingOutput> entity = new GenericEntity<RawTextStreamingOutput>(new RawTextStreamingOutput(registry)){};
-			return Response.ok().entity(entity).type(MediaType.TEXT_PLAIN_TYPE).build();
-		}
+            return Response.ok().entity(entity).type(MediaType.TEXT_PLAIN_TYPE).build();
+        }
 
-		if ("count".equals(format)) {
+        if ("count".equals(format)) {
             GenericEntity<Integer> entity = new GenericEntity<Integer>(registry.getServices().size()){};
-			return Response.ok().entity(entity).type(MediaType.TEXT_PLAIN_TYPE).build();
-		}
+            return Response.ok().entity(entity).type(MediaType.TEXT_PLAIN_TYPE).build();
+        }
 
-		final Configuration freemarkerCfg = freeMarkerConfigurer.getConfiguration();
+        final Configuration freemarkerCfg = freeMarkerConfigurer.getConfiguration();
         GenericEntity<FreemarkerStreamingOutput> entity = new GenericEntity<FreemarkerStreamingOutput>(new FreemarkerStreamingOutput(registry, miOntologyTree, freemarkerCfg)){};
         return Response.ok().entity(entity).type(MediaType.TEXT_HTML_TYPE).build();
-	}
+    }
 
 	private Registry createRegistry(final ServiceFilter... filters) {
 		Registry registry = new Registry();

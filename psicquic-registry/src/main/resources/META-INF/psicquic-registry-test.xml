@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <registry xmlns="http://hupo.psi.org/psicquic/registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://hupo.psi.org/psicquic/registry psicquic-registry.xsd">
-
-
-  <service>
-        <name>FlyMLDB</name>
-              <soapUrl>http://www.ebi.ac.uk/Tools/webservices/psicquic/flycam/webservices/psicquic</soapUrl>
-                   <restUrl>http://www.ebi.ac.uk/Tools/webservices/psicquic/flycam/webservices/current/search/</restUrl>
-                          <restExample>http://www.ebi.ac.uk/Tools/webservices/psicquic/flycam/webservices/current/search/query/*:*?firstResult=0&amp;maxResults=100</restExample>
-                                <organizationUrl>http://www.cam.ac.uk/</organizationUrl>
-                                      <restricted>false</restricted>
-  </service>
-
+          xsi:schemaLocation="http://hupo.psi.org/psicquic/registry/psicquic-registry.xsd">
 
   <service>
       <name>APID</name>
@@ -85,9 +74,9 @@
 
   <service>
       <name>IntAct</name>
-      <soapUrl>http://wwwdev.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic</soapUrl>
-      <restUrl>http://wwwdev.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/</restUrl>
-      <restExample>http://wwwdev.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic/query/species:human?firstResult=0&amp;maxResults=100</restExample>
+      <soapUrl>http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic</soapUrl>
+      <restUrl>http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/</restUrl>
+      <restExample>http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/psicquic/query/species:human?firstResult=0&amp;maxResults=100</restExample>
       <organizationUrl>http://www.ebi.ac.uk/intact</organizationUrl>
       <restricted>false</restricted>
       <tag>MI:1047</tag> <!-- protein-protein-->
@@ -145,24 +134,24 @@
       <tag>MI:1051</tag> <!-- evidence -->
   </service>
 
-  <service>
-      <name>MPIDB</name>
-      <soapUrl>http://www.jcvi.org/mpidb/servlet/webservices/psicquic</soapUrl>
-      <restUrl>http://www.jcvi.org/mpidb/servlet/webservices/current/search/</restUrl>
-      <restExample>http://www.jcvi.org/mpidb/servlet/webservices/current/search/query/19151138</restExample>
-      <organizationUrl>http://www.jcvi.org/mpidb/</organizationUrl>
-      <restricted>false</restricted>
-      <tag>MI:1047</tag> <!-- protein-protein-->
-      <tag>MI:1055</tag> <!-- internally-curated -->
-      <tag>MI:1057</tag> <!-- predicted -->
-      <tag>MI:1057</tag> <!-- predicted -->
-      <tag>MI:1058</tag> <!-- imported -->
-      <tag>MI:0961</tag> <!-- rapid curation -->
-      <tag>MI:0960</tag> <!-- mimix -->
-      <tag>MI:0959</tag> <!-- imex curation -->
-      <tag>MI:1060</tag> <!-- spoke -->
-      <tag>MI:1051</tag> <!-- evidence -->
-  </service>
+  <!--<service>-->
+      <!--<name>MPIDB</name>-->
+      <!--<soapUrl>http://www.jcvi.org/mpidb/servlet/webservices/psicquic</soapUrl>-->
+      <!--<restUrl>http://www.jcvi.org/mpidb/servlet/webservices/current/search/</restUrl>-->
+      <!--<restExample>http://www.jcvi.org/mpidb/servlet/webservices/current/search/query/19151138</restExample>-->
+      <!--<organizationUrl>http://www.jcvi.org/mpidb/</organizationUrl>-->
+      <!--<restricted>false</restricted>-->
+      <!--<tag>MI:1047</tag> &lt;!&ndash; protein-protein&ndash;&gt;-->
+      <!--<tag>MI:1055</tag> &lt;!&ndash; internally-curated &ndash;&gt;-->
+      <!--<tag>MI:1057</tag> &lt;!&ndash; predicted &ndash;&gt;-->
+      <!--<tag>MI:1057</tag> &lt;!&ndash; predicted &ndash;&gt;-->
+      <!--<tag>MI:1058</tag> &lt;!&ndash; imported &ndash;&gt;-->
+      <!--<tag>MI:0961</tag> &lt;!&ndash; rapid curation &ndash;&gt;-->
+      <!--<tag>MI:0960</tag> &lt;!&ndash; mimix &ndash;&gt;-->
+      <!--<tag>MI:0959</tag> &lt;!&ndash; imex curation &ndash;&gt;-->
+      <!--<tag>MI:1060</tag> &lt;!&ndash; spoke &ndash;&gt;-->
+      <!--<tag>MI:1051</tag> &lt;!&ndash; evidence &ndash;&gt;-->
+  <!--</service>-->
 
   <service>
       <name>Reactome</name>
@@ -205,9 +194,9 @@
 
   <service>
       <name>BIND</name>
-      <soapUrl>http://webservice.baderlab.org:8180/psicquic-ws/webservices/psicquic</soapUrl>
-      <restUrl>http://webservice.baderlab.org:8180/psicquic-ws/webservices/current/search/</restUrl>
-      <restExample>http://webservice.baderlab.org:8180/psicquic-ws/webservices/current/search/query/species:9606?firstResult=0&amp;maxResults=5</restExample>
+      <soapUrl>http://webservice.baderlab.org:8480/psicquic-ws/webservices/psicquic</soapUrl>
+      <restUrl>http://webservice.baderlab.org:8480/psicquic-ws/webservices/current/search/</restUrl>
+      <restExample>http://webservice.baderlab.org:8480/psicquic-ws/webservices/current/search/query/species:9606?firstResult=0&amp;maxResults=5</restExample>
       <organizationUrl>http://www.baderlab.org</organizationUrl>
       <restricted>false</restricted>
       <tag>MI:1047</tag> <!-- protein-protein-->
@@ -219,9 +208,9 @@
 
   <service>
       <name>Interoporc</name>
-      <soapUrl>http://www.baderlab.org:8180/psicquic-interoporc-ws/webservices/psicquic</soapUrl>
-      <restUrl>http://www.baderlab.org:8180/psicquic-interoporc-ws/webservices/current/search/</restUrl>
-      <restExample>http://www.baderlab.org:8180/psicquic-interoporc-ws/webservices/current/search/query/species:3702?firstResult=0&amp;maxResults=25</restExample>
+      <soapUrl>http://www.baderlab.org:8580/psicquic-interoporc-ws/webservices/psicquic</soapUrl>
+      <restUrl>http://www.baderlab.org:8580/psicquic-interoporc-ws/webservices/current/search/</restUrl>
+      <restExample>http://www.baderlab.org:8580/psicquic-interoporc-ws/webservices/current/search/query/species:3702?firstResult=0&amp;maxResults=25</restExample>
       <organizationUrl>http://biodev.extra.cea.fr/interoporc</organizationUrl>
       <restricted>false</restricted>
       <tag>MI:1047</tag> <!-- protein-protein-->
@@ -387,9 +376,9 @@
   </service>
   <service>
         <name>GeneMANIA</name>
-        <soapUrl>http://webservice.baderlab.org:8180/psi-gm/webservices/psicquic</soapUrl>
-        <restUrl>http://webservice.baderlab.org:8180/psi-gm/webservices/current/search/</restUrl>
-        <restExample>http://webservice.baderlab.org:8180/psi-gm/webservices/current/search/query/*:*?firstResult=0&amp;maxResults=40</restExample>
+        <soapUrl>http://webservice.baderlab.org:8380/psi-gm/webservices/psicquic</soapUrl>
+        <restUrl>http://webservice.baderlab.org:8380/psi-gm/webservices/current/search/</restUrl>
+        <restExample>http://webservice.baderlab.org:8380/psi-gm/webservices/current/search/query/*:*?firstResult=0&amp;maxResults=40</restExample>
         <organizationUrl>http://www.genemania.org/</organizationUrl>
         <restricted>false</restricted>
        <tag>MI:1047</tag> <!-- protein-protein-->
