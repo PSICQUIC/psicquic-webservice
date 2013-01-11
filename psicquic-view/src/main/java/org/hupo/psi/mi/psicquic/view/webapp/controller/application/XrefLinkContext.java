@@ -72,8 +72,8 @@ public class XrefLinkContext implements Serializable {
         return xrefUrls.get("ols");
     }
 
-    public String getCitexploreUrl() {
-        return xrefUrls.get("citexplore");
+    public String getEuropePubmedCentralUrl() {
+        return xrefUrls.get("europePubmedCentral");
     }
 
     public String getIntactUrl() {

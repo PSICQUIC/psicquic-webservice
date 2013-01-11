@@ -10,7 +10,7 @@
     </description>
 
     <tag>
-        <name>goCitexplore</name>
+        <name>goEuropePubmedCentral</name>
         <attribute>
             <name>query</name>
             <required>true</required>

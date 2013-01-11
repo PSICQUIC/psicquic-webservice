@@ -7,8 +7,8 @@
     <namespace>http://psicquic.mi.psi.hupo.org/extlinks</namespace>
 
     <tag>
-        <tag-name>goCitexplore</tag-name>
-        <source>facelets/components/links/GoCitexplore.xhtml</source>
+        <tag-name>goEuropePubmedCentral</tag-name>
+        <source>facelets/components/links/GoEuropePubmedCentral.xhtml</source>
     </tag>
     <tag>
         <tag-name>goChebi</tag-name>

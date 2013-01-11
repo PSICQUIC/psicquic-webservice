@@ -9,9 +9,9 @@
                 xmlns:ebi="http://ebi.ac.uk/faces/components"
                 xmlns:ebisf="http://www.ebi.ac.uk/faces/site">
 
-    <tr:goLink targetFrame="citexplore" text="#{(text != null)? text : query}"
+    <tr:goLink targetFrame="europePubmedCentral" text="#{(text != null)? text : query}"
                disabled="#{disabled != null? disabled : false}"
-            destination="http://www.ebi.ac.uk/citexplore/citationDetails.do?externalId=#{query}&amp;dataSource=MED">
+            destination="http://europepmc.org/abstract/MED/#{query}">
         <ui:insert/>
     </tr:goLink>
 </ui:composition>
