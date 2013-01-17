@@ -55,6 +55,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 	private int clusteringSizeLimit;
 	private Proxy proxy;
 	private String downloadAllLocation;
+	private String colourSchema;
 
 	public PsicquicViewConfig() {
 	}
@@ -93,10 +94,13 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 		miqlFilterQuery = properties.getProperty("query.filter");
 		includedServices = properties.getProperty("services.included");
 		excludedServices = properties.getProperty("services.excluded");
+		colourSchema = properties.getProperty("colour.schema");
+
 
 		registryURL = loadProperty(properties, "registry.url", REGISTRY_URL);
 		downloadAllLocation = loadProperty(properties, "download.all.storage.location", buildDefaultDir());
 		clusteringSizeLimit = loadIntProperty(properties, "clustering.limit.count", DEFAULT_CLUSTERING_SIZE_LIMIT);
+
 
 		final String strRows = properties.getProperty("services.rows");
 		if (strRows != null) serviceRows = Integer.parseInt(strRows);
@@ -149,6 +153,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 		setProperty(properties, "services.excluded", excludedServices);
 		setProperty(properties, "clustering.limit.count", String.valueOf(clusteringSizeLimit));
 		setProperty(properties, "services.rows", String.valueOf(serviceRows));
+		setProperty(properties, "colour.schema", colourSchema);
 		setProperty(properties, "download.all.storage.location", downloadAllLocation);
 
 		OutputStream outputStream = new FileOutputStream(configFile);
@@ -298,5 +303,13 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 		File file = createDirectoryIfNotExist( downloadAllLocation );
 		this.downloadAllLocation = file.getAbsolutePath();
 		log.warn( "Setting download all location to: " + this.downloadAllLocation );
+	}
+
+	public String getColourSchema() {
+		return colourSchema;
+	}
+
+	public void setColourSchema(String colourSchema) {
+		this.colourSchema = colourSchema;
 	}
 }

@@ -31,6 +31,7 @@
         <property name="includedServices" value="${services.included}"/>
         <property name="excludedServices" value="${services.excluded}"/>
         <property name="serviceRows" value="${services.rows}"/>
+        <property name="colourSchema" value="${colour.schema}" />
         <property name="clusteringSizeLimit" value="${clustering.limit.count}"/>
 
 

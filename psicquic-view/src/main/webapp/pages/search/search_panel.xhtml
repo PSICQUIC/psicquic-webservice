@@ -8,7 +8,7 @@
 
         <tr:panelHorizontalLayout valign="top">
             <f:facet name="separator">
-                <tr:spacer width="20" height="5"/>
+                <tr:spacer width="10" height="5"/>
             </f:facet>
 
             <!--<trh:script>-->
@@ -55,7 +55,7 @@
 
             <tr:panelHorizontalLayout>
                 <f:facet name="separator">
-                    <tr:spacer width="20" height="5"/>
+                    <tr:spacer width="8" height="5"/>
                 </f:facet>
 
                 <tr:selectOneChoice id="selectOneAndOr" value="#{userQuery.newQueryToken.operandStr}"
@@ -74,7 +74,7 @@
                 </tr:selectOneChoice>
 
                 <tr:panelGroupLayout id="newQueryValue" partialTriggers="newQueryField">
-                    <tr:inputText id="newQueryValueTxt" value="#{userQuery.newQueryToken.query}" columns="50"
+                    <tr:inputText id="newQueryValueTxt" value="#{userQuery.newQueryToken.query}" columns="40"
                                   immediate="true"
                                   autoSubmit="true"
                                   partialTriggers="newQueryField"
