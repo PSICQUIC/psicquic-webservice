@@ -219,9 +219,9 @@
                     <td align="right" style="vertical-align: top;">
                         <h:panelGroup>
                             <tr:outputText value="Total: "/>
-                            <tr:outputText value="#{searchBean.totalResults} "
-                                           inlineStyle="background-color:white; font-weight: bold; " >
-                                <f:convertNumber pattern="#,###"/>
+                            <tr:outputText value="#{searchBean.totalResults}"
+                                           inlineStyle="font-weight: bold;" >
+                                <tr:convertNumber pattern="#,###"/>
                             </tr:outputText>
                             <tr:outputText
                                     value="#{searchBean.clusterSelected ? ' clustered' : ' '} binary interactions"/>
