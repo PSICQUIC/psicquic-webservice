@@ -5,7 +5,9 @@
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
 <!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
 <!--[if gt IE 8]><!-->
-<html class=" js no-flexbox canvas canvastext no-touch rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients no-cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent applicationcache" lang="en"><!--<![endif]--><head>
+<html class=" js no-flexbox canvas canvastext no-touch rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients no-cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent applicationcache"
+      lang="en"><!--<![endif]-->
+<head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
 
@@ -18,7 +20,8 @@
     <!-- Your [project-name] here -->
 
     <!-- Mobile viewport optimized: j.mp/bplateviewport -->
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport"
+          content="width = device-width, initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0, user-scalable = no"/>
 
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
 
@@ -37,13 +40,15 @@
     <link rel="stylesheet" href="//www.ebi.ac.uk/web_guidelines/css/compliance/develop/embl-petrol-colours.css"
           type="text/css" media="screen">
 
-    <#--<link rel="stylesheet" type="text/css" rel="stylesheet" href="css/psicquic-colours.css" media="screen"/>-->
+    <link rel="stylesheet" type="text/css" rel="stylesheet" href="css/psicquic-colours.css" media="screen"/>
 
 
     <!-- for production the above can be replaced with -->
     <!--
       <link rel="stylesheet" href="//www.ebi.ac.uk/web_guidelines/css/compliance/mini/ebi-fluid-embl.css">
       -->
+    <link href="css/footable/footable-0.1.css" rel="stylesheet" type="text/css"/>
+    <link href="css/footable/footable.sortable-0.1.css" rel="stylesheet" type="text/css"/>
 
     <style type="text/css">
             /* You have the option of setting a maximum width for your page, and making sure everything is centered */
@@ -67,9 +72,9 @@
             background-color: #f8cfcf;
         }
 
-    /* --------------------------------
-        GLOBAL SEARCH TEMPLATE - START
-       -------------------------------- */
+            /* --------------------------------
+                GLOBAL SEARCH TEMPLATE - START
+               -------------------------------- */
         .loading {
             background: url("images/ajax-loader.gif") no-repeat right;
         }
@@ -81,9 +86,10 @@
             background-color: rgb(238, 238, 238);
             border-radius: 5px 5px 5px 5px;
         }
-    /* --------------------------------
-        GLOBAL SEARCH TEMPLATE - END
-       -------------------------------- */
+
+            /* --------------------------------
+                GLOBAL SEARCH TEMPLATE - END
+               -------------------------------- */
     </style>
 
     <!-- end CSS-->
@@ -116,7 +122,9 @@
 <header>
     <div id="global-masthead" class="masthead grid_24">
         <!--This has to be one line and no newline characters-->
-        <a href="//www.ebi.ac.uk/" title="Go to the EMBL-EBI homepage"><img src="//www.ebi.ac.uk/web_guidelines/images/logos/EMBL-EBI/EMBL_EBI_Logo_white.png" alt="EMBL European Bioinformatics Institute"></a>
+        <a href="//www.ebi.ac.uk/" title="Go to the EMBL-EBI homepage"><img
+                src="//www.ebi.ac.uk/web_guidelines/images/logos/EMBL-EBI/EMBL_EBI_Logo_white.png"
+                alt="EMBL European Bioinformatics Institute"></a>
 
         <nav>
             <ul id="global-nav">
@@ -125,7 +133,7 @@
                 <li id="research"><a href="//www.ebi.ac.uk/research">Research</a></li>
                 <li id="training"><a href="//www.ebi.ac.uk/training">Training</a></li>
                 <li id="industry"><a href="//www.ebi.ac.uk/industry">Industry</a></li>
-                <li class="last" id="about" ><a href="//www.ebi.ac.uk/about">About us</a></li>
+                <li class="last" id="about"><a href="//www.ebi.ac.uk/about">About us</a></li>
             </ul>
         </nav>
 
@@ -140,11 +148,11 @@
     <#--<h1><a href="#" title="Back to PSICQUIC Registry homepage">PSICQUIC Registry</a></h1>-->
     <#--</div>-->
 
-        <#--<div id="local-title" class="grid_12 alpha logo-title">-->
+    <#--<div id="local-title" class="grid_12 alpha logo-title">-->
 
         <div id="local-title" class="logo-title">
             <a href="#" title="Back to PSICQUIC Registry homepage">
-                <img src="images/psicquic-logo.png" alt="PSICQUIC logo"></a>
+                <img src="images/psicquic-logo.png" alt="PSICQUIC logo"  width="64" height="64"></a>
             <span><h1 style="line-height: normal">PSICQUIC Registry</h1></span>
         </div>
         <!-- /local-title -->
@@ -152,30 +160,30 @@
         <!-- local-search -->
         <!-- NB: if you do not have a local-search, delete the following div, and drop the class="grid_12 alpha" class from local-title above -->
 
-        <#--<div class="grid_12 omega">-->
-            <#--<form id="local-search" name="local-search" action="[search-action]" method="post" onsubmit="updateSummary();return false;">-->
+    <#--<div class="grid_12 omega">-->
+    <#--<form id="local-search" name="local-search" action="[search-action]" method="post" onsubmit="updateSummary();return false;">-->
 
-                <#--<fieldset>-->
+    <#--<fieldset>-->
 
-                    <#--<div class="left">-->
-                        <#--<label>-->
-                            <#--<input type="text" name="first" id="local-searchbox">-->
-                        <#--</label>-->
-                        <#--<!-- Include some example searchterms - keep them short and few! &ndash;&gt;-->
-                        <#--<span class="examples">Examples: <a href="http://frontier.ebi.ac.uk/ebisearch/globalsearchsummary.ebi?query=kinase">kinase</a></span>-->
-                    <#--</div>-->
+    <#--<div class="left">-->
+    <#--<label>-->
+    <#--<input type="text" name="first" id="local-searchbox">-->
+    <#--</label>-->
+    <#--<!-- Include some example searchterms - keep them short and few! &ndash;&gt;-->
+    <#--<span class="examples">Examples: <a href="http://frontier.ebi.ac.uk/ebisearch/globalsearchsummary.ebi?query=kinase">kinase</a></span>-->
+    <#--</div>-->
 
-                    <#--<div class="right">-->
-                        <#--<input type="submit" name="submit" value="Search" class="submit">-->
-                        <#--<!-- If your search is more complex than just a keyword search, you can link to an Advanced Search,-->
-                             <#--with whatever features you want available &ndash;&gt;-->
-                        <#--&lt;#&ndash;<span class="adv"><a href="../search" id="adv-search" title="Advanced">Advanced</a></span>&ndash;&gt;-->
-                    <#--</div>-->
+    <#--<div class="right">-->
+    <#--<input type="submit" name="submit" value="Search" class="submit">-->
+    <#--<!-- If your search is more complex than just a keyword search, you can link to an Advanced Search,-->
+    <#--with whatever features you want available &ndash;&gt;-->
+    <#--&lt;#&ndash;<span class="adv"><a href="../search" id="adv-search" title="Advanced">Advanced</a></span>&ndash;&gt;-->
+    <#--</div>-->
 
-                <#--</fieldset>-->
+    <#--</fieldset>-->
 
-            <#--</form>-->
-        <#--</div>-->
+    <#--</form>-->
+    <#--</div>-->
 
         <!-- /local-search -->
 
@@ -205,17 +213,17 @@
 
     <!-- If you require a breadcrumb trail, its root should be your service.
                 You don't need a breadcrumb trail on the homepage of your service... -->
-    <#--<nav id="breadcrumb">-->
-        <#--<p>-->
-            <#--<a href="#">PSICQUIC</a> &gt;Registry-->
-        <#--</p>-->
-    <#--</nav>-->
+<#--<nav id="breadcrumb">-->
+<#--<p>-->
+<#--<a href="#">PSICQUIC</a> &gt;Registry-->
+<#--</p>-->
+<#--</nav>-->
 
     <!-- Example layout containers -->
 
-    <#--<section class="grid_6 alpha" id="search-filters">-->
-        <#--<p>Data facets, search filters, etc</p>-->
-    <#--</section>-->
+<#--<section class="grid_6 alpha" id="search-filters">-->
+<#--<p>Data facets, search filters, etc</p>-->
+<#--</section>-->
 
     <h2>Registry</h2>
 
@@ -225,74 +233,91 @@
     <! --------------------------------
     GLOBAL SEARCH TEMPLATE - START
     -------------------------------- >
-        <#--<section class="grid_20 alpha" id="search-results">-->
+<#--<section class="grid_20 alpha" id="search-results">-->
 
     <! ------------------------------
     GLOBAL SEARCH TEMPLATE - END
     ------------------------------ >
 
-        <table  style="font-size: 80%">
-                <tr>
-                <th>Name</th>
-                <th>Active</th>
-                <th>Interactions</th>
-                <th>Version</th>
-                <th>URLs</th>
-            <#--<th>SOAP URL</th>-->
-            <#--<th>REST URL</th>-->
-            <#--<th>REST Example</th>-->
-                <th>Restricted</th>
-                <th>Tags</th>
-            <#--<th>Comments</th>-->
-            </tr>
-        <#list registry.services as service>
-        <tr class="${service.active?string("active", "inactive")}" style="vertical-align:top">
-            <td>
-                <a href="${service.organizationUrl}" target="_blank"><strong>${service.name}</strong></a>
-            </td>
-            <td>${service.active?string("YES", "NO")}</td>
-            <td style="text-align:right">${service.count}</td>
-            <td>
-               ${service.version!'-'}
-            </td>
-            <td>
-                    <strong>SOAP URL</strong><br/>${service.soapUrl}
-                <br/>
-                <#if service.restUrl??>
-                        <strong>REST URL</strong><br/>${service.restUrl}
-                <#else>
-                        <strong>REST URL</strong><br/>N/A
-                </#if>
-                <br/>
-                <br/>
-                <#if service.restExample??>
-                        <a href="${service.restExample}" target="_blank">REST example</a>
-                <#else>
-                    N/A
-                </#if>
-            </td>
-            <td>${service.restricted?string("YES", "NO")}</td>
-            <td>
-
+    <p>Filter: <input id="filter" type="text" /></p>
+    <table class="footable" data-filter="#filter" style="font-size: 85%">
+        <thead>
+        <tr>
+            <th data-class="expand" data-sort-initial="true" data-type="alpha">Name</th>
+            <th>Status</th>
+            <th data-hide="phone" data-type="numeric">Interactions</th>
+            <th data-hide="phone,tablet" data-type="alpha">Version</th>
+            <th data-hide="phone,tablet" data-type="alpha">URLs</th>
+        <#--<th>SOAP URL</th>-->
+        <#--<th>REST URL</th>-->
+        <#--<th>REST Example</th>-->
+            <th data-hide="phone,tablet" data-type="alpha">Restricted</th>
+            <th data-hide="phone,tablet">Tags</th>
+        <#--<th>Comments</th>-->
+        </tr>
+        </thead>
+    <#list registry.services as service>
+    <tr class="${service.active?string("active", "inactive")}" style="vertical-align:top">
+        <td>
+            <a href="${service.organizationUrl}" target="_blank"><strong>${service.name}</strong></a>
+            <br/>
+        </td>
+        <td>
+            <#if service.active>
+                <img src="images/active.png" alt="Active" title="active"></a>
+            <#else>
+                <img src="images/inactive.png" alt="Inactive" title="inactive"></a>
+            </#if>
+            <br/>
+        </td>
+        <td style="text-align:right">${service.count}<br/></td>
+        <td>${service.version!'-'}<br/></td>
+        <td>
+            <#--<strong>SOAP URL: </strong>${service.soapUrl}<br/>-->
+            <#--<#if service.restUrl??>-->
+                <#--<strong>REST URL: </strong>${service.restUrl}<br/>-->
+            <#--<#else>-->
+                <#--<strong>REST URL: </strong>N/A<br/>-->
+            <#--</#if>-->
+            SOAP: ${service.soapUrl}<br/>
+            <#if service.restUrl??>
+                REST: ${service.restUrl}<br/>
+            <#else>
+                REST: N/A<br/>
+            </#if>
+            <br/>
+            <#if service.restExample??>
+                <a href="${service.restExample}" target="_blank">REST example</a><br/>
+            <#else>
+                N/A<br/>
+            </#if>
+        </td>
+        <td>${service.restricted?string("YES", "NO")}<br/></td>
+        <td>
+            <#if (service.tags)?has_content>
                 <#list service.tags as tag>
                     <#if tag?starts_with('MI:')>
                         <a href="http://www.ebi.ac.uk/ontology-lookup/?termId=${tag}"
-                                 target="_blank">${termName(tag)}</a>
+                           target="_blank">${termName(tag)}</a>
                     <#else>
-                        ${termName(tag)}
+                    ${termName(tag)}
                     </#if>
                     <#if tag_has_next> <br/> </#if>
                 </#list>&#160;
+            <#else>
+                N/A
+            </#if>
+            <br/><br/>
 
-            </td>
-        <#--<td>${service.comments!''}&#160;</td>-->
-        </#list>
-        </table>
+        </td>
+    <#--<td>${service.comments!''}&#160;</td>-->
+    </#list>
+    </table>
 
     <! --------------------------------
     GLOBAL SEARCH TEMPLATE - START
     -------------------------------- >
-    <#--</section>-->
+<#--</section>-->
     <! ------------------------------
     GLOBAL SEARCH TEMPLATE - END
     ------------------------------ >
@@ -301,9 +326,9 @@
     <! --------------------------------
     GLOBAL SEARCH TEMPLATE - START
     -------------------------------- >
-    <#--<section class="grid_4 omega" id="search-extras">-->
-        <#--<p>EBI global search results</p>-->
-    <#--</section>-->
+<#--<section class="grid_4 omega" id="search-extras">-->
+<#--<p>EBI global search results</p>-->
+<#--</section>-->
     <! ------------------------------
     GLOBAL SEARCH TEMPLATE - END
     ------------------------------ >
@@ -311,9 +336,11 @@
     <h3 id="aboutRegistry">About PSICQUIC Registry</h3>
 
     <p>The PSICQUIC Registry contains the list of PSICQUIC services available, their tags, and their current status.
-       The registry also shows the number of total binary interactions that each resource has made available through PSICQUIC.
+        The registry also shows the number of total binary interactions that each resource has made available through
+        PSICQUIC.
 
-       For more information about PSICQUIC, please visit the <a href="http://code.google.com/p/psicquic/">Google Project documentation</a>.</p>
+        For more information about PSICQUIC, please visit the <a href="http://code.google.com/p/psicquic/">Google
+            Project documentation</a>.</p>
 </div>
 
 
@@ -378,10 +405,10 @@
 
 <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-    <#--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>-->
-    <#--<script>window.jQuery || document.write('<script src="../js/libs/jquery-1.8.0.min.js"><\/script>')</script>-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+<#--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>-->
+<#--<script>window.jQuery || document.write('<script src="../js/libs/jquery-1.8.0.min.js"><\/script>')</script>-->
 
 
 <!-- Your custom JavaScript file scan go here... change names accordingly -->
@@ -397,16 +424,16 @@ GLOBAL SEARCH TEMPLATE - START
 <script type="text/javascript">
     function renderMenu(elem, items, baseURL) {
         var ul = $("<ul>").appendTo(elem);
-        $.each(items, function(index, item) {
+        $.each(items, function (index, item) {
             renderItem(ul, item, baseURL);
         });
     }
 
     function renderItem(ul, item, baseURL) {
-        $( "<li>" )
-                .append( $( "<a>" ).attr("href", baseURL+item.url)
-                        .text( item.name + " ("+item.numberOfResults+")" )
-                ).appendTo( ul );
+        $("<li>")
+                .append($("<a>").attr("href", baseURL + item.url)
+                        .text(item.name + " (" + item.numberOfResults + ")")
+                ).appendTo(ul);
     }
 
     function updateSummary() {
@@ -419,18 +446,18 @@ GLOBAL SEARCH TEMPLATE - START
 
             $.ajax({
                 searchBaseURL: searchBaseURL,
-                url: searchBaseURL+"globalsearchsummary.ebi?query="+query,
+                url: searchBaseURL + "globalsearchsummary.ebi?query=" + query,
                 context: thisElem,
                 dataType: "json",
                 crossdoamin: true,
-                error: function(request, error) {
+                error: function (request, error) {
                     //console.log(arguments);
-                    alert("error occurred: "+error);
+                    alert("error occurred: " + error);
                 },
                 success: function (data, textStatus, jqHXR) {
                     //alert("success");
                 }
-            }).done(function( response ) {
+            }).done(function (response) {
                         var obj = response;
                         $(this).text("");
                         $(this).removeClass("loading");
@@ -452,6 +479,16 @@ GLOBAL SEARCH TEMPLATE - END
 <script defer="defer" src="//www.ebi.ac.uk/web_guidelines/js/foot.js"></script>
 <!-- end scripts-->
 
+<script src="js/footable/footable-0.1.js" type="text/javascript"></script>
+<script src="js/footable/footable.sortable.js" type="text/javascript"></script>
+<script src="js/footable/footable.filter.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('table').footable();
+    });
+</script>
+
 <!-- Google Analytics details... -->
 <!-- Change UA-XXXXX-X to be your site's ID -->
 <!--
@@ -469,7 +506,7 @@ GLOBAL SEARCH TEMPLATE - END
 <!--[if lt IE 7 ]>
 <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
 <script>window.attachEvent('onload', function () {
-    CFInstall.check({mode:'overlay'})
+    CFInstall.check({mode: 'overlay'})
 })</script>
 <![endif]-->
 

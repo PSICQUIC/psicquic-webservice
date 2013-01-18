@@ -33,6 +33,9 @@
                 /images/.*\.png
                 /images/.*\.gif
                 /css/.*\.css
+                /css/footable/.*\.css
+                /css/footable/img/.*\.png
+                /js/footable/.*\.js
             </param-value>
         </init-param>
 	</servlet>
