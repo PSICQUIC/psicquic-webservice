@@ -20,6 +20,8 @@
         <ui:insert name="windowTitle"/>
     </title>
 
+    <link type="text/css" rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/skins/colours/#{config.colourSchema}-colours.css"/>
+
     <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/contents.css" type="text/css"/>
     <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/userstyles.css" type="text/css"/>
     <script src="#{ebisf:absoluteEbiUrl()}/inc/js/contents.js" type="text/javascript"></script>
@@ -46,7 +48,6 @@
           href="//www.ebi.ac.uk/web_guidelines/css/mitigation/develop/ebi-mitigation.css"/>
     <link type="text/css" rel="stylesheet"
           href="//www.ebi.ac.uk/web_guidelines/css/mitigation/develop/embl-petrol-colours.css"/>
-    <link type="text/css" rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/skins/colours/#{config.colourSchema}-colours.css"/>
 
     <script defer="defer" type="text/javascript" src="//www.ebi.ac.uk/web_guidelines/js/cookiebanner.js"></script>
     <script defer="defer" type="text/javascript" src="//www.ebi.ac.uk/web_guidelines/js/foot.js"></script>
