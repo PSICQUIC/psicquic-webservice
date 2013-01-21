@@ -31,7 +31,7 @@
             <div id="local-masthead" class="masthead grid_24">
                 <c:if test="#{not empty config.logoUrl}">
                     <div id="local-title" class="logo-title">
-                    <a href="#" title="Back to #{config.title} homepage">
+                    <a href="#{requestConfigBean.absoluteContextPath}" title="Back to #{config.title} homepage">
                         <h:graphicImage value="#{config.logoUrl}" alt="Logo"/>
                     </a>
                     <span><h1>#{config.title}</h1></span>
@@ -39,7 +39,7 @@
                 </c:if>
                 <c:if test="#{empty config.logoUrl}">
                     <div id="local-title">
-                        <h1><a href="#" title="Back to #{config.title} homepage">#{config.title}</a></h1>
+                        <h1><a href="#{requestConfigBean.absoluteContextPath}" title="Back to #{config.title} homepage">#{config.title}</a></h1>
                     </div>
                 </c:if>
 

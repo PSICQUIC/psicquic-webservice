@@ -37,7 +37,7 @@ public class CustomViewHandler extends ViewHandler {
 			if (facesContext != null) {
 
 				try {
-					facesContext.getExternalContext().redirect("/psicquic/view/main.xhtml?status=exp");
+					facesContext.getExternalContext().redirect("main.xhtml?status=exp");
 					facesContext.responseComplete();
 				} catch (IOException e) {
 					throw new PsicquicViewException(e);

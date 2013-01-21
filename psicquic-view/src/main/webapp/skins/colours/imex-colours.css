@@ -1,8 +1,35 @@
 /*
+	*** TEMPLATE - please apply your custom values ***
 
-	Colour palette: EMBL Petrol
+
+	Colour palette: [project name] [main colour]
 	Details: Accented Analogic from ColourSchemeDesigner
-	         http://colorschemedesigner.com/#3i61TnBpxw0w0
+	         http://colorschemedesigner.com/[custom URL]
+
+*/
+
+/*
+
+*** Primary Color:
+
+   var. 1 = #909090 = rgb(144,144,144)
+   var. 2 = #6C6C6C = rgb(108,108,108)
+   var. 3 = #5E342F = rgb(94,52,47)
+   var. 5 = #C8C8C8 = rgb(200,200,200)
+
+*** Secondary Color A:
+
+   var. 3 = #5E462F = rgb(94,70,47)
+
+*** Secondary Color B:
+
+   var. 1 = #787878 = rgb(120,120,120)
+   var. 3 = #4E273A = rgb(78,39,58)
+   var. 5 = #BCBCBC = rgb(188,188,188)
+
+*** Complementary Color:
+
+   var. 2 = #515151 = rgb(81,81,81)
 
 */
 
@@ -10,182 +37,100 @@
 /* Color
 ===================================================*/
 
-/*div#topbar {*/
-    /*background-color: #207a7a;*/
-    /*border-bottom: 1px solid #222;*/
+/* These style rules will over-ride the core EBI styles and apply
+    your custom colour palette in a consistent manner */
+
+/* Links */
+/*a:link,*/
+/*a:visited { border-bottom-color: #909090; }*/
+
+/*a:hover,*/
+/*a:focus,*/
+/*a:active {*/
+    /*color: #909090;*/
+    /*border-bottom: 1px solid #909090;*/
 /*}*/
 
-/*div#headerdiv a:link ,*/
-/*div#footerdiv a:link {*/
-    /*color: #0f2559;*/
-/*}*/
-
-
-/*div#headerdiv a:hover,*/
-/*div#footerdiv a:hover,*/
-/*div#headerdiv a:focus,*/
-/*div#footerdiv a:focus,*/
-/*div#headerdiv a:active ,*/
-/*div#footerdiv a:active {*/
-    /*color: #0e6a0e;*/
-/*}*/
-
-
-/*div#headerdiv h1,*/
-/*div#footerdiv h1,*/
-/*div#headerdiv h2,*/
-/*div#footerdiv h2,*/
-/*div#headerdiv h3,*/
-/*div#footerdiv h3,*/
-/*div#headerdiv h4,*/
-/*div#footerdiv h4,*/
-/*div#headerdiv h5,*/
-/*div#footerdiv h5,*/
-/*div#headerdiv h6 ,*/
-/*div#footerdiv h6 {*/
-    /*color: #222222;*/
+/*a.special:hover,*/
+/*a.special:focus,*/
+/*a.special:active {*/
+    /*color:#909090;*/
+    /*border-bottom: 3px double #909090;*/
 /*}*/
 
 
-/*div#headerdiv h1 ,*/
-/*div#footerdiv h1 { color: #f7f7f7; }*/
+/*a:link { color: #5E462F; }*/
+
+/*a:hover,*/
+/*a:focus,*/
+/*a:active { color: #4E273A; }*/
+
+/*a.special { background-color: #BCBCBC; }*/
 
 
-/*div#headerdiv h2 ,*/
-/*div#footerdiv h2 {*/
-    /*color: #207a7a;*/
+/* Headings */
+/*h1, h2, h3, h4, h5, h6 { color: #222222; }*/
+
+/*h1 { color: #909090; }*/
+
+/*h2 { color: #515151; }*/
+
+/*h1 a:link,*/
+/*h2 a:link,*/
+/*h3 a:link,*/
+/*h4 a:link,*/
+/*h5 a:link,*/
+/*h6 a:link,*/
+/*h1 a:visited,*/
+/*h2 a:visited,*/
+/*h3 a:visited,*/
+/*h4 a:visited,*/
+/*h5 a:visited,*/
+/*h6 a:visited {*/
+    /*border-bottom-color: #909090;*/
 /*}*/
 
 
-/*div#headerdiv h3 ,*/
-/*div#footerdiv h3 {*/
-    /*color: #996a44;*/
+/* Table heading cells */
+/*th { background-color: #C8C8C8; }*/
+
+
+/* Form submission button */
+/*input.submit {*/
+    /* colours */
+    /*color: #fff;*/
+    /*text-shadow: #5E342F 1px 1px;*/
+    /*border-top: 1px solid #C8C8C8;*/
+    /*border-left: 1px solid #C8C8C8;*/
+    /*border-right: 1px solid #5E342F;*/
+    /*border-bottom: 1px solid #5E342F;*/
+
+    /*background-image: -moz-linear-gradient(top, #909090, #6C6C6C);*/
+    /*background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #ccc),color-stop(1, #6C6C6C));*/
+    /*background-image: -webkit-linear-gradient(#909090, #6C6C6C);*/
+    /*background-image: linear-gradient(top, #909090, #6C6C6C);*/
+    /*filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#909090', EndColorStr='#6C6C6C');*/
 /*}*/
 
+/* Define the basic colour your local masthead */
+/*div#local-masthead { background-color: #C8C8C8; }*/
 
-/*div#headerdiv th ,*/
-/*div#footerdiv th {*/
-    /*background-color: #70BDBD; *//* #2ba32b; */
-    /*background-color: rgba(112, 189, 189, 0.5);*/
-    /*filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#70BDBD', EndColorStr='#70BDBD');*/
-/*}*/
-
-
-/*div#headerdiv a.special ,*/
-/*div#footerdiv a.special { background-color: #7cd17c; }*/
-
-
-/*div#headerdiv form input.submit ,*/
-/*div#footerdiv form input.submit {*/
-    /*border-color: #295c5c;	*//* P2 */
-
-    /*background-color: #207a7a;	*//* colour P1 */
-    /*background-image: -moz-linear-gradient(top, #54bdbd, #207a7a);*/
-    /*background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #54bdbd),color-stop(1, #207a7a));*/
-    /*background-image: -webkit-linear-gradient(#54bdbd, #207a7a);*/
-    /*background-image: linear-gradient(top, #54bdbd, #207a7a);*/
-    /*filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#54bdbd', EndColorStr='#207a7a');*/
-
-    /*color: #f8f8f8;*/
-    /*text-shadow: #145251 0 1px 1px;*/
-/*}*/
-
-
-/*div#headerdiv form input.submit:hover,*/
-/*div#footerdiv form input.submit:hover,*/
-/*div#headerdiv form input.submit:focus,*/
-/*div#footerdiv form input.submit:focus,*/
-/*div#headerdiv form input.submit:active ,*/
-/*div#footerdiv form input.submit:active { background: #207a7a; }*/
-
-
-/*div#headerdiv div.box ,*/
-/*div#footerdiv div.box { border: 10px solid #7cd17c; }*/
-
-/*div#local-masthead { background-color: #4c9191; }*/
+/*Define the basic colour your local masthead*/
 div#local-masthead {
-    background-color: #818181;
-    background-image: -moz-linear-gradient(top, #c8dede, rgb(0, 0, 0));
-    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #c8dede),color-stop(1, #000000));
-    background-image: -webkit-linear-gradient(#c8dede, #000000);
-    background-image: linear-gradient(top, #c8dede, #000000);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#c8dede', EndColorStr='#0e5353');
+    background-color: #C8C8C8;
+    background-image: -moz-linear-gradient(top, #C8C8C8, #909090);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #C8C8C8),color-stop(1, #909090));
+    background-image: -webkit-linear-gradient(#C8C8C8, #909090);
+    background-image: linear-gradient(top, #C8C8C8, #909090);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#C8C8C8', EndColorStr='#909090');
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#C8C8C8', EndColorStr='#909090')";
 }
-
-
-/* For use on the EBI homepage... */
-/*div#local-masthead.gradient {*/
-    /*background-color: #70bdbd;*/
-    /*background-image: -moz-linear-gradient(top, #70bdbd, #9adede);*/
-    /*background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #70bdbd),color-stop(1, #9adede));*/
-    /*background-image: -webkit-linear-gradient(#70bdbd, #9adede);*/
-    /*background-image: linear-gradient(top, #70bdbd, #9adede);*/
-    /*filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#70bdbd', EndColorStr='#9adede');*/
-
-/*}*/
-
-
 
 /* Colour the faux-underline for local menu items */
 /*div#local-masthead ul li a:hover,*/
 /*div#local-masthead ul li a:focus,*/
 /*div#local-masthead ul li a:active {*/
-    /*border-bottom: 3px solid #207A7A;*/
+    /*border-bottom: 3px solid #909090;*/
 /*}*/
 
 
-
-/* testing masthead combos */
-/* div#local { background-color: #70bdbd; } */
-
-/*div#mastheads div#local h1 { color: #222; }*/
-
-
-/* Palette color codes */
-
-
-/*div#headerdiv .primary-1 ,*/
-/*div#footerdiv .primary-1 { background-color: #207A7A }*/
-/*div#headerdiv .primary-2 ,*/
-/*div#footerdiv .primary-2 { background-color: #295C5C }*/
-/*div#headerdiv .primary-3 ,*/
-/*div#footerdiv .primary-3 { background-color: #0A4F4F }*/
-/*div#headerdiv .primary-4 ,*/
-/*div#footerdiv .primary-4 { background-color: #54BDBD }*/
-/*div#headerdiv .primary-5 ,*/
-/*div#footerdiv .primary-5 { background-color: #70BDBD }*/
-
-/*div#headerdiv .secondary-a-1 ,*/
-/*div#footerdiv .secondary-a-1 { background-color: #2E4988 }*/
-/*div#headerdiv .secondary-a-2 ,*/
-/*div#footerdiv .secondary-a-2 { background-color: #344366 }*/
-/*div#headerdiv .secondary-a-3 ,*/
-/*div#footerdiv .secondary-a-3 { background-color: #0F2559 }*/
-/*div#headerdiv .secondary-a-4 ,*/
-/*div#footerdiv .secondary-a-4 { background-color: #6380C4 }*/
-/*div#headerdiv .secondary-a-5 ,*/
-/*div#footerdiv .secondary-a-5 { background-color: #7D92C4 }*/
-
-/*div#headerdiv .secondary-b-1 ,*/
-/*div#footerdiv .secondary-b-1 { background-color: #2BA32B }*/
-/*div#headerdiv .secondary-b-2 ,*/
-/*div#footerdiv .secondary-b-2 { background-color: #377A37 }*/
-/*div#headerdiv .secondary-b-3 ,*/
-/*div#footerdiv .secondary-b-3 { background-color: #0E6A0E }*/
-/*div#headerdiv .secondary-b-4 ,*/
-/*div#footerdiv .secondary-b-4 { background-color: #5DD15D }*/
-/*div#headerdiv .secondary-b-5 ,*/
-/*div#footerdiv .secondary-b-5 { background-color: #7CD17C }*/
-
-/*div#headerdiv .complement-1 ,*/
-/*div#footerdiv .complement-1 { background-color: #CB7935 }*/
-/*div#headerdiv .complement-2 ,*/
-/*div#footerdiv .complement-2 { background-color: #996A44 }*/
-/*div#headerdiv .complement-3 ,*/
-/*div#footerdiv .complement-3 { background-color: #844511 }*/
-/*div#headerdiv .complement-4 ,*/
-/*div#footerdiv .complement-4 { background-color: #E5A066 }*/
-/*div#headerdiv .complement-5 ,*/
-/*div#footerdiv .complement-5 { background-color: #E5B288 }*/
-
-/* end */
