@@ -15,4 +15,20 @@
         </style-sheet-name>
 
     </skin>
+    <skin>
+        <id>
+            imex.desktop
+        </id>
+        <family>
+            imex
+        </family>
+        <extends>ebi.desktop</extends>
+        <render-kit-id>
+            org.apache.myfaces.trinidad.desktop
+        </render-kit-id>
+        <style-sheet-name>
+            skins/imex/imex.css
+        </style-sheet-name>
+
+    </skin>
 </skins>
