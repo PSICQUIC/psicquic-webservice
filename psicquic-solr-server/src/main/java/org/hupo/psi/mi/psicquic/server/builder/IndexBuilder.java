@@ -180,7 +180,16 @@ public class IndexBuilder{
         File srcFl = new File( file );
         try{
             String cpath = srcFl.getCanonicalPath();
-            this.root = cpath;
+            // this.root = cpath;
+
+            // strip file name to get root
+            
+            this.root = cpath.substring( 0, cpath.length() - file.length() );
+
+            log.info( "CP:"+cpath+ "  FN:" + file );
+            log.info( "ROOT:" 
+                      + cpath.substring(0,cpath.length()-file.length() ) );
+
             enqueue( cpath, srcFl );        
         } catch( IOException ex ){ 
             log.info( ex.getMessage(), ex );

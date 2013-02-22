@@ -625,7 +625,7 @@ public class SolrRecordIndex implements RecordIndex{
             SolrInputDocument doc 
                 = (SolrInputDocument) cdoc.get("solr");
             log.debug( " SolrRecordIndex(add): recId=" + recId );
-            log.debug( " SolrRecordIndex(add): SIDoc=" + doc );
+            log.debug( " SolrRecordIndex(add): SIDoc=" + doc.toString().substring(0,64) );
             
             try{
                 if( shSolr.size() > 1 ){
@@ -637,7 +637,7 @@ public class SolrRecordIndex implements RecordIndex{
                                " shard= " + shard + " (max= " + shMax +")" );
                     
                     log.debug( " SolrRecordIndex(add): document START");
-                    log.debug( doc );
+                    log.debug( doc.toString().substring(0,64) );
                     log.debug( " SolrRecordIndex(add): document END");
                     
                     this.add( shard, doc );

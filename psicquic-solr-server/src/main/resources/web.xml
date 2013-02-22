@@ -11,12 +11,11 @@
  ! Version: $Rev:: 234                                                         $
  !==============================================================================
  !                                                                        
- ! PSICQUIC Reference Server: Web Application configuration file
+ ! Modular PSICQUIC Server: Web Application configuration file
  !                                                                        
  !========================================================================== -->
 
-  <display-name>PSICQUIC Reference Server</display-name>
-
+  <display-name>PSICQUIC Modular Server</display-name>
 
  <!-- Uncomment if you are trying to use a Resin version before 3.0.19.
     Their XML implementation isn't entirely compatible with Xerces.
@@ -128,7 +127,6 @@
     <filter-name>SolrRequestFilter</filter-name>
     <url-pattern>/solr/*</url-pattern>
   </filter-mapping>
-
 
 
 <!-- ======================================================= =============== -->

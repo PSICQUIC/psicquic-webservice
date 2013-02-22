@@ -227,10 +227,10 @@ public class DerbyRecordStore implements RecordStore{
                                           new Long(rc.length()).intValue() );
                 rt = rs.getString(3);
             } 
-
-	log.info( "DerbyRecordDao(getRecord): recId=" + rid + " rt=" + rt 
-                  + "  record=" + record );
-        
+            if(record != null ){
+                log.debug( "DerbyRecordDao(getRecord): recId=" + rid + " rt=" + rt 
+                           + "  record=" + record.substring(0, 32) );
+            }
         }catch( Exception ex ){
             ex.printStackTrace();
         }
@@ -381,26 +381,14 @@ public class DerbyRecordStore implements RecordStore{
             String recId = (String) cdoc.get( "recId" );
             NodeList fl = (NodeList) cdoc.get( "dom" );
                             
-            String vStr = null;
+            String vStr = (String) cdoc.get( "view" );
             
-            for( int j = 0; j< fl.getLength() ;j++ ){
-                if( fl.item(j).getNodeName().equals( "field") ){
-                    Element fe = (Element) fl.item(j);
-                    String name = fe.getAttribute("name");
-                    String value = fe.getFirstChild().getNodeValue();
-                    
-                    log.debug( " Node: name=" + name 
-                               + " length(value)="+ value.length() );
-                    
-                    if( name.equals( "recId" ) ){
-                        recId = value;
-                    }
-                    if( name.equals( "view" ) ){
-                        vStr = value;
-                    }
-                }
+            log.info("processFile->recId:" + recId ); 
+            log.debug("processFile->dom:" + fl );
+            if( vStr != null ){
+                log.debug("processFile->view:" + vStr.substring( 0, 64 ) ); 
             }
-            
+
             try{
                 this.add( recId, viewName, vStr );
             }catch( Exception ex ){
@@ -440,13 +428,14 @@ public class DerbyRecordStore implements RecordStore{
                     rmgrURL = hostReset( rmgrURL, host );
                 }
             }
-            
+            log.info( "mgr URL=" + rmgrURL);
+
             URL url = new URL( rmgrURL );
             URLConnection conn = url.openConnection();
             conn.setDoOutput( true );
             OutputStreamWriter wr =
                 new OutputStreamWriter( conn.getOutputStream() );
-            wr.write(postData);
+            wr.write( postData );
             wr.flush();
             
             // Get the response
@@ -463,6 +452,7 @@ public class DerbyRecordStore implements RecordStore{
             wr.close();
             rd.close();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

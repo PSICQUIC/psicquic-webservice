@@ -10,6 +10,8 @@
     <name>psicquic-solr-server</name>
 
     <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
       <cxf.version>2.6.0</cxf.version>
       <spring.version>3.1.2.RELEASE</spring.version>
       <struts.version>2.3.4.1</struts.version>
@@ -94,6 +96,12 @@
             <artifactId>calimocho-solr</artifactId>
             <version>${calimocho.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>psidev.psi.mi</groupId>
+            <artifactId>psimitab</artifactId>
+            <version>1.8.3</version>
+        </dependency> 
 
          <dependency>
            <groupId>org.apache.cxf</groupId>

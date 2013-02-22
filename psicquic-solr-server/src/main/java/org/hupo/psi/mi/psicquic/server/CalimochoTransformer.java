@@ -32,7 +32,7 @@ public class CalimochoTransformer implements PsqTransformer{
     DefaultRowReader rowReader = null;
     BufferedReader bufferedReader = null;
 
-    Converter solrDocConverter = null;;
+    Converter solrDocConverter = null;
 
     String fileName = null;
     String curRowStr = null;

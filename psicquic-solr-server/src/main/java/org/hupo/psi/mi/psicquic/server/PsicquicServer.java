@@ -59,6 +59,7 @@ public class PsicquicServer {
         log.info( "getByQuery: q=" + query );
         
         log.info( " FR(in)=" + firstResult + " BS(in)=" + blockSize );
+        log.info( " RT=" + resultType );
         
         // PAGING
         //-------
@@ -83,8 +84,6 @@ public class PsicquicServer {
         }
         
         log.info(":" + query +":");
-
-        String viewType = psqContext.getDefaultView();
         
         if( miqlx != null ){
             for( Iterator mi = miqlx.entrySet().iterator(); mi.hasNext(); ){
@@ -94,18 +93,24 @@ public class PsicquicServer {
                           + "\'  value=\'" + me.getValue() +"\'");
             }
 
-            if( miqlx.get("MiqlxView:") != null ){
-                viewType = ((List<String>) miqlx.get("MiqlxView:")).get(0);
-                
-
+            if( miqlx.get("MiqlxView:") != null 
+                && (resultType == null || resultType.equals("") ) ){
+                resultType = ((List<String>) miqlx.get("MiqlxView:")).get(0);
             }
         }
+        if( resultType == null || resultType.equals("") ){
+            resultType = psqContext.getDefaultView();
+        }
+        
         log.info( " FR(q)=" + firstResult + " BS(q)=" + blockSize );
+        log.info( " RT=" + resultType );
+
+
         ResultSet qrs = psqContext.getActiveIndex()
             .query( query, miqlx, firstResult, blockSize );
         
         ResultSet prs = 
-            new ResultSet( viewType, qrs.getFirstResult(),
+            new ResultSet( resultType, qrs.getFirstResult(),
                            qrs.getMaxResult(), new ArrayList() );
         
         prs.setMeta( qrs.getMeta() );
@@ -119,9 +124,8 @@ public class PsicquicServer {
             String recId = (String) in.get( psqContext.getRecId() );
 
             String drecord =  psqContext.getActiveStore()
-                .getRecord( recId , viewType );
+                .getRecord( recId , resultType );
         
-            log.debug( " SolrDoc: recId=" + recId + " :: "  + drecord );
             prs.getResultList().add( drecord );
         }
         

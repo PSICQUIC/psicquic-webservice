@@ -11,12 +11,19 @@ package org.hupo.psi.mi.psicquic.server;
 
 import java.util.*;
 import java.io.InputStream;
+import java.io.StringReader;
 
 import javax.annotation.*;
 import javax.jws.WebService;
 
+import javax.xml.transform.stream.StreamSource;
+
+import javax.xml.bind.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.hupo.psi.mi.mif.*;
 
 import org.hupo.psi.mi.psq.*;
 import org.hupo.psi.mi.psicquic.*;
@@ -94,6 +101,17 @@ public class PsicquicSoapImpl implements PsqPort {
                 viewType = infoRequest.getResultType();   
             } 
         }
+
+        log.info( "PsqPortImpl: TP=" + viewType);
+        
+        if( query != null 
+            && (viewType == null || viewType.equals("") )
+            && query.indexOf("MiqlxView:psi-mi/xml25") > 0){
+
+            // ugly hack; should be done in a cleaner way 
+            
+            viewType = "psi-mi/xml25";
+        }
         
         ResultSet qrs = psqServer.getByQuery( query, viewType,
                                               firstResult, blockSize );
@@ -104,17 +122,43 @@ public class PsicquicSoapImpl implements PsqPort {
         String mitab =  psqServer.getHeader( viewType );
         
 	log.info( "getByQuery: rs="+ qrs); 
-        
+               
+
         for( Iterator i = qrs.getResultList().iterator(); i.hasNext(); ){
             String record = (String) i.next();
             mitab += record + "\n";
         }
         mitab += psqServer.getFooter( viewType );
 
-        qr.getResultSet().setMitab( mitab );     
-
-        return qr;
         
+        if( viewType == null || !viewType.equals( "psi-mi/xml25" ) ){
+            qr.getResultSet().setMitab( mitab );     
+            return qr;
+        }
+
+        try{
+            JAXBContext jc = 
+                JAXBContext.newInstance( "org.hupo.psi.mi.mif" );
+            Unmarshaller u = jc.createUnmarshaller();
+            //EntrySet es = (EntrySet)
+
+
+            log.info( "getByQuery: mif-str=" + mitab );
+
+            JAXBElement jbe = (JAXBElement)
+                u.unmarshal( new StreamSource( new StringReader( mitab ) ) );
+
+            log.info( "getByQuery: declaredtype=" + jbe.getDeclaredType());
+
+            //EntrySet es = (EntrySet) jbegetValue() 
+            
+            qr.getResultSet().setEntrySet( (EntrySet) jbe.getValue() );  
+
+        } catch( JAXBException jbx ){
+            throw new PsicquicServiceException( " Unmarshaling error" , null);
+        }
+        
+        return qr;        
     };
 
     //--------------------------------------------------------------------------
