@@ -3,11 +3,12 @@ use SOAP::Lite;
 use XML::XPath;
 use XML::XPath::XMLParser;
 
-my $URL = "http://127.0.0.1:8080/psicquic-solr/ws/psq";
-my $PURL= "http://%%%:8080/psicquic-solr/ws/psq";
+my $URL = "http://127.0.0.1:8080/psicquic-solr-server/service/ws";
+my $PURL= "http://%%%:8080/psicquic-solr-server/service/soap/current";
 
 my $ip="";
 my $op="getByQuery";
+my $rtp=""; #psi-mi/tab25";
 my $query="*:*";
 
 my $firstRec = 0;
@@ -32,6 +33,9 @@ for( my $i=0; $i < @ARGV; $i++ ) {
     if( $ARGV[$i]=~/MREC=(.+)/ ) {
         $maxRec=$1;
     }
+    if( $ARGV[$i]=~/RTP=(.+)/ ) {
+        $rtp=$1;
+    }
 }
 
 print "URL: $URL\n";
@@ -49,11 +53,13 @@ if($op ne "" ) {
     
 	my $rqinfo = "<query>$query</query>". 
 	    "<infoRequest>".
-	    "<resultType/>".
+	    "<resultType>$rtp</resultType>".
 	    "<firstResult>$firstRec</firstResult>".
 	    "<blockSize>$maxRec</blockSize>".
 	    "</infoRequest>";
 	
+        print "::\n".$rqinfo."\n::\n";
+
         $som=SOAP::Lite->uri($URL)
             ->proxy($URL)
             ->default_ns($rns)
