@@ -16,7 +16,7 @@
       <spring.version>3.1.2.RELEASE</spring.version>
       <struts.version>2.3.4.1</struts.version>
       <solr.version>3.6.0</solr.version>
-      <calimocho.version>2.2-SNAPSHOT</calimocho.version>
+      <calimocho.version>2.5.1-SNAPSHOT</calimocho.version>
     </properties>
 
     <scm>
@@ -97,9 +97,25 @@
             <version>${calimocho.version}</version>
         </dependency>
 
+        <!-- needed by calimocho-solr ??? -->
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+
+        <!-- needed by calimocho-solr ??? -->     
+
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
+            <version>1.8.3</version>
+        </dependency> 
+
+        <dependency>
+            <groupId>psidev.psi.mi</groupId>
+            <artifactId>psi25-xml</artifactId>
             <version>1.8.3</version>
         </dependency> 
 

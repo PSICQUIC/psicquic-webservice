@@ -199,7 +199,13 @@
                "out":"view",
                "config":{
                     "in":"mitab25",
-                    "out":"mitab25"
+                    "out":"view",
+                    "col":["idA_o","idB_o","altidA_o","altidB_o",
+                        "aliasA_o","aliasB_o","detmethod_o","pubauth_o",
+                        "pubid_o","taxidA_o","taxidB_o","type_o","source_o",
+                        "interaction_id_o","confidence_o"
+                    ],
+                    "col-sep":"\t"
                   },
                "active":true
             },
@@ -208,7 +214,20 @@
                "out":"view",
                "config":{
                     "in":"mitab25",
-                    "out":"mitab27"
+                    "out":"view",
+                    "col":[ "idA_o","idB_o","altidA_o","altidB_o",
+                        "aliasA_o","aliasB_o","detmethod_o","pubauth_o",
+                        "pubid_o","taxidA_o","taxidB_o","type_o","source_o",
+                        "interaction_id_o","confidence_o","complex_o",
+                        "pbioroleA_o","pbioroleB_o","pexproleA_o","pexproleB_o",
+                        "ptypeA_o","ptypeB_o","pxrefA_o","pxrefB_o","xref_o",
+                        "annotA_o","annotB_o","annot_o","taxidHost_o",
+                        "param_o","cdate_o","udate_o",
+                        "checksumA_o","checksumB_o","checksumI_o",
+                        "negative","ftypeA_o","ftypeB_o","stcA_o","stcB_o",
+                        "pmethodA_o","pmethodB_o"
+                    ],
+                    "col-sep":"\t"
                   },
                "active":true
             }
@@ -219,7 +238,13 @@
                "out":"view",
                "config":{
                     "in":"mitab27",
-                    "out":"mitab25"
+                    "out":"view",
+                    "col":["idA_o","idB_o","altidA_o","altidB_o",
+                        "aliasA_o","aliasB_o","detmethod_o","pubauth_o",
+                        "pubid_o","taxidA_o","taxidB_o","type_o","source_o",
+                        "interaction_id_o","confidence_o"
+                    ],
+                    "col-sep":"\t"
                   },
                "active":true
             },
@@ -228,7 +253,29 @@
                "out":"view",
                "config":{
                     "in":"mitab27",
-                    "out":"mitab27"
+                    "out":"view",
+                    "col":[ "idA_o","idB_o","altidA_o","altidB_o",
+                        "aliasA_o","aliasB_o","detmethod_o","pubauth_o",
+                        "pubid_o","taxidA_o","taxidB_o","type_o","source_o",
+                        "interaction_id_o","confidence_o","complex_o",
+                        "pbioroleA_o","pbioroleB_o","pexproleA_o","pexproleB_o",
+                        "ptypeA_o","ptypeB_o","pxrefA_o","pxrefB_o","xref_o",
+                        "annotA_o","annotB_o","annot_o","taxidHost_o",
+                        "param_o","cdate_o","udate_o",
+                        "checksumA_o","checksumB_o","checksumI_o",
+                        "negative","ftypeA_o","ftypeB_o","stcA_o","stcB_o",
+                        "pmethodA_o","pmethodB_o"
+                    ],
+                    "col-sep":"\t"
+                  },
+               "active":true
+            },
+            { "type":"mitab2mif", 
+               "view":"psi-mi/xml25",
+               "out":"view",
+               "config":{
+                 "in":"mitab27",
+                 "out":"view"
                   },
                "active":true
             }

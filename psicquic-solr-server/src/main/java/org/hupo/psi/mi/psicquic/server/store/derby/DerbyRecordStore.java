@@ -312,13 +312,17 @@ public class DerbyRecordStore implements RecordStore{
                 Map itr = (Map) it.next();
                 log.debug( "DerbyRecordStore:" +
                            " addFile: view=" + itr.get( "view" ) );
-                if( ((String) itr.get("type")).equalsIgnoreCase("XSLT") &&
-                    (Boolean) itr.get("active") ){
+               
+                // XSLT transformer
+                //------------------
 
-                    if( itm.get( itr.get("view") ) == null ){            
+                if( (Boolean) itr.get("active") ){
+
+                    if( ((String) itr.get("type")).equalsIgnoreCase("XSLT")
+                        &&itm.get( itr.get("view") ) == null ){            
                         
-                    // initialize transformer
-                    //-----------------------
+                        // initialize XSLT transformer
+                        //----------------------------
                         
                         log.info( " Initializing transformer: format=" + format
                                   + " type=XSLT config=" + itr.get("config") );
@@ -329,8 +333,44 @@ public class DerbyRecordStore implements RecordStore{
                         itm.put( (String) itr.get("view"), rt );
                     }
 
+                    if( ((String) itr.get("type")).equalsIgnoreCase("CALIMOCHO")
+                        &&itm.get( itr.get("view") ) == null ){            
+                        
+                        // initialize CALIMOCHO transformer
+                        //---------------------------------
+                        
+                        log.info( " Initializing transformer: format=" + format
+                                  + " type=CALIMOCHO config=" + itr.get("config") );
+
+                        PsqTransformer rt =
+                            new CalimochoTransformer( (Map) itr.get( "config" ) );
+                        itm.put( (String) itr.get("view"), rt );
+
+                        log.info( " Initializing transformer(" + (String) itr.get("view")
+                                  + "): new=" + itm.get( itr.get("view") ) );
+                    }
+                    
+                    if( ((String) itr.get("type")).equalsIgnoreCase("MITAB2MIF")
+                        &&itm.get( itr.get("view") ) == null ){
+                        
+                        // initialize MITAB2MIF transformer
+                        //---------------------------------
+                        
+                        log.info( " Initializing transformer: format=" + format
+                                  + " type=MITAB2MIF config=" + itr.get("config") );
+                        
+                        PsqTransformer rt =
+                            new Mitab2MifTransformer( (Map) itr.get("config") );
+                        
+                        itm.put( (String) itr.get("view"), rt );
+                    }
+                    
                     PsqTransformer rt = itm.get( itr.get("view") );                     
                     
+                    log.info( "rt=" + rt 
+                              + "view=" + itr.get( "view" )
+                              + "fname=" + fileName );
+
                     try{
                         if( compress!= null 
                             && compress.equalsIgnoreCase("zip") ){
@@ -346,7 +386,7 @@ public class DerbyRecordStore implements RecordStore{
                         log.info( ex.getMessage(), ex );
                         return;
                     }
-                }                
+                }
             }            
         }
     }

@@ -8,7 +8,6 @@ Dependencies
   
   all but psicquic-api artifact are publicly available from a maven repository.
   psicquic-api has to be checked out and compiled/installed (mvn install)
-
   
 Compilation
 -----------

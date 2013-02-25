@@ -20,6 +20,7 @@ import org.hupo.psi.calimocho.tab.util.MitabDocumentDefinitionFactory;
 import psidev.psi.mi.calimocho.solr.converter.Converter;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.SolrInputField;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +38,15 @@ public class CalimochoTransformer implements PsqTransformer{
     String fileName = null;
     String curRowStr = null;
     int curLineNumber = 0;
+
+    String out = "SOLR";
+
+    // mitab2x view
+    //-------------
+
+    List<String> col = null;
+    String sep = "\t";
+
     
     public CalimochoTransformer( Map config ){
         
@@ -76,7 +86,17 @@ public class CalimochoTransformer implements PsqTransformer{
                 if( ((String) config.get( "out" ))
                     .equalsIgnoreCase( "SOLR" ) ){
                     solrDocConverter = new Converter();
+                    out = "SOLR";
                 }
+
+                if( ((String) config.get( "out" ))
+                   .equalsIgnoreCase( "VIEW" ) ){
+                    solrDocConverter = new Converter();
+                    out = "VIEW";
+
+                    col = (List<String>) config.get( "col" );
+                    sep = (String) config.get( "col-sep" );
+                }    
             }
         }		    
     }
@@ -155,6 +175,8 @@ public class CalimochoTransformer implements PsqTransformer{
     }
 
     public Map next(){
+
+        Log log = LogFactory.getLog( this.getClass() );
         
         if( curRowStr == null ){
             hasNext();
@@ -168,7 +190,7 @@ public class CalimochoTransformer implements PsqTransformer{
             
             Row row = rowReader.readLine( curRowStr );
             curRowStr = null;
-
+            
             if( row != null ){
                 String recId = fileName + ":" + curLineNumber;
                 resMap.put( "recId", recId );
@@ -178,13 +200,49 @@ public class CalimochoTransformer implements PsqTransformer{
                         = solrDocConverter.toSolrDocument( row );
 
                     sid.setField( "recId", recId );
-                    resMap.put( "solr", sid );
+
+                    if( out.equals("SOLR") ){
+                            resMap.put( "solr", sid );
+                    }
+                    
+                    if( out.equals("VIEW") ){
+
+                        StringBuffer view = new StringBuffer();
+
+                        for( Iterator<String> ci = col.iterator(); 
+                             ci.hasNext(); ){
+
+                            String cc = ci.next();
+                            String cv ="";
+                            SolrInputField sv =  sid.get( cc );
+                            if( sv != null ){
+                                cv =  sv.getFirstValue().toString();
+                                if(cv == null ) cv = "";
+                            }
+
+                            view.append(cv);
+                            if( ci.hasNext() ){
+                                view.append(sep);
+                            }
+                        }
+                                
+                        resMap.put( "view", view.toString() );
+
+
+                        log.info("recId=" + recId + "  ::" + view.toString());
+
+                    }
+
+                    
                 }
                 
                 // resMap.put( "dom", ??? ); NOTE: DOM representation ? 
             }  
             
         }catch ( Throwable t ) {
+            t.printStackTrace();
+            log.info( "Problem in line " + curLineNumber + ": " + curRowStr );
+
             // NOTE: add native exception ?
             //throw new IllegalRowException( "Problem in line: " + curLineNumber 
             //                               + "  /  LINE: " + curRowStr, 

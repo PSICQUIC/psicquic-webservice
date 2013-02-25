@@ -72,6 +72,9 @@
         <include>psidev.psi.mi:calimocho</include>
         <include>psidev.psi.mi:calimocho-tab</include>
         <include>psidev.psi.mi:calimocho-solr</include>
+        <include>joda-time:joda-time</include>
+        <include>psidev.psi.mi:psimitab</include>
+        <include>psidev.psi.mi:psi25-xml</include>
         <include>com.google.guava:guava</include>
         <include>commons-cli:commons-cli</include>
         <include>commons-logging:commons-logging</include>

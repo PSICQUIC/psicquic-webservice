@@ -1,8 +1,8 @@
 package org.hupo.psi.mi.psicquic.util;
 
 /* =============================================================================
- # $Id:: JsonContext.java 937 2012-05-29 15:39:09Z lukasz99                    $
- # Version: $Rev:: 937                                                         $
+ # $Id::                                                                       $
+ # Version: $Rev::                                                             $
  #==============================================================================
  #                                                                             $
  # JsonContext: JSON-based configuration                                       $
