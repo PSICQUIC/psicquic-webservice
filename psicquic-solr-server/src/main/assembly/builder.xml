@@ -91,6 +91,7 @@
         <include>org.apache.httpcomponents:httpclient</include>
         <include>org.apache.httpcomponents:httpmime</include>
         <include>org.apache.derby:derby</include>
+        <include>com.sun.xml.bind:jaxb-impl</include>
       </includes>
       <unpack>true</unpack>
       <scope>runtime</scope>

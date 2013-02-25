@@ -227,15 +227,10 @@ public class CalimochoTransformer implements PsqTransformer{
                         }
                                 
                         resMap.put( "view", view.toString() );
-
-
-                        log.info("recId=" + recId + "  ::" + view.toString());
-
+                        log.debug( "recId=" + recId 
+                                   + "  ::" + view.toString().substring(0,64) );
                     }
-
-                    
                 }
-                
                 // resMap.put( "dom", ??? ); NOTE: DOM representation ? 
             }  
             

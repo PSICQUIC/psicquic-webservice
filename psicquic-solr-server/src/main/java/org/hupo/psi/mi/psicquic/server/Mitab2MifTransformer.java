@@ -20,6 +20,8 @@ import psidev.psi.mi.tab.converter.tab2xml.*;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.xml.model.*;
 
+import psidev.psi.mi.xml.*;
+
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 
@@ -38,6 +40,12 @@ import javax.xml.bind.util.JAXBResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+
+
+
+
+
+
 public class Mitab2MifTransformer implements PsqTransformer{
 
     String fileName = null;
@@ -55,20 +63,16 @@ public class Mitab2MifTransformer implements PsqTransformer{
 
     private Transformer viewtr = null;
 
-    Marshaller mifMarshaller = null; 
+    private PsimiXmlWriter pxw = null;
 
     public Mitab2MifTransformer(Map config ){
 
         tabReader = new PsimiTabReader();
-        tabConverter = new Tab2Xml();
-
-        try{
-            JAXBContext jc = JAXBContext.newInstance( "psidev.psi.mi.xml.model" );
-            mifMarshaller = jc.createMarshaller();
-        } catch( JAXBException jex){
-            jex.printStackTrace();
-        }
-            
+        tabConverter = new Tab2Xml();        
+        
+        pxw = new PsimiXmlWriter( PsimiXmlVersion.VERSION_254, 
+                                  PsimiXmlForm.FORM_EXPANDED );       
+        
         if( config == null ){
 
         } else {
@@ -182,10 +186,14 @@ public class Mitab2MifTransformer implements PsqTransformer{
             if( viewtr != null ){
                 try{
                     StringWriter buffer = new StringWriter();                   
-                    mifMarshaller.marshal( eset, new StreamResult( buffer ) );
-                    
+                    pxw.write( eset, buffer);
                     String str = buffer.toString();
-                    log.debug( " next: str="+ str.substring(0,64));
+                    
+                    int fIndex = str.indexOf( "<interaction id" );
+                    int lIndex = str.lastIndexOf( "</interaction>" );
+
+                    str = str.substring( fIndex, lIndex + 14 );
+                    log.debug( " next: str=" + str.substring(0,64) );
                     resMap.put( "view", str );
                     
                 } catch ( Exception ex ){
@@ -194,9 +202,7 @@ public class Mitab2MifTransformer implements PsqTransformer{
             }
             
             curLineNumber++;            
-            String recId =  fileName+ ":" + curLineNumber;
-
-            //resMap.put( "dom", elemView );
+            String recId = fileName+ ":" + curLineNumber;
             resMap.put( "recId", recId  );
         }
         return resMap;
