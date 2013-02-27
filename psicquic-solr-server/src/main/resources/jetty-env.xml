@@ -10,5 +10,18 @@
   <Arg type="boolean">true</Arg>
  </New>
 
+ <New class="org.mortbay.jetty.plus.naming.Resource">
+  <Arg>java:/comp/env/jdbc/psicquicStore</Arg>
+  <Arg>
+   <New class="org.postgresql.ds.PGSimpleDataSource">
+    <Set name="User">${hibernate.connection.username}</Set>
+    <Set name="Password">${hibernate.connection.password}</Set>
+    <Set name="DatabaseName">${hibernate.connection.dbname}</Set>
+    <Set name="ServerName">${hibernate.connection.servername}</Set>
+    <Set name="PortNumber">${hibernate.connection.portnum}</Set>
+   </New>
+  </Arg>
+ </New>
+
 </Configure>
 

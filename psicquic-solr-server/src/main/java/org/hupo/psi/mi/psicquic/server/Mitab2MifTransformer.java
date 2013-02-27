@@ -13,7 +13,6 @@ import java.util.*;
 import java.net.*;
 import java.io.*;
 
-
 import psidev.psi.mi.tab.*;
 import psidev.psi.mi.tab.converter.tab2xml.*;
 
@@ -39,12 +38,6 @@ import javax.xml.bind.util.JAXBResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-
-
-
-
-
 
 public class Mitab2MifTransformer implements PsqTransformer{
 
@@ -189,10 +182,10 @@ public class Mitab2MifTransformer implements PsqTransformer{
                     pxw.write( eset, buffer);
                     String str = buffer.toString();
                     
-                    int fIndex = str.indexOf( "<interaction id" );
-                    int lIndex = str.lastIndexOf( "</interaction>" );
+                    int fIndex = str.indexOf( "<entry>" );
+                    int lIndex = str.lastIndexOf( "</entry>" );
 
-                    str = str.substring( fIndex, lIndex + 14 );
+                    str = str.substring( fIndex, lIndex + 8 );
                     log.debug( " next: str=" + str.substring(0,64) );
                     resMap.put( "view", str );
                     

@@ -68,7 +68,9 @@
     <property name="solrRecordIndex" ref="solrIndex" />  <!-- index name ??-->
   </bean>
 
- 
+<!-- HibernateRecordStore setup -->
+   <import resource="datastore-hibernate.xml"/>
+
 <!-- ======================================================== STRUTS ACTIONS -->
   
   <bean id="recordMgrAction" scope="prototype"
