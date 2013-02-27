@@ -44,6 +44,7 @@
       <map>
         <entry key="solr" value-ref="solrStore"/>       
         <entry key="derby" value-ref="derbyStore"/>
+        <entry key="hibernate" value-ref="hibernateStore"/>
       </map>
     </property>
   </bean>

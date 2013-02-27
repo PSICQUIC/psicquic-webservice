@@ -139,7 +139,11 @@ public class HibernateRecordStore implements RecordStore{
         
         try{
             Session session = sessionFactory.getCurrentSession();
+
+            Transaction tx = session.beginTransaction();
             session.saveOrUpdate( pr );
+            tx.commit();
+
         } catch( Exception ex ){
             log.info( "   addRecord failed" );
             ex.printStackTrace();
@@ -156,6 +160,7 @@ public class HibernateRecordStore implements RecordStore{
 
         try{
             Session session = sessionFactory.getCurrentSession();
+            
             Query query
                 = session.createQuery( "select pr.value" +
                                        " from PsicquicRecord pr" +

@@ -125,10 +125,11 @@ public class RecordMgrAction extends ActionSupport
 
     public String execute() throws Exception {
 
-        initialize();
-
         Log log = LogFactory.getLog( this.getClass() );
         log.info( "OP=" + op + " ID=" + pid + " VT=" + vt );
+        log.debug( "STORE=" + psqContext.getActiveStore() );
+        
+        initialize();
         
         if( op != null && op.equals( "add" ) ){
             if( pid != null && vt != null && vv != null ){

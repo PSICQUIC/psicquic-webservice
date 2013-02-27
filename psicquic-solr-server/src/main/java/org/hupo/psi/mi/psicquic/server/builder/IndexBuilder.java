@@ -24,6 +24,7 @@ import org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex;
 
 import org.hupo.psi.mi.psicquic.server.store.*;
 import org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore;
+import org.hupo.psi.mi.psicquic.server.store.hibernate.HibernateRecordStore;
 import org.hupo.psi.mi.psicquic.server.store.solr.SolrRecordStore;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
@@ -373,6 +374,12 @@ class IndexThread extends Thread{
                 recordStore = new DerbyRecordStore( psqContext, host );
                 recordStore.initialize();
             }
+
+            if( activeStoreName.equals( "hibernate" ) ){
+                recordStore = new HibernateRecordStore( psqContext, host );
+                recordStore.initialize();
+            }
+
         } catch( MalformedURLException mux ){
             mux.printStackTrace();
         }
