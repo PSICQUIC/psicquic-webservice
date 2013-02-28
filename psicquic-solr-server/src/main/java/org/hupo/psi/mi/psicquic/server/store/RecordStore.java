@@ -20,7 +20,6 @@ public interface RecordStore{
     public void clearLocal();
     public void shutdown();
     public void addRecord( String id, String record, String format );
-    //public void addFile( String fileName, String format, InputStream is );
     public void addFile( File f, String name, String format, String compress );
 
     public String getRecord( String id, String format );

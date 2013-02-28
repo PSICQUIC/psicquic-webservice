@@ -420,6 +420,8 @@ class IndexThread extends Thread{
                     recordStore.addFile( file, name, format, compress );
                 }
             }catch( Exception ex ){
+                log.info("XXX");
+                ex.printStackTrace();
                 log.info( ex.getMessage(), ex );
             }
         }

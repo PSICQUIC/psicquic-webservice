@@ -51,7 +51,7 @@
   },
   "store":{
      "record-mgr": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr",
-     "active":"hibernate",
+     "active":"derby",
      "rec-id":"recId",
      "view-default":"psi-mi/tab27",
      "derby":{
