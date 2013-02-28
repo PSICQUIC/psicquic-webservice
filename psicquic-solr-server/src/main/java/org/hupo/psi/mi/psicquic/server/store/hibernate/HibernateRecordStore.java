@@ -221,5 +221,4 @@ public class HibernateRecordStore extends RdbRecordStore {
             ex.printStackTrace();
         }   
     }
-
 }

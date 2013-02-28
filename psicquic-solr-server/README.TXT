@@ -167,22 +167,31 @@ Configuration
     Record views (ie record representation(s) returned in response to a query) 
     can be, in general, stored outside of the index in a record store (local 
     filesystem, local or remote database; in the simplest case it is also 
-    possible to store them in the index. Currently, two implemetations of the 
-    record store are available: "derby" (utilizing Apache Derby 
-    http://db.apache.org/derby/) and "solr" which reuses the data stored within
-    the index to generate mitab2x representiation of the records. 
+    possible to store them in the index. Currently, three implemetations of the 
+    record store are available:
+      "derby" utilizes embedded Apache Derby (http://db.apache.org/derby/) SQL 
+              server.
+
+      "hibernate" utilizes Hibernate (http://www.hibernate.org/) object-
+              relational mapping (ORM) library and thus supports any RDMB 
+              accessible through Hibernate (about a dozen major RDBM systems, 
+              including MySQL, PostgreSQL, Oracle, DB2, Microsoft SQL and more)
+
+      "solr" reuses the data stored within the index to generate mitab2x 
+             representiation of the records. 
   
     Parameters:
-           
-      active - currently active data store. Valid values "derby", "solr".
+
+      active - currently active data store. Valid values "derby", "solr", 
+               "hibernate".
 
       rec-id - index field to use as the data store id. Valid values: 
                 "uuId" - to be used with solr data store 
                 "recId" - to be used with anything else (preferrd)
 
       view-default - default record view. Valid values:
-                "psi-mi/tab25", "psi-mi/tab26", "psi-mi/tab27" (solr,derby dts) 
-                "psi-mi/xml25" (derby dts only)
+                "psi-mi/tab25", "psi-mi/tab26", "psi-mi/tab27" (solr, derby, hibernate) 
+                "psi-mi/xml25" (derby only)
 
       record-mgr - url of the action used to commit/retrieve individual 
                records from the record store; used only by the derby record 
@@ -195,6 +204,10 @@ Configuration
                 each view ("psi-mi/tab25","psi-mi/tab26","psi-mi/tab27")
                 can be customized by adding header footer blocks defined
                 by 'header' and 'footer' parameters; 
+   
+       'hibernate' store configuration:
+           
+
 
        'solr' store configuration:
            url, shard - same as for solr index; in the simplest case 
@@ -210,11 +223,12 @@ Configuration
               column separator (typically tab or comma) and "header"/
               "footer" parameters that specify blocks of text that
               preceed/follow retrieved records 
-   
+
+
   Service Configuration
   ---------------------
 
-     Paramewters to be returned as the meta information about the 
+     Parameters to be returned as the meta information about the 
      psicquic server.
 
 
