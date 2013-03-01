@@ -144,17 +144,10 @@
         <!-- local-title -->
         <!-- NB: for additional title style patterns, see http://frontier.ebi.ac.uk/web/style/patterns -->
 
-    <#--<div class="grid_12 alpha" id="local-title">-->
-    <#--<h1><a href="#" title="Back to PSICQUIC Registry homepage">PSICQUIC Registry</a></h1>-->
-    <#--</div>-->
-
-    <#--<div id="local-title" class="grid_12 alpha logo-title">-->
-
-        <div id="local-title" class="logo-title">
-            <a href="#" title="Back to PSICQUIC Registry homepage">
-                <img src="images/psicquic-logo.png" alt="PSICQUIC logo"  width="64" height="64"></a>
-            <span><h1 style="line-height: normal">PSICQUIC Registry</h1></span>
+        <div class="grid_12 alpha" id="local-title">
+        <h1><a href="#" title="Back to PSICQUIC Registry homepage">PSICQUIC Registry</a></h1>
         </div>
+
         <!-- /local-title -->
 
         <!-- local-search -->
@@ -230,14 +223,6 @@
     <p>Total: <strong>${totalCount}</strong>&#160;Interactions from <strong>${serviceCount}</strong> PSICQUIC
         Services.</p>
 
-    <! --------------------------------
-    GLOBAL SEARCH TEMPLATE - START
-    -------------------------------- >
-<#--<section class="grid_20 alpha" id="search-results">-->
-
-    <! ------------------------------
-    GLOBAL SEARCH TEMPLATE - END
-    ------------------------------ >
 
     <p>Filter: <input id="filter" type="text" /></p>
     <table class="footable" data-filter="#filter" style="font-size: 85%">
@@ -248,9 +233,6 @@
             <th data-hide="phone" data-type="numeric">Interactions</th>
             <th data-hide="phone,tablet" data-type="alpha">Version</th>
             <th data-hide="phone,tablet" data-type="alpha">URLs</th>
-        <#--<th>SOAP URL</th>-->
-        <#--<th>REST URL</th>-->
-        <#--<th>REST Example</th>-->
             <th data-hide="phone,tablet" data-type="alpha">Restricted</th>
             <th data-hide="phone,tablet">Tags</th>
         <#--<th>Comments</th>-->
@@ -273,12 +255,6 @@
         <td style="text-align:right">${service.count}<br/></td>
         <td>${service.version!'-'}<br/></td>
         <td>
-            <#--<strong>SOAP URL: </strong>${service.soapUrl}<br/>-->
-            <#--<#if service.restUrl??>-->
-                <#--<strong>REST URL: </strong>${service.restUrl}<br/>-->
-            <#--<#else>-->
-                <#--<strong>REST URL: </strong>N/A<br/>-->
-            <#--</#if>-->
             SOAP: ${service.soapUrl}<br/>
             <#if service.restUrl??>
                 REST: ${service.restUrl}<br/>
@@ -313,25 +289,8 @@
     <#--<td>${service.comments!''}&#160;</td>-->
     </#list>
     </table>
+    </p>
 
-    <! --------------------------------
-    GLOBAL SEARCH TEMPLATE - START
-    -------------------------------- >
-<#--</section>-->
-    <! ------------------------------
-    GLOBAL SEARCH TEMPLATE - END
-    ------------------------------ >
-
-
-    <! --------------------------------
-    GLOBAL SEARCH TEMPLATE - START
-    -------------------------------- >
-<#--<section class="grid_4 omega" id="search-extras">-->
-<#--<p>EBI global search results</p>-->
-<#--</section>-->
-    <! ------------------------------
-    GLOBAL SEARCH TEMPLATE - END
-    ------------------------------ >
 
     <h3 id="aboutRegistry">About PSICQUIC Registry</h3>
 
@@ -417,63 +376,6 @@
   <script defer="defer" src="//www.ebi.ac.uk/web_guidelines/js/script.js"></script>
   -->
 
-<! --------------------------------
-GLOBAL SEARCH TEMPLATE - START
--------------------------------- >
-
-<script type="text/javascript">
-    function renderMenu(elem, items, baseURL) {
-        var ul = $("<ul>").appendTo(elem);
-        $.each(items, function (index, item) {
-            renderItem(ul, item, baseURL);
-        });
-    }
-
-    function renderItem(ul, item, baseURL) {
-        $("<li>")
-                .append($("<a>").attr("href", baseURL + item.url)
-                        .text(item.name + " (" + item.numberOfResults + ")")
-                ).appendTo(ul);
-    }
-
-    function updateSummary() {
-        var query = $("#local-searchbox").val();
-        if (query) {
-            var searchBaseURL = "http://frontier.ebi.ac.uk/ebisearch/";
-            var thisElem = $.find("#search-extras");
-            $(thisElem).text("Loading other results");
-            $(thisElem).addClass("loading");
-
-            $.ajax({
-                searchBaseURL: searchBaseURL,
-                url: searchBaseURL + "globalsearchsummary.ebi?query=" + query,
-                context: thisElem,
-                dataType: "json",
-                crossdoamin: true,
-                error: function (request, error) {
-                    //console.log(arguments);
-                    alert("error occurred: " + error);
-                },
-                success: function (data, textStatus, jqHXR) {
-                    //alert("success");
-                }
-            }).done(function (response) {
-                        var obj = response;
-                        $(this).text("");
-                        $(this).removeClass("loading");
-                        $(this).append("<p>EBI global search results</p>");
-                        //$(this).blink({delay: 500});
-                        $("#page-title").text('Search results for ').append($("<span>").attr("class", "searchterm").text(query));
-                        renderMenu(this, obj, searchBaseURL);
-                    });
-        }
-    }
-
-</script>
-
-<! ------------------------------
-GLOBAL SEARCH TEMPLATE - END
------------------------------- >
 
 <script defer="defer" src="//www.ebi.ac.uk/web_guidelines/js/cookiebanner.js"></script>
 <script defer="defer" src="//www.ebi.ac.uk/web_guidelines/js/foot.js"></script>
