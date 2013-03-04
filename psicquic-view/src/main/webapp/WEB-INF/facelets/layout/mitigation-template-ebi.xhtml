@@ -8,8 +8,9 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:c="http://java.sun.com/jstl/core"
-      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-<head>
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:trh="http://myfaces.apache.org/trinidad/html">
+<trh:head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name='robots' content='nofollow'/>
     <meta http-equiv="Content-Language" content="en-GB" />
@@ -25,10 +26,11 @@
     <script src="#{ebisf:absoluteEbiUrl()}/inc/js/contents.js" type="text/javascript"></script>
     <link rel="stylesheet" href="#{ebisf:absoluteEbiUrl()}/inc/css/sidebars.css" type="text/css"/>
 
-    <!--<link rel="stylesheet" href="#{requestConfigBean.absoluteContextPath}/skins/ebi/ebi.css" type="text/css"/>-->
+    <!--Import the right trinidad style-->
+    <trh:styleSheet/>
 
     <style type="text/css">
-        body { min-width: 1024px !important; max-width: 1600px !important;  margin: auto; }
+        body { min-width: 1024px !important; max-width: 1400px !important;  margin: auto; }
     </style>
 
     <link rel="SHORTCUT ICON" href="http://www.ebi.ac.uk/bookmark.ico" />
@@ -98,8 +100,8 @@
     </style>
 
 
-</head>
-<body>
+</trh:head>
+<trh:body>
 <div id="wrapper" class="container_24 contents">
 
     <div id="skip-to">
@@ -117,12 +119,13 @@
     </ui:insert>
 
 
-    <div id="content" role="main" class="grid_24 clearfix contents">
+    <div class="grid_24 clearfix contents">
         <ui:insert name="content"/>
 
         <ui:insert name="footer_tl">
             <ui:include src="mitigation-footer.xhtml"/>
         </ui:insert>
+
     </div>
 
 
@@ -151,7 +154,7 @@
 
 </script>
 
-</body>
+</trh:body>
 </html>
 
 

@@ -1,9 +1,8 @@
-body {
+af|body {
     background-color:#FFFFFF;
     color:#000000;
     font-family:helvetica,"trebuchet MS",arial,sans-serif;
     font-size:9pt;
-    margin:0pt;
     padding:0pt;
     width:100%;
 }
@@ -53,7 +52,7 @@ a.OraLink:hover {
 }
 
 .AFHeaderWarningIcon:alias {
-    content: url(/skins/ebi/images/warning.gif);
+    content: url(images/warning.gif);
     padding-right: 5px;
 }
 
@@ -195,28 +194,28 @@ af|panelBox::dark af|panelBox::end {
 
 af|panelBox::dark af|panelBox::top-start,
 af|panelBox::dark af|panelBox::top-end:rtl {
-  background-image: url(/skins/ebi/images/rounded_TL.gif);
+  background-image: url(images/rounded_TL.gif);
   width:6px;
   height:6px
 }
 
 af|panelBox::dark af|panelBox::top-end,
 af|panelBox::dark af|panelBox::top-start:rtl {
-  background-image: url(/skins/ebi/images/rounded_TR.gif);
+  background-image: url(images/rounded_TR.gif);
   width:6px;
   height:6px
 }
 
 af|panelBox::dark af|panelBox::bottom-start,
 af|panelBox::dark af|panelBox::bottom-end:rtl {
-  background-image: url(/skins/ebi/images/rounded_BL.gif);
+  background-image: url(images/rounded_BL.gif);
   width:6px;
   height:6px
 }
 
 af|panelBox::dark af|panelBox::bottom-end,
 af|panelBox::dark af|panelBox::bottom-start:rtl {
-  background-image: url(/skins/ebi/images/rounded_BR.gif);
+  background-image: url(images/rounded_BR.gif);
   width:6px;
   height:6px
 }
@@ -535,28 +534,28 @@ af|messages::end {
 
 af|messages::top-start,
 af|messages::top-end:rtl {
-  background-image: url(/skins/ebi/images/rounded_TL.gif);
+  background-image: url(images/rounded_TL.gif);
   width:6px;
   height:6px
 }
 
 af|messages::top-end,
 af|messages::top-start:rtl {
-  background-image: url(/skins/ebi/images/rounded_TR.gif);
+  background-image: url(images/rounded_TR.gif);
   width:6px;
   height:6px
 }
 
 af|messages::bottom-start,
 af|messages::bottom-end:rtl {
-  background-image: url(/skins/ebi/images/rounded_BL.gif);
+  background-image: url(images/rounded_BL.gif);
   width:6px;
   height:6px
 }
 
 af|messages::bottom-end,
 af|messages::bottom-start:rtl {
-  background-image: url(/skins/ebi/images/rounded_BR.gif);
+  background-image: url(images/rounded_BR.gif);
   width:6px;
   height:6px
 }

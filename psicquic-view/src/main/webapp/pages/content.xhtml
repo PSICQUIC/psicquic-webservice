@@ -10,9 +10,7 @@
                 xmlns:ebi="http://ebi.ac.uk/faces/components"
                 xmlns:ebisf="http://www.ebi.ac.uk/faces/site">
 
-<tr:document title="#{config.title}">
-
-<tr:form id="mainForm" inlineStyle="padding: 10px;">
+<tr:form id="mainForm" inlineStyle="padding: 10px; background-color: white">
 
 <tr:panelGroupLayout layout="vertical">
 
@@ -22,7 +20,7 @@
 <tr:statusIndicator id="status">
     <f:facet name="busy">
         <tr:panelGroupLayout layout="horizontal">
-            <tr:image source="/skins/ebi/images/status_busy_redback.gif"
+            <tr:image source="images/status_busy_redback.gif"
                       inlineStyle="vertical-align:middle"/>
             <tr:outputFormatted value="&#160;"/>
             <tr:outputText value="Loading..."/>
@@ -270,5 +268,4 @@
 </tr:panelGroupLayout>
 
 </tr:form>
-</tr:document>
 </ui:composition>

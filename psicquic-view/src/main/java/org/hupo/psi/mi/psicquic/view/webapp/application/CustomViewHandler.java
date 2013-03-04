@@ -17,6 +17,9 @@ import java.util.Locale;
  * To change this template use File | Settings | File Templates.
  */
 
+/**
+ * Solves part of the problems with the View Expired Exception
+ */
 public class CustomViewHandler extends ViewHandler {
 	private ViewHandler parent;
 
@@ -28,7 +31,7 @@ public class CustomViewHandler extends ViewHandler {
 	@Override
 	public UIViewRoot restoreView(FacesContext facesContext, String viewId) {
 		/**
-		 * {@link javax.faces.application.ViewExpiredException}. This happens only  when we try to logout from timed out pages.
+		 * {@link javax.faces.application.ViewExpiredException}.
 		 */
 		UIViewRoot root = null;
 		root = parent.restoreView(facesContext, viewId);

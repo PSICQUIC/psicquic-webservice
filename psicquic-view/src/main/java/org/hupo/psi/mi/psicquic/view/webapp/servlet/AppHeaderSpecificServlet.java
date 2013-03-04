@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psicquic.view.webapp.controller.servlet;
+package org.hupo.psi.mi.psicquic.view.webapp.servlet;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;

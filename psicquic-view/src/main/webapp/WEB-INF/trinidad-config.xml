@@ -5,7 +5,7 @@
 
   <!-- you can use EL to get the skin. This allows the skin to change between
        requests. -->
-  <skin-family>imex</skin-family>
+  <skin-family>#{config.colourSchema}</skin-family>
 
   <!--  Uncomment any of these to enable them -->
   <!-- accessibility-mode>inaccessible</accessibility-mode -->

@@ -20,7 +20,7 @@
     <properties>
         <service.name>psicquic</service.name>
 
-        <debug>false</debug>
+        <debug>true</debug>
 
         <jetty.port>19095</jetty.port>
         <jetty.context>view</jetty.context>
@@ -33,7 +33,7 @@
         <appRoot>/psicquic</appRoot>
 
         <!-- configurable -->
-        <config.file>file:psicquic-view.config.properties</config.file>
+        <config.file>file:imex-view.config.properties</config.file>
 
         <!-- Stores cache in local directory unless overriden at build time using -Dclustering.storage.directory=... -->
         <clustering.storage.directory>cluster-cache</clustering.storage.directory>

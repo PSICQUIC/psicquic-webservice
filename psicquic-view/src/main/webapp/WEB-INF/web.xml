@@ -243,7 +243,7 @@
             automatic compression of style class names.
         </description>
         <param-name>org.apache.myfaces.trinidad.DISABLE_CONTENT_COMPRESSION</param-name>
-        <param-value>false</param-value>
+        <param-value>${debug}</param-value>
     </context-param>
 
     <context-param>
@@ -379,7 +379,7 @@
     <!-- Frontier guidelines servlets -->
     <servlet>
         <servlet-name>appHeaderSpecific</servlet-name>
-        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.controller.servlet.AppHeaderSpecificServlet</servlet-class>
+        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.servlet.AppHeaderSpecificServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -389,7 +389,7 @@
 
     <servlet>
         <servlet-name>appMainHeader</servlet-name>
-        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.controller.servlet.AppMainHeaderServlet</servlet-class>
+        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.servlet.AppMainHeaderServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -399,7 +399,7 @@
 
     <servlet>
         <servlet-name>appMainFooter</servlet-name>
-        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.controller.servlet.AppMainFooterServlet</servlet-class>
+        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.servlet.AppMainFooterServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
