@@ -229,7 +229,7 @@
         <thead>
         <tr>
             <th data-class="expand" data-sort-initial="true" data-type="alpha">Name</th>
-            <th>Status</th>
+            <th data-type="alpha">Status</th>
             <th data-hide="phone" data-type="numeric">Interactions</th>
             <th data-hide="phone,tablet" data-type="alpha">Version</th>
             <th data-hide="phone,tablet" data-type="alpha">URLs</th>
@@ -244,11 +244,11 @@
             <a href="${service.organizationUrl}" target="_blank"><strong>${service.name}</strong></a>
             <br/>
         </td>
-        <td>
+        <td data-value="${service.active?string("active", "inactive")}">
             <#if service.active>
-                <img src="images/active.png" alt="Active" title="active"></a>
+                <img src="images/active.png" alt="Active" title="active">
             <#else>
-                <img src="images/inactive.png" alt="Inactive" title="inactive"></a>
+                <img src="images/inactive.png" alt="Inactive" title="inactive">
             </#if>
             <br/>
         </td>
