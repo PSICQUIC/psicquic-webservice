@@ -10,6 +10,7 @@ package org.hupo.psi.mi.psicquic.server.store;
  #=========================================================================== */
 
 import java.util.List;
+import java.util.Map;
 import java.io.File;
 
 import org.hupo.psi.mi.psicquic.server.*;
@@ -25,4 +26,5 @@ public interface RecordStore{
     public String getRecord( String id, String format );
     public List<String> getRecordList( List<String> id, String format );
     public String toString( ResultSet rset );
+    public Map getMeta();
 }

@@ -29,7 +29,39 @@
     </result-types>
 
    <!-- ======================================================= Interceptors -->
-   <!-- <interceptors/> -->   
+
+    <interceptors>   
+     <interceptor name="menu"
+         class="edu.ucla.mbi.util.struts.interceptor.MenuInterceptor"/>
+
+     <interceptor-stack name="mgrStack">
+       <interceptor-ref name="exception"/>
+       <interceptor-ref name="alias"/>
+       <interceptor-ref name="servletConfig"/>
+       <interceptor-ref name="prepare"/>
+       <interceptor-ref name="i18n"/>
+       <interceptor-ref name="chain"/>
+       <interceptor-ref name="debugging"/>
+       <interceptor-ref name="profiling"/>
+       <interceptor-ref name="scopedModelDriven"/>
+       <interceptor-ref name="modelDriven"/>
+       <interceptor-ref name="checkbox"/>
+       <interceptor-ref name="staticParams"/>
+       <interceptor-ref name="params">
+        <param name="excludeParams">dojo\..*</param>
+       </interceptor-ref>
+       <interceptor-ref name="conversionError"/>
+       <interceptor-ref name="menu"/>
+       <interceptor-ref name="validation">
+         <param name="excludeMethods">input,back,cancel,browse</param>
+       </interceptor-ref>
+       <interceptor-ref name="workflow">
+         <param name="excludeMethods">input,back,cancel,browse</param>
+       </interceptor-ref>
+     </interceptor-stack>
+
+    </interceptors>
+
    <!-- ============================================================ Actions -->
 
    <!-- welcome page -->
@@ -41,6 +73,7 @@
   <!-- record manager -->
 
     <action name="recordmgr" class="recordMgrAction" >
+
       <interceptor-ref name="defaultStack"/>
       <interceptor-ref name="timer"/>
 
@@ -50,6 +83,22 @@
         </param>
         <param name="noCache">true</param>
       </result>
+    </action>
+
+    <action name="mpsqmgr" class="mpsqMgrAction" >
+      <interceptor-ref name="mgrStack"/>
+      <interceptor-ref name="timer"/>
+
+
+      <result name="success" type="tiles">mpsqmgr</result>
+
+      <result name="json" type="json">
+        <param name="includeProperties">
+          meta.*, mode
+        </param>
+        <param name="noCache">true</param>
+      </result>
+
     </action>
 
   </package>

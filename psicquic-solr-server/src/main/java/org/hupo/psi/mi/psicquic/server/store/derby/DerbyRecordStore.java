@@ -279,4 +279,39 @@ public class DerbyRecordStore extends RdbRecordStore{
             create();
         }
     }
+
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
+    public Map getMeta(){
+        connect();
+        Map meta = new HashMap();
+        meta.put("resource-class","store");
+        meta.put("resource-type","derby");
+
+        try{
+
+            Map viewCount = new HashMap();
+            
+            
+
+            PreparedStatement pst = dbcon
+                .prepareStatement( "select format, count(*) from record" +
+                                   " group by format" );
+            
+            ResultSet rs =  pst.executeQuery();
+            long all = 0;
+            while( rs.next() ){
+                    String vt = rs.getString(1);
+                    int vc = rs.getInt(2);
+                    all += vc;
+                    viewCount.put( vt, vc );
+            }
+            viewCount.put( "all", all );
+            meta.put( "counts", viewCount );
+        } catch( Exception ex ){
+            ex.printStackTrace();
+        }
+        return meta;
+    }
 }

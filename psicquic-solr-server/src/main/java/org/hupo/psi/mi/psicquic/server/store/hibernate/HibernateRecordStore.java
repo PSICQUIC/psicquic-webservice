@@ -221,4 +221,47 @@ public class HibernateRecordStore extends RdbRecordStore {
             ex.printStackTrace();
         }   
     }
+
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
+    public Map getMeta(){
+
+        Map meta = new HashMap();
+        meta.put("resource-class","store");
+        meta.put("resource-type","hibernate");
+
+        Log log = LogFactory.getLog( this.getClass() );
+
+        Session session = null;
+   
+        try{
+            session = sessionFactory.getCurrentSession();
+            
+            Map viewCount = new HashMap();
+
+            Query query
+                = session.createQuery( "select pr.format, count(pr)" +
+                                       " from PsicquicRecord pr" +
+                                       " group by pr.format" );
+            
+            long all = 0;
+            for( Iterator<Object[]> qi = (Iterator<Object[]>) query.iterate();
+                 qi.hasNext(); ){
+                
+                Object[] cq = qi.next();
+                
+                String vt = (String) cq[0];
+                int vc = (Integer) cq[1];
+                all+=vc;
+                viewCount.put(vt,vc);
+            }
+            viewCount.put( "all", all);
+            meta.put( "counts", viewCount );
+        } catch( Exception ex ){
+            ex.printStackTrace();
+        }   
+        return meta;
+    }
+
 }

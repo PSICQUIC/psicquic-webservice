@@ -350,7 +350,7 @@ public abstract class RdbRecordStore implements RecordStore{
         } catch (Exception e) {
         }
     }
-    
+
     //--------------------------------------------------------------------------
 
     private String hostReset( String url, String newHost ){

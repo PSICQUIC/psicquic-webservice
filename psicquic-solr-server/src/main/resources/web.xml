@@ -38,22 +38,22 @@
 <!-- ========================================================= CONTEXT setup -->
 <!-- ========================================================= ============= -->
 
-  <context-param>
-
   <!-- ====================================================== TILES context  -->
-<!--
+
+  <context-param>
     <param-name>
       org.apache.tiles.impl.BasicTilesContainer.DEFINITIONS_CONFIG
     </param-name>
     <param-value>
-      /WEB-INF/tiles.xml
+      /WEB-INF/classes/tiles.xml
     </param-value>
--->
+  </context-param>  
+
   <!-- ===================================================== SPRING context  -->
 
+  <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/spring/spring-context.xml</param-value>
-
   </context-param>
 
 <!-- ========================================================= ============= -->
@@ -61,14 +61,28 @@
 <!-- ========================================================= ============= -->
 
   <!-- ====================================================== STRUTS2 filter -->
-
   <filter>
+
     <filter-name>struts</filter-name>
+    <filter-class>
+      org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
+    </filter-class>
+
+    <init-param>
+     <param-name>actionPackages</param-name>
+     <param-value>org.hupo.psi.mi.psicquic.server.struts.action</param-value>
+    </init-param>
+
+  </filter>
+
 <!--
+    <filter-name>struts</filter-name>
     <filter-class>
       org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
     </filter-class>
 -->
+<!-- XXX
+    <filter-name>struts</filter-name>
     <filter-class>
       org.apache.struts2.dispatcher.FilterDispatcher
     </filter-class>
@@ -78,10 +92,16 @@
         <param-value>org.hupo.psi.mi.psicquic.server.struts.action</param-value>
         </init-param>
   </filter>
+-->
 
   <filter-mapping>
     <filter-name>struts</filter-name>
     <url-pattern>/recordmgr</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>struts</filter-name>
+    <url-pattern>/mpsqmgr</url-pattern>
   </filter-mapping>
 
   <!-- ========================================================= SOLR filter -->
@@ -113,7 +133,7 @@
     
   </filter>
 
- <filter-mapping>
+  <filter-mapping>
     <!--
       NOTE: When using multicore, /admin JSP URLs with a core specified
       such as /solr/coreName/admin/stats.jsp get forwarded by a
@@ -134,13 +154,13 @@
 <!-- ======================================================= =============== -->
 
   <!-- ============================================== STRUTS2/TILES listener -->
-<!--
+
   <listener>
     <listener-class>
       org.apache.struts2.tiles.StrutsTilesListener
     </listener-class>
   </listener>
--->
+
   <!-- ===================================================== SPRING listener -->
 
   <listener>

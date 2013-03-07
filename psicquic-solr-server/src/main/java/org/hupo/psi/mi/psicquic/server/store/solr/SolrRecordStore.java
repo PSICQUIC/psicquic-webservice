@@ -1,5 +1,5 @@
 package org.hupo.psi.mi.psicquic.server.store.solr;
-
+ 
 /* =============================================================================
  # $Id::                                                                       $
  # Version: $Rev::                                                             $
@@ -244,4 +244,59 @@ public class SolrRecordStore implements RecordStore{
         return res.substring( 0, res.length() - 1 ) + "\n";
     }
 
+    //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
+
+    public Map getMeta(){
+        
+        Log log = LogFactory.getLog( this.getClass() );
+        //log.debug( "getMeta: DefSolrParams=" + defSolrParams );
+
+        Map metaMap = new HashMap();
+        metaMap.put("resource-class","store");
+        metaMap.put("resource-type","solr");
+
+        ModifiableSolrParams params
+            = new ModifiableSolrParams(); // defSolrParams );
+        
+        if( baseUrl == null ){ initialize(); }
+        log.debug( "   getMeta: baseUrl=" + baseUrl );
+        
+        if( baseUrl != null ){
+            SolrServer solr = new HttpSolrServer( baseUrl );
+            
+            // set shards when needed
+            //-----------------------
+
+            if( shardStr != null ){
+                params.set( "shards", shardStr );
+            }
+
+            // Query
+            //------
+
+            params.set( "q", "*:*" );
+            params.set( "rows", Long.toString( 1 ) );
+            
+            try{
+                QueryResponse response = solr.query( params );
+                log.debug( "\n\nresponse:\n\n\n" + response +"\n\n\n");
+
+                SolrDocumentList sdl = response.getResults();
+
+                Map countMap = new HashMap();
+                countMap.put( "all", sdl.getNumFound() );
+                
+                metaMap.put( "counts", countMap );
+
+            }catch( Exception ex ){
+                
+                log.info( " getMeta: query error");
+                ex.printStackTrace();
+            }
+        }
+        return metaMap;
+    }
+ 
 }
+

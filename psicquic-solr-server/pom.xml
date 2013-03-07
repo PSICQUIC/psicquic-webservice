@@ -17,12 +17,17 @@
       <struts.version>2.3.4.1</struts.version>
       <solr.version>3.6.0</solr.version>
       <calimocho.version>2.5.1-SNAPSHOT</calimocho.version>
+      <dip.util>0.04</dip.util>
 
       <hibernate.connection.username>psq</hibernate.connection.username>
       <hibernate.connection.password>888psq888</hibernate.connection.password>
       <hibernate.connection.dbname>psicquic</hibernate.connection.dbname>
       <hibernate.connection.servername>10.1.200.1</hibernate.connection.servername>
       <hibernate.connection.portnum>5432</hibernate.connection.portnum>
+
+      <mpsq.version>${project.version}</mpsq.version>
+      <mpsq.bld>$Rev: 418 $</mpsq.bld>
+
     </properties>
 
     <scm>
@@ -103,13 +108,11 @@
             <version>${spring.version}</version>
         </dependency>
 
-
-<dependency>
-  <groupId>org.hibernate</groupId>
-  <artifactId>hibernate-core</artifactId>
-  <version>3.3.2.GA</version>
-</dependency>
-
+        <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-core</artifactId>
+         <version>3.3.2.GA</version>
+        </dependency>
 
         <dependency>
             <groupId>psidev.psi.mi</groupId>
@@ -212,7 +215,14 @@
           <artifactId>struts2-core</artifactId>
           <version>${struts.version}</version>
         </dependency>
+ 
+        <dependency>
+          <groupId>edu.ucla.mbi.dip</groupId>
+          <artifactId>dip-util-struts</artifactId>
+          <version>${dip.util}</version>
+        </dependency>
 
+        
         <dependency>
           <groupId>org.apache.struts</groupId>
           <artifactId>struts2-tiles-plugin</artifactId>
@@ -355,6 +365,12 @@
             <id>intact.nexus</id>
             <name>IntAct Nexus</name>
             <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public</url>
+        </repository>
+
+        <repository>
+          <id>public</id>
+          <name>IMEx Public Maven Reopsitory</name>
+          <url>http://imex.mbi.ucla.edu/archiva/repository/imex-public/</url>
         </repository>
     </repositories>
 
