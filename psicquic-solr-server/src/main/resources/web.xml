@@ -104,6 +104,11 @@
     <url-pattern>/mpsqmgr</url-pattern>
   </filter-mapping>
 
+  <filter-mapping>
+    <filter-name>struts</filter-name>
+    <url-pattern>/index.jsp</url-pattern>
+  </filter-mapping>
+
   <!-- ========================================================= SOLR filter -->
 
  <!-- Any path (name) registered in solrconfig.xml will be sent to that filter -->

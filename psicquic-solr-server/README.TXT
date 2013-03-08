@@ -230,5 +230,3 @@ Configuration
 
      Parameters to be returned as the meta information about the 
      psicquic server.
-
-

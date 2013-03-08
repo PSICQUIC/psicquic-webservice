@@ -31,6 +31,8 @@
  <definition name="header" template="/tiles/header.jsp"/>
  <definition name="footer" template="/tiles/footer.jsp"/>
 
+ <definition name="readme" template="/README.TXT"/>
+
  <definition name="main" template="/tiles/main.jsp"/>
 
  <definition name="mpsqmgr" template="/tiles/layout.jsp">

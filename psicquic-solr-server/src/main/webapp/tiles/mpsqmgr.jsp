@@ -26,7 +26,11 @@
   </s:if>
 </s:elseif>
 <s:else>
-<%--  <h1> Server</h1> --%>
+ <h1>Modular PSICQUC Server</h1>
+ <pre style="border: 1px solid #444444; background-color: #eeeeee; padding: 2em;">
+<t:insertDefinition name="readme"/>
+ </pre>
+ <br/><br/>
 </s:else>
 <br/><br/><br/>
 

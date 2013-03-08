@@ -5,7 +5,7 @@
    "link":"/",
    "active":true,
    "menu":[
-      {"label":"HOME",
+      {"label":"PSICQUIC",
        "link":".",
        "disabled":"false",
        "menu":[
@@ -29,8 +29,8 @@
                 "menu":[]
                },
                {"label":"Manager",
-                "link":"mpsqmgr?mode=index&op.status=admin&mst=1:2:2",
-                "disabled":"false",
+                "link":"mpsqmgr?mode=index&mst=1:2:2",
+                "disabled":"true",
                 "menu":[]
                }]
          },

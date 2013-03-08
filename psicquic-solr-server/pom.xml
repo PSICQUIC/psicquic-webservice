@@ -298,6 +298,12 @@
                 <targetPath>WEB-INF</targetPath>
                 <filtering>true</filtering>
               </resource>
+                <resource>
+                <directory>${basedir}</directory>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <include>README.TXT</include>
+              </resource>
 	    </webResources>
 
 
