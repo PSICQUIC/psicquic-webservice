@@ -27,12 +27,13 @@
   <system-property javax.xml.parsers.SAXParserFactory=
              "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"/>
    -->
-
+<!--
     <env-entry>
        <env-entry-name>solr/home</env-entry-name>
        <env-entry-value>solr</env-entry-value>
        <env-entry-type>java.lang.String</env-entry-type>
     </env-entry>
+-->
 
 <!-- ========================================================= ============= -->
 <!-- ========================================================= CONTEXT setup -->
@@ -114,7 +115,9 @@
  <!-- Any path (name) registered in solrconfig.xml will be sent to that filter -->
   <filter>
     <filter-name>SolrRequestFilter</filter-name>
-    <filter-class>org.apache.solr.servlet.SolrDispatchFilter</filter-class>
+
+    <filter-class>org.hupo.psi.mi.psicquic.server.PsqSolrDispatchFilter</filter-class>
+<!--    <filter-class>org.apache.solr.servlet.SolrDispatchFilter</filter-class> -->
     <!-- If you are wiring Solr into a larger web application which controls
          the web context root, you will probably want to mount Solr under
          a path prefix (app.war with /app/solr mounted into it, for example).
@@ -134,6 +137,11 @@
     <init-param>
       <param-name>path-prefix</param-name>
       <param-value>/solr</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>solr-home</param-name>
+      <param-value>solr</param-value>
     </init-param>
     
   </filter>
@@ -191,7 +199,7 @@
       <param-value>/WEB-INF/spring/cxf.xml</param-value>    
     </init-param>
 -->
-    <load-on-startup>1</load-on-startup>
+    <load-on-startup>2</load-on-startup>
   </servlet>
 
   <!-- ======================================================= SOLR servlets -->
@@ -201,7 +209,7 @@
     <display-name>Solr</display-name>
     <description>Solr Server</description>
     <servlet-class>org.apache.solr.servlet.SolrServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
+    <load-on-startup>4</load-on-startup>
   </servlet>
 
   <servlet>
@@ -209,12 +217,13 @@
     <display-name>SolrUpdate</display-name>
     <description>Solr Update Handler</description>
     <servlet-class>org.apache.solr.servlet.SolrUpdateServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
+    <load-on-startup>4</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>Logging</servlet-name>
     <servlet-class>org.apache.solr.servlet.LogLevelSelection</servlet-class>
+    <load-on-startup>4</load-on-startup> 
   </servlet>
 
 <!-- ======================================================= =============== -->

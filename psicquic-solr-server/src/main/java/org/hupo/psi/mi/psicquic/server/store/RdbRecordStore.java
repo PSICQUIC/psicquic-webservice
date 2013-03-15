@@ -42,7 +42,7 @@ public abstract class RdbRecordStore implements RecordStore{
 
     private  PsqContext psqContext = null;
 
-    String host = null;
+    protected String host = null;
     
     
     public abstract void initialize();

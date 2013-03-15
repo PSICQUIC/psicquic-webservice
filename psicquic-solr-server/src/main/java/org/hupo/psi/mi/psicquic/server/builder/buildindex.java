@@ -163,6 +163,7 @@ public class buildindex{
             
             if( cmd.hasOption( "h" ) ){
                 host = cmd.getOptionValue( "h" );
+                System.out.println( "Host: " + host );
             }
             
             if( cmd.hasOption( "z" ) ){
@@ -206,6 +207,8 @@ public class buildindex{
 
         IndexBuilder ibuilder = null;
         
+        System.out.println( "Host: " + host );
+
         if( context != null ){
             System.out.println( "Context: " + context );
             ibuilder = new IndexBuilder( context, host, btCount, stCount, 

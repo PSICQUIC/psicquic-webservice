@@ -44,7 +44,7 @@
       <map>
         <entry key="solr" value-ref="solrStore"/>       
         <entry key="derby" value-ref="derbyStore"/>
-        <entry key="hibernate" value-ref="hibernateStore"/>
+        <entry key="hibernate" value-ref="rdbmStore"/>
       </map>
     </property>
   </bean>
@@ -78,7 +78,7 @@
   </bean>
 
 <!-- HibernateRecordStore setup -->
-   <import resource="datastore-hibernate.xml"/>
+   <import resource="datastore-${mpsq.rdbm-store}.xml"/>
 
 <!-- ======================================================== STRUTS ACTIONS -->
   

@@ -31,7 +31,7 @@ public class HibernateRecordStore extends RdbRecordStore {
     Map<String,Map<String,PsqTransformer>> inTransformerMap = null;
 
     String rmgrURL = null;
-    String host = null;
+    //String host = null;
 
     SessionFactory sessionFactory = null;
     

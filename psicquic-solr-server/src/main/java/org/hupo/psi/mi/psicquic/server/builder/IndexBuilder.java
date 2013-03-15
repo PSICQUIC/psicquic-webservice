@@ -93,13 +93,20 @@ public class IndexBuilder{
         this._IndexBuilder( isCtx, host, btc, stc, format, zip );
     }
 
-    private void _IndexBuilder( InputStream isCtx,  String host, 
+    private void _IndexBuilder( InputStream isCtx,  String serverHost, 
                                 int btc, int stc, String format, boolean zip ){
         this.zip = zip;
         this.format = format;
         this.source = source;
         
         log.info( " initilizing IndexBuilder: threads=" + builderTCount );
+        log.info( " initilizing IndexBuilder: server host=" + serverHost );
+
+        if( serverHost != null ){
+            this.host = serverHost;
+            log.info( " Setting server host=" + serverHost );
+            log.info( " Host set:" + this.host );
+        }
         
         // get context
         //------------
@@ -132,9 +139,7 @@ public class IndexBuilder{
             solrconTCount = stcInt.intValue();
         }
 
-        if( host != null ){
-            this.host = host;
-        }
+        log.info( " Host set:" + this.host );        
     }
 
     //--------------------------------------------------------------------------
@@ -151,7 +156,7 @@ public class IndexBuilder{
             String activeIndexName = psqContext.getActiveIndexName();
             
             if( activeIndexName.equals( "solr" ) ){
-                recordIndex = new SolrRecordIndex( psqContext );
+                recordIndex = new SolrRecordIndex( psqContext, host );
                 recordIndex.initialize();
                 recordIndex.connect();
                 recordIndex.clear();
@@ -167,7 +172,7 @@ public class IndexBuilder{
             }
 
             if( activeStoreName.equals( "derby" ) ){
-                recordStore = new DerbyRecordStore( psqContext );
+                recordStore = new DerbyRecordStore( psqContext, host );
                 recordStore.clear();
             }
         } catch( MalformedURLException mux ){

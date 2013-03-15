@@ -44,7 +44,7 @@ public class DerbyRecordStore extends RdbRecordStore{
     Map<String,Map<String,PsqTransformer>> inTransformerMap = null;
     
     String rmgrURL = null;
-    String host = null;
+    //String host = null;
     
     public DerbyRecordStore(){
         
@@ -73,6 +73,8 @@ public class DerbyRecordStore extends RdbRecordStore{
         if( host != null ){
             this.host = host;
         }
+
+        log.info( "Server Host=" + host);
         
         try{
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");

@@ -3,6 +3,12 @@ $Id::                                                                       $
 PSICQUIC Server
 ---------------
 
+Prerequisites
+-------------
+  
+  - Java 6 runtime
+  - Servlet container (eg Apache Tomcat 6) 
+
 Dependencies
 ------------
   

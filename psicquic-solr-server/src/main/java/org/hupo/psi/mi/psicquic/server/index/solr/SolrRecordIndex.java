@@ -125,6 +125,9 @@ public class SolrRecordIndex implements RecordIndex{
     }
     
     public void initialize( boolean force ){
+
+        Log log = LogFactory.getLog( this.getClass() );
+                    
        
         // initialize cache
         //-----------------
@@ -138,7 +141,6 @@ public class SolrRecordIndex implements RecordIndex{
 
         if( force || baseUrl == null ){
             
-            Log log = LogFactory.getLog( this.getClass() );
             log.info( " initilizing SolrRecordIndex: psqContext=" + psqContext );
 	    if( psqContext != null ){
 		log.info( "                        "
@@ -155,6 +157,7 @@ public class SolrRecordIndex implements RecordIndex{
                 
                 log.info( "    url=" + jSolrCon.get("url") );
                 log.info( "    shard=" + jSolrCon.get("shard") );
+                log.info( "    host=" + host );
                 
                 baseUrl = (String) jSolrCon.get("url");
                 
