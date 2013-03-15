@@ -105,7 +105,6 @@ public class IndexBuilder{
         if( serverHost != null ){
             this.host = serverHost;
             log.info( " Setting server host=" + serverHost );
-            log.info( " Host set:" + this.host );
         }
         
         // get context
@@ -138,8 +137,6 @@ public class IndexBuilder{
                 .get( "solr-thread-count" );
             solrconTCount = stcInt.intValue();
         }
-
-        log.info( " Host set:" + this.host );        
     }
 
     //--------------------------------------------------------------------------

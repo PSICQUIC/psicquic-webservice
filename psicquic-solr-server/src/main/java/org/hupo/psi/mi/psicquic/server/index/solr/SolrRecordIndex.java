@@ -143,8 +143,7 @@ public class SolrRecordIndex implements RecordIndex{
             
             log.info( " initilizing SolrRecordIndex: psqContext=" + psqContext );
 	    if( psqContext != null ){
-		log.info( "                        "
-			  + "JsonConfig=" + psqContext.getJsonConfig() );
+		log.debug( "JsonConfig:\n" + psqContext.getJsonConfig() );
             }
             
             if( psqContext != null && psqContext.getJsonConfig() != null ){

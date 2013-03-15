@@ -122,10 +122,10 @@ public class JsonContext {
 	}
 
 	String jsonConfigDef = sb.toString();
-	log.info( "unparsed=" + jsonConfigDef);
+	log.debug( "unparsed:\n" + jsonConfigDef);
 	try {
 	    JSONObject jo = new JSONObject( jsonConfigDef );
-	    log.info( "parsed: " +jo.toString() );
+	    log.debug( "parsed:\n" +jo.toString() );
 	    jsonConfigObject = jo;
 	    jsonConfigString = jo.toString();
 	    jsonConfigUtil = json2util( jo );
@@ -140,21 +140,21 @@ public class JsonContext {
     //----------------------
 
     public void writeJsonConfigDef( PrintWriter pw ) {
-		Log log = LogFactory.getLog( this.getClass() );
-		JSONObject currentJSONConfigObject = util2json(jsonConfigUtil);
-		try {
-			pw.print(currentJSONConfigObject.toString(2));
-		} catch (JSONException jex) {
+        Log log = LogFactory.getLog( this.getClass() );
+        JSONObject currentJSONConfigObject = util2json(jsonConfigUtil);
+        try {
+            pw.print(currentJSONConfigObject.toString(2));
+        } catch (JSONException jex) {
 	    	log.info( "JSON printing error: " + jex.toString());
-		}
+        }
     }
-
+    
     //--------------------------------------------------------------------------
     // java.util -> JSON conversion
     //-----------------------------
 
     public JSONObject util2json( Map<String,Object> util ) {
-
+        
 	if ( util != null ) {
 	    return new JSONObject( util );
 	} else {
@@ -197,13 +197,13 @@ public class JsonContext {
 	}
 	return util;
     }
-
+    
     //--------------------------------------------------------------------------
-
+    
     public List json2util( JSONArray json ) {
-
+        
 	List util = new ArrayList();
-
+        
 	for ( int i = 0; i < json.length(); i++ ) {
 
 	    Object o = null;
@@ -215,14 +215,14 @@ public class JsonContext {
 
 	    if ( o != null &&
                  o.getClass().getName().equals( "org.json.JSONObject" ) ) {
-
+                
                 // JSONObject
                 o = json2util( (JSONObject) o );
 	    }
-
+            
 	    if ( o != null &&
                  o.getClass().getName().equals( "org.json.JSONArray" ) ) {
-
+                
                 // JSONArray
 		o = json2util( (JSONArray) o );
 	    }
