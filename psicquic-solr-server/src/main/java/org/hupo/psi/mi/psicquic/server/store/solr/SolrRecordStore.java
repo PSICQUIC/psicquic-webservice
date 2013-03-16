@@ -108,10 +108,18 @@ public class SolrRecordStore implements RecordStore{
 
     public void addFile( File file, String fileName, 
                          String format, String compress ){
+
+        addFile( file, fileName, format, compress, null );
+    }
+    
+    public void addFile( File file, String fileName, 
+                         String format, String compress,
+                         Map<String,String> trpar ){
+        
         Log log = LogFactory.getLog( this.getClass() );
         log.info( " SolrRecordStore: addFile(dummy) file=" + fileName );        
     }
-     
+    
     //-------------------------------------------------------------------------
     //-------------------------------------------------------------------------
 

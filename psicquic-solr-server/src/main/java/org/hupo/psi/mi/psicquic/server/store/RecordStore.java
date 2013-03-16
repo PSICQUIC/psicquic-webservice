@@ -21,7 +21,10 @@ public interface RecordStore{
     public void clearLocal();
     public void shutdown();
     public void addRecord( String id, String record, String format );
-    public void addFile( File f, String name, String format, String compress );
+    public void addFile( File f, String name, String format, 
+                         String compress );
+    public void addFile( File f, String name, String format, 
+                         String compress, Map<String,String> trpar );
 
     public String getRecord( String id, String format );
     public List<String> getRecordList( List<String> id, String format );

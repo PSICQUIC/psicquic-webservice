@@ -42,9 +42,13 @@ public class XsltTransformer implements PsqTransformer{
     private int nextPos = -1;
 
     private Log log;
-    
-    public XsltTransformer( Map config ){
 
+    public XsltTransformer( Map config ){
+        this( config, null );
+    }
+
+    public XsltTransformer( Map config, Map<String,String> param ){
+        
         log = LogFactory.getLog( this.getClass() );
 
         try {
@@ -109,20 +113,46 @@ public class XsltTransformer implements PsqTransformer{
                 // set xslt parameters
                 //--------------------
 
+                // Note: Parameters passed as constructor argument
+                //       take precedence over defaults
+
+                if( param != null ){
+
+                    for( Iterator<Map.Entry<String,String>>
+                             ip = param.entrySet().iterator();
+                         ip.hasNext(); ){
+
+                        Map.Entry<String,String> ee = ip.next();
+
+                        log.info( "param(cmdln): name=" + ee.getKey()
+                                  + " value=" + ee.getValue() );
+
+                        psqtr.setParameter( ee.getKey(),
+                                            ee.getValue() );                    
+                    }
+                }
+
+                // remaining default parameters 
+
                 if( config.get("param") != null ){
                     Map<String,String> paramap 
                         = (Map<String,String>) config.get("param");
 
                     for( Iterator<Map.Entry<String,String>> 
-                             ip = paramap.entrySet().iterator(); 
-                         ip.hasNext(); ){    
+                             ipd = paramap.entrySet().iterator(); 
+                         ipd.hasNext(); ){    
                         
-                        Map.Entry<String,String> ee = ip.next();
-                        psqtr.setParameter(ee.getKey(), ee.getValue());
+                        Map.Entry<String,String> eed = ipd.next();
 
-                        log.info("param: name=" + ee.getKey() 
-                                 + " value=" + ee.getValue() ); 
-
+                        if( param == null 
+                            ||  param.get( eed.getKey() ) == null ){ 
+                                                            
+                            log.info( "param(default): name=" + eed.getKey() 
+                                      + " value=" + eed.getValue() ); 
+                            
+                            psqtr.setParameter( eed.getKey(), 
+                                                eed.getValue() );
+                        }
                     }
                 } 
             }

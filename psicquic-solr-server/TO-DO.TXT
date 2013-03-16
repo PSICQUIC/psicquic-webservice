@@ -5,4 +5,5 @@ TO-DO LIST
 
  - mif2mif transformation
  - properly escape mitab fields
+ - set solr admin access restrictions
    

@@ -58,7 +58,8 @@ public class IndexBuilder{
 
     int builderTCount = 1;
     int solrconTCount = 1;
-    
+
+    Map<String,String> pax = null;
 
     String host = null;
     
@@ -73,7 +74,7 @@ public class IndexBuilder{
     //--------------------------------------------------------------------------
     
     public IndexBuilder( String ctx, String host, int btc, int stc, 
-                         String format, boolean zip ){
+                         String format, boolean zip, Map<String,String> pax ){
         
         InputStream isCtx = null;
         this.log = LogFactory.getLog( this.getClass() );
@@ -83,21 +84,23 @@ public class IndexBuilder{
             log.info( ex.getMessage(), ex );
         }
         
-        this._IndexBuilder( isCtx, host, btc, stc, format, zip );          
+        this._IndexBuilder( isCtx, host, btc, stc, format, zip, pax );          
     }
     
     public IndexBuilder( InputStream isCtx, String host, int btc, int stc,
-                         String format, boolean zip ){
-
+                         String format, boolean zip, Map<String,String> pax ){
+        
         this.log = LogFactory.getLog( this.getClass() );
-        this._IndexBuilder( isCtx, host, btc, stc, format, zip );
+        this._IndexBuilder( isCtx, host, btc, stc, format, zip, pax );
     }
 
     private void _IndexBuilder( InputStream isCtx,  String serverHost, 
-                                int btc, int stc, String format, boolean zip ){
+                                int btc, int stc, String format, 
+                                boolean zip, Map<String,String> pax ){
         this.zip = zip;
         this.format = format;
         this.source = source;
+        this.pax = pax;
         
         log.info( " initilizing IndexBuilder: threads=" + builderTCount );
         log.info( " initilizing IndexBuilder: server host=" + serverHost );
@@ -263,7 +266,7 @@ public class IndexBuilder{
             }
             
             IndexThread it = new IndexThread( psqContext, host, solrconTCount,
-                                              root, fq, format, zip );
+                                              root, fq, format, zip, pax );
             itl.add( it );
 
             log.info( "IndexBuilder:  starting thread..." );
@@ -344,14 +347,16 @@ class IndexThread extends Thread{
     String format;
     
     List<File> fileq;
-
+    Map<String,String> pax;
+    
     public IndexThread( PsqContext psqContext, String host, int solrconTCount,
                         String root, List<File> files, 
-                        String format, boolean zip ){
+                        String format, boolean zip, Map<String,String> pax ){
         fileq = files;
         this.zip = zip;
         this.root = root;
         this.format = format;
+        this.pax = pax;
         
         try{
             
@@ -362,7 +367,7 @@ class IndexThread extends Thread{
             
             if( activeIndexName.equals( "solr" ) ){
                 recordIndex = new SolrRecordIndex( psqContext, host, 
-                                                   solrconTCount );
+                                                   solrconTCount);
                 recordIndex.initialize();
                 recordIndex.connect();
             }
@@ -413,16 +418,15 @@ class IndexThread extends Thread{
                 //-----------------------
                 
                 if( recordIndex != null){
-                    recordIndex.addFile( file, name, format, compress );      
+                    recordIndex.addFile( file, name, format, compress, pax );      
                 }
 
                 // transform/add -> datastore
                 //---------------------------
                 if( recordStore != null){  
-                    recordStore.addFile( file, name, format, compress );
+                    recordStore.addFile( file, name, format, compress, pax );
                 }
-            }catch( Exception ex ){
-                log.info("XXX");
+            }catch( Exception ex ){               
                 ex.printStackTrace();
                 log.info( ex.getMessage(), ex );
             }

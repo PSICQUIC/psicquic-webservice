@@ -43,6 +43,8 @@ public class buildindex{
     public static boolean zip = false;
     public static boolean desc = false;
 
+    public static Map<String,String> pax = null; // xslt transformer params
+
     public static int btCount = -1;
     public static int stCount = -1;
     
@@ -119,6 +121,15 @@ public class buildindex{
             .create( "ts" );
         
         options.addOption( tsOption );
+
+
+        Option xsltOption = OptionBuilder.withLongOpt( "xslt-param" )
+            .hasArgs(2).withValueSeparator()
+            .withArgName( "paramater=value" )
+            .withDescription( "XSLT transformer paramater=value pairs" )
+            .create( "xp" );
+        
+        options.addOption( xsltOption );
         
         Option zipOption = OptionBuilder.withLongOpt( "zip" )
             .withDescription( "zipped files" )
@@ -137,7 +148,7 @@ public class buildindex{
 
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.setWidth( 127 );
-                formatter.printHelp( "BuildSolrDerbyIndex", options );
+                formatter.printHelp( "BuildMpsqIndex", options );
                 System.exit(0);
             }
             
@@ -193,9 +204,23 @@ public class buildindex{
                     System.out.println( "TS format Error. Using default" );
                 }
             }
+            
+            if( cmd.hasOption("xp") ){
 
-
-
+                pax = new HashMap<String,String>();
+                try{
+                    Map paxMap =  cmd.getOptionProperties("xp");
+                    
+                    for( Iterator i = paxMap.keySet().iterator(); i.hasNext();){
+                        
+                        String k = (String) i.next();
+                        System.out.println(" XP: " + k + "=" + paxMap.get(k) );  
+                    }
+                }catch( Exception paxx ){
+                    System.out.println( "pxslt fornat error" );
+                }
+            }
+            
         } catch( Exception exp ) {
             System.out.println( "BuildIndex: Options parsing failed. " +
                                 "Reason: " + exp.getMessage() );
@@ -212,7 +237,7 @@ public class buildindex{
         if( context != null ){
             System.out.println( "Context: " + context );
             ibuilder = new IndexBuilder( context, host, btCount, stCount, 
-                                         ifrmt, zip );
+                                         ifrmt, zip, pax );
         }else{
             
             System.out.println( "Context(default): " + DEFAULT_CONTEXT );
@@ -221,11 +246,10 @@ public class buildindex{
                     .getResourceAsStream( DEFAULT_CONTEXT );
                 
                 ibuilder = new IndexBuilder( ctxStream, host, btCount, stCount, 
-                                             ifrmt, zip );
+                                             ifrmt, zip, pax );
             } catch( Exception ex){
                 ex.printStackTrace();
-            }
-            
+            }            
         }
 
         if( clr ){

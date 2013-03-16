@@ -17,7 +17,10 @@ public interface RecordIndex{
     public void initialize();
     public void clear();
     public void connect() throws MalformedURLException;
-    //public void addFile( String format, String fileName, InputStream is );
-    public void addFile( File f, String name, String format, String compress );
+
+    public void addFile( File f, String name, 
+                         String format, String compress );
+    public void addFile( File f, String name, 
+                         String format, String compress, Map<String,String> trpar );
     public Map getMeta();
 }

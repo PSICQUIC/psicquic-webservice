@@ -532,7 +532,14 @@ public class SolrRecordIndex implements RecordIndex{
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
 
-    public void addFile( File f, String name, String format, String compress){
+    public void addFile( File f, String name, 
+                         String format, String compress ){
+        addFile( f, name, format, compress, null );       
+    }
+
+    public void addFile( File f, String name, 
+                         String format, String compress, 
+                         Map<String,String> trpar ){
         
 	Log log = LogFactory.getLog( this.getClass() );
         Map rtr = ricon.get( format );
@@ -549,7 +556,7 @@ public class SolrRecordIndex implements RecordIndex{
                           + " type=XSLT config=" + rtr.get( "config" ) );
                 
                 PsqTransformer recTr = 
-                    new XsltTransformer( (Map) rtr.get("config") );
+                    new XsltTransformer( (Map) rtr.get("config"), trpar );
                 
                 inTransformer.put( format, recTr );
                 log.info( " Initializing transformer(" + format
