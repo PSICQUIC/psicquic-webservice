@@ -55,7 +55,7 @@
      "rec-id":"recId",
      "view-default":"psi-mi/tab27",
      "derby":{
-        "derby-db":"derby/psq-store",
+        "derby-db":"psq-store",
         "rec-id":"recId",
         "view":{
            "psi-mi/tab25":{

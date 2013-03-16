@@ -44,7 +44,7 @@ public class DerbyRecordStore extends RdbRecordStore{
     Map<String,Map<String,PsqTransformer>> inTransformerMap = null;
     
     String rmgrURL = null;
-    //String host = null;
+    String derbyHome = null;
     
     public DerbyRecordStore(){
         
@@ -84,7 +84,12 @@ public class DerbyRecordStore extends RdbRecordStore{
     }
     
     public void initialize(){
-        
+
+        Log log = LogFactory.getLog( this.getClass() );
+        log.info( "initialize()" );
+
+        derbyHome = System.getProperty( "derby.derby.home");
+        log.info( "derbyHome: " + derbyHome );
     }
     
     private void connect(){
@@ -93,7 +98,7 @@ public class DerbyRecordStore extends RdbRecordStore{
             
             Log log = LogFactory.getLog( this.getClass() );
             log.info( "DerbyRecordDao:connect" );
-            
+        
             if( getPsqContext() != null 
                 && getPsqContext().getJsonConfig() != null ){
 
@@ -102,7 +107,16 @@ public class DerbyRecordStore extends RdbRecordStore{
                     .get("derby");
                 try{
                     String derbydb = (String) derbyCfg.get("derby-db");
-                    log.info( "               location: " + derbydb );
+                    log.info( " derby-db(config): " + derbydb );
+
+                    if( derbyHome == null ){
+                        derbyHome = System.getProperty( "derby.derby.home");
+                    }
+
+                    if( derbyHome != null && !derbydb.startsWith("/") ){
+                        derbydb = derbyHome + File.separator + derbydb;
+                    }
+                    log.info( " derby-db(final): " + derbydb );
 
                     dbcon = 
                         DriverManager.getConnection( "jdbc:derby:" + 
