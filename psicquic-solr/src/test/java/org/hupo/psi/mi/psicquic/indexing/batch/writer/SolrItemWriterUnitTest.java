@@ -22,7 +22,7 @@ public class SolrItemWriterUnitTest extends AbstractSolrServerTest {
 
     @Test
     public void test_write_rows() throws Exception {
-        String solrUr= "http://localhost:18080/solr";
+        String solrUr= "http://127.0.0.1:18080/solr";
         SolrItemWriter writer = new SolrItemWriter();
         writer.setSolrUrl(solrUr);
 

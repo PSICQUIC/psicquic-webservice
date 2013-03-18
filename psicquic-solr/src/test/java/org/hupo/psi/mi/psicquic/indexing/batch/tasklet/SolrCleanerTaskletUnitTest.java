@@ -29,7 +29,7 @@ public class SolrCleanerTaskletUnitTest extends AbstractSolrServerTest {
     @Test
     public void test_delete_all() throws Exception {
 
-        String solrUr= "http://localhost:18080/solr";
+        String solrUr= "http://127.0.0.1:18080/solr";
         SolrCleanerTasklet tasklet = new SolrCleanerTasklet();
         tasklet.setSolrUrl(solrUr);
 

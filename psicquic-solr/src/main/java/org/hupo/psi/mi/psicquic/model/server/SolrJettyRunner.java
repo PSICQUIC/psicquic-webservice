@@ -35,6 +35,7 @@ public class SolrJettyRunner {
     private static Logger log = LoggerFactory.getLogger(SolrJettyRunner.class);
 
     private int port = 18080;
+    private String host = "127.0.0.1";
 
     protected Server server;
     protected HttpSolrServer solrServer;
@@ -93,6 +94,7 @@ public class SolrJettyRunner {
 
         Connector connector=new SelectChannelConnector();
         connector.setPort(Integer.getInteger("jetty.port",port).intValue());
+        connector.setHost(host);
         server.setConnectors(new Connector[]{connector});
 
         WebAppContext webapp = new WebAppContext();
@@ -121,7 +123,7 @@ public class SolrJettyRunner {
     }
 
     public String getSolrUrl() {
-        return "http://localhost:"+port+"/solr/";
+        return "http://"+host+":"+port+"/solr/";
     }
 
     public HttpSolrServer getSolrServer() {
@@ -156,5 +158,13 @@ public class SolrJettyRunner {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }
