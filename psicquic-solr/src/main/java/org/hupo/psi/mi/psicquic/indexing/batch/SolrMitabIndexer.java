@@ -1,11 +1,9 @@
 package org.hupo.psi.mi.psicquic.indexing.batch;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.*;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -126,7 +124,22 @@ public class SolrMitabIndexer {
             }
         }
 
-        runJob(jobName, indexingId);
+        JobExecution execution = runJob(jobName, indexingId);
+
+        while (execution.isRunning()){
+            try {
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (execution.getExitStatus().equals(ExitStatus.FAILED)){
+            log.error("Indexing job has failed.");
+            for (Throwable e : execution.getAllFailureExceptions()){
+                log.error(ExceptionUtils.getFullStackTrace(e));
+            }
+        }
     }
 
     protected JobExecution runJob(String jobName, String indexingId) throws JobInstanceAlreadyCompleteException, JobParametersInvalidException, JobRestartException, JobExecutionAlreadyRunningException {
