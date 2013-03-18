@@ -94,13 +94,13 @@ public class SolrJettyRunner {
 
         Connector connector=new SelectChannelConnector();
         connector.setPort(Integer.getInteger("jetty.port",port).intValue());
-        connector.setHost(host);
         server.setConnectors(new Connector[]{connector});
 
         WebAppContext webapp = new WebAppContext();
         webapp.setContextPath("/solr");
         webapp.setWar(solrWar.getAbsolutePath());
         webapp.setTempDirectory(workingDir);
+        webapp.setVirtualHosts(new String[]{host});
 
         server.setHandler(webapp);
 
