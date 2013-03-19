@@ -87,20 +87,23 @@ public class PsicquicSearchResults {
         Tab2Xml tab2Xml = new Tab2Xml();
         InputStream inputStream = getMitab();
         EntrySet entrySet = null;
-        try{
-            if (inputStream != null){
-                entrySet = tab2Xml.convert(mitabReader.read(inputStream));
+        if (inputStream != null){
+            try{
+                if (inputStream != null){
+                    entrySet = tab2Xml.convert(mitabReader.read(inputStream));
+                }
+                else {
+                    entrySet = new EntrySet(PsimiXmlVersion.VERSION_25_UNDEFINED);
+                }
             }
-            else {
-                entrySet = new EntrySet(PsimiXmlVersion.VERSION_25_UNDEFINED);
+            finally {
+                if (inputStream != null){
+                    inputStream.close();
+                }
+                tab2Xml.close();
             }
         }
-        finally {
-            if (inputStream != null){
-                inputStream.close();
-            }
-            tab2Xml.close();
-        }
+
         return entrySet;
     }
 
@@ -108,29 +111,31 @@ public class PsicquicSearchResults {
         InputStream mitabOs = getMitab();
         InputStream xgmml = null;
 
-        try{
-            ColumnBasedDocumentDefinition mitab25Definition = MitabDocumentDefinitionFactory.mitab25();
-            XGMMLDocumentDefinition xgmmlDefinition = new XGMMLDocumentDefinition("PSICQUIC", "Generated from MITAB 2.5", "http://psicquic.googlecode.com");
-
-            ByteArrayOutputStream xgmmlOutput = new ByteArrayOutputStream();
-            Writer xgmmlWriter = new BufferedWriter(new OutputStreamWriter(xgmmlOutput));
-
+        if (mitabOs != null){
             try{
+                ColumnBasedDocumentDefinition mitab27Definition = MitabDocumentDefinitionFactory.mitab27();
+                XGMMLDocumentDefinition xgmmlDefinition = new XGMMLDocumentDefinition("PSICQUIC", "Generated from MITAB 2.7", "http://psicquic.googlecode.com");
 
-                xgmmlDefinition.writeDocument(xgmmlWriter, mitabOs, mitab25Definition);
-                xgmml = new ByteArrayInputStream(xgmmlOutput.toByteArray());
+                ByteArrayOutputStream xgmmlOutput = new ByteArrayOutputStream();
+                Writer xgmmlWriter = new BufferedWriter(new OutputStreamWriter(xgmmlOutput));
 
+                try{
+
+                    xgmmlDefinition.writeDocument(xgmmlWriter, mitabOs, mitab27Definition);
+                    xgmml = new ByteArrayInputStream(xgmmlOutput.toByteArray());
+
+                }
+                finally {
+                    // close stringWriter now
+                    xgmmlWriter.close();
+                    xgmmlOutput.close();
+                }
             }
             finally {
-                // close stringWriter now
-                xgmmlWriter.close();
-                xgmmlOutput.close();
-            }
-        }
-        finally {
-            // close mitabOs now
-            if (mitabOs != null){
-                mitabOs.close();
+                // close mitabOs now
+                if (mitabOs != null){
+                    mitabOs.close();
+                }
             }
         }
 
@@ -168,23 +173,24 @@ public class PsicquicSearchResults {
         String rdfFormat = getRdfFormatName(format);
 
         psidev.psi.mi.xml.model.EntrySet entrySet = createEntrySet();
-
         ByteArrayOutputStream rdfOutput = new ByteArrayOutputStream();
         Writer rdfWriter = new BufferedWriter(new OutputStreamWriter(rdfOutput));
         InputStream rdf = null;
+        if (entrySet != null){
 
-        try{
-            // only convert when having some results
-            if (entrySet != null && !entrySet.getEntries().isEmpty()){
-                rdfConverter.convert(entrySet, rdfFormat , rdfWriter);
-                rdf = new ByteArrayInputStream(rdfOutput.toByteArray());
+            try{
+                // only convert when having some results
+                if (entrySet != null && !entrySet.getEntries().isEmpty()){
+                    rdfConverter.convert(entrySet, rdfFormat , rdfWriter);
+                    rdf = new ByteArrayInputStream(rdfOutput.toByteArray());
+                }
             }
-        }
-        finally {
-            // close writer
-            rdfWriter.close();
-            rdfOutput.close();
-            rdfConverter.close();
+            finally {
+                // close writer
+                rdfWriter.close();
+                rdfOutput.close();
+                rdfConverter.close();
+            }
         }
 
         return rdf;
