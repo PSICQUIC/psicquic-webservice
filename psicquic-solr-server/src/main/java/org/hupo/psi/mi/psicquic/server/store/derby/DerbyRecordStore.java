@@ -89,7 +89,7 @@ public class DerbyRecordStore extends RdbRecordStore{
         log.info( "initialize()" );
 
         derbyHome = System.getProperty( "xpsq.derby.home");
-        log.info( "derbyHome: " + derbyHome );
+        log.info( "derby-home(prefix): " + derbyHome );
     }
     
     private void connect(){

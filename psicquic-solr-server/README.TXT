@@ -1,7 +1,7 @@
-        $Id::                                                                       $
+$Id::                                                                          $
 
-XPS: Extensible PSICQUIC Server
--------------------------------
+XPSQ: Extensible PSICQUIC Server
+--------------------------------
 
 Prerequisites
 -------------
@@ -175,24 +175,24 @@ Configuration
     possible to store them in the index. Currently, three implemetations of the 
     record store are available:
     
-      "berkeleydb" utilizes embedded Berkeley DB (JE) library: 
-                  http://www.oracle.com/technetwork/products/berkeleydb/overview
+      "bdb" utilizes embedded Berkeley DB (JE) library: 
+             http://www.oracle.com/technetwork/products/berkeleydb/overview
 
-      "derby" utilizes embedded Apache Derby (http://db.apache.org/derby/) SQL 
-              server.
-
+      "derby" utilizes embedded Apache Derby SQL server implementation:
+             http://db.apache.org/derby/
+             
       "hibernate" utilizes Hibernate (http://www.hibernate.org/) object-
-              relational mapping (ORM) library and thus supports any RDMB 
-              accessible through Hibernate (about a dozen major RDBM systems, 
-              including MySQL, PostgreSQL, Oracle, DB2, Microsoft SQL and more)
+             relational mapping (ORM) library -  supports any RDMB accessible 
+             through Hibernate (about a dozen major RDBM systems, including 
+             MySQL, PostgreSQL, Oracle, DB2, Microsoft SQL and many more)
 
       "solr" reuses the data stored within the index to generate mitab2x 
              representiation of the records. 
   
     Parameters:
 
-      active - currently active data store. Valid values "berkeleydb", 
-               "derby", "solr", "hibernate".
+      active - currently active data store. Valid values: 
+                "bdb", "derby", "solr", "hibernate".
 
       rec-id - index field to use as the data store id. Valid values: 
                 "uuId" - to be used with solr data store 
@@ -206,9 +206,22 @@ Configuration
                records from the record store; used only by the derby record 
                store;          
 
-      'berkeleydb' store configuration:
+      'bdb' store configuration:
            db-home - location of the berkeleydb data directory
+           
+           view - configuration of the views offered by the derby store. 
+                each view ("psi-mi/tab25","psi-mi/tab26","psi-mi/tab27")
+                can be customized by adding header footer blocks defined
+                by 'header' and 'footer' parameters; 
+                
+                Parameters:
+                   db-name - name of the corresponding bdb database
 
+                   header - block of text preceeding the list of records 
+                             returned by the view
+                   
+                   footer - block of text that follows the list of recored
+                             returned by the view
 
       'derby' store  configration:
            db-home - location of the derby data directory
@@ -216,13 +229,31 @@ Configuration
            view - configuration of the views offered by the derby store. 
                 each view ("psi-mi/tab25","psi-mi/tab26","psi-mi/tab27")
                 can be customized by adding header footer blocks defined
-                by 'header' and 'footer' parameters; 
+                by 'header' and 'footer' parameters;
+
+              Parameters:
+                   header - block of text preceeding the list of records
+                             returned by the view
+
+                   footer - block of text that follows the list of recored
+                             returned by the view
+
    
-       'hibernate' store configuration:
-           
+      'hibernate' store configuration:
 
+           view - configuration of the views offered by the derby store. 
+                each view ("psi-mi/tab25","psi-mi/tab26","psi-mi/tab27")
+                can be customized by adding header footer blocks defined
+                by 'header' and 'footer' parameters;
 
-       'solr' store configuration:
+              Parameters:
+                   header - block of text preceeding the list of records
+                             returned by the view
+
+                   footer - block of text that follows the list of recored
+                             returned by the view
+
+      'solr' store configuration:
            url, shard - same as for solr index; in the simplest case 
                solr index and solr record store should be identical.
                It is possible, though to come up with more elaborate 
