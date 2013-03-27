@@ -45,6 +45,7 @@
         <entry key="solr" value-ref="solrStore"/>       
         <entry key="derby" value-ref="derbyStore"/>
         <entry key="hibernate" value-ref="rdbmStore"/>
+        <entry key="berkeleydb" value-ref="bdbStore"/>
       </map>
     </property>
   </bean>
@@ -65,9 +66,14 @@
   </bean>
  
 <!-- ========================================================= DATA STORE(S) -->
+
+  <bean id="bdbStore" destroy-method="shutdown" 
+    class="org.hupo.psi.mi.psicquic.server.store.berkeleydb.BerkeleyDbRecordStore">
+    <property name="psqContext" ref="psqContext"/>      
+  </bean>
   
-  <bean id="derbyStore" init-method="initialize" destroy-method="shutdown" 
-        class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore">
+  <bean id="derbyStore" destroy-method="shutdown" 
+    class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore">
     <property name="psqContext" ref="psqContext"/>      
   </bean>
 

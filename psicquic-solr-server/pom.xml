@@ -215,6 +215,12 @@
         </dependency>
 
         <dependency>
+          <groupId>com.sleepycat</groupId>
+          <artifactId>je</artifactId>
+          <version>5.0.58</version>
+        </dependency>
+
+        <dependency>
           <groupId>postgresql</groupId>
           <artifactId>postgresql</artifactId>
           <version>8.3-603.jdbc4</version>
@@ -377,6 +383,14 @@
           <name>IMEx Public Maven Reopsitory</name>
           <url>http://imex.mbi.ucla.edu/archiva/repository/imex-public/</url>
         </repository>
+
+        <repository>
+      <id>oracleReleases</id>
+      <name>Oracle Released Java Packages</name>
+      <url>http://download.oracle.com/maven</url>
+      <layout>default</layout>
+    </repository> 
+
     </repositories>
 
     <pluginRepositories>

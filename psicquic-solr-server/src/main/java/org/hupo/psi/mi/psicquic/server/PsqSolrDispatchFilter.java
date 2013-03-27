@@ -47,6 +47,7 @@ public class PsqSolrDispatchFilter  extends SolrDispatchFilter{
             if( !solrHome.startsWith("/") ){
                 solrHome = path + File.separator + solrHome;
             }    
+            log.info( " solr-home(final)=" + path );
             System.setProperty( "solr.solr.home",  solrHome );
         }
         

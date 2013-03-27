@@ -20,6 +20,8 @@ import javax.servlet.http.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.hupo.psi.mi.psicquic.server.PsqContext;
+
 public class PsqStoreDispatchFilter  implements Filter{
     
     public void init( FilterConfig config ) throws ServletException{
@@ -41,12 +43,29 @@ public class PsqStoreDispatchFilter  implements Filter{
         
         if( config.getInitParameter( "derby-home" ) != null ){
             
-            String derbyHome = config.getInitParameter( "derby-home" ) ;
-            if( !derbyHome.startsWith("/") ){
-                derbyHome = path + File.separator + derbyHome;
+            String myHome = config.getInitParameter( "derby-home" ) ;
+            if( !myHome.startsWith("/") ){
+                myHome = path + File.separator + myHome;
             }    
-            System.setProperty( "derby.derby.home",  derbyHome );
+            System.setProperty( "xpsq.derby.home",  myHome );
+
+            if( PsqContext.getStore("derby") != null ){
+                PsqContext.getStore("derby").initialize();
+            }
+        } 
+        
+        if( config.getInitParameter( "berkeleydb-home" ) != null ){
+            
+            String myHome = config.getInitParameter( "berkeleydb-home" ) ;
+            if( !myHome.startsWith("/") ){
+                myHome = path + File.separator + myHome;
+            }    
+            System.setProperty( "xpsq.berkeleydb.home", myHome );
+            if( PsqContext.getStore("berkeleydb") != null ){
+                PsqContext.getStore("berkeleydb").initialize();
+            }
         }
+
     }
     
     public void doFilter( ServletRequest request, 

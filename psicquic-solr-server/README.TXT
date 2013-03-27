@@ -1,7 +1,7 @@
-$Id::                                                                       $
+        $Id::                                                                       $
 
-PSICQUIC Server
----------------
+XPS: Extensible PSICQUIC Server
+-------------------------------
 
 Prerequisites
 -------------
@@ -165,8 +165,7 @@ Configuration
           org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex; 
           ultimately this will be configurable through a spring configuration
           file of some sort (once the builder starts using spring) 
-    
-    
+              
   Record Store configuration ("store" section)
   --------------------------------------------
 
@@ -175,6 +174,10 @@ Configuration
     filesystem, local or remote database; in the simplest case it is also 
     possible to store them in the index. Currently, three implemetations of the 
     record store are available:
+    
+      "berkeleydb" utilizes embedded Berkeley DB (JE) library: 
+                  http://www.oracle.com/technetwork/products/berkeleydb/overview
+
       "derby" utilizes embedded Apache Derby (http://db.apache.org/derby/) SQL 
               server.
 
@@ -188,8 +191,8 @@ Configuration
   
     Parameters:
 
-      active - currently active data store. Valid values "derby", "solr", 
-               "hibernate".
+      active - currently active data store. Valid values "berkeleydb", 
+               "derby", "solr", "hibernate".
 
       rec-id - index field to use as the data store id. Valid values: 
                 "uuId" - to be used with solr data store 
@@ -203,8 +206,12 @@ Configuration
                records from the record store; used only by the derby record 
                store;          
 
+      'berkeleydb' store configuration:
+           db-home - location of the berkeleydb data directory
+
+
       'derby' store  configration:
-           derby-db - location of the derby data directory
+           db-home - location of the derby data directory
 
            view - configuration of the views offered by the derby store. 
                 each view ("psi-mi/tab25","psi-mi/tab26","psi-mi/tab27")

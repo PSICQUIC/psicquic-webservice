@@ -17,7 +17,7 @@ YAHOO.mpsq.status = {
 
     initIndex: function( o ){
 
-        var indexCallback = { cache:false, timeout: 5000,
+        var indexCallback = { cache:false, timeout: 15000,
                               success:YAHOO.mpsq.status.buildStatus,
                               failure:YAHOO.mpsq.status.asyncFailure,
                               argument:{ mode:"store", anchor:o.anchor } }; 
@@ -31,7 +31,7 @@ YAHOO.mpsq.status = {
 
     initStore: function( o ){
 
-        var storeCallback = { cache:false, timeout: 5000,
+        var storeCallback = { cache:false, timeout: 15000,
                               success:YAHOO.mpsq.status.buildStatus,
                               failure:YAHOO.mpsq.status.asyncFailure,
                               argument:{ mode:"store", anchor:o.anchor } }; 

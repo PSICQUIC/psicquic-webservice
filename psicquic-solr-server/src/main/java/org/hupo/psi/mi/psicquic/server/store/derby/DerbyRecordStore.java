@@ -88,7 +88,7 @@ public class DerbyRecordStore extends RdbRecordStore{
         Log log = LogFactory.getLog( this.getClass() );
         log.info( "initialize()" );
 
-        derbyHome = System.getProperty( "derby.derby.home");
+        derbyHome = System.getProperty( "xpsq.derby.home");
         log.info( "derbyHome: " + derbyHome );
     }
     
@@ -106,8 +106,8 @@ public class DerbyRecordStore extends RdbRecordStore{
                     (Map) ((Map) getPsqContext().getJsonConfig().get("store"))
                     .get("derby");
                 try{
-                    String derbydb = (String) derbyCfg.get("derby-db");
-                    log.info( " derby-db(config): " + derbydb );
+                    String derbydb = (String) derbyCfg.get("db-home");
+                    log.info( " db-home(config): " + derbydb );
 
                     if( derbyHome == null ){
                         derbyHome = System.getProperty( "derby.derby.home");
@@ -116,7 +116,7 @@ public class DerbyRecordStore extends RdbRecordStore{
                     if( derbyHome != null && !derbydb.startsWith("/") ){
                         derbydb = derbyHome + File.separator + derbydb;
                     }
-                    log.info( " derby-db(final): " + derbydb );
+                    log.info( " db-home(final): " + derbydb );
 
                     dbcon = 
                         DriverManager.getConnection( "jdbc:derby:" + 

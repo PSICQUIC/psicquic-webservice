@@ -39,7 +39,7 @@ public class PsqContext{
         return null;
     }
 
-    private Map<String,RecordIndex> indexMap;
+    private static Map<String,RecordIndex> indexMap;
     
     public void setIndexMap( Map map ){
         indexMap = map;
@@ -57,13 +57,13 @@ public class PsqContext{
         return indexMap.get( getActiveIndexName() );
     }
     
-    private Map<String,RecordStore> storeMap;
+    private static Map<String,RecordStore> storeMap;
     
     public void setStoreMap( Map map ){
         storeMap = map;
     }
 
-    public RecordStore getStore( String name ){
+    public static RecordStore getStore( String name ){
         return storeMap.get( name );
     }
     
