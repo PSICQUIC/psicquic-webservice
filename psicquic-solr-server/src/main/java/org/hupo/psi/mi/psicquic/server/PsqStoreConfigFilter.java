@@ -5,7 +5,7 @@ package org.hupo.psi.mi.psicquic.server;
  # Version: $Rev::                                                             $
  #==============================================================================
  #
- # PsqStoreDispatchFilter: Customized Record Store initialization
+ # PsqStoreConfigFilter: Customized Record Store initialization
  #
  #=========================================================================== */
 
@@ -22,12 +22,12 @@ import org.apache.commons.logging.LogFactory;
 
 import org.hupo.psi.mi.psicquic.server.PsqContext;
 
-public class PsqStoreDispatchFilter  implements Filter{
+public class PsqStoreConfigFilter  implements Filter{
     
     public void init( FilterConfig config ) throws ServletException{
 
         Log log = LogFactory.getLog( this.getClass() );
-        log.info( "PsqStoreDispatchFilter: init(config) called");
+        log.info( "PsqStoreConfigFilter: init(config) called");
         
         String path = "";        
         
@@ -54,15 +54,15 @@ public class PsqStoreDispatchFilter  implements Filter{
             }
         } 
         
-        if( config.getInitParameter( "berkeleydb-home" ) != null ){
+        if( config.getInitParameter( "bdb-home" ) != null ){
             
-            String myHome = config.getInitParameter( "berkeleydb-home" ) ;
+            String myHome = config.getInitParameter( "bdb-home" ) ;
             if( !myHome.startsWith("/") ){
                 myHome = path + File.separator + myHome;
             }    
-            System.setProperty( "xpsq.berkeleydb.home", myHome );
-            if( PsqContext.getStore("berkeleydb") != null ){
-                PsqContext.getStore("berkeleydb").initialize();
+            System.setProperty( "xpsq.bdb.home", myHome );
+            if( PsqContext.getStore("bdb") != null ){
+                PsqContext.getStore("bdb").initialize();
             }
         }
 

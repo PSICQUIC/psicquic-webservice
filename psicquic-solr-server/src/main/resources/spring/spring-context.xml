@@ -68,12 +68,12 @@
 <!-- ========================================================= DATA STORE(S) -->
 
   <bean id="bdbStore" destroy-method="shutdown" 
-    class="org.hupo.psi.mi.psicquic.server.store.berkeleydb.BerkeleyDbRecordStore">
+        class="org.hupo.psi.mi.psicquic.server.store.bdb.BdbRecordStore">
     <property name="psqContext" ref="psqContext"/>      
   </bean>
   
   <bean id="derbyStore" destroy-method="shutdown" 
-    class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore">
+        class="org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore">
     <property name="psqContext" ref="psqContext"/>      
   </bean>
 

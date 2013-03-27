@@ -76,32 +76,32 @@
   <!-- ===================================================== PsqStore filter -->
 
   <filter>
-    <filter-name>PsqStoreRequestFilter</filter-name>
+    <filter-name>PsqStoreConfigFilter</filter-name>
 
     <filter-class>
-      org.hupo.psi.mi.psicquic.server.PsqStoreDispatchFilter
+      org.hupo.psi.mi.psicquic.server.PsqStoreConfigFilter
     </filter-class>
     
     <init-param>
       <param-name>derby-home</param-name>
-      <param-value>derby</param-value>
+      <param-value>store/derby</param-value>
     </init-param>
 
     <init-param>
-      <param-name>berkeleydb-home</param-name>
-      <param-value>bdb</param-value>
+      <param-name>bdb-home</param-name>
+      <param-value>store/bdb</param-value>
     </init-param>
     
   </filter>
 
   <!-- 
-    NOTE:
-     Used only to configure derby home location; no filtering
+    NOTE: Used only to configure location of embedded record stores; 
+          no filtering performed
   --> 
 
   <!--
   <filter-mapping>
-    <filter-name>PsqStoreRequestFilter</filter-name>
+    <filter-name>PsqStoreConfigFilter</filter-name>
     <url-pattern>/derby/*</url-pattern>
   </filter-mapping>
   -->

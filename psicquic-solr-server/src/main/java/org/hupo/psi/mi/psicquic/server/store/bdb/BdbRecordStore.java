@@ -1,11 +1,11 @@
-package org.hupo.psi.mi.psicquic.server.store.berkeleydb;
+package org.hupo.psi.mi.psicquic.server.store.bdb;
 
 /* =============================================================================
  # $Id::                                                                       $
  # Version: $Rev::                                                             $
  #==============================================================================
  #
- # BerkeleyDbRecordStore: Berkeley DB(JE)-backed RecordStore implementation
+ # BdbRecordStore: Berkeley DB(JE)-backed RecordStore implementation
  #
  #
  #=========================================================================== */
@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 //------------------------------------------------------------------------------
 
-public class BerkeleyDbRecordStore extends RdbRecordStore{ 
+public class BdbRecordStore extends RdbRecordStore{ 
     
     public static final int TIMEOUT_LONG = 30;
     public static final int TIMEOUT_SHORT = 5;
@@ -43,7 +43,7 @@ public class BerkeleyDbRecordStore extends RdbRecordStore{
     private Environment bdbEnv;
     private Map<String,Database> bdbMap = new HashMap<String,Database>();
     
-    public BerkeleyDbRecordStore(){
+    public BdbRecordStore(){
         try{
             
         } catch( Exception ex ){
@@ -51,7 +51,7 @@ public class BerkeleyDbRecordStore extends RdbRecordStore{
         }
     }
 
-    public BerkeleyDbRecordStore( PsqContext context ){
+    public BdbRecordStore( PsqContext context ){
 
         setPsqContext( context );
         
@@ -63,7 +63,7 @@ public class BerkeleyDbRecordStore extends RdbRecordStore{
         }
     }
 
-    public BerkeleyDbRecordStore( PsqContext context, String host ){
+    public BdbRecordStore( PsqContext context, String host ){
         
         setPsqContext( context );
         Log log = LogFactory.getLog( this.getClass() );
@@ -79,25 +79,34 @@ public class BerkeleyDbRecordStore extends RdbRecordStore{
     public void initialize(){
         
         Log log = LogFactory.getLog( this.getClass() );
-        log.info( "BerkeleyDbRecordStore: initialize" );
+        log.info( "BdbRecordStore: initialize" );
         if( getPsqContext() != null 
             && getPsqContext().getJsonConfig() != null ){
             
+            String activeCfg = 
+                (String) ((Map) getPsqContext().getJsonConfig().get("store"))
+                .get("active");
+
+            if( activeCfg == null ||  !activeCfg.equalsIgnoreCase("derby") ){
+                log.info( " bdb-store not active: initialization skipped");
+                return;
+            }
+
             Map bdbCfg = 
                 (Map) ((Map) getPsqContext().getJsonConfig().get("store"))
-                .get("berkeleydb");
+                .get("bdb");
             
             String berkeleydb = (String) bdbCfg.get("db-home");
-            log.info( " berkeleydb-home(config): " + berkeleydb );
+            log.info( " bdb-home(config): " + berkeleydb );
             
             if( bdbHome == null ){
-                bdbHome = System.getProperty( "xpsq.berkeleydb.home");
+                bdbHome = System.getProperty( "xpsq.bdb.home");
             }
             
             if( bdbHome != null && !berkeleydb.startsWith("/") ){
                 berkeleydb = bdbHome + File.separator + berkeleydb;
             }
-            log.info( " berkelydb-home(final): " + berkeleydb );
+            log.info( " bdb-home(final): " + berkeleydb );
             
             EnvironmentConfig myEnvConfig = new EnvironmentConfig();
             myEnvConfig.setAllowCreate( true );
@@ -115,7 +124,7 @@ public class BerkeleyDbRecordStore extends RdbRecordStore{
         } else {
             
         }
-        log.info( "BerkeleyDbRecordStore: initialize (DONE)" );
+        log.info( "BdbRecordStore: initialize (DONE)" );
 
     }
 
