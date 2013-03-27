@@ -87,7 +87,7 @@ public class BdbRecordStore extends RdbRecordStore{
                 (String) ((Map) getPsqContext().getJsonConfig().get("store"))
                 .get("active");
 
-            if( activeCfg == null ||  !activeCfg.equalsIgnoreCase("derby") ){
+            if( activeCfg == null ||  !activeCfg.equalsIgnoreCase("bdb") ){
                 log.info( " bdb-store not active: initialization skipped");
                 return;
             }
@@ -286,7 +286,7 @@ public class BdbRecordStore extends RdbRecordStore{
     public void clearLocal(){
         
         Log log = LogFactory.getLog( this.getClass() );
-        log.info( "BerkeleyDbRecordStore(clearLocal): START");
+        log.info( "BdbRecordStore(clearLocal): START");
 
         if( bdbEnv != null ){
             try{
@@ -302,7 +302,7 @@ public class BdbRecordStore extends RdbRecordStore{
                             bdbEnv.truncateDatabase( txn, 
                                                      myDb.getDatabaseName(), 
                                                      true );
-                        log.info( "BerkeleyDbRecordStore(clearLocal):"
+                        log.info( "BdbRecordStore(clearLocal):"
                                   + " database: " + myDb.getDatabaseName() 
                                   + " records removed: " + recCount );
                     }catch( Exception e ){
@@ -313,7 +313,7 @@ public class BdbRecordStore extends RdbRecordStore{
                     }
                 }
             } catch( Exception ex ){
-                log.info( "BerkeleyDbRecordStore(clearLocal): DONE");
+                log.info( "BdbRecordStore(clearLocal): DONE");
             }
         }
     }
@@ -325,7 +325,7 @@ public class BdbRecordStore extends RdbRecordStore{
        
         Map meta = new HashMap();
         meta.put("resource-class","store");
-        meta.put("resource-type","berkeleydb");
+        meta.put("resource-type","bdb");
         
         try{
             Map viewCount = new HashMap();
@@ -339,7 +339,7 @@ public class BdbRecordStore extends RdbRecordStore{
 
                 Database myDb = entry.getValue();
                 long recCount = myDb.count();
-                viewCount.put( entry.getValue(), recCount );
+                viewCount.put( entry.getKey(), recCount );
                 
                 all += recCount;
             }
@@ -356,22 +356,28 @@ public class BdbRecordStore extends RdbRecordStore{
     //--------------------------------------------------------------------------
 
     private Database createDatabase( String format ){
-        
+
+        Log log = LogFactory.getLog( this.getClass() );
+        log.info( "BdbRecordStore(createDatabase): START");        
         Map berkeleydbCfg = 
             (Map) ((Map) getPsqContext().getJsonConfig().get("store"))
-            .get("berkeleydb");
-
+            .get("bdb");
+        
         Map dbConfig = (Map) ((Map) ((Map) berkeleydbCfg.get("view"))
                               .get( format )).get("config");
         
-        String dbName = (String) dbConfig.get("db-name");
-        
+        String dbName = (String) dbConfig.get( "db-name" );
+        log.info( "db-name=" + dbName );
+
         try{
             DatabaseConfig myConfig = new DatabaseConfig();
             myConfig.setTransactional( true );
+            myConfig.setAllowCreate( true );
+
             Database myDb  = bdbEnv.openDatabase( null, dbName, myConfig );
             bdbMap.put( format, myDb );
         } catch (DatabaseException de) {
+            de.printStackTrace();
             // Exception handling goes here
         }
         return bdbMap.get( format);

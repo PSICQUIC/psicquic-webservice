@@ -46,7 +46,9 @@ public class PsqStoreConfigFilter  implements Filter{
             String myHome = config.getInitParameter( "derby-home" ) ;
             if( !myHome.startsWith("/") ){
                 myHome = path + File.separator + myHome;
-            }    
+            }
+
+            log.info( "derby-home(final)=" + myHome );
             System.setProperty( "xpsq.derby.home",  myHome );
 
             if( PsqContext.getStore("derby") != null ){
@@ -60,12 +62,14 @@ public class PsqStoreConfigFilter  implements Filter{
             if( !myHome.startsWith("/") ){
                 myHome = path + File.separator + myHome;
             }    
+
+            log.info( "bdb-home(final)=" + myHome );
             System.setProperty( "xpsq.bdb.home", myHome );
+
             if( PsqContext.getStore("bdb") != null ){
                 PsqContext.getStore("bdb").initialize();
             }
         }
-
     }
     
     public void doFilter( ServletRequest request, 

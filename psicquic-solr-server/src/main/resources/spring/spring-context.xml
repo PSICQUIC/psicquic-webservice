@@ -42,10 +42,10 @@
     </property>
     <property name="storeMap">
       <map>
-        <entry key="solr" value-ref="solrStore"/>       
+        <entry key="bdb" value-ref="bdbStore"/>
         <entry key="derby" value-ref="derbyStore"/>
         <entry key="hibernate" value-ref="rdbmStore"/>
-        <entry key="berkeleydb" value-ref="bdbStore"/>
+        <entry key="solr" value-ref="solrStore"/>       
       </map>
     </property>
   </bean>

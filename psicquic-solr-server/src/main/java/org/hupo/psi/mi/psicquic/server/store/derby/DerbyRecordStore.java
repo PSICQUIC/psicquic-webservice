@@ -90,6 +90,15 @@ public class DerbyRecordStore extends RdbRecordStore{
 
         derbyHome = System.getProperty( "xpsq.derby.home");
         log.info( "derby-home(prefix): " + derbyHome );
+
+        String activeName = getPsqContext().getActiveStoreName();
+        
+        if( activeName != null 
+            && activeName.equalsIgnoreCase("derby") ){
+            connect();
+        } else {
+            log.info( " derby-store not active: initialization skipped");
+        }
     }
     
     private void connect(){
@@ -98,7 +107,15 @@ public class DerbyRecordStore extends RdbRecordStore{
             
             Log log = LogFactory.getLog( this.getClass() );
             log.info( "DerbyRecordDao:connect" );
-        
+
+            String activeName = getPsqContext().getActiveStoreName();
+
+            if( activeName == null
+                || !activeName.equalsIgnoreCase("derby") ){
+                log.warn( " derby-store not active: not connecting" );
+                return;
+            }
+
             if( getPsqContext() != null 
                 && getPsqContext().getJsonConfig() != null ){
 
@@ -110,7 +127,7 @@ public class DerbyRecordStore extends RdbRecordStore{
                     log.info( " db-home(config): " + derbydb );
 
                     if( derbyHome == null ){
-                        derbyHome = System.getProperty( "derby.derby.home");
+                        derbyHome = System.getProperty( "xpsq.derby.home");
                     }
 
                     if( derbyHome != null && !derbydb.startsWith("/") ){

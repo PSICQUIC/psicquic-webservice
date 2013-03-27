@@ -4,6 +4,11 @@ TO-DO LIST
 ----------
 
  - mif2mif transformation
+
  - properly escape mitab fields
+
  - set solr admin access restrictions
+
+ - clean up store/index configuration - eliminate direct 
+   access to getPsqContext().getJsonConfig()
    
