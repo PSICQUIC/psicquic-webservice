@@ -23,9 +23,10 @@ import org.hupo.psi.mi.psicquic.server.index.*;
 import org.hupo.psi.mi.psicquic.server.index.solr.SolrRecordIndex;
 
 import org.hupo.psi.mi.psicquic.server.store.*;
-import org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore;
+import org.hupo.psi.mi.psicquic.server.store.derby.DerbyRecordStore; 
 import org.hupo.psi.mi.psicquic.server.store.hibernate.HibernateRecordStore;
 import org.hupo.psi.mi.psicquic.server.store.solr.SolrRecordStore;
+import org.hupo.psi.mi.psicquic.server.store.bdb.BdbRecordStore;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
 
@@ -52,6 +53,7 @@ public class IndexBuilder{
     String root = null;
     String source = null;
     boolean zip = false;
+    boolean logId = false;
 
     RecordIndex recordIndex = null;
     RecordStore recordStore = null;
@@ -74,7 +76,8 @@ public class IndexBuilder{
     //--------------------------------------------------------------------------
     
     public IndexBuilder( String ctx, String host, int btc, int stc, 
-                         String format, boolean zip, Map<String,String> pax ){
+                         String format, boolean zip, boolean logId, 
+                         Map<String,String> pax ){
         
         InputStream isCtx = null;
         this.log = LogFactory.getLog( this.getClass() );
@@ -84,23 +87,26 @@ public class IndexBuilder{
             log.info( ex.getMessage(), ex );
         }
         
-        this._IndexBuilder( isCtx, host, btc, stc, format, zip, pax );          
+        this._IndexBuilder( isCtx, host, btc, stc, format, zip, logId, pax );          
     }
     
     public IndexBuilder( InputStream isCtx, String host, int btc, int stc,
-                         String format, boolean zip, Map<String,String> pax ){
+                         String format, boolean zip, boolean logId, 
+                         Map<String,String> pax ){
         
         this.log = LogFactory.getLog( this.getClass() );
-        this._IndexBuilder( isCtx, host, btc, stc, format, zip, pax );
+        this._IndexBuilder( isCtx, host, btc, stc, format, zip, logId, pax );
     }
 
     private void _IndexBuilder( InputStream isCtx,  String serverHost, 
                                 int btc, int stc, String format, 
-                                boolean zip, Map<String,String> pax ){
+                                boolean zip, boolean logId, 
+                                Map<String,String> pax ){
         this.zip = zip;
         this.format = format;
         this.source = source;
         this.pax = pax;
+        this.logId = logId;
         
         log.info( " initilizing IndexBuilder: threads=" + builderTCount );
         log.info( " initilizing IndexBuilder: server host=" + serverHost );
@@ -171,10 +177,21 @@ public class IndexBuilder{
                 // implicitly cleared by clearing index
             }
 
+            if( activeStoreName.equals( "bdb" ) ){
+                recordStore = new BdbRecordStore( psqContext, host );
+                recordStore.clear();
+            }
+            
             if( activeStoreName.equals( "derby" ) ){
                 recordStore = new DerbyRecordStore( psqContext, host );
                 recordStore.clear();
             }
+
+            if( activeStoreName.equals( "hibernate" ) ){
+                recordStore = new HibernateRecordStore( psqContext, host );
+                recordStore.clear();
+            }
+            
         } catch( MalformedURLException mux ){
             log.info( mux.getMessage(), mux );
         }              
@@ -264,9 +281,10 @@ public class IndexBuilder{
             for( Iterator<File> fqi = fq.iterator(); fqi.hasNext(); ){
                 log.info( "IndexBuilder:  file: " + fqi.next() );
             }
-            
+
             IndexThread it = new IndexThread( psqContext, host, solrconTCount,
-                                              root, fq, format, zip, pax );
+                                              root, fq, format, zip, logId, 
+                                              pax );
             itl.add( it );
 
             log.info( "IndexBuilder:  starting thread..." );
@@ -306,9 +324,11 @@ public class IndexBuilder{
         }
     }
 
-    public void index( String root, File file ) throws IOException{
+    public void index( String root, File file, boolean logId ) 
+        throws IOException{
                 
         String name = null;
+        List<String> idList;
         
         name = file.getCanonicalPath().replace( root, "" );
         
@@ -319,17 +339,70 @@ public class IndexBuilder{
         log.info( "index: root:" + root );
         
         String compress = zip ? "zip" : "";
-        
+
+
         // transform/add -> index
         //-----------------------
 
         if( recordIndex!= null ){
-            recordIndex.addFile( file, name, format, compress );
+            idList = recordIndex.addFile( file, name, format, compress, logId );
         }
         // transform/add -> datastore
         //---------------------------
         if( recordStore!= null ){
             recordStore.addFile( file, name, format, compress );       
+        }
+    }
+
+    //------------------------------------------------------------------------------
+
+    public void deleteRecords( List<String> idList){
+        
+        log.info( "Deleting records" );
+
+        // record index
+        //-------------
+       
+        String activeIndexName = psqContext.getActiveIndexName();
+
+        if( activeIndexName.equals( "solr" ) ){
+
+            try{
+                RecordIndex recordIndex = new SolrRecordIndex( psqContext, host );
+                recordIndex.initialize();
+                recordIndex.connect();
+                recordIndex.delete( idList );
+            } catch( MalformedURLException mux){
+                log.info( mux.getMessage(), mux );
+            }
+        }
+            
+        // data store
+        //-----------
+
+        String activeStoreName = psqContext.getActiveStoreName();
+        
+        if( activeStoreName.equals( "solr" ) ){
+            // implicitly deleted when deleting from index
+        } else {
+            
+            RecordStore recordStore = null;
+            if( activeStoreName.equals( "bdb" ) ){
+                recordStore = new BdbRecordStore( psqContext, host );
+            }
+            
+            if( activeStoreName.equals( "derby" ) ){
+                recordStore = new DerbyRecordStore( psqContext, host );
+            }
+
+            if( activeStoreName.equals( "hibernate" ) ){
+                recordStore = new HibernateRecordStore( psqContext, host );
+            }
+           
+            if( recordStore!= null ){
+                log.info( "store = " + recordStore );
+                recordStore.delete( idList );
+            }
         }
     }
 }
@@ -343,20 +416,25 @@ class IndexThread extends Thread{
     RecordStore recordStore = null;
 
     boolean zip = false;
+    boolean logId = false;
     String root;
     String format;
     
+    
+
     List<File> fileq;
     Map<String,String> pax;
-    
+
     public IndexThread( PsqContext psqContext, String host, int solrconTCount,
                         String root, List<File> files, 
-                        String format, boolean zip, Map<String,String> pax ){
+                        String format, boolean zip, boolean logId, 
+                        Map<String,String> pax ){
         fileq = files;
         this.zip = zip;
         this.root = root;
         this.format = format;
         this.pax = pax;
+        this.logId = logId;
         
         try{
             
@@ -379,12 +457,17 @@ class IndexThread extends Thread{
             
             if( activeStoreName.equals( "derby" ) ){
                 recordStore = new DerbyRecordStore( psqContext, host );
-                recordStore.initialize();
+                //recordStore.initialize();
             }
 
             if( activeStoreName.equals( "hibernate" ) ){
                 recordStore = new HibernateRecordStore( psqContext, host );
-                recordStore.initialize();
+                //recordStore.initialize();
+            }
+
+            if( activeStoreName.equals( "bdb" ) ){
+                recordStore = new BdbRecordStore( psqContext, host );
+                //recordStore.initialize();
             }
 
         } catch( MalformedURLException mux ){
@@ -418,19 +501,45 @@ class IndexThread extends Thread{
                 //-----------------------
                 
                 if( recordIndex != null){
-                    recordIndex.addFile( file, name, format, compress, pax );      
-                }
+                    List<String> idList 
+                        = recordIndex.addFile( file, name, 
+                                               format, compress, logId, pax );
 
+                    if( logId ){
+                        try{
+                            String logFileName 
+                                = file.getCanonicalPath() + ".xpsq";
+                            FileWriter fstream 
+                                = new FileWriter( logFileName, false );
+                            PrintWriter pwLogFile 
+                                = new PrintWriter(fstream);
+                            pwLogFile.println("# "+ name );
+                            
+                            if( idList != null && idList.size() >  0 ){
+                                for(Iterator<String> i = idList.iterator(); 
+                                    i.hasNext(); ){
+                                    pwLogFile.println( i.next() );
+                                }
+                            }
+                            pwLogFile.close();
+                        } catch( Exception ex ){
+                            ex.printStackTrace();
+                        }
+                    }
+                }
                 // transform/add -> datastore
                 //---------------------------
                 if( recordStore != null){  
-                    recordStore.addFile( file, name, format, compress, pax );
+
+                    log.info( "IndexThread: recordStore=" + recordStore );
+                    
+                    recordStore.addFile( file, name, 
+                                         format, compress, pax );
                 }
             }catch( Exception ex ){               
                 ex.printStackTrace();
                 log.info( ex.getMessage(), ex );
             }
-        }
-        
+        }  
     }
 }

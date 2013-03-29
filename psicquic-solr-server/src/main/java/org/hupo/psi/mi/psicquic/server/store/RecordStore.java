@@ -20,13 +20,25 @@ public interface RecordStore{
     public void clear();
     public void clearLocal();
     public void shutdown();
-    public void addRecord( String id, String record, String format );
+
+    public void delete( List<String> idLst);
+
+
     public void addFile( File f, String name, String format, 
                          String compress );
     public void addFile( File f, String name, String format, 
                          String compress, Map<String,String> trpar );
 
     public String getRecord( String id, String format );
+
+    public void addRecord( String id, String record, String format );
+
+    public void updateRecord( String id, String record, String format );
+
+    public void deleteRecord( String id, String format );    
+    public void deleteRecords( List<String> idList, String format );
+    public void deleteRecords( List<String> idList );
+
     public List<String> getRecordList( List<String> id, String format );
     public String toString( ResultSet rset );
     public Map getMeta();

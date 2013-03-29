@@ -135,6 +135,99 @@ public class HibernateRecordStore extends RdbRecordStore {
 
     //--------------------------------------------------------------------------
 
+    public void deleteRecord( String rid, String format ){
+        Log log = LogFactory.getLog( this.getClass() );
+
+        if( rid == null || format == null ) return;
+        
+        Session session = null;
+        Transaction tx = null;
+
+        try{
+            session = sessionFactory.getCurrentSession();
+            tx = session.beginTransaction();
+
+            String hql = "delete from PsicquicRecord where"
+                + " rid = :rid and format = :fmt";
+
+            session.createQuery( hql ).setParameter("rid", rid )
+                .setParameter("fmt", format).executeUpdate();
+            
+            tx.commit();
+
+        } catch( Exception ex ){
+            if (tx != null) tx.rollback();
+            log.info( "   deleteRecord failed" );
+            ex.printStackTrace();
+        }     
+    }
+
+    //--------------------------------------------------------------------------
+    
+    public void deleteRecords( List<String> idList, String format ){
+
+        Log log = LogFactory.getLog( this.getClass() );
+        if( idList == null || idList.size() == 0 || format == null ) return;
+        
+        Session session = null;
+        Transaction tx = null;
+        
+        try{
+            session = sessionFactory.getCurrentSession();
+            tx = session.beginTransaction();
+            
+            String hql = "delete from PsicquicRecord where" 
+                + " rid in( :rid) and format = :fmt";
+            
+            session.createQuery( hql ).setParameter("rid", idList)
+                .setParameter("fmt", format).executeUpdate();
+            
+            tx.commit();
+            
+        } catch( Exception ex ){
+            if (tx != null) tx.rollback();
+            log.info( "   deleteRecord failed" );
+            ex.printStackTrace();
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    public void deleteRecords( List<String> idList ){
+        
+        Log log = LogFactory.getLog( this.getClass() );
+        if( idList == null || idList.size() == 0 ) return;
+        
+        Session session = null;
+        Transaction tx = null;
+        
+        try{
+            session = sessionFactory.getCurrentSession();
+            tx = session.beginTransaction();
+            
+            String hql = "delete from PsicquicRecord  where rid in( :rid)";
+            
+            session.createQuery( hql ).setParameter("rid", idList)
+                .executeUpdate();
+            
+            tx.commit();
+            
+        } catch( Exception ex ){
+            if (tx != null) tx.rollback();
+            log.info( "   deleteRecord failed" );
+            ex.printStackTrace();
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    public void updateRecord( String rid, String record, String fmt ){
+        Log log = LogFactory.getLog( this.getClass() );
+        log.warn( "updateRecord: not implemented" );
+    }
+
+    //--------------------------------------------------------------------------
+
     public String getRecord( String rid, String format ){
       
         String record = "";

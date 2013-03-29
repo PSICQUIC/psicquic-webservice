@@ -38,9 +38,12 @@ public class DerbyRecordStore extends RdbRecordStore{
     
     public static final int TIMEOUT_LONG = 30;
     public static final int TIMEOUT_SHORT = 5;
+
+    public static final int TR_ISOLATION_LEVEL =
+        Connection.TRANSACTION_READ_UNCOMMITTED;
     
     Connection dbcon = null;
-
+    
     Map<String,Map<String,PsqTransformer>> inTransformerMap = null;
     
     String rmgrURL = null;
@@ -56,7 +59,7 @@ public class DerbyRecordStore extends RdbRecordStore{
     }
 
     public DerbyRecordStore( PsqContext context ){
-
+        
         setPsqContext( context );
         Log log = LogFactory.getLog( this.getClass() );
         try{
@@ -87,10 +90,10 @@ public class DerbyRecordStore extends RdbRecordStore{
 
         Log log = LogFactory.getLog( this.getClass() );
         log.info( "initialize()" );
-
+        
         derbyHome = System.getProperty( "xpsq.derby.home");
         log.info( "derby-home(prefix): " + derbyHome );
-
+        
         String activeName = getPsqContext().getActiveStoreName();
         
         if( activeName != null 
@@ -115,7 +118,7 @@ public class DerbyRecordStore extends RdbRecordStore{
                 log.warn( " derby-store not active: not connecting" );
                 return;
             }
-
+            
             if( getPsqContext() != null 
                 && getPsqContext().getJsonConfig() != null ){
 
@@ -138,6 +141,9 @@ public class DerbyRecordStore extends RdbRecordStore{
                     dbcon = 
                         DriverManager.getConnection( "jdbc:derby:" + 
                                                      derbydb + ";create=true");
+                    
+                    dbcon.setTransactionIsolation( TR_ISOLATION_LEVEL );
+                    
                 } catch( Exception ex ){
                     ex.printStackTrace();
                 }
@@ -165,9 +171,10 @@ public class DerbyRecordStore extends RdbRecordStore{
     private void create(){
 
         Log log = LogFactory.getLog( this.getClass() );
-        
+
+        Statement st = null;
         try{
-            Statement st = dbcon.createStatement();
+            st = dbcon.createStatement();
             st.setQueryTimeout( TIMEOUT_LONG ); 
             
             st.executeUpdate( "create table record " +
@@ -176,12 +183,12 @@ public class DerbyRecordStore extends RdbRecordStore{
                               " format varchar(32), record clob )");
             
             st.executeUpdate( "create index r_rid on record (rid)" );
-            
             st.executeUpdate( "create index r_ft on record (format)" );
-            
+            st.close();
         } catch( Exception ex ){
             ex.printStackTrace();
-        }
+        } 
+        
     }
     
     public void shutdown(){
@@ -207,10 +214,11 @@ public class DerbyRecordStore extends RdbRecordStore{
         
         connect();
         log.debug( "dbcon=" + dbcon );
+        PreparedStatement pst = null;
         try{
-            PreparedStatement pst = dbcon
-                .prepareStatement( "insert into record (rid, record, format)" +
-                                   " values (?,?,?)" );
+            pst = dbcon.prepareStatement( "insert into record" 
+                                          + " (rid, record, format)" 
+                                          + " values (?,?,?)" );
             
             pst.setString( 1, rid );
             
@@ -219,7 +227,32 @@ public class DerbyRecordStore extends RdbRecordStore{
                 pst.setString( 3, format );
             
                 pst.executeUpdate();
-            } 
+            }
+            pst.close();
+        }catch( Exception ex ){
+            ex.printStackTrace();
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    
+    public void deleteRecord( String rid, String format ){
+        Log log = LogFactory.getLog( this.getClass() );
+
+        if( rid == null || format == null ) return;
+        
+        connect();
+        log.debug( "dbcon=" + dbcon );
+
+        PreparedStatement pst = null;
+        try{
+            pst = dbcon.prepareStatement( "delete from record"
+                                          + " where rid = ? and format = ?" );
+            
+            pst.setString( 1, rid );
+            pst.setString( 2, format );  
+            pst.executeUpdate();
+            pst.close();
         }catch( Exception ex ){
             ex.printStackTrace();
         }
@@ -227,25 +260,92 @@ public class DerbyRecordStore extends RdbRecordStore{
 
     //--------------------------------------------------------------------------
 
+    public void deleteRecords( List<String> idList, String format ){
+        Log log = LogFactory.getLog( this.getClass() );
+        
+        if( idList == null || format == null ) return;
+        
+        connect();
+        log.debug( "dbcon=" + dbcon );
+
+        PreparedStatement pst = null;
+        try{
+            pst = dbcon.prepareStatement( "delete from record"
+                                          + " where rid = ? and format = ?" );
+            
+            pst.setString( 2, format );
+            
+            dbcon.setAutoCommit( false );
+            for( Iterator<String> i = idList.iterator(); i.hasNext(); ){
+                pst.setString( 1, i.next());
+                pst.addBatch();
+            }
+            pst.executeUpdate();
+            pst.close();
+            dbcon.setAutoCommit( true );
+        }catch( Exception ex ){
+            ex.printStackTrace();
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    public void deleteRecords( List<String> idList ){
+        Log log = LogFactory.getLog( this.getClass() );
+        
+        if( idList == null ) return;
+        
+        connect();
+        log.debug( "dbcon=" + dbcon );
+        PreparedStatement pst = null;
+        try{
+            pst = dbcon.prepareStatement( "delete from record"
+                                          + " where rid = ?" );
+            dbcon.setAutoCommit( false );
+            for( Iterator<String> i = idList.iterator(); i.hasNext(); ){
+                pst.setString( 1, i.next());
+                pst.addBatch();
+            }
+            pst.executeUpdate();            
+            pst.close();
+            dbcon.setAutoCommit( true );
+        }catch( Exception ex ){
+            ex.printStackTrace();
+        }
+    }
+    
+    //--------------------------------------------------------------------------
+
+    public void updateRecord( String rid, String record, String fmt ){
+        Log log = LogFactory.getLog( this.getClass() );
+        log.warn( "updateRecord: not implemented" );
+    }
+
+    //--------------------------------------------------------------------------
+
+
     public String getRecord( String rid, String format ){
         connect();
         String record = "";
         
 	Log log = LogFactory.getLog( this.getClass() );
 
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        Clob rc = null;
+        
         try{
-            PreparedStatement pst = dbcon
-                .prepareStatement( "select rid, record, format from record" +
-                                   " where rid = ? and format= ?" );
-            
+            pst = dbcon.prepareStatement( "select rid, record, format" 
+                                          + " from record" 
+                                          + " where rid = ? and format= ?" );
             pst.setString( 1, rid );
             pst.setString( 2, format );
-            ResultSet rs =  pst.executeQuery();
+            rs =  pst.executeQuery();
 
             String rt = "";
 
             while( rs.next() ){
-                Clob rc = rs.getClob( 2 );
+                rc = rs.getClob( 2 );
                 record = rc.getSubString( 1L, 
                                           new Long(rc.length()).intValue() );
                 rt = rs.getString(3);
@@ -255,6 +355,9 @@ public class DerbyRecordStore extends RdbRecordStore{
                            + " rt=" + rt 
                            + "  record=" + record.substring(0, 32) );
             }
+            rs.close();
+            pst.close();
+
         }catch( Exception ex ){
             ex.printStackTrace();
         }
@@ -268,27 +371,35 @@ public class DerbyRecordStore extends RdbRecordStore{
         connect();
         List<String> recordList = new ArrayList<String>();
         
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        Clob rc = null;
+        
         try{
-            PreparedStatement pst = dbcon
-                .prepareStatement( "select rid, record from record" +
-                                   " where rid = ? and format = ?" );
+            pst = dbcon.prepareStatement( "select rid, record from record" 
+                                          + " where rid = ? and format = ?" );
             
             for( Iterator<String> i = rid.iterator(); i.hasNext(); ){
                 pst.setString( 1, i.next() );
                 pst.setString( 2, format );
-                ResultSet rs =  pst.executeQuery();
+                rs =  pst.executeQuery();
                 
                 while( rs.next() ){
-                    Clob rc = rs.getClob(2);
+                    rc = rs.getClob(2);
                     String record = 
                         rc.getSubString( 1L, 
                                          new Long(rc.length()).intValue() );
                     recordList.add( record );
+                    
                 }
+                rs.close();
             }
+            rs.close();
+            pst.close();
         } catch( Exception ex ){
             ex.printStackTrace();
         }
+        
         return recordList;
     }
     
@@ -299,12 +410,14 @@ public class DerbyRecordStore extends RdbRecordStore{
         if( dbcon == null ){
             connect();
         }
-
+        
+        Statement st = null;
         try{
-            Statement st = dbcon.createStatement();
+            st = dbcon.createStatement();
             st.setQueryTimeout(60);
             st.executeUpdate( "truncate table record");
             log.info( "record table truncated" );
+            st.close();
         } catch( Exception ex ){
             // missing table ?
             log.info( ex.getMessage(), ex );
@@ -322,17 +435,17 @@ public class DerbyRecordStore extends RdbRecordStore{
         meta.put("resource-class","store");
         meta.put("resource-type","derby");
 
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         try{
 
             Map viewCount = new HashMap();
             
+            pst = dbcon.prepareStatement( "select format, count(*)"
+                                          + " from record" 
+                                          + " group by format" );
             
-
-            PreparedStatement pst = dbcon
-                .prepareStatement( "select format, count(*) from record" +
-                                   " group by format" );
-            
-            ResultSet rs =  pst.executeQuery();
+            rs =  pst.executeQuery();
             long all = 0;
             while( rs.next() ){
                     String vt = rs.getString(1);
@@ -340,6 +453,8 @@ public class DerbyRecordStore extends RdbRecordStore{
                     all += vc;
                     viewCount.put( vt, vc );
             }
+            rs.close();
+            pst.close();
             viewCount.put( "all", all );
             meta.put( "counts", viewCount );
         } catch( Exception ex ){

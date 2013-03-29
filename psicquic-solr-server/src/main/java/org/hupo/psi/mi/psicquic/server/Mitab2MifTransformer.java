@@ -43,7 +43,7 @@ public class Mitab2MifTransformer implements PsqTransformer{
 
     String fileName = null;
     String curRowStr = null;
-    int curLineNumber = 0;
+    int curLineNumber = 1;
     
     private String out ="VIEW";
 
@@ -99,7 +99,7 @@ public class Mitab2MifTransformer implements PsqTransformer{
         
         this.fileName = fileName;
         this.curRowStr = null;
-        this.curLineNumber = 0;
+        this.curLineNumber = 1;
         
         log.info( " starting Mitab2MifTransformer(fileName): filename(n)=" 
                   + this.fileName );
@@ -122,7 +122,7 @@ public class Mitab2MifTransformer implements PsqTransformer{
         
         this.fileName = fileName;
         this.curRowStr = null;
-        this.curLineNumber = 0;
+        this.curLineNumber = 1;
 
         log.info( " starting Mitab2MifTransformer(stream): filename(n)=" 
                   + this.fileName );

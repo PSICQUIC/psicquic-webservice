@@ -16,11 +16,18 @@ public interface RecordIndex{
                             long firstResult, long blockSize );
     public void initialize();
     public void clear();
+    public void delete( List<String> idLst );
+
     public void connect() throws MalformedURLException;
 
-    public void addFile( File f, String name, 
-                         String format, String compress );
-    public void addFile( File f, String name, 
-                         String format, String compress, Map<String,String> trpar );
+    public List<String> addFile( File f, String name, 
+                                 String format, String compress, boolean logId );
+
+    public List<String> addFile( File f, String name, 
+                                 String format, String compress, boolean logId, 
+                                 Map<String,String> trpar );
+
+    public void deleteRecords( List<String> idList );
+    
     public Map getMeta();
 }

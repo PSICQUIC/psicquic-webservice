@@ -104,7 +104,17 @@ public class SolrRecordStore implements RecordStore{
     public void clear(){}
     public void clearLocal(){}
     public void shutdown(){}
+
+    public void delete( List<String> idLst ){}
+
     public void addRecord( String rid, String record, String format ){}
+
+    public void deleteRecord( String rid, String fmt ){}
+    public void deleteRecords( List<String> idList, String format ){}
+    public void deleteRecords( List<String> idList ){}
+
+    public void updateRecord( String rid, String record, String fmt ){}
+
 
     public void addFile( File file, String fileName, 
                          String format, String compress ){

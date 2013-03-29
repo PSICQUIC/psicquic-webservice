@@ -38,9 +38,11 @@ public class buildindex{
     public static String host = null;
     public static String idir = null;
     public static String ifile = null;
+    public static String delfile = null;
     
     public static boolean clr = false;
     public static boolean zip = false;
+    public static boolean logId = false;
     public static boolean desc = false;
 
     public static Map<String,String> pax = null; // xslt transformer params
@@ -90,7 +92,7 @@ public class buildindex{
         options.addOption( fmtOption );
         
         Option hlpOption = OptionBuilder.withLongOpt( "help" )
-            .withDescription( "help " )
+            .withDescription( "help" )
             .create( "help" );
         
         options.addOption( hlpOption );
@@ -137,6 +139,19 @@ public class buildindex{
 
         options.addOption( zipOption );
         
+        Option logOption = OptionBuilder.withLongOpt( "log-id" )
+            .withDescription( "generate record identifier log files" )
+            .create( "l" );
+
+        options.addOption( logOption );
+        
+        Option delOption = OptionBuilder.withLongOpt( "delete" )
+            .withArgName( "xpsq-log-file" ).hasArg()
+            .withDescription( "delete records listed in the log file" )
+            .create( "d" );
+
+        options.addOption( delOption );
+        
         String context = null;     
         String ifrmt = DEFAULT_RECORD_FORMAT;
         
@@ -145,10 +160,9 @@ public class buildindex{
             CommandLine cmd = parser.parse( options, args);
 
             if( cmd.hasOption("help") ){
-
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.setWidth( 127 );
-                formatter.printHelp( "BuildMpsqIndex", options );
+                formatter.printHelp( "BuildXpsqIndex", options );
                 System.exit(0);
             }
             
@@ -171,6 +185,10 @@ public class buildindex{
             if( cmd.hasOption( "f" ) ){
                 ifile = cmd.getOptionValue( "f" );
             }
+
+            if( cmd.hasOption( "d" ) ){
+                delfile = cmd.getOptionValue( "d" );
+            }
             
             if( cmd.hasOption( "h" ) ){
                 host = cmd.getOptionValue( "h" );
@@ -179,6 +197,10 @@ public class buildindex{
             
             if( cmd.hasOption( "z" ) ){
                 zip = true;
+            }
+
+            if( cmd.hasOption( "l" ) ){
+                logId = true;
             }
             
             if( cmd.hasOption("r") ){
@@ -233,11 +255,11 @@ public class buildindex{
         IndexBuilder ibuilder = null;
         
         System.out.println( "Host: " + host );
-
+        
         if( context != null ){
             System.out.println( "Context: " + context );
             ibuilder = new IndexBuilder( context, host, btCount, stCount, 
-                                         ifrmt, zip, pax );
+                                         ifrmt, zip, logId, pax );
         }else{
             
             System.out.println( "Context(default): " + DEFAULT_CONTEXT );
@@ -246,17 +268,28 @@ public class buildindex{
                     .getResourceAsStream( DEFAULT_CONTEXT );
                 
                 ibuilder = new IndexBuilder( ctxStream, host, btCount, stCount, 
-                                             ifrmt, zip, pax );
+                                             ifrmt, zip, logId, pax );
             } catch( Exception ex){
                 ex.printStackTrace();
             }            
         }
-
+        
         if( clr ){
             System.out.println( "Clear index" );
             ibuilder.clear();
         }
 
+        if( ibuilder != null && delfile != null ){
+            System.out.println( "Delete records: identifier file=" + delfile );
+            
+            List<String> idList = readLogFile( delfile );
+            
+            if( idList != null && idList.size() > 0){
+                ibuilder.deleteRecords( idList );
+            }
+            return;
+        }
+        
         if( ibuilder != null && ifile != null ){  
             ibuilder.processFile( ifile );
             ibuilder.start();
@@ -267,4 +300,27 @@ public class buildindex{
             }
         }
     }
+    
+    private static List<String> readLogFile( String fileName ){
+
+        List<String> idList = new ArrayList<String>();
+
+        try{
+            FileReader frd = new FileReader( new File(fileName) );
+            BufferedReader bfrd = new BufferedReader( frd ); 
+            String ln = null;
+            while( (ln = bfrd.readLine()) != null ){
+                ln = ln.replaceAll("\\s", "");
+                if( !ln.startsWith("#") ){
+                idList.add( ln );
+                }
+            }
+            bfrd.close();
+        } catch( Exception ex){
+            System.out.println( "Error reading record identifier file" );
+            ex.printStackTrace();
+        }
+        return idList;
+    }
 }
+

@@ -194,6 +194,116 @@ public class BdbRecordStore extends RdbRecordStore{
 
     //--------------------------------------------------------------------------
 
+    public void deleteRecord( String rid, String format ){
+        Log log = LogFactory.getLog( this.getClass() );
+        
+        if( rid == null || format == null ) return;
+ 
+        Database myDb = bdbMap.get( format );
+        if( myDb == null ) return;
+        
+        Transaction txn = bdbEnv.beginTransaction( null, null );
+        try {
+            
+            EntryBinding stringBinding =
+                TupleBinding.getPrimitiveBinding( String.class );
+            
+            DatabaseEntry key = new DatabaseEntry();
+            stringBinding.objectToEntry( rid, key );
+            
+            myDb.delete( txn, key);
+            txn.commit();
+            
+        } catch (Exception e) {
+            if (txn != null) {
+                txn.abort();
+                txn = null;
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    
+    public void deleteRecords( List<String> idList, String format ){
+        Log log = LogFactory.getLog( this.getClass() );
+    
+        if( idList == null || format == null ) return;
+
+        Database myDb = bdbMap.get( format );
+        if( myDb == null ) return;
+
+        EntryBinding stringBinding =
+            TupleBinding.getPrimitiveBinding( String.class );
+        
+        Transaction txn = bdbEnv.beginTransaction(null, null);
+        try {
+            for( Iterator<String> i = idList.iterator(); i.hasNext(); ){
+                
+                DatabaseEntry key = new DatabaseEntry();
+                stringBinding.objectToEntry( i.next(), key );
+
+                myDb.delete( txn, key);
+            }
+            txn.commit();
+            
+        } catch (Exception e) {
+            if (txn != null) {
+                txn.abort();
+                txn = null;
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------
+
+    public void deleteRecords( List<String> idList ){
+        Log log = LogFactory.getLog( this.getClass() );
+
+        if( idList == null || bdbEnv == null ) return;
+
+        EntryBinding stringBinding =
+            TupleBinding.getPrimitiveBinding( String.class );
+
+        Transaction txn = bdbEnv.beginTransaction(null, null);
+        
+        try{
+            for( Iterator<String> i = idList.iterator(); i.hasNext(); ){
+             
+                String id = i.next();
+                log.info("id=>" + id + "<=");
+                for( Iterator<Map.Entry<String,Database>>
+                         it = bdbMap.entrySet().iterator(); it.hasNext(); ){
+                
+                    DatabaseEntry key = new DatabaseEntry();
+                    stringBinding.objectToEntry( id, key );
+                    
+                    Map.Entry<String,Database> entry = (Map.Entry) it.next();
+                    
+                    Database myDb = entry.getValue();
+                    myDb.delete( txn, key);
+                }            
+            }
+            txn.commit();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (txn != null) {
+                txn.abort();
+                txn = null;
+            }
+        }
+    }
+    
+    //--------------------------------------------------------------------------
+    
+    public void updateRecord( String rid, String record, String fmt ){
+        Log log = LogFactory.getLog( this.getClass() );
+        log.warn( "updateRecord: not implemented" );        
+    }
+
+
+    //--------------------------------------------------------------------------
+
     public String getRecord( String rid, String format ){
  
         Log log = LogFactory.getLog( this.getClass() );

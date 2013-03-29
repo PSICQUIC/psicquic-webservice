@@ -467,7 +467,7 @@ public class SolrRecordIndex implements RecordIndex{
         
         log.info( "SolrRecordIndex: connected" );
     }
-
+    
     //--------------------------------------------------------------------------
 
     public void add( SolrInputDocument doc ) 
@@ -532,26 +532,29 @@ public class SolrRecordIndex implements RecordIndex{
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
 
-    public void addFile( File f, String name, 
-                         String format, String compress ){
-        addFile( f, name, format, compress, null );       
+    public List<String> addFile( File f, String name, String format, 
+                                 String compress, boolean logId ){
+        
+        return addFile( f, name, format, compress, logId, null );       
     }
 
-    public void addFile( File f, String name, 
-                         String format, String compress, 
-                         Map<String,String> trpar ){
+    public List<String> addFile( File f, String name, String format, 
+                                 String compress, boolean logId, 
+                                 Map<String,String> trpar ){
+        
+        List idList = null;
         
 	Log log = LogFactory.getLog( this.getClass() );
         Map rtr = ricon.get( format );
         
         List<SolrInputDocument> output = new ArrayList<SolrInputDocument>();
-
+        
         // Known record transformers (add more when implemented)
         //------------------------------------------------------
         
         if( inTransformer.get( format ) == null ){
             if( ((String) rtr.get("type")).equalsIgnoreCase( "XSLT" ) ){
-        
+                
                 log.info( " Initializing transformer: format=" + format
                           + " type=XSLT config=" + rtr.get( "config" ) );
                 
@@ -562,9 +565,9 @@ public class SolrRecordIndex implements RecordIndex{
                 log.info( " Initializing transformer(" + format
                           + "): new=" + inTransformer.get( format ) );
             }    
-        
+            
             if( ((String) rtr.get("type")).equalsIgnoreCase( "CALIMOCHO" ) ){
-            		
+                
                 log.info( " Initializing transformer: format=" + format
                           + " type=CALIMOCHO config=" + rtr.get("config") );
                 
@@ -586,22 +589,28 @@ public class SolrRecordIndex implements RecordIndex{
             if( compress!= null
                 && compress.equalsIgnoreCase("zip") ){
                 
-                processZipFile( rt, name, new ZipFile( f ));
+                idList = processZipFile( rt, name, 
+                                         new ZipFile( f ), logId );
             } else {
-                processFile( rt, name, new FileInputStream( f ));
+                idList = processFile( rt, name, 
+                                      new FileInputStream( f ), logId );
             }
-
+            
         } catch( Exception ex ){
             log.info( ex.getMessage(), ex );
-            return;
         }
+
+        return idList;
+        
     }
 
     //--------------------------------------------------------------------------
 
-    private void processZipFile( PsqTransformer rt,
-                                 String fileName,  ZipFile zf  )
+    private List<String> processZipFile( PsqTransformer rt, String fileName,  
+                                         ZipFile zf, boolean logId )
         throws java.io.IOException{
+        
+        List<String> idList = new ArrayList<String>();
         
         for( Enumeration zfe = zf.entries(); zfe.hasMoreElements(); ){
             
@@ -609,18 +618,26 @@ public class SolrRecordIndex implements RecordIndex{
             
             if( !ze.isDirectory() ){
                 InputStream is = zf.getInputStream( ze );
-                processFile( rt,
-                             fileName + "::" + ze.getName() , is );
+                List<String> idl = processFile( rt,
+                                                fileName + "::" + ze.getName(), 
+                                                is, logId );
+
+                if( idl !=  null ){
+                    idList.addAll( idl );
+                }
             }
         }
+        return idList;        
     }
     
     //--------------------------------------------------------------------------
     
-    private void processFile( PsqTransformer rt,
-                              String fileName,  InputStream is ){
-
+    private List<String> processFile( PsqTransformer rt, String fileName,  
+                                      InputStream is, boolean logId ){
+        
         Log log = LogFactory.getLog( this.getClass() );
+        List<String> idList = new ArrayList();
+        
         rt.start( fileName, is );
         
         log.info( " SolrRecordIndex(add): transformation start (" 
@@ -630,11 +647,12 @@ public class SolrRecordIndex implements RecordIndex{
             
             Map cdoc= rt.next();
 		
-            String recId = (String) cdoc.get("recId");;
+            String recId = (String) cdoc.get("recId");
             SolrInputDocument doc 
                 = (SolrInputDocument) cdoc.get("solr");
             log.debug( " SolrRecordIndex(add): recId=" + recId );
-            log.debug( " SolrRecordIndex(add): SIDoc=" + doc.toString().substring(0,64) );
+            log.debug( " SolrRecordIndex(add):" 
+                       + " SIDoc=" + doc.toString().substring(0,64) );
             
             try{
                 if( shSolr.size() > 1 ){
@@ -653,11 +671,14 @@ public class SolrRecordIndex implements RecordIndex{
                 } else {
                     this.add( doc );
                 }
+                if( logId ){
+                    idList.add( recId );
+                }
             } catch(Exception ex){
                 ex.printStackTrace();
             }                    
         }
-
+        
         try{
             // NOTE: commit every n (configurable) records ?
             this.commit();
@@ -665,13 +686,16 @@ public class SolrRecordIndex implements RecordIndex{
         }catch( Exception ex ){
             ex.printStackTrace();
         }
+        return idList;
     }
     
     //--------------------------------------------------------------------------
 
-    public void addFile( String format, String fileName, InputStream is ){
+    public List<String> addFile( String format, String fileName, InputStream is,
+                                 boolean logId ){
         
 	Log log = LogFactory.getLog( this.getClass() );
+        List<String> idList = new ArrayList<String>();
         
         Map rtr = ricon.get( format );
         
@@ -718,7 +742,7 @@ public class SolrRecordIndex implements RecordIndex{
         log.info( " SolrRecordIndex(add): transformation start (" 
                   + fileName + ")..." + recordTransformer);
         while( recordTransformer.hasNext() ){
-		
+            
             Map cdoc= recordTransformer.next();
 		
             String recId = (String) cdoc.get("recId");;
@@ -744,6 +768,9 @@ public class SolrRecordIndex implements RecordIndex{
                 } else {
                     this.add( doc );
                 }
+                if( logId ){
+                    idList.add( recId );
+                }
             } catch(Exception ex){
                 ex.printStackTrace();
             }                    
@@ -758,7 +785,75 @@ public class SolrRecordIndex implements RecordIndex{
         }catch( Exception ex ){
             ex.printStackTrace();
         }
+        return idList;
     }
+
+    //--------------------------------------------------------------------------
+
+    public void delete( List<String> idList ){
+        deleteRecords( idList );        
+    }
+
+    
+    public void deleteRecords( List<String> idList ){
+        
+        Log log = LogFactory.getLog( this.getClass() );
+        
+        try{
+            if( shSolr != null && shSolr.size()>1 ){
+                
+                // split idList into shards
+                
+                List<List<String>> shardIdList = new ArrayList<List<String>>();
+                
+                for( int i = 0; i < shSolr.size(); i++){
+                    shardIdList.add( new ArrayList<String>() );
+                }
+                
+                for( Iterator<String> i = idList.iterator(); i.hasNext(); ){
+                    String id = i.next();
+                    int sh = shardSelect( id );
+                    shardIdList.get(sh).add(id);
+                }
+                
+                int i = 0;
+                
+                for( Iterator<SolrServer> is = shSolr.iterator(); 
+                     is.hasNext(); ){
+                    
+                    SolrServer css = is.next();
+                    
+                    for( Iterator<String> shi = shardIdList.get(i).iterator(); 
+                         shi.hasNext(); ){
+                        
+                        String id = shi.next();
+                        id = id.replace(":","\\:");
+                        log.info("deleting: shard="+ i+ " id=>" +id+ "<=");
+                        UpdateResponse ur =
+                            css.deleteByQuery( "recId:" + id );
+                    }
+                     
+                    css.commit();
+                    log.info( "SolrRecordIndex Shard#"+i+" Delete" );
+                    
+                    i++;
+                } 
+            } else {
+                
+                UpdateResponse ur =
+                    baseSolr.deleteById( idList );
+                
+                baseSolr.commit();
+                log.info( "SolrRecordIndex Base Index Delete");
+            }
+        }catch( SolrServerException ssx ){
+            log.error( "SolrRecordIndex Delete Error:", ssx );
+        }catch( IOException  iox ){
+            log.error( "SolrRecordIndex Delete Error:", iox );
+        }
+    }
+
+
 
     //--------------------------------------------------------------------------
 

@@ -1,6 +1,8 @@
 package org.hupo.psi.mi.psicquic.server.struts.action;
 
 import java.io.InputStream;
+import java.util.List;
+
 import javax.servlet.ServletContext;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -80,6 +82,12 @@ public class RecordMgrAction extends ActionSupport
         this.op = op;
     }
 
+    List<String> idLst = null;
+    
+    public void setId( List<String> lst ){
+        this.idLst = lst;
+    }
+
     public String getPid(){
         return pid;
     }
@@ -148,6 +156,16 @@ public class RecordMgrAction extends ActionSupport
 
         if( op != null && op.equals( "clear" ) ){
             psqContext.getActiveStore().clearLocal();
+        }
+
+        if( op != null && op.equals( "delete" ) ){
+            
+            log.debug( "STORE=" + psqContext.getActiveStore() );
+            log.debug( "IDL=" + idLst );
+
+            if( idLst != null && idLst.size() >  0 ){
+                psqContext.getActiveStore().deleteRecords( idLst );
+            }
         }
         
         return ActionSupport.SUCCESS;

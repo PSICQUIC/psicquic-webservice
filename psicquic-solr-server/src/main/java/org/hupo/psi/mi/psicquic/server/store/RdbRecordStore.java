@@ -49,8 +49,14 @@ public abstract class RdbRecordStore implements RecordStore{
     
     public abstract void shutdown();
     
-    public abstract void addRecord( String rid, String record, String format );
-    
+    public abstract void addRecord( String rid, String record, String fmt );
+    public abstract void updateRecord( String rid, String record, String fmt );
+
+    public abstract void deleteRecord( String rid, String fmt );    
+    public abstract void deleteRecords( List<String> idList, String format );
+    public abstract void deleteRecords( List<String> idList );
+
+
     public abstract String getRecord( String rid, String format );
 
     
@@ -256,6 +262,66 @@ public abstract class RdbRecordStore implements RecordStore{
 
     //--------------------------------------------------------------------------
     
+    public void delete( List<String> idLst ){
+        
+        Log log = LogFactory.getLog( this.getClass() );
+        
+        if( idLst == null || idLst.size() == 0 ) return;
+
+        // delete record
+        //--------------
+        
+        try{
+            String postData = "op=delete";
+            
+            long l = 0;
+            for( Iterator<String> i = idLst.iterator(); i.hasNext(); ){
+                String id = i.next();
+                postData += "&id=" + URLEncoder.encode( id, "UTF-8" );
+                l++;
+            }
+
+            log.info("POST=" + postData);
+
+            if( rmgrURL == null ){
+                rmgrURL = (String) 
+                    ((Map) getPsqContext().getJsonConfig().get("store"))
+                    .get("record-mgr");            
+                
+                if( host != null ){
+                    rmgrURL = hostReset( rmgrURL, host );
+                }
+            }
+            log.info( "mgr URL=" + rmgrURL);
+
+            URL url = new URL( rmgrURL );
+            URLConnection conn = url.openConnection();
+            conn.setDoOutput( true );
+            OutputStreamWriter wr =
+                new OutputStreamWriter( conn.getOutputStream() );
+            wr.write( postData );
+            wr.flush();
+            
+            // Get the response
+
+            InputStreamReader isr = 
+                new InputStreamReader( conn.getInputStream() );
+            BufferedReader rd = new BufferedReader( isr );
+            String line = null;
+
+            log.info( "  Response:" );
+            while ((line = rd.readLine()) != null) {           
+                log.info( line );
+            }
+            wr.close();
+            rd.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }        
+    }
+     
+    //--------------------------------------------------------------------------
+
     private void add( String pid, String vType, String view ){
         
         Log log = LogFactory.getLog( this.getClass() );
