@@ -9,7 +9,7 @@
     <div id="status"></div>
     <script>
       YAHOO.util.Event.addListener( window, "load",
-        YAHOO.mpsq.status.init({"mode":"index","anchor":"status"}) );
+        YAHOO.xpsq.status.init({"mode":"index","anchor":"status"}) );
     </script> 
   </s:if>
   <s:else>
@@ -21,7 +21,7 @@
    <div id="status"></div> 
    <script>
      YAHOO.util.Event.addListener( window, "load", 
-       YAHOO.mpsq.status.init({"mode":"store","anchor":"status"}) );
+       YAHOO.xpsq.status.init({"mode":"store","anchor":"status"}) );
    </script>
   </s:if>
 </s:elseif>

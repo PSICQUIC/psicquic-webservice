@@ -26,9 +26,9 @@
       <hibernate.connection.servername>10.1.200.1</hibernate.connection.servername>
       <hibernate.connection.portnum>5432</hibernate.connection.portnum>
 
-      <mpsq.rdbm-store>dummy</mpsq.rdbm-store>
-      <mpsq.version>${project.version}</mpsq.version>
-      <mpsq.bld>$Rev: 418 $</mpsq.bld>
+      <xpsq.rdbm-store>dummy</xpsq.rdbm-store>
+      <xpsq.version>${project.version}</xpsq.version>
+      <xpsq.bld>$Rev: 418 $</xpsq.bld>
 
     </properties>
 
@@ -39,7 +39,7 @@
        <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-       <mpsq.rdbm-store>hibernate</mpsq.rdbm-store>
+       <xpsq.rdbm-store>hibernate</xpsq.rdbm-store>
       </properties>
      </profile>
     </profiles>

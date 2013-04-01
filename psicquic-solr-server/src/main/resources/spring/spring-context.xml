@@ -84,7 +84,7 @@
   </bean>
 
 <!-- HibernateRecordStore setup -->
-   <import resource="datastore-${mpsq.rdbm-store}.xml"/>
+   <import resource="datastore-${xpsq.rdbm-store}.xml"/>
 
 <!-- ======================================================== STRUTS ACTIONS -->
   
@@ -93,8 +93,8 @@
     <property name="psqContext" ref="psqContext"/>     
   </bean>
 
-  <bean id="mpsqMgrAction" scope="prototype"
-        class="org.hupo.psi.mi.psicquic.server.struts.action.MpsqMgrAction">
+  <bean id="xpsqMgrAction" scope="prototype"
+        class="org.hupo.psi.mi.psicquic.server.struts.action.XpsqMgrAction">
 
     <property name="psqContext" ref="psqContext"/>
 

@@ -5,46 +5,46 @@
    "link":"/",
    "active":true,
    "menu":[
-      {"label":"PSICQUIC",
+      {"label":"XPSQ",
        "link":".",
        "disabled":"false",
        "menu":[
          {"label":"Web Services",
-          "link":"mpsqmgr?mode=services&op.status=show&mst=1:1:1",
+          "link":"xpsqmgr?mode=services&op.status=show&mst=1:1:1",
           "disabled":"false",
           "menu":[
            {"label":"Status",
-            "link":"mpsqmgr?mode=services&op.status=show&mst=1:1:1",
+            "link":"xpsqmgr?mode=services&op.status=show&mst=1:1:1",
             "disabled":"false",
             "menu":[]
            }]
          },
          {"label":"Record Index",
-          "link":"mpsqmgr?mode=index&op.status=show&mst=1:2:1",
+          "link":"xpsqmgr?mode=index&op.status=show&mst=1:2:1",
           "disabled":"false",
           "menu":[
                {"label":"Status",
-                "link":"mpsqmgr?mode=index&op.status=show&mst=1:2:1",
+                "link":"xpsqmgr?mode=index&op.status=show&mst=1:2:1",
                 "disabled":"false",
                 "menu":[]
                },
                {"label":"Manager",
-                "link":"mpsqmgr?mode=index&mst=1:2:2",
+                "link":"xpsqmgr?mode=index&mst=1:2:2",
                 "disabled":"true",
                 "menu":[]
                }]
          },
          {"label":"Record Store",
-          "link":"mpsqmgr?mode=store&op.status=show&mst=1:3:1",
+          "link":"xpsqmgr?mode=store&op.status=show&mst=1:3:1",
           "disabled":"false",
           "menu":[
                {"label":"Status",
-                "link":"mpsqmgr?mode=store&op.status=show&mst=1:3:1",
+                "link":"xpsqmgr?mode=store&op.status=show&mst=1:3:1",
                 "disabled":"false",
                 "menu":[]
                },
                {"label":"Manager",
-                "link":"mpsqmgr?mode=store&op.status=admin&mst=1:3:1",
+                "link":"xpsqmgr?mode=store&op.status=admin&mst=1:3:1",
                 "disabled":"true",
                 "menu":[]
                }]

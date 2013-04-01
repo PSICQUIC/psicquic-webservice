@@ -7,7 +7,7 @@
    <table width="100%" cellspacing="0" border="0">
     <tr>
      <td class="logo" valign="middle">
-      <a href="."><img height="55" border="0" src="img/psicquic-logo-2-small.png" alt="MPSQ"/></a>
+      <a href="."><img height="65" border="0" src="img/xpsq-logo-1-65x160.png" alt="XPSQ"/></a>
      </td>
     </tr>
    </table>

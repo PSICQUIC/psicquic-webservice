@@ -6,7 +6,7 @@ package org.hupo.psi.mi.psicquic.server.struts.action;
  * Version: $Rev::                                                             $
  *==============================================================================
  *
- * MpsqMgrAction - server status/manager action
+ * XpsqMgrAction - server status/manager action
  *                
  ============================================================================ */
 
@@ -28,7 +28,7 @@ import edu.ucla.mbi.util.struts.interceptor.*;
 import org.hupo.psi.mi.psicquic.server.PsqContext;
 import org.hupo.psi.mi.psicquic.util.JsonContext;
 
-public class MpsqMgrAction extends ManagerSupport {
+public class XpsqMgrAction extends ManagerSupport {
     
     private static final String JSON = "json";    
     private static final String REDIRECT = "redirect";    

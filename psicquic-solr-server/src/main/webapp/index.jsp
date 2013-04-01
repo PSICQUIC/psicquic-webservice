@@ -1,2 +1,2 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<s:action name="mpsqmgr" executeResult="true"/>
+<s:action name="xpsqmgr" executeResult="true"/>

@@ -85,12 +85,12 @@
       </result>
     </action>
 
-    <action name="mpsqmgr" class="mpsqMgrAction" >
+    <action name="xpsqmgr" class="xpsqMgrAction" >
       <interceptor-ref name="mgrStack"/>
       <interceptor-ref name="timer"/>
 
 
-      <result name="success" type="tiles">mpsqmgr</result>
+      <result name="success" type="tiles">xpsqmgr</result>
 
       <result name="json" type="json">
         <param name="includeProperties">

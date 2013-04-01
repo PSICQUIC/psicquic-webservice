@@ -65,7 +65,7 @@
 
   <filter-mapping>
     <filter-name>struts</filter-name>
-    <url-pattern>/mpsqmgr</url-pattern>
+    <url-pattern>/xpsqmgr</url-pattern>
   </filter-mapping>
 
   <filter-mapping>

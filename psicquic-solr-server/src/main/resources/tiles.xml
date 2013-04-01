@@ -18,14 +18,14 @@
  <definition name="yui-js" template="/tiles/yui-js.jsp" />
  <definition name="yui-css" template="/tiles/yui-css.jsp" />
 
- <definition name="mpsq-js" template="/tiles/mpsq-js.jsp" /> 
- <definition name="mpsq-css" template="/tiles/mpsq-css.jsp" />
+ <definition name="xpsq-js" template="/tiles/xpsq-js.jsp" /> 
+ <definition name="xpsq-css" template="/tiles/xpsq-css.jsp" />
 
  <definition name="htmlhead" template="/tiles/htmlhead.jsp">
    <put-attribute name="yui-css" type="definition" value="yui-css"/>  
-   <put-attribute name="mpsq-css" type="definition" value="mpsq-css"/>  
+   <put-attribute name="xpsq-css" type="definition" value="xpsq-css"/>  
    <put-attribute name="yui-js" type="definition" value="yui-js"/>  
-   <put-attribute name="mpsq-js" type="definition" value="mpsq-js"/>  
+   <put-attribute name="xpsq-js" type="definition" value="xpsq-js"/>  
  </definition>
 
  <definition name="header" template="/tiles/header.jsp"/>
@@ -35,9 +35,9 @@
 
  <definition name="main" template="/tiles/main.jsp"/>
 
- <definition name="mpsqmgr" template="/tiles/layout.jsp">
-  <put-attribute name="title" value="MPSQ Manager" />
-  <put-attribute name="body" value="/tiles/mpsqmgr.jsp"/>
+ <definition name="xpsqmgr" template="/tiles/layout.jsp">
+  <put-attribute name="title" value="XPSQ Manager" />
+  <put-attribute name="body" value="/tiles/xpsqmgr.jsp"/>
  </definition>
 
 </tiles-definitions>

@@ -14,7 +14,7 @@
  <t:insertDefinition name="htmlhead"/>
  </head>
  <body class="yui-skin-sam">
- <iframe id="yui-history-iframe" src="img/mpsq_logo_small.png"></iframe>
+ <iframe id="yui-history-iframe" src="img/xpsq_logo_small.png"></iframe>
  <input id="yui-history-field" type="hidden">
 
   <div id="page">

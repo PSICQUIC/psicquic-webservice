@@ -1,16 +1,16 @@
-YAHOO.namespace("mpsq");
+YAHOO.namespace("xpsq");
 
-YAHOO.mpsq.status = {
+YAHOO.xpsq.status = {
   
     init: function( o ){
         var mode = o.mode;
         var anchor = o.anchor;
         
         if(mode === "index"){
-            YAHOO.mpsq.status.initIndex( {"anchor":anchor} );
+            YAHOO.xpsq.status.initIndex( {"anchor":anchor} );
         }
         if(mode === "store"){
-            YAHOO.mpsq.status.initStore( {"anchor":anchor} );
+            YAHOO.xpsq.status.initStore( {"anchor":anchor} );
         }
 
     },
@@ -18,11 +18,11 @@ YAHOO.mpsq.status = {
     initIndex: function( o ){
 
         var indexCallback = { cache:false, timeout: 5000,
-                              success:YAHOO.mpsq.status.buildStatus,
-                              failure:YAHOO.mpsq.status.asyncFailure,
+                              success:YAHOO.xpsq.status.buildStatus,
+                              failure:YAHOO.xpsq.status.asyncFailure,
                               argument:{ mode:"store", anchor:o.anchor } }; 
         
-        var url = "mpsqmgr?mode=index&op.meta=meta";
+        var url = "xpsqmgr?mode=index&op.meta=meta";
         
         YAHOO.util.Connect.asyncRequest( 'GET', url, 
                                          indexCallback );
@@ -32,11 +32,11 @@ YAHOO.mpsq.status = {
     initStore: function( o ){
 
         var storeCallback = { cache:false, timeout: 5000,
-                              success:YAHOO.mpsq.status.buildStatus,
-                              failure:YAHOO.mpsq.status.asyncFailure,
+                              success:YAHOO.xpsq.status.buildStatus,
+                              failure:YAHOO.xpsq.status.asyncFailure,
                               argument:{ mode:"store", anchor:o.anchor } }; 
         
-        var url = "mpsqmgr?mode=store&op.meta=meta";
+        var url = "xpsqmgr?mode=store&op.meta=meta";
         
         YAHOO.util.Connect.asyncRequest( 'GET', url, 
                                          storeCallback );
