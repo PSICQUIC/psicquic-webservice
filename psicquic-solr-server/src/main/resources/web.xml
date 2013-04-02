@@ -30,13 +30,13 @@
     <param-value>
       /WEB-INF/classes/tiles.xml
     </param-value>
-  </context-param>  
+  </context-param>
 
   <!-- ===================================================== SPRING context  -->
 
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/spring/spring-context.xml</param-value>
+    <param-value>/WEB-INF/spring/spring-context-default.xml</param-value>
   </context-param>
 
 <!-- ===================================================== ================= -->
@@ -145,6 +145,7 @@
   </listener>
 
   <!-- ===================================================== SPRING listener -->
+
 
   <listener>
     <listener-class>

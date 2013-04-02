@@ -36,21 +36,24 @@ public class HibernateRecordStore extends RdbRecordStore {
     SessionFactory sessionFactory = null;
     
     public HibernateRecordStore(){
-        
+        Log log = LogFactory.getLog( this.getClass() );
+        log.debug("HibernateRecordStore() called");
     }
 
     public HibernateRecordStore( PsqContext context ){
 
         Log log = LogFactory.getLog( this.getClass() );
+        log.debug("HibernateRecordStore(PsqContext) called");
         setPsqContext( context );
-        log = LogFactory.getLog( this.getClass() );
+       
     }
 
     public HibernateRecordStore( PsqContext context, String host ){
         
         Log log = LogFactory.getLog( this.getClass() );
+        log.debug("HibernateRecordStore(PsqContext,String) called");
         setPsqContext( context );
-        log = LogFactory.getLog( this.getClass() );
+        
         if( host != null ){
             this.host = host;
         }           
@@ -61,7 +64,9 @@ public class HibernateRecordStore extends RdbRecordStore {
     }
     
     public void initialize(){
-        
+        Log log = LogFactory.getLog( this.getClass() );
+        log.debug("initialize() called");
+
     }
     
     private void connect(){
@@ -327,9 +332,11 @@ public class HibernateRecordStore extends RdbRecordStore {
         Log log = LogFactory.getLog( this.getClass() );
 
         Session session = null;
-   
+        Transaction tx = null;
+  
         try{
             session = sessionFactory.getCurrentSession();
+            tx = session.beginTransaction();
             
             Map viewCount = new HashMap();
 
@@ -345,9 +352,9 @@ public class HibernateRecordStore extends RdbRecordStore {
                 Object[] cq = qi.next();
                 
                 String vt = (String) cq[0];
-                int vc = (Integer) cq[1];
-                all+=vc;
-                viewCount.put(vt,vc);
+                long vc = (Long) cq[1];
+                all += vc;
+                viewCount.put( vt, vc );
             }
             viewCount.put( "all", all);
             meta.put( "counts", viewCount );

@@ -26,7 +26,7 @@
       <hibernate.connection.servername>10.1.200.1</hibernate.connection.servername>
       <hibernate.connection.portnum>5432</hibernate.connection.portnum>
 
-      <xpsq.rdbm-store>dummy</xpsq.rdbm-store>
+      <xpsq.rdbm-store>hibernate</xpsq.rdbm-store>
       <xpsq.version>${project.version}</xpsq.version>
       <xpsq.bld>$Rev: 418 $</xpsq.bld>
 
@@ -121,6 +121,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-webmvc</artifactId>
+          <version>${spring.version}</version>
         </dependency>
 
         <dependency>
