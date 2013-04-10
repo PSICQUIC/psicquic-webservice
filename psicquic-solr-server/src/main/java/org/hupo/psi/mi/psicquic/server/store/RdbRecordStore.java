@@ -267,7 +267,7 @@ public abstract class RdbRecordStore implements RecordStore{
                             
             String vStr = (String) cdoc.get( "view" );
             
-            log.info("processFile->recId:" + recId ); 
+            log.debug("processFile->recId:" + recId ); 
             log.debug("processFile->dom:" + fl );
             if( vStr != null ){
                 log.debug("processFile->view:" + vStr.substring( 0, 64 ) ); 
@@ -302,7 +302,7 @@ public abstract class RdbRecordStore implements RecordStore{
                 l++;
             }
 
-            log.info("POST=" + postData);
+            log.debug("POST=" + postData);
 
             if( rmgrURL == null ){
                 rmgrURL = (String) 
@@ -332,7 +332,7 @@ public abstract class RdbRecordStore implements RecordStore{
 
             log.info( "  Response:" );
             while ((line = rd.readLine()) != null) {           
-                log.info( line );
+                log.debug( line );
             }
             wr.close();
             rd.close();
@@ -347,11 +347,11 @@ public abstract class RdbRecordStore implements RecordStore{
         
         Log log = LogFactory.getLog( this.getClass() );
         
-        log.info( "PID=" + pid ); 
-        log.info( "  VTP=" + vType ); 
-        log.info( "  VIEW=" + view.substring(0,24) + "..." ); 
-
-        log.info( "rmgrURL=" + rmgrURL + " host=" + host);
+        log.debug( "PID=" + pid ); 
+        log.debug( "  VTP=" + vType ); 
+        log.debug( "  VIEW=" + view.substring(0,24) + "..." ); 
+        
+        log.debug( "rmgrURL=" + rmgrURL + " host=" + host);
 
         // add record
         //-----------
@@ -376,7 +376,7 @@ public abstract class RdbRecordStore implements RecordStore{
                     rmgrURL = hostReset( rmgrURL, host );
                 }
             }
-            log.info( "mgr URL=" + rmgrURL);
+            log.debug( "mgr URL=" + rmgrURL);
 
             URL url = new URL( rmgrURL );
             URLConnection conn = url.openConnection();
@@ -393,9 +393,9 @@ public abstract class RdbRecordStore implements RecordStore{
             BufferedReader rd = new BufferedReader( isr );
             String line = null;
 
-            log.info( "  Response:" );
+            log.debug( "  Response:" );
             while ((line = rd.readLine()) != null) {           
-                log.info( line );
+                log.debug( line );
             }
             wr.close();
             rd.close();
@@ -485,7 +485,7 @@ public abstract class RdbRecordStore implements RecordStore{
                 String newUrl = prefix + newHost + newPort + postfix;
                 
                 Log log = LogFactory.getLog( this.getClass() );
-                log.info( "hostReset: old=" + url + " new=" + newUrl );
+                log.debug( "hostReset: old=" + url + " new=" + newUrl );
 
                 return newUrl;
 

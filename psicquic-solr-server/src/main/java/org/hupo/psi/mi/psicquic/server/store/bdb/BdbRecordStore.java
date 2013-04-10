@@ -19,6 +19,8 @@ import java.net.*;
 import java.util.*;
 import java.util.zip.*;
 
+import java.util.concurrent.TimeUnit;
+
 import java.util.regex.*;
 
 import org.hupo.psi.mi.psicquic.util.JsonContext;
@@ -111,7 +113,6 @@ public class BdbRecordStore extends RdbRecordStore{
             EnvironmentConfig myEnvConfig = new EnvironmentConfig();
             myEnvConfig.setAllowCreate( true );
             myEnvConfig.setTransactional( true );
-            
             try{
                 
                 log.info("Opening environment in: " + berkeleydb );
@@ -125,7 +126,6 @@ public class BdbRecordStore extends RdbRecordStore{
             
         }
         log.info( "BdbRecordStore: initialize (DONE)" );
-
     }
 
     //--------------------------------------------------------------------------
@@ -163,15 +163,16 @@ public class BdbRecordStore extends RdbRecordStore{
         if (db == null ){
             db = createDatabase( format );
             //bdbMap.put( format, db );
-            log.info("Bdb(key)=" + format + " new db=" + db);
+            log.debug("Bdb(key)=" + format + " new db=" + db);
         }
         
         if( db == null ){
-            log.warn( "database access error format=" + format );
+            log.info( "database access error format=" + format );
             return;
         }
 
-        Transaction txn = bdbEnv.beginTransaction(null, null);
+        Transaction txn = bdbEnv.beginTransaction( null, null );
+        
         try {
 
             EntryBinding stringBinding = 
@@ -272,7 +273,7 @@ public class BdbRecordStore extends RdbRecordStore{
             for( Iterator<String> i = idList.iterator(); i.hasNext(); ){
              
                 String id = i.next();
-                log.info("id=>" + id + "<=");
+                log.debug("id=>" + id + "<=");
                 for( Iterator<Map.Entry<String,Database>>
                          it = bdbMap.entrySet().iterator(); it.hasNext(); ){
                 
@@ -300,21 +301,21 @@ public class BdbRecordStore extends RdbRecordStore{
     
     public void updateRecord( String rid, String record, String fmt ){
         Log log = LogFactory.getLog( this.getClass() );
-        log.warn( "updateRecord: not implemented" );        
+        log.info( "updateRecord: not implemented" );        
     }
 
 
     //--------------------------------------------------------------------------
 
     public String getRecord( String rid, String format ){
- 
+        
         Log log = LogFactory.getLog( this.getClass() );
         String record = "";
         
         Database myDb = bdbMap.get( format );
         
         if( myDb == null ){
-            log.warn( "database access error format=" + format );
+            log.info( "database access error format=" + format );
             return record;
         }
         
@@ -332,7 +333,7 @@ public class BdbRecordStore extends RdbRecordStore{
             if( retVal == OperationStatus.SUCCESS ){
                 record = (String) stringBinding.entryToObject( data );
             }
-
+            txn.commit();
         } catch (Exception e) {
             if (txn != null) {
                 txn.abort();
@@ -352,9 +353,9 @@ public class BdbRecordStore extends RdbRecordStore{
         List<String> recordList = new ArrayList<String>();
         
         Database myDb = bdbMap.get( format );
-
+        
         if( myDb == null ){
-            log.warn( "database access error format=" + format );
+            log.info( "database access error format=" + format );
             return recordList;
         }
 
@@ -362,7 +363,7 @@ public class BdbRecordStore extends RdbRecordStore{
             TupleBinding.getPrimitiveBinding( String.class );
         
         for( Iterator<String> i = rid.iterator(); i.hasNext(); ){
-
+            
             Transaction txn = bdbEnv.beginTransaction(null, null);
             
             try {
@@ -381,12 +382,12 @@ public class BdbRecordStore extends RdbRecordStore{
                         recordList.add( record );
                     }
                 }
-
+                txn.commit();
             } catch (Exception e) {
-                    if (txn != null) {
-                        txn.abort();
-                        txn = null;
-                    }
+                if (txn != null) {
+                    txn.abort();
+                    txn = null;
+                }
             }
         }
         
@@ -409,18 +410,32 @@ public class BdbRecordStore extends RdbRecordStore{
                     Map.Entry<String,Database> entry = (Map.Entry) it.next();
                     
                     Database myDb = entry.getValue();
-
+                  
                     log.info( " Bdb(view)=" + entry.getKey() + " db=" + myDb );
-
+                    
                     Transaction txn = bdbEnv.beginTransaction(null, null);
+                    txn.setLockTimeout( 10, TimeUnit.SECONDS ); 
                     try{
+                        
+                        String name = myDb.getDatabaseName();                                            
+                        DatabaseConfig config = myDb.getConfig();
+                        
+                        myDb.close();
+                        
                         long recCount = 
-                            bdbEnv.truncateDatabase( txn, 
-                                                     myDb.getDatabaseName(), 
-                                                     true );
+                            bdbEnv.truncateDatabase( txn, name, true );
                         log.info( "BdbRecordStore(clearLocal):"
-                                  + " database: " + myDb.getDatabaseName() 
+                                  + " database: " + name 
                                   + " records removed: " + recCount );
+                        
+                        // reopen
+                        //-------
+                        
+                        myDb  = bdbEnv.openDatabase( txn , name, config );
+                        bdbMap.put( entry.getKey(), myDb );
+                        
+                        txn.commit();
+                        
                     }catch( Exception e ){
                         if( txn != null ){
                             txn.abort();

@@ -258,7 +258,7 @@ public class SolrRecordIndex implements RecordIndex{
                 String newUrl = prefix + newHost + newPort + postfix;
 
                 Log log = LogFactory.getLog( this.getClass() );
-                log.info( "hostReset: old=" + url + " new=" + newUrl );
+                log.debug( "hostReset: old=" + url + " new=" + newUrl );
 
                 return newUrl;
 
@@ -401,7 +401,7 @@ public class SolrRecordIndex implements RecordIndex{
                 if( response.getFacetFields() != null 
                     && response.getFacetFields().size() > 0 ){
 
-                    log.info("processing facets");
+                    log.debug("processing facets");
                 
                     Map<String,List<ValueCount>> rsFacets
                         = new HashMap<String,List<ValueCount>>();
@@ -646,7 +646,7 @@ public class SolrRecordIndex implements RecordIndex{
     }
 
     //--------------------------------------------------------------------------
-
+    
     private List<String> processGZipFile( PsqTransformer rt, String fileName,  
                                          File gzf, boolean logId )
         throws java.io.IOException{

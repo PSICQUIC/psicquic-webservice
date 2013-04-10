@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.hupo.psi.mi.psicquic</groupId>
-    <artifactId>psicquic-solr-server</artifactId>
+    <artifactId>xpsq</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 

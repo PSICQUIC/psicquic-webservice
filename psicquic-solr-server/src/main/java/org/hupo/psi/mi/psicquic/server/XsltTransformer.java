@@ -219,9 +219,9 @@ public class XsltTransformer implements PsqTransformer{
 	
 	    Map resMap = new HashMap();
 	    
-	    log.info( " XsltTransformer: pos=" + domPos );
-	    log.info( "                  node=" + domList.item( domPos ) );
-	    log.info( "                  out=" + out );
+	    log.debug( " XsltTransformer: pos=" + domPos );
+	    log.debug( "                  node=" + domList.item( domPos ) );
+	    log.debug( "                  out=" + out );
 
 	    if( domPos < domList.getLength() ){
 		
@@ -256,7 +256,7 @@ public class XsltTransformer implements PsqTransformer{
 
                     if( out.equals( "VIEW" ) ){
 
-                        log.info( " next: return view" );
+                        log.debug( " next: return view" );
 
                         NodeList field = domList.item( domPos ).getChildNodes();
                         
@@ -283,16 +283,15 @@ public class XsltTransformer implements PsqTransformer{
                                     if( vnde.getNodeType() == Node.TEXT_NODE ){
                                         textView = vnde.getNodeValue();
 
-                                        log.info( " next: textView" 
-                                                  + textView.substring(0,64));
-                                        
+                                        log.debug( " next: textView" 
+                                                   + textView.substring(0,64));
                                     }
                                     if( vnde.getNodeType() == Node.ELEMENT_NODE
                                         && elemView == null ){
                                         elemView = (Element) vnde;
 
-                                        log.info( " next: elemView" 
-                                                  + elemView.getNodeName() );
+                                        log.debug( " next: elemView" 
+                                                   + elemView.getNodeName() );
                                     }
                                 }
                             }
@@ -307,14 +306,15 @@ public class XsltTransformer implements PsqTransformer{
                                     TransformerFactory tf 
                                         = TransformerFactory.newInstance();
                                     viewtr = tf.newTransformer(); 
-                                    viewtr.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "yes");
-
+                                    viewtr.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, 
+                                                              "yes");
+                                    
                                 } catch ( TransformerException tex ){
                                     tex.printStackTrace();
                                 }
                             }
                             
-                            log.info( " next: viewtr=" + viewtr );
+                            log.debug( " next: viewtr=" + viewtr );
 
                             if( viewtr != null ){
                                 StringWriter buffer = new StringWriter();

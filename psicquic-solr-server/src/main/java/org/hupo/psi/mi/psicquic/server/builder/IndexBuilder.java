@@ -214,14 +214,13 @@ public class IndexBuilder{
 
             // strip file name to get root
             
-            if( cpath.lastIndexOf(file) > -1 ){
+            if( cpath.lastIndexOf( file ) > -1 ){
                 this.root = cpath
-                    .substring( 0, cpath.length() - cpath.lastIndexOf(file) );
+                    .substring( 0, cpath.lastIndexOf( file ) );
             } else {
                 this.root = "";
             }
-            log.info( "CP: " +cpath + "  FN:" + file );
-            log.info( "ROOT: " + this.root );
+            log.info( "CP: " +cpath + "  FN:" + file + " ROOT: " + this.root );
 
             enqueue( cpath, srcFl );        
         } catch( IOException ex ){ 
@@ -317,10 +316,10 @@ public class IndexBuilder{
                     if( cit.getState() != Thread.State.TERMINATED ){
                         running = true;
                     }
-                    System.out.println( cit.getState() + ":" );
+                    log.debug( cit.getState() + ":" );
                 }
                 if( running ){
-		    log.info( "IndexBuilder: still running...");
+		    log.debug( "IndexBuilder: still running...");
                     Thread.sleep( 1000*5 );
                 } else {
 		    log.info( "IndexBuilder: done...");
@@ -404,7 +403,7 @@ public class IndexBuilder{
             if( activeStoreName.equals( "derby" ) ){
                 recordStore = new DerbyRecordStore( psqContext, host );
             }
-
+            
             if( activeStoreName.equals( "hibernate" ) ){
                 recordStore = new HibernateRecordStore( psqContext, host );
             }

@@ -152,7 +152,7 @@ public class SolrRecordStore implements RecordStore{
 
         if( srec == null ){
             log.debug( "   SolrRecordIndex: baseUrl="+ sri.getBaseUrl() );
-            log.info( "RecordCache: miss" );
+            log.debug( "RecordCache: miss" );
 
             if( sri.getBaseUrl() != null ){
  
