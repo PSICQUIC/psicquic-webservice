@@ -53,6 +53,7 @@ public class IndexBuilder{
     String root = null;
     String source = null;
     boolean zip = false;
+    boolean gzip = false;
     boolean logId = false;
 
     RecordIndex recordIndex = null;
@@ -76,8 +77,8 @@ public class IndexBuilder{
     //--------------------------------------------------------------------------
     
     public IndexBuilder( String ctx, String host, int btc, int stc, 
-                         String format, boolean zip, boolean logId, 
-                         Map<String,String> pax ){
+                         String format, boolean zip, boolean gzip, 
+                         boolean logId, Map<String,String> pax ){
         
         InputStream isCtx = null;
         this.log = LogFactory.getLog( this.getClass() );
@@ -87,22 +88,25 @@ public class IndexBuilder{
             log.info( ex.getMessage(), ex );
         }
         
-        this._IndexBuilder( isCtx, host, btc, stc, format, zip, logId, pax );          
+        this._IndexBuilder( isCtx, host, btc, stc, format, 
+                            zip, gzip, logId, pax );          
     }
     
     public IndexBuilder( InputStream isCtx, String host, int btc, int stc,
-                         String format, boolean zip, boolean logId, 
-                         Map<String,String> pax ){
+                         String format, boolean zip, boolean gzip, 
+                         boolean logId, Map<String,String> pax ){
         
         this.log = LogFactory.getLog( this.getClass() );
-        this._IndexBuilder( isCtx, host, btc, stc, format, zip, logId, pax );
+        this._IndexBuilder( isCtx, host, btc, stc, format, 
+                            zip, gzip, logId, pax );
     }
 
     private void _IndexBuilder( InputStream isCtx,  String serverHost, 
                                 int btc, int stc, String format, 
-                                boolean zip, boolean logId, 
-                                Map<String,String> pax ){
+                                boolean zip, boolean gzip,
+                                boolean logId, Map<String,String> pax ){
         this.zip = zip;
+        this.gzip = gzip;
         this.format = format;
         this.source = source;
         this.pax = pax;
@@ -179,16 +183,19 @@ public class IndexBuilder{
 
             if( activeStoreName.equals( "bdb" ) ){
                 recordStore = new BdbRecordStore( psqContext, host );
+                log.info( " bdb clear" );
                 recordStore.clear();
             }
             
             if( activeStoreName.equals( "derby" ) ){
                 recordStore = new DerbyRecordStore( psqContext, host );
+                log.info( " derby clear" );
                 recordStore.clear();
             }
 
             if( activeStoreName.equals( "hibernate" ) ){
                 recordStore = new HibernateRecordStore( psqContext, host );
+                log.info( " hibernate clear" );
                 recordStore.clear();
             }
             
@@ -207,11 +214,14 @@ public class IndexBuilder{
 
             // strip file name to get root
             
-            this.root = cpath.substring( 0, cpath.length() - file.length() );
-
-            log.info( "CP:"+cpath+ "  FN:" + file );
-            log.info( "ROOT:" 
-                      + cpath.substring(0,cpath.length()-file.length() ) );
+            if( cpath.lastIndexOf(file) > -1 ){
+                this.root = cpath
+                    .substring( 0, cpath.length() - cpath.lastIndexOf(file) );
+            } else {
+                this.root = "";
+            }
+            log.info( "CP: " +cpath + "  FN:" + file );
+            log.info( "ROOT: " + this.root );
 
             enqueue( cpath, srcFl );        
         } catch( IOException ex ){ 
@@ -283,8 +293,8 @@ public class IndexBuilder{
             }
 
             IndexThread it = new IndexThread( psqContext, host, solrconTCount,
-                                              root, fq, format, zip, logId, 
-                                              pax );
+                                              root, fq, format, 
+                                              zip, gzip, logId, pax );
             itl.add( it );
 
             log.info( "IndexBuilder:  starting thread..." );
@@ -339,7 +349,7 @@ public class IndexBuilder{
         log.info( "index: root:" + root );
         
         String compress = zip ? "zip" : "";
-
+        compress = gzip ? "gzip" : compress;
 
         // transform/add -> index
         //-----------------------
@@ -416,6 +426,7 @@ class IndexThread extends Thread{
     RecordStore recordStore = null;
 
     boolean zip = false;
+    boolean gzip = false;
     boolean logId = false;
     String root;
     String format;
@@ -427,10 +438,11 @@ class IndexThread extends Thread{
 
     public IndexThread( PsqContext psqContext, String host, int solrconTCount,
                         String root, List<File> files, 
-                        String format, boolean zip, boolean logId, 
-                        Map<String,String> pax ){
+                        String format, boolean zip, boolean gzip, 
+                        boolean logId, Map<String,String> pax ){
         fileq = files;
         this.zip = zip;
+        this.gzip = gzip;
         this.root = root;
         this.format = format;
         this.pax = pax;
@@ -483,6 +495,7 @@ class IndexThread extends Thread{
         log.info( "IndexThread: processing fileq:" + fileq );
 
         String compress = zip ? "zip" : "";
+        compress = gzip ? "gzip" : compress;
         
         for( Iterator<File> fi = fileq.iterator(); fi.hasNext(); ){
 
@@ -530,7 +543,7 @@ class IndexThread extends Thread{
                 // transform/add -> datastore
                 //---------------------------
                 if( recordStore != null){  
-
+                    
                     log.info( "IndexThread: recordStore=" + recordStore );
                     
                     recordStore.addFile( file, name, 

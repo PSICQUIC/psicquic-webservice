@@ -70,10 +70,10 @@ public class BdbRecordStore extends RdbRecordStore{
         
         log.info( "Server Host=" + host);
         
-        try{
-        } catch( Exception ex ){
-            ex.printStackTrace();
+        if( host != null ){
+            this.host = host;
         }
+        
     }
     
     public void initialize(){
@@ -162,10 +162,12 @@ public class BdbRecordStore extends RdbRecordStore{
         Database db = bdbMap.get( format );
         if (db == null ){
             db = createDatabase( format );
+            //bdbMap.put( format, db );
+            log.info("Bdb(key)=" + format + " new db=" + db);
         }
         
         if( db == null ){
-            log.warn( "database access error format=" + format);
+            log.warn( "database access error format=" + format );
             return;
         }
 
@@ -397,6 +399,7 @@ public class BdbRecordStore extends RdbRecordStore{
         
         Log log = LogFactory.getLog( this.getClass() );
         log.info( "BdbRecordStore(clearLocal): START");
+        log.info( " BdbEnv=" + bdbEnv );
 
         if( bdbEnv != null ){
             try{
@@ -406,6 +409,9 @@ public class BdbRecordStore extends RdbRecordStore{
                     Map.Entry<String,Database> entry = (Map.Entry) it.next();
                     
                     Database myDb = entry.getValue();
+
+                    log.info( " Bdb(view)=" + entry.getKey() + " db=" + myDb );
+
                     Transaction txn = bdbEnv.beginTransaction(null, null);
                     try{
                         long recCount = 
@@ -420,6 +426,7 @@ public class BdbRecordStore extends RdbRecordStore{
                             txn.abort();
                             txn = null;
                         }
+                        e.printStackTrace();
                     }
                 }
             } catch( Exception ex ){
@@ -490,6 +497,6 @@ public class BdbRecordStore extends RdbRecordStore{
             de.printStackTrace();
             // Exception handling goes here
         }
-        return bdbMap.get( format);
+        return bdbMap.get( format );
     }
 }

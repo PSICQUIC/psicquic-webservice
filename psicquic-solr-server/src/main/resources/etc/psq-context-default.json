@@ -4,10 +4,10 @@
      "first-result":0,
      "block-size":10,
      "solr":{ 
-        "url":"http://127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
+        "url":"http://127.0.0.1:8080/xpsq/solr/psq-01",
         "shard":[
-            "127.0.0.1:8080/psicquic-solr-server/solr/psq-01",
-            "127.0.0.1:8080/psicquic-solr-server/solr/psq-02"
+            "127.0.0.1:8080/xpsq/solr/psq-01",
+            "127.0.0.1:8080/xpsq/solr/psq-02"
         ],
         "rec-id":"recId",
         "param-default":{
@@ -50,8 +50,8 @@
      }
   },
   "store":{
-     "record-mgr": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr",
-     "active":"brb",
+     "record-mgr": "http://127.0.0.1:8080/xpsq/recordmgr",
+     "active":"derby",
      "rec-id":"recId",
      "view-default":"psi-mi/tab27",
      "bdb":{
@@ -204,7 +204,7 @@
         }
      },
      "psq":{
-        "url": "http://127.0.0.1:8080/psicquic-solr-server/recordmgr"
+        "url": "http://127.0.0.1:8080/xpsq/recordmgr"
      },
      "transform":{
         "mif254":[

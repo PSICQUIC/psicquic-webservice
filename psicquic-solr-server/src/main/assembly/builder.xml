@@ -1,5 +1,5 @@
 <assembly>
-  <id>builder</id>
+  <id>index-builder</id>
   <formats>
     <format>jar</format>
   </formats>

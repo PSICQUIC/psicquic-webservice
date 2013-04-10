@@ -20,11 +20,11 @@ Compilation
  
   - run
       mvn clean install
-    to generate server's .war file (psicquic-solr-server.war)
+    to generate server's .war file (xpsq.war)
   
   - run 
      mvn assembly:single 
-    to generate a stand-alone index builder (psicquic-index-builder.jar)
+    to generate a stand-alone index builder (xpsq-index-builder.jar)
     NOTE: this take quite a while as the generated jar file contains way too
           much classes. I think it can be optimized by modifying assembly 
           descriptor (src/main/assembly/builder.xml)
@@ -39,13 +39,13 @@ Testing
        mvn jetty:run-war 
      to deploy the server within a local jetty servlet container.  If everything
      worked fine, the embedded solr server should be accessible at
-        http://127.0.0.1:8080/psicquic-solr-server/solr/admin/index.jsp  
+        http://127.0.0.1:8080/xpsq/solr/admin/index.jsp  
      and the web service should be deployed at
-        http://127.0.0.1:8080/psicquic-solr-server/ws
+        http://127.0.0.1:8080/xpsq/ws
 
      The record manager action (used to commit records into record store) should 
      appear as mapped to
-        http://127.0.0.1:8080/psicquic-solr-server/recordmgr
+        http://127.0.0.1:8080/xpsq/recordmgr
   
      NOTE: while run for the first time the server created data directories
            for the solr shards; consecutive re-runs retain index contents from
@@ -59,7 +59,7 @@ Testing
   
   - run the index builder:
 
-         java -jar target/psicquic-index-builder.jar --help
+         java -jar target/xpsq-index-builder.jar --help
 
     If everything worked fine it should return the list of available options:
 
@@ -76,19 +76,19 @@ Testing
 
     - mitab25 file foo.txt located in mydir directory:  
 
-      java -jar target/psicquic-index-builder.jar -f mydir/foo.txt -fmt mitab25 
+      java -jar target/xpsq-index-builder.jar -f mydir/foo.txt -fmt mitab25 
 
     - zipped mitab25 file foo.zip located in mydir directory:  
 
-      java -jar target/psicquic-index-builder.jar -f mydir/foo.zip -z -fmt mitab25 
+      java -jar target/xpsq-index-builder.jar -f mydir/foo.zip -z -fmt mitab25 
 
    - all mitab27 files located in mydir directory:
 
-      java -jar target/psicquic-index-builder.jar -d mydir -fmt mitab27  
+      java -jar target/xpsq-index-builder.jar -d mydir -fmt mitab27  
 
    - all mitab26 files located in mydir directory tree 
 
-     java -jar target/psicquic-index-builder.jar -d mydir -r -fmt mitab26
+     java -jar target/xpsq-index-builder.jar -d mydir -r -fmt mitab26
 
 
 Configuration

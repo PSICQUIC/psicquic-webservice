@@ -238,9 +238,14 @@ public class XsltTransformer implements PsqTransformer{
                             if( field.item(j).getNodeName().equals("field") ){
                                 Element fe = (Element) field.item(j);
                                 String name = fe.getAttribute("name");
-                                String value = fe.getFirstChild().getNodeValue();
-                                doc.addField( name, value );
-			    
+                                
+                                String value = null;
+                                
+                                if( fe.getFirstChild() != null ){
+                                    value = fe.getFirstChild().getNodeValue();
+                                    doc.addField( name, value );
+                                }
+                                
                                 if( name.equals( "recId" ) ){
                                     recId = value;
                                 }

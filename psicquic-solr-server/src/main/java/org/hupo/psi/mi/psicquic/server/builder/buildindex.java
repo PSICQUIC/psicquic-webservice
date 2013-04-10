@@ -42,6 +42,7 @@ public class buildindex{
     
     public static boolean clr = false;
     public static boolean zip = false;
+    public static boolean gzip = false;
     public static boolean logId = false;
     public static boolean desc = false;
 
@@ -99,7 +100,7 @@ public class buildindex{
 
         Option hostOption = OptionBuilder.withLongOpt( "host" )
             .withArgName( "host" ).hasArg()
-            .withDescription( "host" )
+            .withDescription( "host[:80]" )
             .create( "h" );
 
         options.addOption( hostOption );
@@ -138,6 +139,12 @@ public class buildindex{
             .create( "z" );
 
         options.addOption( zipOption );
+
+        Option gzipOption = OptionBuilder.withLongOpt( "gzip" )
+            .withDescription( "gzipped files" )
+            .create( "gz" );
+
+        options.addOption( gzipOption );
         
         Option logOption = OptionBuilder.withLongOpt( "log-id" )
             .withDescription( "generate record identifier log files" )
@@ -197,6 +204,11 @@ public class buildindex{
             
             if( cmd.hasOption( "z" ) ){
                 zip = true;
+            }
+
+            if( cmd.hasOption( "gz" ) ){ // gz has precedence over z
+                gzip = true;
+                zip = false;
             }
 
             if( cmd.hasOption( "l" ) ){
@@ -259,7 +271,7 @@ public class buildindex{
         if( context != null ){
             System.out.println( "Context: " + context );
             ibuilder = new IndexBuilder( context, host, btCount, stCount, 
-                                         ifrmt, zip, logId, pax );
+                                         ifrmt, zip, gzip, logId, pax );
         }else{
             
             System.out.println( "Context(default): " + DEFAULT_CONTEXT );
@@ -268,7 +280,7 @@ public class buildindex{
                     .getResourceAsStream( DEFAULT_CONTEXT );
                 
                 ibuilder = new IndexBuilder( ctxStream, host, btCount, stCount, 
-                                             ifrmt, zip, logId, pax );
+                                             ifrmt, zip, gzip, logId, pax );
             } catch( Exception ex){
                 ex.printStackTrace();
             }            

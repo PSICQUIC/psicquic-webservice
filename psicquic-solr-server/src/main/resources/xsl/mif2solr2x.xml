@@ -877,9 +877,19 @@
     <xsl:element name="field">
       <xsl:attribute name="name">taxidHost_o</xsl:attribute>
       <xsl:for-each select="*">
-        <xsl:value-of select="concat('taxid:',./@ncbiTaxId,'(&quot;',
-                                     ./mif:names/mif:shortLabel/text(),
-                                     '&quot;)')" />
+        <xsl:choose>
+         <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">
+          <xsl:value-of select="concat('taxid:',./@ncbiTaxId,'(&quot;',
+                                       ./mif:names/mif:shortLabel/text(),
+                                       '&quot;)')" />
+          </xsl:when>
+          <xsl:otherwise>
+           <xsl:value-of select="concat('taxid:',./@ncbiTaxId,'(&quot;',
+                                        ./mif:names/mif:fullName/text(),
+                                        '&quot;)')" />
+          </xsl:otherwise>
+        </xsl:choose>
+
         <xsl:if test="not(position()=last())">
            <xsl:text>|</xsl:text>
          </xsl:if>
@@ -973,20 +983,40 @@
                                      ./mif:xref/mif:primaryRef/@id)" />
       </xsl:element>
 
+     
       <xsl:element name="field">
         <xsl:attribute name="name">
           <xsl:value-of select="$fid"/>
         </xsl:attribute>
-        <xsl:value-of select="./mif:names/mif:shortLabel/text()" />
+
+       <xsl:choose>
+        <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">
+         <xsl:value-of select="./mif:names/mif:shortLabel/text()" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="./mif:names/mif:fullName/text()" />
+        </xsl:otherwise>
+       </xsl:choose>
       </xsl:element>
 
       <xsl:element name="field">
         <xsl:attribute name="name">
           <xsl:value-of select="$fid"/>
         </xsl:attribute>
-        <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':',
-                                     ./mif:xref/mif:primaryRef/@id,'(',
-                                     ./mif:names/mif:shortLabel/text(),')')" />
+
+        <xsl:choose>
+        <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">
+         <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':',
+                                      ./mif:xref/mif:primaryRef/@id,'(',
+                                      ./mif:names/mif:shortLabel/text(),')')" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':',
+                                      ./mif:xref/mif:primaryRef/@id,'(',
+                                      ./mif:names/mif:fullName/text(),')')" />       
+        </xsl:otherwise>
+       </xsl:choose>
+ 
       </xsl:element>
     </xsl:if>
    
@@ -1003,16 +1033,34 @@
         <xsl:attribute name="name">
           <xsl:value-of select="concat($fid,'_s')"/>
         </xsl:attribute>
-        <xsl:value-of select="./mif:names/mif:shortLabel/text()" />
+        <xsl:choose>
+         <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">
+          <xsl:value-of select="./mif:names/mif:shortLabel/text()" />
+         </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="./mif:names/mif:fullName/text()" />
+        </xsl:otherwise>
+       </xsl:choose>
+
       </xsl:element>
 
       <xsl:element name="field">
         <xsl:attribute name="name">
           <xsl:value-of select="concat($fid,'_s')"/>
         </xsl:attribute>
-        <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':',
+        <xsl:choose>
+         <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">
+          <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':',
                                      ./mif:xref/mif:primaryRef/@id,'(',
                                      ./mif:names/mif:shortLabel/text(),')')" />
+         </xsl:when>
+         <xsl:otherwise>
+           <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':',
+                                     ./mif:xref/mif:primaryRef/@id,'(',
+                                     ./mif:names/mif:fullName/text(),')')" />           
+         </xsl:otherwise>
+       </xsl:choose>
+
       </xsl:element>
     </xsl:if>
 
@@ -1021,9 +1069,19 @@
         <xsl:attribute name="name">
           <xsl:value-of select="concat($fid,'_o')"/>
         </xsl:attribute>
-        <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
-                                     ./mif:xref/mif:primaryRef/@id,'&quot;(',
-                                     ./mif:names/mif:shortLabel/text(),')')" />
+        <xsl:choose>
+         <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">
+          <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
+                                       ./mif:xref/mif:primaryRef/@id,'&quot;(',
+                                       ./mif:names/mif:shortLabel/text(),')')" />
+        </xsl:when>
+         <xsl:otherwise>
+           <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
+                                       ./mif:xref/mif:primaryRef/@id,'&quot;(',
+                                       ./mif:names/mif:fullName/text(),')')" />
+         </xsl:otherwise>
+       </xsl:choose>
+
       </xsl:element>
     </xsl:if>
 
@@ -1047,9 +1105,18 @@
         <xsl:value-of select="concat($fid,'_o')"/>
       </xsl:attribute>
       <xsl:for-each select="*">
-        <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
-                                     ./mif:xref/mif:primaryRef/@id,'&quot;(',
-                                     ./mif:names/mif:shortLabel/text(),')')" />
+        <xsl:choose>
+         <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">        
+           <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
+                                        ./mif:xref/mif:primaryRef/@id,'&quot;(',
+                                       ./mif:names/mif:shortLabel/text(),')')" />
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
+                                        ./mif:xref/mif:primaryRef/@id,'&quot;(',
+                                       ./mif:names/mif:fullName/text(),')')" />
+         </xsl:otherwise>
+        </xsl:choose>
         <xsl:if test="not(position()=last())">
            <xsl:text>|</xsl:text>
          </xsl:if>

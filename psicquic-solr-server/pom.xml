@@ -282,7 +282,7 @@
     </dependencies>
 
     <build>
-      <finalName>psicquic-solr-server</finalName>
+      <finalName>xpsq</finalName>
 
       <plugins>
         <plugin>
@@ -308,17 +308,29 @@
             <target>1.6</target>
 
 	    <webResources>        
+
               <resource>
                 <directory>src/main/resources</directory>
                 <targetPath>WEB-INF</targetPath>
                 <filtering>true</filtering>
               </resource>
-                <resource>
+
+              <resource>
                 <directory>${basedir}</directory>
                 <targetPath>.</targetPath>
                 <filtering>true</filtering>
                 <include>README.TXT</include>
               </resource>
+
+              <resource>
+                <directory>${basedir}/src/main/webapp/tiles</directory>
+                <targetPath>tiles</targetPath>
+                <filtering>true</filtering>
+                <includes>             
+                  <include>footer.jsp</include>
+                </includes>
+              </resource>
+
 	    </webResources>
 
 	  </configuration>
@@ -349,7 +361,7 @@
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <configuration>
-            <finalName>psicquic-index</finalName>
+            <finalName>xpsq</finalName>
             <archive>
               <manifest>
                 <mainClass>org.hupo.psi.mi.psicquic.server.builder.buildindex</mainClass>

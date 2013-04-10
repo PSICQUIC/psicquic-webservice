@@ -234,6 +234,14 @@ public class SolrRecordIndex implements RecordIndex{
 
         if( host == null ) return url;
 
+
+        String newPort = ":80" ;
+
+        if( newHost !=null && newHost.indexOf( ":" ) > 0 ){
+            newPort = newHost.substring( newHost.indexOf( ":" ) );
+            newHost = newHost.substring(0, newHost.indexOf(":") );
+        }
+
         // http://aaa:8888/d/d/d
 
         try{
@@ -247,7 +255,7 @@ public class SolrRecordIndex implements RecordIndex{
                 String port = m.group( 3 );
                 String postfix = m.group( 4 );
 
-                String newUrl = prefix + newHost + port + postfix;
+                String newUrl = prefix + newHost + newPort + postfix;
 
                 Log log = LogFactory.getLog( this.getClass() );
                 log.info( "hostReset: old=" + url + " new=" + newUrl );
@@ -585,12 +593,19 @@ public class SolrRecordIndex implements RecordIndex{
             // NOTE: throw unknown transformer exception ?
         }
         
+        log.info( "compress=" + compress );
+
         try{
             if( compress!= null
                 && compress.equalsIgnoreCase("zip") ){
                 
                 idList = processZipFile( rt, name, 
                                          new ZipFile( f ), logId );
+            } else if(compress!= null
+                      && compress.equalsIgnoreCase("gzip") ){ 
+
+                idList = processGZipFile( rt, name, f, logId );
+                
             } else {
                 idList = processFile( rt, name, 
                                       new FileInputStream( f ), logId );
@@ -627,6 +642,27 @@ public class SolrRecordIndex implements RecordIndex{
                 }
             }
         }
+        return idList;        
+    }
+
+    //--------------------------------------------------------------------------
+
+    private List<String> processGZipFile( PsqTransformer rt, String fileName,  
+                                         File gzf, boolean logId )
+        throws java.io.IOException{
+        
+        Log log = LogFactory.getLog( this.getClass() );
+        List<String> idList = new ArrayList();
+        
+        GZIPInputStream gzipIS = 
+            new GZIPInputStream( new FileInputStream( gzf ) );
+        
+        List<String> idl = processFile( rt, fileName, gzipIS, logId );
+
+        if( idl !=  null ){
+            idList.addAll( idl );
+        }
+        
         return idList;        
     }
     

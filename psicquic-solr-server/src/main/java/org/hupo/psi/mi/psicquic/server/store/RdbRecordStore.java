@@ -199,7 +199,13 @@ public abstract class RdbRecordStore implements RecordStore{
                             
                             processZipFile( rt, (String) itr.get( "view" ), 
                                             fileName, new ZipFile( file ));                            
-                        } else {
+                        } else if(compress!= null
+                                  && compress.equalsIgnoreCase("gzip") ){
+
+                            processGZipFile( rt, (String) itr.get( "view" ),
+                                             fileName, file );
+                            
+                        }else{
                             processFile( rt, (String) itr.get( "view" ),
                                          fileName, new FileInputStream( file ));
                         }
@@ -228,6 +234,21 @@ public abstract class RdbRecordStore implements RecordStore{
                              fileName + "::" + ze.getName() , is );
             }
         }
+    }
+
+    //--------------------------------------------------------------------------
+
+    private void processGZipFile( PsqTransformer rt, String viewName,
+                                  String fileName,  File f )
+        throws java.io.IOException{
+        
+        Log log = LogFactory.getLog( this.getClass() );
+
+        GZIPInputStream gzipIS =
+            new GZIPInputStream( new FileInputStream( f ) );
+        
+        processFile( rt, viewName, fileName, gzipIS );
+            
     }
 
     //--------------------------------------------------------------------------
@@ -330,6 +351,8 @@ public abstract class RdbRecordStore implements RecordStore{
         log.info( "  VTP=" + vType ); 
         log.info( "  VIEW=" + view.substring(0,24) + "..." ); 
 
+        log.info( "rmgrURL=" + rmgrURL + " host=" + host);
+
         // add record
         //-----------
         
@@ -386,21 +409,27 @@ public abstract class RdbRecordStore implements RecordStore{
     public void clear(){
 
         Log log = LogFactory.getLog( this.getClass() );
-        
+
         try{
             String postData = URLEncoder.encode("op", "UTF-8") + "="
                 + URLEncoder.encode( "clear", "UTF-8");
             
+            log.info( "rmgrURL=" + rmgrURL);
+
             if( rmgrURL == null ){
                 rmgrURL = (String) 
                     ((Map) getPsqContext().getJsonConfig().get("store"))
                     .get("record-mgr");            
 
+                log.info( "rmgrURL=" + rmgrURL + " host=" + host );
+
                 if( host != null ){
                     rmgrURL = hostReset( rmgrURL, host );
                 }
             }
-            
+
+            log.info( "rmgrURL(updated)=" + rmgrURL);
+
             URL url = new URL( rmgrURL );
             URLConnection conn = url.openConnection();
             conn.setDoOutput( true );
@@ -422,6 +451,8 @@ public abstract class RdbRecordStore implements RecordStore{
             wr.close();
             rd.close();
         } catch (Exception e) {
+
+            e.printStackTrace();
         }
     }
 
@@ -430,6 +461,13 @@ public abstract class RdbRecordStore implements RecordStore{
     private String hostReset( String url, String newHost ){
 
         if( host == null ) return url;
+
+        String newPort = ":80" ;
+        
+        if( newHost !=null && newHost.indexOf( ":" ) > 0 ){
+            newPort = newHost.substring( newHost.indexOf( ":" ) );
+            newHost = newHost.substring(0, newHost.indexOf(":") );
+        }
 
         // http://aaa:8888/d/d/d
 
@@ -444,7 +482,11 @@ public abstract class RdbRecordStore implements RecordStore{
                 String port = m.group( 3 );
                 String postfix = m.group( 4 );
 
-                String newUrl = prefix + newHost + port + postfix;
+                String newUrl = prefix + newHost + newPort + postfix;
+                
+                Log log = LogFactory.getLog( this.getClass() );
+                log.info( "hostReset: old=" + url + " new=" + newUrl );
+
                 return newUrl;
 
             } else {
