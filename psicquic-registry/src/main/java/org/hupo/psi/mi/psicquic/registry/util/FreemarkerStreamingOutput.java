@@ -39,7 +39,7 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
     private Registry registry;
     private Configuration configuration;
     private SelfDiscoveringOntologyTree miOntologyTree;
-    
+
     public FreemarkerStreamingOutput(Registry registry, SelfDiscoveringOntologyTree miOntologyTree,Configuration config) {
         this.registry = registry;
         this.configuration = config;
@@ -48,21 +48,27 @@ public class FreemarkerStreamingOutput implements StreamingOutput {
 
     public void write(OutputStream outputStream) throws IOException, WebApplicationException {
         final Template template = configuration.getTemplate("main.ftl");
-        
+
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
         try{
             Map root = new HashMap();
 
             long totalCount = 0L;
             int serviceCount = registry.getServices().size();
+            int servicesDown = 0;
+
 
             for (ServiceType service : registry.getServices()) {
                 totalCount += service.getCount();
+                if(!service.isActive()){
+                    servicesDown += 1;
+                }
             }
 
             root.put("registry",registry);
             root.put("totalCount", totalCount);
             root.put("serviceCount", serviceCount);
+            root.put("servicesDown", servicesDown);
             root.put("termName", new TermName(miOntologyTree));
 
             try {

@@ -22,6 +22,7 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>*.war</include>
+                <include>*.jar</include>
             </includes>
         </fileSet>
     </fileSets>

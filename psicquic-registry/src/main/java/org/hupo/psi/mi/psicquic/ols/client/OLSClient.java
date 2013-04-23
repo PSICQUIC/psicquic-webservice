@@ -24,7 +24,7 @@ public class OLSClient {
             HashMap terms = service.getTermChildren(termId, ontology, 1, null);
             if (terms != null){
                 retval.putAll(terms);
-            } 
+            }
         } catch (ServiceException e) {
             e.printStackTrace();
         } catch (RemoteException e) {
@@ -42,13 +42,22 @@ public class OLSClient {
      */
     public Map<String, String> getTermsByName(String text, String ontology) {
 
-        Map retval = new HashMap<String, String>();
+        Map<String, String> retval = new HashMap<String, String>();
         QueryServiceLocator locator = new QueryServiceLocator();
         try {
             Query service = locator.getOntologyQuery();
-            HashMap terms = service.getTermsByName(text, ontology, true);
+
+            // We change the getTermByName to getTermsByExactName to have more accuracy when
+            // we retrieve the term ids by name. We need to reverse the map because getTermsByExactName
+            // doesn't do it for us (something that didn't need it before because true boolean in getTermsByName did it)
+            // HashMap terms = service.getTermsByName(text, ontology, true);
+            HashMap<String,String> terms = service.getTermsByExactName(text, ontology);
+
             if (terms != null){
-                retval.putAll(terms);
+                // retval.putAll(terms);
+                for (Map.Entry<String, String> entry : terms.entrySet()){
+                    retval.put(entry.getValue(), entry.getKey()) ;
+                }
             }
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -59,7 +68,7 @@ public class OLSClient {
         return retval;
 
     }
-    
+
     public String getTermNameByTermId(String termId, String ontology){
     	  String retval = "";
           QueryServiceLocator locator = new QueryServiceLocator();
@@ -77,7 +86,7 @@ public class OLSClient {
           }
 
           return retval;
-    	
+
     }
 }
 

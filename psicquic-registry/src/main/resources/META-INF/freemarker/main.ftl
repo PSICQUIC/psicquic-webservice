@@ -221,7 +221,7 @@
     <h2>Registry</h2>
 
     <p>Total: <strong>${totalCount}</strong>&#160;Interactions from <strong>${serviceCount}</strong> PSICQUIC
-        Services.</p>
+        Services, of which <strong>${servicesDown}</strong> are currently down.</p>
 
 
     <p>Filter: <input id="filter" type="text" /></p>
