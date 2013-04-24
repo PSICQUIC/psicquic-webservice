@@ -3,7 +3,7 @@
 
     <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-solr</artifactId>
-    <version>1.2.1.1</version>
+    <version>1.2.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>psicquic-solr</name>
@@ -16,8 +16,8 @@
 
     <properties>
         <solr.url>http://127.0.0.1:8983/solr</solr.url>
-        <calimocho.version>2.5.0</calimocho.version>
-        <psimi.version>1.8.3</psimi.version>
+        <calimocho.version>2.5.1-SNAPSHOT</calimocho.version>
+        <psimi.version>1.8.4-SNAPSHOT</psimi.version>
         <spring.version>3.1.2.RELEASE</spring.version>
     </properties>
 
@@ -40,46 +40,11 @@
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-source</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.7</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
-                    <attach>false</attach>
-                    <descriptors>
-                        <descriptor>src/main/assembly/bin-with-dependencies.xml</descriptor>
-                    </descriptors>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
         </plugins>
@@ -190,7 +155,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-xgmml</artifactId>
-            <version>2.5.0.3</version>
+            <version>${calimocho.version}</version>
         </dependency>
 
         <!-- Jetty -->
