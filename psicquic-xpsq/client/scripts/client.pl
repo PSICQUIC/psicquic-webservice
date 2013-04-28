@@ -3,12 +3,12 @@ use SOAP::Lite;
 use XML::XPath;
 use XML::XPath::XMLParser;
 
-my $URL = "http://127.0.0.1:8080/psicquic-solr-server/service/ws";
-my $PURL= "http://%%%:8080/psicquic-solr-server/service/soap/current";
+my $URL = "http://127.0.0.1:8080/xpsq/service/soap/current";
+my $PURL= "http://%%%:8080/xpsq/service/soap/current";
 
 my $ip="";
 my $op="getByQuery";
-my $rtp=""; #psi-mi/tab25";
+my $rtp="psi-mi/tab27";
 my $query="*:*";
 
 my $firstRec = 0;
@@ -51,11 +51,13 @@ if($op ne "" ) {
 
     if( $op eq "getByQuery" ) {            
     
-	my $rqinfo = "<query>$query</query>". 
-	    "<infoRequest>".
-	    "<resultType>$rtp</resultType>".
-	    "<firstResult>$firstRec</firstResult>".
-	    "<blockSize>$maxRec</blockSize>".
+        my $q= "<query>$query</query>";
+       
+	my $rqinfo = 
+            "<infoRequest>".
+	    " <resultType>$rtp</resultType>".
+	    " <firstResult>$firstRec</firstResult>".
+	    " <blockSize>$maxRec</blockSize>".
 	    "</infoRequest>";
 	
         print "::\n".$rqinfo."\n::\n";
@@ -64,7 +66,8 @@ if($op ne "" ) {
             ->proxy($URL)
             ->default_ns($rns)
             ->outputxml('true')
-            ->getByQuery( SOAP::Data->type( 'xml' => $query), 
+            -> on_action(sub { sprintf 'getByQuery', shift })
+            ->getByQuery( SOAP::Data->type( 'xml' => $q), 
                           SOAP::Data->type( 'xml' => $rqinfo) );
     }
     
