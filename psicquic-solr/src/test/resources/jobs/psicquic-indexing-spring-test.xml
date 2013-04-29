@@ -148,7 +148,7 @@
 
             <batch:chunk reader="mitabReaderParameterTest"
                          writer="solrWriterTest"
-                         retry-limit="10" commit-interval="3">
+                         retry-limit="10" commit-interval="2">
                 <batch:streams>
                     <batch:stream ref="mitabReaderParameterTest"/>
                     <batch:stream ref="solrWriterTest"/>

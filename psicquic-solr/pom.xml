@@ -3,7 +3,7 @@
 
     <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-solr</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.1.2</version>
     <packaging>jar</packaging>
 
     <name>psicquic-solr</name>
@@ -16,8 +16,8 @@
 
     <properties>
         <solr.url>http://127.0.0.1:8983/solr</solr.url>
-        <calimocho.version>2.5.1-SNAPSHOT</calimocho.version>
-        <psimi.version>1.8.4-SNAPSHOT</psimi.version>
+        <calimocho.version>2.5.0</calimocho.version>
+        <psimi.version>1.8.3</psimi.version>
         <spring.version>3.1.2.RELEASE</spring.version>
     </properties>
 
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-xgmml</artifactId>
-            <version>${calimocho.version}</version>
+            <version>2.5.0.3</version>
         </dependency>
 
         <!-- Jetty -->
