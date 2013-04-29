@@ -419,6 +419,18 @@ public class SolrMitabIndexerTest extends AbstractSolrServerTest {
 
         Assert.assertEquals(4L, server.query(new SolrQuery("*:*")).getResults().getNumFound());
     }
+
+    @Test
+    @DirtiesContext
+    public void retryIndexing() throws Exception {
+
+        // first time should fail after 2 readings
+        solrMitabIndexer.startJob("mitabIndexRetryJob");
+        SolrServer server = solrJettyRunner.getSolrServer();
+
+        Assert.assertEquals(4L, server.query(new SolrQuery("*:*")).getResults().getNumFound());
+
+    }
 }
 
 

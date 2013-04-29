@@ -34,6 +34,12 @@
         <property name="solrUrl" value="${solr.url}"/>
     </bean>
 
+    <!-- retry listener -->
+    <bean id="solrServerRollbackListener" class="org.hupo.psi.mi.psicquic.indexing.batch.listener.SolrServerRollbackListener">
+        <property name="solrUrl" value="${solr.url}"/>
+        <property name="numberOfRetries" value="5"/>
+    </bean>
+
     <!-- steps -->
     <batch:step id="cleanSolrStep" parent="batchStep">
         <batch:tasklet ref="solrCleanerTasklet">
@@ -50,7 +56,7 @@
 
             <batch:chunk reader="mitabReader"
                          writer="solrWriter"
-                         retry-limit="10" commit-interval="5000">
+                         retry-limit="5" commit-interval="5000">
                 <batch:streams>
                     <batch:stream ref="mitabReader"/>
                     <batch:stream ref="solrWriter"/>
@@ -59,6 +65,10 @@
                 <batch:retryable-exception-classes>
                     <batch:include class="org.apache.solr.client.solrj.SolrServerException"/>
                 </batch:retryable-exception-classes>
+
+                <batch:retry-listeners>
+                    <batch:listener ref="solrServerRollbackListener"/>
+                </batch:retry-listeners>
             </batch:chunk>
         </batch:tasklet>
     </batch:step>

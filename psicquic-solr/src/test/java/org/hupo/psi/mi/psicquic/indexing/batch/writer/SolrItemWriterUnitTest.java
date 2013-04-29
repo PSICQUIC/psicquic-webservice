@@ -33,8 +33,10 @@ public class SolrItemWriterUnitTest extends AbstractSolrServerTest {
         Row row = mitabLineMapper.mapLine(mitab27, 0);
 
         // index data to be hosted by PSICQUIC : we should have one result
-        writer.open(new ExecutionContext());
+        ExecutionContext context = new ExecutionContext();
+        writer.open(context);
         writer.write(Arrays.asList(row));
+        writer.update(context);
         writer.close();
 
         Assert.assertEquals(1L, solrJettyRunner.getSolrServer().query(new SolrQuery("*:*")).getResults().getNumFound());

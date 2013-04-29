@@ -1,5 +1,7 @@
-package org.hupo.psi.mi.psicquic.indexing.batch.writer;
+package org.hupo.psi.mi.psicquic.indexing.batch.listener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -10,106 +12,90 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.common.SolrInputDocument;
-import org.hupo.psi.calimocho.model.Row;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStream;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.retry.RetryCallback;
+import org.springframework.batch.retry.RetryContext;
+import org.springframework.batch.retry.RetryListener;
 import org.xml.sax.SAXException;
-import psidev.psi.mi.calimocho.solr.converter.Converter;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.List;
 
 /**
- * Solr item writer
+ * This listener will rollback any added documents to the solr server that have not been commited by a SolrItemWriter so in the retry process
+ * we don't add the same documents twice in the solr server when a SolrServerException occured
  *
  * @author Marine Dumousseau (marine@ebi.ac.uk)
  * @version $Id$
- * @since <pre>29/05/12</pre>
+ * @since <pre>29/04/13</pre>
  */
 
-public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
+public class SolrServerRollbackListener implements RetryListener {
+
+    private static final Log log = LogFactory.getLog(SolrServerRollbackListener.class);
 
     protected String solrUrl;
     protected HttpSolrServer solrServer;
-    protected Converter solrConverter;
 
     // settings SOLRServer
     private int maxTotalConnections = 128;
     private int defaultMaxConnectionsPerHost = 24;
     private boolean allowCompression = true;
+    int numberOfRetries = 5;
 
-    private boolean needToCommitOnClose;
-
-    public SolrItemWriter(){
-        solrConverter = new Converter();
-    }
-
-    /**
-     * Index a list of calimocho rows in SOLR
-     * @param items
-     * @throws Exception
-     */
-    public void write(List<? extends Row> items) throws Exception {
-        needToCommitOnClose = false;
-
-        if (solrUrl == null) {
-            throw new IllegalStateException("No 'solrURL' configured for SolrItemWriter");
-        }
-
-        if (items.isEmpty()) {
-            return;
-        }
-
-        for (Row row : items){
-            SolrInputDocument solrInputDoc = solrConverter.toSolrDocument(row);
-            solrServer.add(solrInputDoc);
-        }
-    }
-
-    public void open(ExecutionContext executionContext) throws ItemStreamException {
-        if (solrUrl != null) {
+    public <T> boolean open(RetryContext context, RetryCallback<T> callback) {
+        if (solrUrl != null && solrServer == null) {
             try {
                 createSolrServer();
+                return true;
             } catch (SAXException e) {
-                new ItemStreamException("Impossible to create a new HTTP solr server",e);
+                log.error("Impossible to create a new HTTP solr server",e);
             } catch (ParserConfigurationException e) {
-                new ItemStreamException("Impossible to create a new HTTP solr server",e);
+                log.error("Impossible to create a new HTTP solr server",e);
             }
             catch (IOException e) {
-                throw new ItemStreamException("Cannot connect to solr server: "+ solrUrl, e);
+                log.error("Cannot connect to solr server: "+ solrUrl, e);
             }
         }
+
+        return solrServer != null;
     }
 
-    public void update(ExecutionContext executionContext) throws ItemStreamException {
+    public <T> void close(RetryContext context, RetryCallback<T> callback, Throwable throwable) {
+        // do noting
+    }
+
+    public <T> void onError(RetryContext context, RetryCallback<T> callback, Throwable throwable) {
+
         if (solrServer != null){
             try {
-                solrServer.commit();
-                needToCommitOnClose = true;
+                solrServer.rollback();
             } catch (SolrServerException e) {
-                throw new ItemStreamException("Problem committing the results.", e);
+                retryRollback(context, e);
             } catch (IOException e) {
-                throw new ItemStreamException("Problem committing the results.", e);
+                retryRollback(context, e);
             }
         }
     }
 
-    public void close() throws ItemStreamException {
-        if (solrServer != null){
+    private void retryRollback(RetryContext context, Exception e) {
+        int number = 1;
+        boolean didRollback = false;
+        while (number < numberOfRetries && !didRollback){
             try {
-                if (needToCommitOnClose){
-                    solrServer.optimize();
-                }
-            } catch (Exception e) {
-                throw new ItemStreamException("Problem closing solr server", e);
+                solrServer.rollback();
+                didRollback = true;
+            } catch (SolrServerException e1) {
+                log.error(e);
+                number++;
+            } catch (IOException e1) {
+                log.error(e);
+                number++;
             }
-
-            solrServer.shutdown();
-            this.solrServer = null;
+        }
+        if (!didRollback){
+            // stop the job here
+            context.setExhaustedOnly();
+            log.error("Impossible to rollback added documents while retrying the indexing step.", e);
         }
     }
 
@@ -170,5 +156,13 @@ public class SolrItemWriter implements ItemWriter<Row>, ItemStream {
 
     public void setAllowCompression(boolean allowCompression) {
         this.allowCompression = allowCompression;
+    }
+
+    public int getNumberOfRetries() {
+        return numberOfRetries;
+    }
+
+    public void setNumberOfRetries(int numberOfRetries) {
+        this.numberOfRetries = numberOfRetries;
     }
 }
