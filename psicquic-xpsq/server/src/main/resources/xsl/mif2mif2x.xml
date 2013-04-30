@@ -67,6 +67,7 @@
                <xsl:with-param name="a" select="$a" />
                <xsl:with-param name="b" select="$b" />
                <xsl:with-param name="debug" select="$debug" />
+               
              </xsl:call-template> 
              <!-- <xsl:text>&#xA;</xsl:text> -->
             </xsl:for-each>
@@ -87,6 +88,12 @@
     <xsl:param name="bprt" />
     <xsl:param name="epid">false</xsl:param>
     <xsl:param name="expand"/>
+     
+    <xsl:if test="$debug = 'true'">
+      <xsl:text>expand=</xsl:text>
+      <xsl:value-of select="$expand"/>
+      <xsl:text>&#xA;</xsl:text>
+    </xsl:if>
 
     <xsl:for-each select='$aprt'>
       <xsl:variable name="a" select='.'/>
@@ -145,13 +152,20 @@
     <xsl:param name="b" />
     <xsl:param name="expand" />
     <xsl:param name="debug">true</xsl:param> 
-
-    <xsl:element name="entry">
+  
+   <xsl:if test="$debug = 'true'">
+      <xsl:text>binary-view:expand=</xsl:text>
+      <xsl:value-of select="$expand"/>
+      <xsl:text>&#xA;</xsl:text>
+    </xsl:if>
+     
+    <xsl:element name="entry">       
        <xsl:attribute name="id"><xsl:value-of select="$evd/@id"/></xsl:attribute>
        <xsl:apply-templates select="$src" mode="copy"/>
        <xsl:element name="interactionList">
          <xsl:apply-templates select="$int" mode="copy-int">
            <xsl:with-param name="evd" select="$evd"/> 
+           <xsl:with-param name="expand" select="$expand"/> 
          </xsl:apply-templates>
         </xsl:element>
     </xsl:element>
@@ -159,16 +173,45 @@
   </xsl:template>
 
   <xsl:template match="@*|node()" mode="copy">
-    
+    <xsl:param name="expand" />     
     <xsl:copy>
-      <xsl:apply-templates select="@*|node()" mode="copy"/> 
+      <xsl:apply-templates select="@*|node()" mode="copy">
+       <xsl:with-param name="expand" select="$expand"/>
+      </xsl:apply-templates>
     </xsl:copy>
   </xsl:template>
 
   <xsl:template match="@*|node()" mode="copy-int">       
-     <xsl:choose>
+     <xsl:param name="expand" />
+
+     <xsl:choose>      
+
+      <xsl:when test="local-name(.) = 'interactionType' and $expand='spoke'">
+
+        <xsl:element name="interactionType">
+          <xsl:element name="names">
+            <xsl:element name="fullName">
+              <xsl:text>physical association</xsl:text>
+            </xsl:element>
+          </xsl:element>  
+
+          <xsl:element name="xref">
+            <xsl:element name="primaryRef">
+              <xsl:attribute name="db"><xsl:text>psi-mi</xsl:text></xsl:attribute>
+              <xsl:attribute name="dbAc"><xsl:text>MI:0488</xsl:text></xsl:attribute>
+              <xsl:attribute name="id"><xsl:text>MI:0915</xsl:text></xsl:attribute>
+              <xsl:attribute name="refType"><xsl:text>identity</xsl:text></xsl:attribute>
+              <xsl:attribute name="refTypeAc"><xsl:text>MI:0356</xsl:text></xsl:attribute>
+            </xsl:element> 
+          </xsl:element>
+        </xsl:element>
+
+      </xsl:when>
+
       <xsl:when test="local-name(.) = 'experimentRef'">
-        <xsl:apply-templates select="." mode="experiment-ref"/>
+        <xsl:apply-templates select="." mode="experiment-ref">
+          <xsl:with-param name="expand" select="$expand"/>
+        </xsl:apply-templates> 
       </xsl:when>
 
       <xsl:when test="local-name(.) = 'interactorRef'">
@@ -177,7 +220,9 @@
 
       <xsl:otherwise>
         <xsl:copy>
-            <xsl:apply-templates select="@*|node()" mode="copy-int"/> 
+            <xsl:apply-templates select="@*|node()" mode="copy-int">
+              <xsl:with-param name="expand" select="$expand"/>
+            </xsl:apply-templates> 
         </xsl:copy>
       </xsl:otherwise>
     </xsl:choose>
@@ -189,8 +234,11 @@
   </xsl:template> 
 
   <xsl:template match="*" mode="experiment-ref">
+    <xsl:param name="expand" />
     <xsl:variable name="id" select="text()"/>
-    <xsl:apply-templates select="//mif:experimentDescription[@id=$id]" mode="copy"/>
+    <xsl:apply-templates select="//mif:experimentDescription[@id=$id]" mode="copy">
+      <xsl:with-param name="expand" select="$expand"/>
+    </xsl:apply-templates>
   </xsl:template> 
 
 </xsl:stylesheet>
