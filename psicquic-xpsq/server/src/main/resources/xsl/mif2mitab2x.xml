@@ -18,7 +18,7 @@
 <!-- ======================================================================= -->
 
   <xsl:param name="debug">false</xsl:param>
-  <xsl:param name="format">2.6</xsl:param>
+  <xsl:param name="format">2.7</xsl:param>
   <xsl:param name="natext">-</xsl:param>
 
   <xsl:include href="mif2xpsq.xml"/> 
@@ -190,13 +190,26 @@
       <xsl:with-param name="cv" 
            select="$evd/mif:interactionDetectionMethod"/>
      </xsl:call-template>
-
-     <xsl:apply-templates mode="pubauth-col" 
-       select="$evd/mif:attributeList[
-                  ./mif:attribute/@name='author-list']">
-       <xsl:with-param name="debug" select='$debug'/>
-       <xsl:with-param name="tag">::auth</xsl:with-param>
-     </xsl:apply-templates>
+     
+     <xsl:choose>
+       <xsl:when 
+         test="string-length($evd/mif:attributeList[
+                               ./mif:attribute/@name='author-list']) &gt; 0"> 
+        <xsl:apply-templates mode="pubauth-col" 
+          select="$evd/mif:attributeList[
+                    ./mif:attribute/@name='author-list']">
+         <xsl:with-param name="debug" select='$debug'/>
+         <xsl:with-param name="tag">::auth</xsl:with-param>
+       </xsl:apply-templates>
+       </xsl:when>
+       <xsl:otherwise>
+         <xsl:call-template name="na-col">
+           <xsl:with-param name="debug" select='$debug'/>
+           <xsl:with-param name="tag">::auth</xsl:with-param>
+           <xsl:with-param name="clist" select="."/>
+        </xsl:call-template>
+       </xsl:otherwise> 
+     </xsl:choose>
 
      <xsl:apply-templates mode="pubid-col" select="$evd" >
        <xsl:with-param name="debug" select='$debug'/>
@@ -226,12 +239,12 @@
         <xsl:with-param name="tag">::src</xsl:with-param>
         <xsl:with-param name="src" select="$src"/>
       </xsl:call-template>
-   
+  
       <xsl:call-template name="intid-col">
         <xsl:with-param name="debug" select='$debug'/>
         <xsl:with-param name="tag">::intid</xsl:with-param>
-        <xsl:with-param name="intid" 
-             select="$int/mif:xref/*[@refType='identity']"/>
+        <xsl:with-param name="int" 
+             select="$int"/>
       </xsl:call-template>
    
       <xsl:call-template name="confidence-col">
@@ -260,19 +273,42 @@
           <xsl:with-param name="role" select="$b/mif:biologicalRole"/>
         </xsl:call-template>
 
-        <xsl:call-template name="role-list-col">
-          <xsl:with-param name="debug" select='$debug'/>
-          <xsl:with-param name="tag">::exproleA</xsl:with-param>
-          <xsl:with-param name="rolelist" 
-               select="$a/mif:experimentalRoleList/*"/>
-        </xsl:call-template>
+        <xsl:choose>
+          <xsl:when test="count($a/mif:experimentalRoleList/*) &gt; 0">
+            <xsl:call-template name="role-list-col">
+              <xsl:with-param name="debug" select='$debug'/>
+              <xsl:with-param name="tag">::exproleA</xsl:with-param>
+              <xsl:with-param name="rolelist" 
+                 select="$a/mif:experimentalRoleList/*"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="na-col">
+              <xsl:with-param name="debug" select='$debug'/>
+              <xsl:with-param name="tag">::exproleA</xsl:with-param>
+              <xsl:with-param name="clist" select="."/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
 
-        <xsl:call-template name="role-list-col">
-          <xsl:with-param name="debug" select='$debug'/>
-          <xsl:with-param name="tag">::exproleB</xsl:with-param>
-          <xsl:with-param name="rolelist" 
-               select="$b/mif:experimentalRoleList/*"/>
-        </xsl:call-template>
+        <xsl:choose>
+          <xsl:when test="count($b/mif:experimentalRoleList/*) &gt; 0">
+            <xsl:call-template name="role-list-col">
+              <xsl:with-param name="debug" select='$debug'/>
+              <xsl:with-param name="tag">::exproleB</xsl:with-param>
+              <xsl:with-param name="rolelist" 
+                   select="$b/mif:experimentalRoleList/*"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="na-col">
+              <xsl:with-param name="debug" select='$debug'/>
+              <xsl:with-param name="tag">::exproleB</xsl:with-param>
+              <xsl:with-param name="clist" select="."/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+
 
         <xsl:call-template name="intype-col">
           <xsl:with-param name="debug" select='$debug'/>
@@ -364,13 +400,26 @@
           <xsl:with-param name="tag">::intChk</xsl:with-param>
           <xsl:with-param name="clist" select="."/>
         </xsl:call-template>
-        
-        <xsl:call-template name="text-col">
-          <xsl:with-param name="debug" select='$debug'/>
-          <xsl:with-param name="tag">::negative</xsl:with-param>
-          <xsl:with-param name="text" select="$int/mif:negative/text()"/>
-        </xsl:call-template>
-        
+
+        <xsl:variable name="negative" select="$int/mif:negative/text()"/>
+
+        <xsl:choose>
+          <xsl:when test="string-length($negative) &gt; 0">
+          <xsl:call-template name="text-col">
+            <xsl:with-param name="debug" select='$debug'/>
+            <xsl:with-param name="tag">::negative</xsl:with-param>
+            <xsl:with-param name="text" select="$int/mif:negative/text()"/>
+          </xsl:call-template>
+        </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="na-col">
+              <xsl:with-param name="debug" select='$debug'/>
+              <xsl:with-param name="tag">::negative</xsl:with-param>
+              <xsl:with-param name="clist" select="."/>
+            </xsl:call-template>
+ 
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:if>
 
       <xsl:if test="$format = '2.7'">
@@ -508,16 +557,32 @@
    <xsl:variable name="iid"
                  select="$p9t/mif:interactorRef/text()"/>            
 
-   <xsl:call-template name="xref-fld">
-      <xsl:with-param name="tag" select="$tag" />
-      <xsl:with-param name="xref" 
-        select="$p9t/mif:interactor/mif:xref/
+   <xsl:variable name="cnt"
+     select="count($p9t/mif:interactor/mif:xref/
                             mif:secondaryRef[not(@refType='secondary-ac' or
                                                  @refType='identity')]
           | $ilst[@id=$iid]/mif:xref/
                             mif:secondaryRef[not(@refType='secondary-ac' or
+                                                 @refType='identity')])"/>  
+
+   <xsl:choose>
+     <xsl:when test="$cnt &gt; 0">
+
+       <xsl:call-template name="xref-fld">
+         <xsl:with-param name="tag" select="$tag" />
+         <xsl:with-param name="xref" 
+           select="$p9t/mif:interactor/mif:xref/
+                            mif:secondaryRef[not(@refType='secondary-ac' or
+                                                 @refType='identity')]
+                    | $ilst[@id=$iid]/mif:xref/
+                            mif:secondaryRef[not(@refType='secondary-ac' or
                                                  @refType='identity')]"/>
-   </xsl:call-template>  
+       </xsl:call-template>  
+     </xsl:when>
+     <xsl:otherwise>
+       <xsl:value-of select="$natext"/>  
+     </xsl:otherwise>
+   </xsl:choose>
 
    <xsl:if test="$debug = 'true'">
     <xsl:value-of select="$tag"/>
@@ -544,7 +609,7 @@
        <xsl:with-param name="value" 
             select="$p9t/mif:interactor/mif:names/mif:shortLabel|
                     $ilst[@id=$iid]/mif:names/mif:shortLabel" />
-       <xsl:with-param name="type">(short label)</xsl:with-param>        
+       <xsl:with-param name="type">(synonym)</xsl:with-param>        
      </xsl:call-template>
 
    </xsl:if>
@@ -566,7 +631,7 @@
        <xsl:with-param name="value"
             select="$p9t/mif:interactor/mif:names/mif:fullName|
                     $ilst[@id=$iid]/mif:names/mif:fullName"/>
-       <xsl:with-param name="type">(full name)</xsl:with-param>        
+       <xsl:with-param name="type">(synonym)</xsl:with-param>        
      </xsl:call-template>
 
    </xsl:if>
@@ -608,11 +673,18 @@
   <xsl:template mode="pubauth-col" match="*">
     <xsl:param name="tag"/>
     <xsl:param name="debug"/>
+
+    <xsl:choose>
+      <xsl:when test="string-length(./mif:attribute[@name='author-list']) &gt; 0">
+        <xsl:value-of select="concat(
+          substring-before(./mif:attribute[@name='author-list'],' '),
+          ' et al. (',./mif:attribute[@name='publication year'], ')')" />  
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$natext"/>     
+      </xsl:otherwise> 
+    </xsl:choose>
      
-    <xsl:value-of select="concat(
-        substring-before(./mif:attribute[@name='author-list'],' '),
-        ' et al. (',./mif:attribute[@name='publication year'], ')')" />  
-   
     <xsl:if test="$debug = 'true'">
       <xsl:value-of select="$tag"/>
     </xsl:if>
@@ -749,7 +821,7 @@
   <xsl:template name="taxid-fld">
     <xsl:param name="org" />
     
-    <xsl:if test="count(./mif:names/mif:shortLabel) = 1">
+    <xsl:if test="count($org/mif:names/mif:shortLabel) = 1">
       <xsl:value-of select="concat( 'taxid:',$org/@ncbiTaxId,'(&quot;',
                                         $org/mif:names/mif:shortLabel,
                                         '&quot;)' )" />
@@ -829,19 +901,33 @@
 
   <xsl:template name="intid-col">
     <xsl:param name="tag" />
-    <xsl:param name="intid" />
+    <xsl:param name="int" />
     <xsl:param name="debug"/>
+    <xsl:variable name="imexid" select="$int/@imexId"/>
+    <xsl:variable name="intid" select="$int/mif:xref/*[@refType='identity']"/>
 
-    <xsl:choose>
-     <xsl:when test="count($intid) &gt; 0 ">
-       <xsl:call-template name="xref-fld">
-         <xsl:with-param name="xref" select="$intid" />
-       </xsl:call-template>
-    </xsl:when>
-     <xsl:otherwise>
-       <xsl:value-of select="$natext"/>
-     </xsl:otherwise>
+    <xsl:choose> 
+      <xsl:when test="string-length($imexid) = 0 and
+                      count($intid) = 0">
+        <xsl:value-of select="$natext"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:if test="string-length($imexid) &gt; 0">
+           <xsl:value-of select="concat('imex:',$imexid)"/>
+        </xsl:if>
+
+        <xsl:if test="string-length($imexid) &gt; 0 and
+                      count($intid) &gt; 0">
+          <xsl:text>"|"</xsl:text>
+        </xsl:if>
+        <xsl:if test="count($intid) &gt; 0">
+         <xsl:call-template name="xref-fld">
+            <xsl:with-param name="xref" select="$intid" />
+         </xsl:call-template>
+        </xsl:if>
+      </xsl:otherwise>
    </xsl:choose>
+
     <xsl:if test="$debug = 'true'">
       <xsl:value-of select="$tag"/>
      </xsl:if>
@@ -876,9 +962,21 @@
     <xsl:param name="rolelist" />
     <xsl:param name="debug"/>
     <xsl:for-each select="$rolelist">
-      <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
-                                     ./mif:xref/mif:primaryRef/@id,'&quot;(',
-                                     ./mif:names/mif:shortLabel/text(),')')" />
+      <xsl:choose>
+        <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">     
+          <xsl:value-of 
+            select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
+                           ./mif:xref/mif:primaryRef/@id,'&quot;(',
+                           ./mif:names/mif:shortLabel/text(),')')" />
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of
+            select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
+                           ./mif:xref/mif:primaryRef/@id,'&quot;(',
+                           ./mif:names/mif:fullName/text(),')')" />
+        </xsl:otherwise>  
+      </xsl:choose>
+
       <xsl:if test="not(position()=last())">
            <xsl:text>|</xsl:text>
       </xsl:if>
@@ -893,7 +991,7 @@
     <xsl:param name="tag" />
     <xsl:param name="role" />
     <xsl:param name="debug"/>
-
+    
     <xsl:choose>
       <xsl:when test="not($role = '')">    
         <xsl:call-template name="cvterm-fld">
@@ -916,11 +1014,21 @@
     <xsl:param name="debug"/>
 
     <xsl:choose>
-      <xsl:when test="not($cvterm= '')">    
-        <xsl:value-of 
-             select="concat($cvterm/mif:xref/mif:primaryRef/@db,':&quot;',
-                            $cvterm/mif:xref/mif:primaryRef/@id,'&quot;(',
-                            $cvterm/mif:names/mif:shortLabel/text(),')')" />   
+      <xsl:when test="not($cvterm= '')">
+        <xsl:choose>
+          <xsl:when test="string-length($cvterm/mif:names/mif:shortLabel/text()) &gt; 0">    
+            <xsl:value-of 
+              select="concat($cvterm/mif:xref/mif:primaryRef/@db,':&quot;',
+                             $cvterm/mif:xref/mif:primaryRef/@id,'&quot;(',
+                             $cvterm/mif:names/mif:shortLabel/text(),')')" />
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of 
+              select="concat($cvterm/mif:xref/mif:primaryRef/@db,':&quot;',
+                             $cvterm/mif:xref/mif:primaryRef/@id,'&quot;(',
+                             $cvterm/mif:names/mif:fullName/text(),')')" />
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <xsl:call-template name="na-col">
@@ -969,11 +1077,21 @@
     <xsl:param name="cvterm" />
     <xsl:param name="debug"/>
     <xsl:choose>
-      <xsl:when test="not($cvterm= '')">    
-        <xsl:value-of 
-             select="concat($cvterm/mif:xref/mif:primaryRef/@db,':&quot;',
-                            $cvterm/mif:xref/mif:primaryRef/@id,'&quot;(',
-                            $cvterm/mif:names/mif:shortLabel/text(),')')" />   
+      <xsl:when test="not($cvterm= '')">
+        <xsl:choose>
+          <xsl:when test="string-length($cvterm/mif:names/mif:shortLabel/text()) &gt; 0">
+            <xsl:value-of 
+              select="concat($cvterm/mif:xref/mif:primaryRef/@db,':&quot;',
+                             $cvterm/mif:xref/mif:primaryRef/@id,'&quot;(',
+                             $cvterm/mif:names/mif:shortLabel/text(),')')" />
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of
+              select="concat($cvterm/mif:xref/mif:primaryRef/@db,':&quot;',
+                             $cvterm/mif:xref/mif:primaryRef/@id,'&quot;(',
+                             $cvterm/mif:names/mif:fullName/text(),')')" />
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$natext"/>        
@@ -1007,9 +1125,18 @@
     <xsl:param name="hlist" />
     <xsl:param name="debug"/>
     <xsl:for-each select="$hlist/*">
-      <xsl:value-of select="concat('taxid:',./@ncbiTaxId,'(&quot;',
-                                     ./mif:names/mif:shortLabel/text(),
-                                     '&quot;)')" />
+      <xsl:choose>
+       <xsl:when test="string-length(./mif:names/mif:shortLabel/text())">
+         <xsl:value-of select="concat('taxid:',./@ncbiTaxId,'(&quot;',
+                                      ./mif:names/mif:shortLabel/text(),
+                                      '&quot;)')" />
+       </xsl:when>
+       <xsl:otherwise>
+         <xsl:value-of select="concat('taxid:',./@ncbiTaxId,'(&quot;',
+                                      ./mif:names/mif:fullName/text(),
+                                      '&quot;)')" />
+       </xsl:otherwise>
+      </xsl:choose>
       <xsl:if test="not(position()=last())">
            <xsl:text>|</xsl:text>
       </xsl:if>
