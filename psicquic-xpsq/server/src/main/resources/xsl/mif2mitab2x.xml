@@ -94,8 +94,12 @@
           <xsl:variable name="b" select='.'/>
 
           <xsl:if test="$debug = 'true'">   
+            <xsl:text>expand=</xsl:text><xsl:value-of select='$expand'/>
+            <xsl:text>&#xA;</xsl:text>
+            <xsl:text>epid=</xsl:text><xsl:value-of select='$epid'/>
+            <xsl:text>&#xA;</xsl:text>
             <xsl:text>a::b= </xsl:text><xsl:value-of select='$a/@id'/>
-             <xsl:text>::</xsl:text><xsl:value-of select='$b/@id'/>
+            <xsl:text>::</xsl:text><xsl:value-of select='$b/@id'/>
             <xsl:text>&#xA;</xsl:text>
           </xsl:if>
 
@@ -184,13 +188,24 @@
       <xsl:with-param name="p9t" select="$b"/>
     </xsl:call-template>
 
-    <xsl:call-template name="cv-col">
-      <xsl:with-param name="debug" select='$debug'/>
-      <xsl:with-param name="tag">::idm</xsl:with-param>
-      <xsl:with-param name="cv" 
-           select="$evd/mif:interactionDetectionMethod"/>
-     </xsl:call-template>
-     
+    <xsl:choose>
+      <xsl:when test="$expand = 'spoke' ">
+       <xsl:text>psi-mi:"MI:0915"(physical association)</xsl:text>
+       <xsl:if test="$debug = 'true'">
+         <xsl:text>::idm</xsl:text>
+       </xsl:if>
+       <xsl:text>&#x9;</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="cv-col">
+          <xsl:with-param name="debug" select='$debug'/>
+          <xsl:with-param name="tag">::idm</xsl:with-param>
+          <xsl:with-param name="cv" 
+               select="$evd/mif:interactionDetectionMethod"/>
+         </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+
      <xsl:choose>
        <xsl:when 
          test="string-length($evd/mif:attributeList[
@@ -532,18 +547,27 @@
    <xsl:variable name="iid"
                  select="$p9t/mif:interactorRef/text()"/>            
 
-   <xsl:call-template name="xref-fld">
-      <xsl:with-param name="tag" select="$tag" />
-      <xsl:with-param name="xref" 
-        select="$p9t/mif:interactor/mif:xref/
+   <xsl:variable name="aidList" 
+     select="$p9t/mif:interactor/mif:xref/
                             mif:secondaryRef[@refType='secondary-ac' or
                                              @refType='identity']
           | $ilst[@id=$iid]/mif:xref/
                             mif:secondaryRef[@refType='secondary-ac' or
                                              @refType='identity']"/>
-   </xsl:call-template>  
+   <xsl:choose>
+     <xsl:when test="count($aidList) = 0">
+       <xsl:text>-</xsl:text>
+     </xsl:when>
+     <xsl:otherwise>
+       <xsl:call-template name="xref-fld">
+         <xsl:with-param name="tag" select="$tag" />
+         <xsl:with-param name="xref" select="$aidList"/>
+       </xsl:call-template>  
+     </xsl:otherwise>
+   </xsl:choose>
+
    <xsl:if test="$debug = 'true'">
-    <xsl:value-of select="$tag"/>
+     <xsl:value-of select="$tag"/>
    </xsl:if>  
    <xsl:text>&#x9;</xsl:text>
   </xsl:template>
