@@ -23,12 +23,8 @@ Compilation
     to generate server's .war file (xpsq.war)
   
   - run 
-     mvn assembly:single 
+      mvn assembly:single 
     to generate a stand-alone index builder (xpsq-index-builder.jar)
-    NOTE: this take quite a while as the generated jar file contains way too
-          much classes. I think it can be optimized by modifying assembly 
-          descriptor (src/main/assembly/builder.xml)
-
   
 Testing
 -------
@@ -46,16 +42,6 @@ Testing
      The record manager action (used to commit records into record store) should 
      appear as mapped to
         http://127.0.0.1:8080/xpsq/recordmgr
-  
-     NOTE: while run for the first time the server created data directories
-           for the solr shards; consecutive re-runs retain index contents from
-           the previous run. In order to clean the indexes remove data 
-           directories:
-              rm -rf target/work/webapp/solr/data 
-              rm -rf target/work/webapp/solr/psq-01/data/ 
-              rm -rf target/work/webapp/solr/psq-02/data/
-           Ultimately, index builder will provide the option to clean the 
-           idices.
   
   - run the index builder:
 
