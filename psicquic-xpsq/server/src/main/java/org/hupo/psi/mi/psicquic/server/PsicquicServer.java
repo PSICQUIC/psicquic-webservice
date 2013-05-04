@@ -281,4 +281,8 @@ public class PsicquicServer {
     public String getFooter( String viewType ){
         return psqContext.getFooter( viewType );
     }
+
+    public String getMediaType( String viewType ){
+        return psqContext.getMediaType( viewType );
+    }
 }

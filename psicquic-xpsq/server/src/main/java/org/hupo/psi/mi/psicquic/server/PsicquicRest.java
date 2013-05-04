@@ -20,7 +20,7 @@ public interface PsicquicRest {
         Object getByInteractor( @PathParam("interactorAc") String intAc,
                                 @DefaultValue("") 
                                 @QueryParam("db") String db,
-                                @DefaultValue("tab25") 
+                                @DefaultValue("psi-mi/tab25") 
                                 @QueryParam("format") String format,
                                 @DefaultValue("0") 
                                 @QueryParam("firstResult") String firstResult,
@@ -34,7 +34,7 @@ public interface PsicquicRest {
         Object getByInteraction( @PathParam("interactionAc") String intAc,
                                  @DefaultValue("") 
                                  @QueryParam("db") String db,
-                                 @DefaultValue("tab25") 
+                                 @DefaultValue("psi-mi/tab25") 
                                  @QueryParam("format") String format,
                                  @DefaultValue("0") 
                                  @QueryParam("firstResult") String firstResult,
@@ -46,7 +46,7 @@ public interface PsicquicRest {
 
     @GET @Path("/query/{query}")
         Object getByQuery( @PathParam("query") String query,
-                           @DefaultValue("tab25") 
+                           @DefaultValue("psi-mi/tab25") 
                            @QueryParam("format") String format,
                            @DefaultValue("0") 
                            @QueryParam("firstResult") String firstResult,

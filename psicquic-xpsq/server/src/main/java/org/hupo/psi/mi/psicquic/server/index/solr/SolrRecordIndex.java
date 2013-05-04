@@ -688,7 +688,7 @@ public class SolrRecordIndex implements RecordIndex{
                 = (SolrInputDocument) cdoc.get("solr");
             log.debug( " SolrRecordIndex(add): recId=" + recId );
             log.debug( " SolrRecordIndex(add):" 
-                       + " SIDoc=" + doc.toString().substring(0,64) );
+                       + " SIDoc=" + doc.toString() );
             
             try{
                 if( shSolr.size() > 1 ){

@@ -130,6 +130,25 @@ public class PsqContext{
             return "";
         }
     }
+
+    public String getMediaType( String viewType ){
+        
+        if( viewType == null || viewType.equals( "" ) ){
+            viewType = getDefaultView();
+        }
+
+        Map stConfig = (Map) 
+            ((Map) getJsonConfig().get( "store" )).get( getActiveStoreName() );
+        
+        Map viewConfig = (Map)
+            ((Map) ((Map) stConfig.get("view")).get(viewType)).get("config");
+
+        if( viewConfig.get( "mdia-type" ) != null ){
+            return (String) viewConfig.get( "media-type" );
+        } else {
+            return "text/plain";
+        }
+    }
     
     public long getDefaultFirstResult(){
         return (Long)

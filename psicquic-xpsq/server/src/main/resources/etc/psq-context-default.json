@@ -51,7 +51,7 @@
   },
   "store":{
      "record-mgr": "http://127.0.0.1:8080/xpsq/recordmgr",
-     "active":"bdb",
+     "active":"derby",
      "rec-id":"recId",
      "view-default":"psi-mi/tab27",
      "bdb":{
@@ -62,28 +62,32 @@
                "config":{
                  "db-name":"psi-mi-tab25",
                  "header":"#psi-mi/tab25\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/tab26":{
                "config":{
                  "db-name":"psi-mi-tab26",
                  "header":"#psi-mi/tab26\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/tab27":{
                "config":{
                  "db-name":"psi-mi-tab27",
                  "header":"#psi-mi/tab27\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/xml25":{
                "config":{
                  "db-name":"psi-mi-xml25",
                  "header":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<entrySet xmlns=\"http://psi.hupo.org/mi/mif\" level=\"2\" minorVersion=\"4\" version=\"5\">\n",
-                 "footer":"</entrySet>\n"
+                 "footer":"</entrySet>\n",
+                 "media-type":"text/xml"
                }
            }
          }
@@ -96,25 +100,29 @@
            "psi-mi/tab25":{
                "config":{
                  "header":"#psi-mi/tab25\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/tab26":{
                "config":{
                  "header":"#psi-mi/tab26\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/tab27":{
                "config":{
                  "header":"#psi-mi/tab27\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/xml25":{
                "config":{
                  "header":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<entrySet xmlns=\"http://psi.hupo.org/mi/mif\" level=\"2\" minorVersion=\"4\" version=\"5\">\n",
-                 "footer":"</entrySet>\n"
+                 "footer":"</entrySet>\n",
+                 "media-type":"text/xml"
                }
            }
          }
@@ -125,25 +133,29 @@
            "psi-mi/tab25":{
                "config":{
                  "header":"#psi-mi/tab25\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/tab26":{
                "config":{
                  "header":"#psi-mi/tab26\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/tab27":{
                "config":{
                  "header":"#psi-mi/tab27\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
            },
            "psi-mi/xml25":{
                "config":{
                  "header":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<entrySet xmlns=\"http://psi.hupo.org/mi/mif\" level=\"2\" minorVersion=\"4\" version=\"5\">\n",
-                 "footer":"</entrySet>\n"
+                 "footer":"</entrySet>\n",
+                 "media-type":"text/xml"
                }
            }
         }
@@ -161,7 +173,8 @@
                  ],
                  "col-sep":"\t",
                  "header":"#psi-mi/tab25\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain",
                }
             },
             "psi-mi/tab26":{
@@ -179,7 +192,8 @@
                  ],               
                  "col-sep":"\t",
                  "header":"#psi-mi/tab26\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                },
             },
             "psi-mi/tab27":{
@@ -198,7 +212,8 @@
                  ],
                  "col-sep":"\t",
                  "header":"#psi-mi/tab27\n",
-                 "footer":"#\n"
+                 "footer":"#\n",
+                 "media-type":"text/plain"
                }
             }
         }
@@ -358,7 +373,8 @@
      "soap":{
         "version":"1.1",
         "properties":{
-           "implementation":"ic-psq-0.01",
+           "implementation":"xpsq",
+           "implementation-version":"0.01",     
            "last-protein-update":"01-Jan-12"
           },
         "supported-return-type":[
@@ -374,7 +390,8 @@
      "rest":{
         "version":"1.1",
         "properties":{
-           "implementation":"ic-psq-0.01",
+           "implementation":"xpsq",
+           "implementation-ver":"0.01",
            "last-protein-update":"01-Jan-12"
         },
         "supported-return-type":[

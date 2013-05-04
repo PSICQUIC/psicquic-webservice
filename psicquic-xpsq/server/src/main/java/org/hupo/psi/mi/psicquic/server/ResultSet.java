@@ -54,6 +54,14 @@ public class ResultSet{
         return resultList;
     }
 
+    public long getResultCount(){
+
+        if( resultList == null ){
+            return 0L;
+        }
+        return resultList.size();
+    }
+
     public void setResultList( List results ){
         resultList = results;
     }

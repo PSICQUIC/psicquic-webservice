@@ -15,11 +15,14 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import java.io.*;
+
 import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
 import org.hupo.psi.mi.*;
 import org.hupo.psi.mi.psq.*;
-
+      
 import org.json.*;
 
 import org.apache.commons.logging.Log;
@@ -135,27 +138,26 @@ public class PsicquicRestImpl implements PsicquicRest{
 
         ResultSet qrs = psqServer.getByQuery( query, format, fRes, mRes );
         
-        log.info( "getByQuery: rs="+ qrs );
-        log.info( "meta=" + qrs.getMeta() );
+        log.debug( "getByQuery: rs="+ qrs );
+        log.debug( "meta=" + qrs.getMeta() );
         
-        String mitab = psqServer.toString( qrs, true, true );
-
-        // Records
-        //--------
-
-        //for( Iterator i = qrs.getResultList().iterator(); i.hasNext(); ){
-        //    String record = (String) i.next();
-        //    mitab += record + "\n";
-        //}
-      
+        String mitab = psqServer.getHeader( format );
+        mitab += psqServer.toString( qrs, true, true );                
+        mitab += psqServer.getFooter( format );
+        
+        log.debug( "getByQuery: miab(0,32)=" + mitab.substring(0,32) );
+        
         // Meta info 
         //----------
-
         /*
         if( qrs.getMeta() != null ){
 
             if( qrs.getMeta().get( "groups") != null ){
-            
+
+                if( psqServer.getMediaType( format ).equals( "text/xml" ) ){
+                    mitab += "<!--\n";
+                }
+                
                 Map<String,List<ValueCount>> groups 
                     = (Map<String,List<ValueCount>>) qrs.getMeta().get( "groups"); 
                 
@@ -178,12 +180,61 @@ public class PsicquicRestImpl implements PsicquicRest{
                             + count + "\n";
                     }
                 }
+
+                if( psqServer.getMediaType( format ).equals( "text/xml" ) ){
+                    mitab += "-->\n";                    
+                }
             }
+        
         }
         */
-        return mitab;        
+        try{
+
+            return prepareResponse( psqServer, mitab, format,
+                                    qrs.getResultCount() ).build(); 
+            
+        } catch (Throwable e) {
+
+            PsicquicFault psqFault = new PsicquicFault();
+            throw new PsicquicServiceException( "Problem creating output", 
+                                                psqFault, e);
+        }
+        
     }
     
+    //--------------------------------------------------------------------------
+    
+    protected Response.ResponseBuilder 
+        prepareResponse( PsicquicServer psqServer, Object result, 
+                         String format, long totalCount ) throws IOException {
+        
+        Response.ResponseBuilder rb = Response.status( 200 );
+        
+        rb.type( psqServer.getMediaType( format ));
+        rb.entity( new GenericEntity<String>( (String) result ){} );
+        
+        prepareHeaders( rb, psqServer )
+            .header( "X-PSICQUIC-Count", String.valueOf(totalCount));
+        
+        return rb;
+    }
+    
+    public Response.ResponseBuilder 
+        prepareHeaders( Response.ResponseBuilder rspBuilder,
+                        PsicquicServer psqServer ) {
+
+        rspBuilder.header( "X-PSICQUIC-Impl", 
+                           psqServer.getProperty("rest","implementation"));
+        rspBuilder.header( "X-PSICQUIC-Impl-Version", 
+                           psqServer.getProperty("rest","implementation-ver"));
+        rspBuilder.header( "X-PSICQUIC-Spec-Version", 
+                           psqServer.getVersion("rest") );
+        rspBuilder.header( "X-PSICQUIC-Supports-Compression", 
+                           Boolean.TRUE );
+
+        return rspBuilder;
+    }
+
 
     //--------------------------------------------------------------------------
     

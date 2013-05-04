@@ -699,9 +699,7 @@
        </xsl:attribute>
        <xsl:value-of select="./@ncbiTaxId"/>
      </xsl:element>
-   </xsl:if>
-
-   <xsl:if test="not($fmode = '_o')">
+     
      <xsl:element name="field">
        <xsl:attribute name="name">
          <xsl:value-of select="$fid"/><xsl:value-of select="$fmode"/>
@@ -742,7 +740,16 @@
      </xsl:if>
    </xsl:if>
 
-    <xsl:if test="$fmode = '_o'">
+   <xsl:if test="$fmode = '_s'">
+     <xsl:element name="field">
+       <xsl:attribute name="name">
+         <xsl:value-of select="$fid"/><xsl:value-of select="$fmode"/>
+       </xsl:attribute>
+       <xsl:text>taxid:</xsl:text><xsl:value-of select="./@ncbiTaxId"/>
+     </xsl:element>
+   </xsl:if>
+
+   <xsl:if test="$fmode = '_o'">
       <xsl:element name="field">
         <xsl:attribute name="name">
           <xsl:value-of select="$fid"/><xsl:value-of select="$fmode"/>
@@ -763,7 +770,7 @@
                                         '&quot;)' )" />
         </xsl:if>
       </xsl:element>
-    </xsl:if> 
+   </xsl:if> 
   </xsl:template>
 
  <!-- SOURCE -->
@@ -808,14 +815,14 @@
       </xsl:attribute>
       <xsl:value-of select="concat(./@db,':',./@id)"/> 
     </xsl:element>
-
+<!--
     <xsl:element name="field">
       <xsl:attribute name="name">
         <xsl:value-of select="concat($fid,'_s')"/>
       </xsl:attribute>
       <xsl:value-of select="concat(./@db,':',./@id,'(',@refType,')' )"/> 
     </xsl:element>
-
+-->
     <xsl:element name="field">
       <xsl:attribute name="name">
         <xsl:value-of select="concat($fid,'_o')"/>
@@ -1040,7 +1047,7 @@
         <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':',
                                    ./mif:xref/mif:primaryRef/@id)" />
       </xsl:element>
-
+<!--
       <xsl:element name="field">
         <xsl:attribute name="name">
           <xsl:value-of select="concat($fid,'_s')"/>
@@ -1074,6 +1081,7 @@
        </xsl:choose>
 
       </xsl:element>
+-->
     </xsl:if>
 
     <xsl:if test="not($skip_o = 'yes')"> 
@@ -1293,43 +1301,88 @@
     <xsl:param name="type">false</xsl:param>    
 
     <xsl:for-each select='$list'> 
-      <xsl:element name="field">
-        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
-        <xsl:value-of select="./@db"/>
-      </xsl:element>
+     
+      <xsl:choose>
+        <xsl:when test="./@dbAc = 'MI:0486'">
+          <xsl:variable name="db" select="'uniprotkb'"/>
+          <xsl:element name="field">
+            <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+            <xsl:value-of select="$db"/>
+          </xsl:element>
 
-      <xsl:element name="field">
-        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
-        <xsl:value-of select="./@id"/> 
-      </xsl:element>
+          <xsl:element name="field">
+            <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+            <xsl:value-of select="./@id"/> 
+          </xsl:element>
 
-      <xsl:element name="field">
-        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
-        <xsl:value-of select="concat(./@db,':',./@id)"/> 
-      </xsl:element>
+          <xsl:element name="field">
+            <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+            <xsl:value-of select="concat($db,':',./@id)"/> 
+          </xsl:element>
 
-     <xsl:if test="$type = 'true'">
-       <xsl:element name="field">
-         <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
-         <xsl:value-of select="concat(./@db,':',./@id,'(',@refType,')' )"/> 
-       </xsl:element>
-     </xsl:if>
+          <xsl:if test="$type = 'true'">
+            <xsl:element name="field">
+              <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+              <xsl:value-of select="concat($db,':',./@id,'(',@refType,')' )"/> 
+            </xsl:element>
+          </xsl:if>
 
-      <xsl:element name="field">
-        <xsl:attribute name="name">
-          <xsl:value-of select="concat($fid,'_s')"/>
-        </xsl:attribute>
-        <xsl:value-of select="concat(./@db,':',./@id)"/> 
-      </xsl:element>
+          <xsl:element name="field">
+            <xsl:attribute name="name">
+              <xsl:value-of select="concat($fid,'_s')"/>
+            </xsl:attribute>
+            <xsl:value-of select="concat($db,':',./@id)"/> 
+          </xsl:element>
 
-      <xsl:if test="$type = 'true'">
-        <xsl:element name="field">
-          <xsl:attribute name="name">
-            <xsl:value-of select="concat($fid,'_s')"/>
-          </xsl:attribute>
-          <xsl:value-of select="concat(./@db,':',./@id,'(',@refType,')' )"/> 
-        </xsl:element>
-      </xsl:if>
+          <xsl:if test="$type = 'true'">
+            <xsl:element name="field">
+              <xsl:attribute name="name">
+                <xsl:value-of select="concat($fid,'_s')"/>
+              </xsl:attribute>
+              <xsl:value-of select="concat($db,':',./@id,'(',@refType,')' )"/> 
+            </xsl:element>
+          </xsl:if>      
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:element name="field">
+            <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+            <xsl:value-of select="./@db"/>
+          </xsl:element>
+
+          <xsl:element name="field">
+            <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+            <xsl:value-of select="./@id"/> 
+          </xsl:element>
+
+          <xsl:element name="field">
+            <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+            <xsl:value-of select="concat(./@db,':',./@id)"/> 
+          </xsl:element>
+
+          <xsl:if test="$type = 'true'">
+            <xsl:element name="field">
+              <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+              <xsl:value-of select="concat(./@db,':',./@id,'(',@refType,')' )"/> 
+            </xsl:element>
+          </xsl:if>
+
+          <xsl:element name="field">
+            <xsl:attribute name="name">
+              <xsl:value-of select="concat($fid,'_s')"/>
+            </xsl:attribute>
+            <xsl:value-of select="concat(./@db,':',./@id)"/> 
+          </xsl:element>
+
+          <xsl:if test="$type = 'true'">
+            <xsl:element name="field">
+              <xsl:attribute name="name">
+                <xsl:value-of select="concat($fid,'_s')"/>
+              </xsl:attribute>
+              <xsl:value-of select="concat(./@db,':',./@id,'(',@refType,')' )"/> 
+            </xsl:element>
+          </xsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:for-each>
 
     <xsl:element name="field">
@@ -1339,12 +1392,32 @@
       <xsl:for-each select="$list">        
         <xsl:choose> 
           <xsl:when test="$type = 'true'">
-            <xsl:value-of select="concat( ./@db, ':&quot;', 
+
+            <xsl:choose>
+              <xsl:when test="./@dbAc = 'MI:0486'">
+                <xsl:value-of select="concat( 'uniprotkb', ':&quot;', 
+                                      ./@id, '&quot;(', @refType, ')' )"/>
+              </xsl:when>
+              <xsl:otherwise> 
+                <xsl:value-of select="concat( ./@db, ':&quot;', 
                                           ./@id, '&quot;(', @refType, ')' )"/>
-          </xsl:when> 
+              </xsl:otherwise>
+            </xsl:choose>
+
+          </xsl:when>
           <xsl:otherwise>
-            <xsl:value-of select="concat( ./@db, ':&quot;', 
-                                          ./@id, '&quot;' )"/>
+
+            <xsl:choose>
+              <xsl:when test="./@dbAc = 'MI:0486'">
+                <xsl:value-of select="concat( 'uniprotkb', ':&quot;', 
+                                              ./@id, '&quot;' )"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="concat( ./@db, ':&quot;',
+                                              ./@id, '&quot;' )"/>
+              </xsl:otherwise>
+            </xsl:choose> 
+
           </xsl:otherwise>
         </xsl:choose>
         <xsl:if test="not(position()=last())">
