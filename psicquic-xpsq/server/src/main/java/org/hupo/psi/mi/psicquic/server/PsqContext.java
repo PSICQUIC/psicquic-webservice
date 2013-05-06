@@ -143,7 +143,7 @@ public class PsqContext{
         Map viewConfig = (Map)
             ((Map) ((Map) stConfig.get("view")).get(viewType)).get("config");
 
-        if( viewConfig.get( "mdia-type" ) != null ){
+        if( viewConfig.get( "media-type" ) != null ){
             return (String) viewConfig.get( "media-type" );
         } else {
             return "text/plain";

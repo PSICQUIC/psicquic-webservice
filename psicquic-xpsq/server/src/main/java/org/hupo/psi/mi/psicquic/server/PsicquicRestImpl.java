@@ -72,7 +72,7 @@ public class PsicquicRestImpl implements PsicquicRest{
         JSONObject jRequest = null;
 
         String query = "";
-        String format = "psi-mi/tab25";
+        String format = "tab25";
         String firstResult = "0";
         String maxResults = "500";
         
@@ -145,8 +145,12 @@ public class PsicquicRestImpl implements PsicquicRest{
         mitab += psqServer.toString( qrs, true, true );                
         mitab += psqServer.getFooter( format );
         
-        log.debug( "getByQuery: miab(0,32)=" + mitab.substring(0,32) );
-        
+        if( mitab!= null && mitab.length() > 32 ){
+            log.debug( "getByQuery: miab(0,32)=" + mitab.substring(0,32) );
+        } else {
+            log.debug( "getByQuery: miab=" + mitab );
+        }
+
         // Meta info 
         //----------
         /*

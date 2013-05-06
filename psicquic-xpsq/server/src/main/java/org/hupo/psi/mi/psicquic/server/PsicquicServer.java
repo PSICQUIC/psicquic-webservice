@@ -138,19 +138,31 @@ public class PsicquicServer {
         
         String rstr = "";
 
+        Log log = LogFactory.getLog( this.getClass() );
+        
         // Records
         //--------
 
         if( records ){
             rstr += psqContext.getActiveStore().toString( rset );
         }
+
+        log.info( "toString:  format=" + rset.getFormat()
+                  + " mediatype=" 
+                  + psqContext.getMediaType( rset.getFormat() ) );
+        String mediaType = 
+            psqContext.getMediaType( rset.getFormat() ).toLowerCase();
         
         // Meta info
         //----------
 
         if( meta && rset.getMeta() != null ){
             if( rset.getMeta().get( "groups") != null ){
-                
+
+                if( mediaType.indexOf("xml") >= 0 ){
+                    rstr += "\n<!--\n";
+                }
+
                 Map<String,List<ValueCount>> groups = 
                     (Map<String,List<ValueCount>>) rset.getMeta()
                     .get( "groups");
@@ -174,6 +186,12 @@ public class PsicquicServer {
                             + count + "\n";
                     }
                 }
+
+                if( mediaType.indexOf("xml") >= 0 ){
+                    rstr += "-->\n";
+                }
+                
+
             }
         }
         return rstr;
