@@ -114,6 +114,7 @@ public class IndexBuilder{
         
         log.info( " initilizing IndexBuilder: threads=" + builderTCount );
         log.info( " initilizing IndexBuilder: server host=" + serverHost );
+        log.info( " initilizing IndexBuilder: pax=" + this.pax );
 
         if( serverHost != null ){
             this.host = serverHost;
@@ -290,6 +291,8 @@ public class IndexBuilder{
             for( Iterator<File> fqi = fq.iterator(); fqi.hasNext(); ){
                 log.info( "IndexBuilder:  file: " + fqi.next() );
             }
+
+            log.info( "IndexBuilder: pax=" + pax );
 
             IndexThread it = new IndexThread( psqContext, host, solrconTCount,
                                               root, fq, format, 

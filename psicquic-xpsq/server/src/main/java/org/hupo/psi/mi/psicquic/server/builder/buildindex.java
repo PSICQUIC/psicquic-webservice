@@ -128,8 +128,8 @@ public class buildindex{
 
         Option xsltOption = OptionBuilder.withLongOpt( "xslt-param" )
             .hasArgs(2).withValueSeparator()
-            .withArgName( "paramater=value" )
-            .withDescription( "XSLT transformer paramater=value pairs" )
+            .withArgName( "name=value" )
+            .withDescription( "XSLT transformer parameter name=value pairs" )
             .create( "xp" );
         
         options.addOption( xsltOption );
@@ -249,6 +249,7 @@ public class buildindex{
                         
                         String k = (String) i.next();
                         System.out.println(" XP: " + k + "=" + paxMap.get(k) );  
+                        pax.put( k, (String) paxMap.get(k) );                        
                     }
                 }catch( Exception paxx ){
                     System.out.println( "pxslt fornat error" );
@@ -267,6 +268,7 @@ public class buildindex{
         IndexBuilder ibuilder = null;
         
         System.out.println( "Host: " + host );
+        System.out.println( "PAX: " + pax );
         
         if( context != null ){
             System.out.println( "Context: " + context );
