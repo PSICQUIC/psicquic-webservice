@@ -84,14 +84,14 @@ public abstract class RdbRecordStore implements RecordStore{
 
     public String toString( org.hupo.psi.mi.psicquic.server.ResultSet rset ){
         
-        String rstr = "";
+        StringBuffer rstr = new StringBuffer();
 
         for( Iterator i = rset.getResultList().iterator(); i.hasNext(); ){
             String record = (String) i.next();
-            rstr += record;
+            rstr.append( record );
         }
 
-        return rstr;
+        return rstr.toString();
     }
     
     //--------------------------------------------------------------------------

@@ -34,6 +34,8 @@ public class XsltTransformer implements PsqTransformer{
     private Transformer psqtr = null;
     private Transformer viewtr = null;
 
+    private Map<String,String> xsltParam = null;
+    
     private String fileName = "";
     private String out = "VIEW";
 
@@ -50,7 +52,7 @@ public class XsltTransformer implements PsqTransformer{
     public XsltTransformer( Map config, Map<String,String> param ){
         
         log = LogFactory.getLog( this.getClass() );
-
+        
         try {
 	    DocumentBuilderFactory
 		dbf = DocumentBuilderFactory.newInstance();
@@ -116,8 +118,10 @@ public class XsltTransformer implements PsqTransformer{
                 // Note: Parameters passed as constructor argument
                 //       take precedence over defaults
 
+                xsltParam = new HashMap<String,String>();
+                
                 if( param != null ){
-
+                    
                     for( Iterator<Map.Entry<String,String>>
                              ip = param.entrySet().iterator();
                          ip.hasNext(); ){
@@ -127,8 +131,10 @@ public class XsltTransformer implements PsqTransformer{
                         log.info( "param(cmdln): name=" + ee.getKey()
                                   + " value=" + ee.getValue() );
 
-                        psqtr.setParameter( ee.getKey(),
-                                            ee.getValue() );                    
+                        //psqtr.setParameter( ee.getKey(),
+                        //                    ee.getValue() );
+
+                        xsltParam.put( ee.getKey(), ee.getValue() );
                     }
                 }
 
@@ -150,8 +156,11 @@ public class XsltTransformer implements PsqTransformer{
                             log.info( "param(default): name=" + eed.getKey() 
                                       + " value=" + eed.getValue() ); 
                             
-                            psqtr.setParameter( eed.getKey(), 
-                                                eed.getValue() );
+                            //psqtr.setParameter( eed.getKey(), 
+                            //                    eed.getValue() );
+                            
+                            xsltParam.put( eed.getKey(),
+                                           eed.getValue() );
                         }
                     }
                 } 
@@ -175,15 +184,38 @@ public class XsltTransformer implements PsqTransformer{
 	    
             StreamSource ssNative = new StreamSource( is );
             DOMResult domResult = new DOMResult();
-	    
+            
+
+            // reset transformer
+            //------------------
+
+            domPos = -1;
+            nextPos = -1;
+            
+            psqtr.reset();
+            psqtr.clearParameters();
+            
+            for( Iterator<Map.Entry<String,String>>
+                     ip = xsltParam.entrySet().iterator();
+                 ip.hasNext(); ){
+                
+                Map.Entry<String,String> ee = ip.next();
+
+                log.info( "param(reset): name=" + ee.getKey()
+                          + " value=" + ee.getValue() );
+
+                psqtr.setParameter( ee.getKey(),
+                                    ee.getValue() );
+            }
+            
+            
             //transform into DOM
             //------------------
             
-            //psqtr.clearParameters();
-    
             psqtr.setParameter( "file", fileName );
             psqtr.transform( ssNative, domResult );
             
+
 	    Node domNode = domResult.getNode();
 	    log.debug( " XsltTransformer: node=" + domNode );
             

@@ -156,11 +156,13 @@ public class PsicquicServer {
         // Meta info
         //----------
 
+        StringBuffer metaBuffer = new StringBuffer();
+
         if( meta && rset.getMeta() != null ){
             if( rset.getMeta().get( "groups") != null ){
 
                 if( mediaType.indexOf("xml") >= 0 ){
-                    rstr += "\n<!--\n";
+                    metaBuffer.append( "\n<!--\n" );
                 }
 
                 Map<String,List<ValueCount>> groups = 
@@ -180,21 +182,21 @@ public class PsicquicServer {
                         ValueCount vc = ivc.next();
                         String value = vc.getValue();
                         long count = vc.getCount();
-                        rstr += "#" + "miqlx:groupby" + "\t"
-                            + field + "\t"
-                            + value + "\t"
-                            + count + "\n";
+                        metaBuffer.append( "#miqlx:groupby\t"
+                                           + field + "\t"
+                                           + value + "\t"
+                                           + count + "\n");
                     }
                 }
 
                 if( mediaType.indexOf("xml") >= 0 ){
-                    rstr += "-->\n";
+                    metaBuffer.append( "-->\n");
                 }
                 
-
             }
         }
-        return rstr;
+        log.info( "toString: DONE");
+        return rstr + metaBuffer.toString();
     }
     
     //--------------------------------------------------------------------------

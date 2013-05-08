@@ -71,10 +71,10 @@ public class buildindex{
 
         options.addOption( ctxOption );
         
-        Option dirOption = OptionBuilder.withLongOpt( "dir" )
-            .withArgName( "dir" ).hasArg()
+        Option dirOption = OptionBuilder.withLongOpt( "directory" )
+            .withArgName( "directory" ).hasArg()
             .withDescription( "input file directory" )
-            .create( "d" );
+            .create( "dir" );
         
         options.addOption( dirOption );
 
@@ -105,7 +105,7 @@ public class buildindex{
 
         options.addOption( hostOption );
                
-        Option recOption = OptionBuilder.withLongOpt( "r" )
+        Option recOption = OptionBuilder
             .withDescription( "recursively process directory" )
             .create( "r" );
         
@@ -129,7 +129,7 @@ public class buildindex{
         Option xsltOption = OptionBuilder.withLongOpt( "xslt-param" )
             .hasArgs(2).withValueSeparator()
             .withArgName( "name=value" )
-            .withDescription( "XSLT transformer parameter name=value pairs" )
+            .withDescription( "XSLT transformers: parameter name=value pairs" )
             .create( "xp" );
         
         options.addOption( xsltOption );
@@ -155,7 +155,7 @@ public class buildindex{
         Option delOption = OptionBuilder.withLongOpt( "delete" )
             .withArgName( "xpsq-log-file" ).hasArg()
             .withDescription( "delete records listed in the log file" )
-            .create( "d" );
+            .create( "del" );
 
         options.addOption( delOption );
         
@@ -169,7 +169,7 @@ public class buildindex{
             if( cmd.hasOption("help") ){
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.setWidth( 127 );
-                formatter.printHelp( "BuildXpsqIndex", options );
+                formatter.printHelp( "xpsq-index-builder [options]", options );
                 System.exit(0);
             }
             
@@ -193,8 +193,8 @@ public class buildindex{
                 ifile = cmd.getOptionValue( "f" );
             }
 
-            if( cmd.hasOption( "d" ) ){
-                delfile = cmd.getOptionValue( "d" );
+            if( cmd.hasOption( "del" ) ){
+                delfile = cmd.getOptionValue( "del" );
             }
             
             if( cmd.hasOption( "h" ) ){
