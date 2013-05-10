@@ -185,8 +185,8 @@ public class buildindex{
                 ifrmt = cmd.getOptionValue( "fmt" );
             }
 
-            if( cmd.hasOption( "d" ) ){
-                idir = cmd.getOptionValue( "d" );
+            if( cmd.hasOption( "dir" ) ){
+                idir = cmd.getOptionValue( "dir" );
             }
             
             if( cmd.hasOption( "f" ) ){

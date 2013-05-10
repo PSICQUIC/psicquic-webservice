@@ -148,6 +148,8 @@ public class Mitab2MifTransformer implements PsqTransformer{
         
         if( ! biIterator.hasNext() ) return null;
 
+        log.info( " next: biterator->bi" );
+
         BinaryInteraction bi = biIterator.next();
         List<BinaryInteraction> bis = new  ArrayList<BinaryInteraction>();
         bis.add(bi);
@@ -163,6 +165,11 @@ public class Mitab2MifTransformer implements PsqTransformer{
         if( out.equals( "VIEW" ) && eset != null ){
             
             if( viewtr == null ){
+
+
+                log.info( " next: viewtr=" + viewtr );
+
+
                 try{
                     TransformerFactory tf
                         = TransformerFactory.newInstance();
@@ -174,21 +181,34 @@ public class Mitab2MifTransformer implements PsqTransformer{
                 }
             }
 
-            log.info( " next: viewtr=" + viewtr );
+            log.debug( " next: viewtr=" + viewtr );
             
             if( viewtr != null ){
                 try{
+                    log.info( " next: eset->str" );
+
+
                     StringWriter buffer = new StringWriter();                   
+
+                    log.info( " next: eset->str" );
+
                     pxw.write( eset, buffer);
+
+                    log.info( " next: posstr" );                    
+
                     String str = buffer.toString();
-                    
+
+                    log.info( " next: posstr" );                    
+
                     int fIndex = str.indexOf( "<entry>" );
                     int lIndex = str.lastIndexOf( "</entry>" );
+
+                    log.info( " next: substr" );
 
                     str = str.substring( fIndex, lIndex + 8 );
                     log.debug( " next: str=" + str.substring(0,64) );
                     resMap.put( "view", str );
-                    
+                    log.info( " next: eset->str DONE" );
                 } catch ( Exception ex ){
                     ex.printStackTrace();
                 }

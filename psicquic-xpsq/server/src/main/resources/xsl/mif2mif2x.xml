@@ -230,7 +230,7 @@
 
   <xsl:template match="*" mode="interactor-ref">
     <xsl:variable name="id" select="text()"/>
-    <xsl:apply-templates select="//mif:interactor[@id=$id]" mode="copy"/>
+    <xsl:apply-templates select="//mif:interactor[@id=$id][position() = 1]" mode="copy"/>
   </xsl:template> 
 
   <xsl:template match="*" mode="experiment-ref">

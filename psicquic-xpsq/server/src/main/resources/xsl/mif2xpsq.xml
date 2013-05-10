@@ -8,9 +8,13 @@
 <!--       file - file name                                                  -->
 <!--       expand - expansion flag (true/false)                              -->
 <!--                                                                         -->
-<!--  NOTE: bait/prey (ie spoke) expansion only; retains interaction type.   -->
+<!--  NOTES: bait/prey (ie spoke) expansion only; retains interaction type.  -->
 <!--        The latter should be modified to promote 'association'           -->
-<!--        to 'physical association'.                                       -->                                   
+<!--        to 'physical association'                                        -->
+<!--                                                                         -->
+<!--                                                                         -->
+<!--  2013/05/10:  should properly handle multi-evidence interactions        -->
+<!--                                                                         -->                          
 <!-- ======================================================================= -->
 <!--                                                                         -->
 <!-- record/doc PID: <$file>:<entry#>:<int id>:<evid id>[:prt id:pt id]      -->
@@ -44,34 +48,55 @@
  <xsl:template match="*" mode="interaction">
    <xsl:param name="ep"/>
    <xsl:param name="src"/>
-   <xsl:variable name="fepi" select="concat($file,':',$ep,':',@id)"/>
+   <xsl:variable name="iid" select="@id"/> 
    <xsl:variable name="int"  select="."/>
 
    <xsl:if test="$debug = 'true'">
-    <xsl:text>count=</xsl:text>
+    <xsl:text>participant count=</xsl:text>
      <xsl:value-of select="count(mif:participantList/mif:participant)"/>
     <xsl:text>&#xA;</xsl:text> 
+    <xsl:text>experimentDescription count=</xsl:text>
+     <xsl:value-of select="count(mif:experimentList/mif:experimentDescription)"/>
+    <xsl:text>&#xA;</xsl:text> 
    </xsl:if>
+ 
+   <xsl:for-each select='mif:experimentList/mif:experimentDescription'>
 
-     <xsl:if test="count(mif:experimentList/mif:experimentDescription) = 1">
-       <xsl:call-template name="evidence">
-         <xsl:with-param name="src" select='$src'/>
-         <xsl:with-param name="fep" select='$fepi'/>
-         <xsl:with-param name="evd" 
-              select='mif:experimentList/mif:experimentDescription[1]'/>
-         <xsl:with-param name="int" select='$int'/>  
-       </xsl:call-template>
+     <xsl:variable name="fepi" select="concat($file,':',$ep,':',$iid,':',position())"/> 
+
+     <xsl:if test="$debug = 'true'">
+       <xsl:text>fepi=</xsl:text>
+       <xsl:value-of select="$fepi"/>
+       <xsl:text>&#xA;</xsl:text>
      </xsl:if>
      
-     <xsl:if test="count(mif:experimentList/mif:experimentRef) = 1">
-       <xsl:call-template name="evidence-ref">
-         <xsl:with-param name="src" select='$src'/>
-         <xsl:with-param name="fep" select='$fepi'/>
-         <xsl:with-param name="evrl" 
-              select="mif:experimentList/mif:experimentRef"/>
-         <xsl:with-param name="int" select='$int'/>
-       </xsl:call-template>
+     <xsl:call-template name="evidence">
+       <xsl:with-param name="src" select='$src'/>
+       <xsl:with-param name="fep" select='$fepi'/>
+       <xsl:with-param name="evd" select='.'/>
+       <xsl:with-param name="int" select='$int'/>  
+     </xsl:call-template>
+
+   </xsl:for-each>
+
+   <xsl:for-each select='mif:experimentList/mif:experimentRef'>
+
+     <xsl:variable name="fepi" select="concat($file,':',$ep,':',$iid,':',position())"/> 
+     
+     <xsl:if test="$debug = 'true'">
+       <xsl:text>fepi=</xsl:text>
+       <xsl:value-of select="$fepi"/>
+       <xsl:text>&#xA;</xsl:text>
      </xsl:if>
+
+     <xsl:call-template name="evidence-ref">
+       <xsl:with-param name="src"  select='$src'/>
+       <xsl:with-param name="fep"  select='$fepi'/>
+       <xsl:with-param name="evrl" select="."/>
+       <xsl:with-param name="int"  select='$int'/>
+     </xsl:call-template>
+
+   </xsl:for-each>
 
  </xsl:template>
 

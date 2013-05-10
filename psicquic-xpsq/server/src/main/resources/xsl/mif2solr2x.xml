@@ -231,10 +231,13 @@
              <xsl:variable name="iid"
                   select="$a/mif:interactorRef/text()"/>                 
              <xsl:variable name="i9r"
-                  select="//mif:interactorList/mif:interactor[@id=$iid]"/>
+                  select="//mif:interactorList/mif:interactor[@id=$iid][position() = 1]"/>
 
              <xsl:if test="$debug = 'true'">
               <xsl:text>&#xA;interactor-ref A&#xA;</xsl:text>
+              <xsl:text>  count=</xsl:text> 
+              <xsl:value-of select="count(//mif:interactorList/mif:interactor[@id=$iid][position() = 1])"/>
+              <xsl:text>&#xA;</xsl:text>
              </xsl:if>
 
              <xsl:call-template name="interactor">
@@ -263,7 +266,7 @@
              <xsl:variable name="iid"
                   select="$b/mif:interactorRef/text()"/>                 
              <xsl:variable name="i9r"
-                  select="//mif:interactorList/mif:interactor[@id=$iid]"/>
+                  select="//mif:interactorList/mif:interactor[@id=$iid][position() = 1]"/>
              
              <xsl:call-template name="interactor">
                <xsl:with-param name="i9r" select="$i9r"/>
@@ -526,7 +529,7 @@
      <xsl:with-param name="type" select="$type" />
      <xsl:with-param name="list" 
           select="$p11t/mif:interactor/mif:xref/mif:primaryRef
-                  | $ilst[@id=$iid]/mif:xref/mif:primaryRef"/>
+                  | $ilst[@id=$iid][position() = 1]/mif:xref/mif:primaryRef"/>
      <xsl:with-param name="fid" select="$fid"/>
    </xsl:call-template>
 
@@ -550,7 +553,7 @@
           select="$p11t/mif:interactor/mif:xref/
                         mif:secondaryRef[@refType='secondary-ac' or
                                          @refType='identity']
-                  | $ilst[@id=$iid]/mif:xref/
+                  | $ilst[@id=$iid][position() = 1]/mif:xref/
                               mif:secondaryRef[@refType='secondary-ac' or
                                                @refType='identity']"/>
      <xsl:with-param name="fid" select="$fid"/>
