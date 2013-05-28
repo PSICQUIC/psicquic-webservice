@@ -216,14 +216,19 @@ public class UserQuery extends BaseController {
         String query = getSearchQuery();
         String miqlFilterQuery = config.getMiqlFilterQuery();
 
-        if (miqlFilterQuery == null || miqlFilterQuery.length() == 0) {
-            return query;
-        } else {
+        if (miqlFilterQuery != null && miqlFilterQuery.length() != 0) {
             if (query.equals("*") || query.length() == 0) {
                 query = miqlFilterQuery;
             } else {
-                query = "(" + query + ") AND (" + miqlFilterQuery + ")";
+                // miqlFilterQuery have the parenthesis in the .properties file and we
+                // only wrap with them if it is necessary
+                query = surroundByBracesIfNecessary(query) + " AND " + miqlFilterQuery ;
             }
+        }
+        //We add a whitespace to handle the bug with the dismax parser in the services that are using it
+        if(query!=null && !query.isEmpty()){
+            query = query.replaceAll("\\(", "( ");
+            query = query.replaceAll("\\)", " )");
         }
 
         return query;

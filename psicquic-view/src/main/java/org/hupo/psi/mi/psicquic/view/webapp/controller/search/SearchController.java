@@ -317,7 +317,7 @@ public class SearchController extends BaseController {
 		}
 
 		if (log.isDebugEnabled()) {
-			log.debug("\tquery:  " + searchQuery);
+			log.debug("Query:  " + searchQuery);
 		}
 
 		// A minimum checking of the query
@@ -454,6 +454,9 @@ public class SearchController extends BaseController {
 
 		final String filteredSearchQuery = userQuery.getFilteredSearchQuery();
 
+        if (log.isDebugEnabled()) {
+            log.debug("Filtered query:  " + filteredSearchQuery);
+        }
 		// count the results
 		PsicquicThreadConfig threadConfig = (PsicquicThreadConfig) applicationContext.getBean("psicquicThreadConfig");
 
