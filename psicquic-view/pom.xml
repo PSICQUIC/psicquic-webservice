@@ -7,7 +7,7 @@
     <groupId>org.hupo.psi.mi.psicquic</groupId>
     <artifactId>psicquic-view</artifactId>
     <packaging>war</packaging>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.2</version>
 
     <name>PSICQUIC :: View</name>
 
@@ -46,7 +46,6 @@
     </properties>
 
     <build>
-        <!--<finalName>${service.name}-view-${project.version}-${buildNumber}</finalName>-->
         <finalName>${service.name}-view-${project.version}</finalName>
 
         <resources>
