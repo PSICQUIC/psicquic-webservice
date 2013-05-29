@@ -2,7 +2,6 @@ package org.hupo.psi.mi.psicquic.view.webapp.io.file;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hupo.psi.mi.psicquic.view.webapp.controller.config.DetectProxy;
 import org.hupo.psi.mi.psicquic.view.webapp.io.DownloadUtils;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.Proxy;
 
 /**
  * Created with IntelliJ IDEA.
@@ -119,14 +117,14 @@ public class FileDownloadServlet extends HttpServlet {
 			// file to the above OutputStream the usual way.
 
 			PsicquicSimpleClient psicquicSimpleClient;
-			DetectProxy detectProxy = new DetectProxy();
-			Proxy proxy = detectProxy.getProxy();
-
-			if(proxy != null){
-				psicquicSimpleClient = new PsicquicSimpleClient(serviceURL, proxy);
-			} else {
+//			DetectProxy detectProxy = new DetectProxy();
+//			Proxy proxy = detectProxy.getProxy();
+//
+//			if(proxy != null){
+//				psicquicSimpleClient = new PsicquicSimpleClient(serviceURL, proxy);
+//			} else {
 				psicquicSimpleClient = new PsicquicSimpleClient(serviceURL);
-			}
+//			}
 
 			psicquicSimpleClient.setReadTimeout(40000);
 			InputStream inputStream = psicquicSimpleClient.getByQuery(query, format);

@@ -7,7 +7,6 @@ import org.apache.myfaces.trinidad.event.ReturnEvent;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.hupo.psi.mi.psicquic.view.webapp.application.PsicquicThreadConfig;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.BaseController;
-import org.hupo.psi.mi.psicquic.view.webapp.controller.config.DetectProxy;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.config.PsicquicViewConfig;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.search.SearchController;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
@@ -19,7 +18,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import java.io.*;
-import java.net.Proxy;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -241,14 +239,14 @@ public class DownloadAllController extends BaseController {
 	private static File downloadTempFile(ServiceType service, String query, String name, String format, File tempDir) {
 
 		PsicquicSimpleClient psicquicSimpleClient;
-		DetectProxy detectProxy = new DetectProxy();
-		Proxy proxy = detectProxy.getProxy();
-
-		if (proxy != null) {
-			psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl(), proxy);
-		} else {
+//		DetectProxy detectProxy = new DetectProxy();
+//		Proxy proxy = detectProxy.getProxy();
+//
+//		if (proxy != null) {
+//			psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl(), proxy);
+//		} else {
 			psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
-		}
+//		}
 		psicquicSimpleClient.setReadTimeout(40000);
 
 		BufferedWriter out = null;

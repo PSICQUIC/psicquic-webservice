@@ -368,12 +368,12 @@ public class SearchController extends BaseController {
 		try {
 			if (!clusterSelected) {
 				PsicquicSimpleClient psicquicSimpleClient;
-				Proxy proxy = config.getProxy();
-				if(proxy != null){
-					psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl(), proxy);
-				} else {
+//				Proxy proxy = config.getProxy();
+//				if(proxy != null){
+//					psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl(), proxy);
+//				} else {
 					psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
-				}
+//				}
 
 				results = new PsicquicResultDataModel(
 						psicquicSimpleClient,
@@ -527,12 +527,12 @@ public class SearchController extends BaseController {
 
 		PsicquicSimpleClient psicquicSimpleClient;
 
-		Proxy proxy = config.getProxy();
-		if(proxy != null){
-			psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl(), proxy);
-		} else {
+//		Proxy proxy = config.getProxy();
+//		if(proxy != null){
+//			psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl(), proxy);
+//		} else {
 			psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
-		}
+//		}
 		psicquicSimpleClient.setReadTimeout(5000);
 
 
@@ -560,12 +560,12 @@ public class SearchController extends BaseController {
 			if (service.isActive()) {
 
 				PsicquicSimpleClient psicquicSimpleClient;
-				Proxy proxy = config.getProxy();
-				if(proxy != null){
-					psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl(), proxy);
-				} else {
+//				Proxy proxy = config.getProxy();
+//				if(proxy != null){
+//					psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl(), proxy);
+//				} else {
 					psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
-				}
+//				}
 				psicquicSimpleClient.setReadTimeout(5000);
 
 				try {

@@ -22,7 +22,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.faces.event.ActionEvent;
 import java.io.*;
-import java.net.Proxy;
 import java.util.Date;
 import java.util.Properties;
 
@@ -53,7 +52,7 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 	private String registryURL;
 	private int serviceRows;
 	private int clusteringSizeLimit;
-	private Proxy proxy;
+//	private Proxy proxy;
 	private String downloadAllLocation;
 	private String colourSchema;
 
@@ -77,8 +76,8 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
 //		loadConfigFromFile(null);
 
-		DetectProxy detectProxy = new DetectProxy();
-		proxy = detectProxy.getProxy();
+//		DetectProxy detectProxy = new DetectProxy();
+//		proxy = detectProxy.getProxy();
 	}
 
 	public void loadConfigFromFile(ActionEvent evt) throws IOException {
@@ -265,10 +264,10 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 		this.registryURL = registryURL;
 	}
 
-	public Proxy getProxy() {
-		return proxy;
-	}
-
+//	public Proxy getProxy() {
+//		return proxy;
+//	}
+//
 
 	private String buildDefaultDir() {
 		String defaultLocation = TEMP_DIR;
