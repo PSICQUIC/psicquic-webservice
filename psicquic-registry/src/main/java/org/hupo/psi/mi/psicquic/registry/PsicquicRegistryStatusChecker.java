@@ -114,46 +114,52 @@ public class PsicquicRegistryStatusChecker {
 			final URL countURL = new URL(serviceStatus.getRestUrl() + "query/*?format=count");
 
 			final HttpURLConnection urlConnection = (HttpURLConnection) versionUrl.openConnection();
-			int code = urlConnection.getResponseCode();
+            urlConnection.setConnectTimeout(10000);
+            urlConnection.setReadTimeout(10000);
 
-			urlConnection.connect();
+            try{
+                urlConnection.connect();
 
-			if (HttpURLConnection.HTTP_OK == code) {
+                int code = urlConnection.getResponseCode();
 
-				serviceStatus.setActive(true);
+                if (HttpURLConnection.HTTP_OK == code) {
 
-				final String version;
-				final String strCount;
+                    serviceStatus.setActive(true);
 
-				InputStream contentStream = null;
-				InputStream countStream = null;
+                    final String version;
+                    final String strCount;
 
-				try {
+                    InputStream contentStream = null;
+                    InputStream countStream = null;
 
-					//TODO Add a double check to know if the service is active
-					// or not add a catch block for the exceptions
+                    try {
 
-					contentStream = (InputStream) urlConnection.getContent();
-					version = IOUtils.toString(contentStream);
-					serviceStatus.setVersion(version);
+                        //TODO Add a double check to know if the service is active
+                        // or not add a catch block for the exceptions
 
-					countStream = countURL.openStream();
-					strCount = IOUtils.toString(countStream);
-					serviceStatus.setCount(Long.valueOf(strCount));
+                        contentStream = (InputStream) urlConnection.getContent();
+                        version = IOUtils.toString(contentStream);
+                        serviceStatus.setVersion(version);
 
-				} finally {
-					if(contentStream!=null){
-						contentStream.close();
-					}
-					if(countStream!=null){
-						countStream.close();
-					}
-				}
-			} else {
-				serviceStatus.setActive(false);
-			}
+                        countStream = countURL.openStream();
+                        strCount = IOUtils.toString(countStream);
+                        serviceStatus.setCount(Long.valueOf(strCount));
 
-            urlConnection.disconnect();
+                    } finally {
+                        if(contentStream!=null){
+                            contentStream.close();
+                        }
+                        if(countStream!=null){
+                            countStream.close();
+                        }
+                    }
+                } else {
+                    serviceStatus.setActive(false);
+                }
+            }
+            finally{
+                urlConnection.disconnect();
+            }
 
 		} catch (Throwable e) {
 			serviceStatus.setActive(false);
