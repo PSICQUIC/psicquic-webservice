@@ -235,6 +235,20 @@ public class UserQuery extends BaseController {
 
     }
 
+    public boolean isIncludeNegativeQuery() {
+
+        String query = getSearchQuery();
+        return (!query.isEmpty() && (query.contains("negative:true")
+                || query.contains("negative:(true OR false)")
+                || query.contains("negative:(false OR true)")));
+    }
+
+    public boolean isOnlyNegativeQuery() {
+
+        String query = getSearchQuery();
+        return (!query.isEmpty() && (query.contains("negative:true")));
+    }
+
     public void setSearchQuery(String searchQuery) {
         this.searchQuery = searchQuery;
     }

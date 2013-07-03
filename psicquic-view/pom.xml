@@ -33,7 +33,7 @@
         <appRoot>/psicquic</appRoot>
 
         <!-- configurable -->
-        <config.file>file:imex-view.config.properties</config.file>
+        <config.file>file:psicquic-view.config.properties</config.file>
 
         <!-- Stores cache in local directory unless overriden at build time using -Dclustering.storage.directory=... -->
         <clustering.storage.directory>cluster-cache</clustering.storage.directory>
@@ -42,6 +42,7 @@
         <download.all.storage.directory>download-cache</download.all.storage.directory>
 
         <spring.version>3.1.2.RELEASE</spring.version>
+        <spring.batch.version>2.1.8.RELEASE</spring.batch.version>
         <spring.security.version>3.1.2.RELEASE</spring.security.version>
     </properties>
 
@@ -82,24 +83,6 @@
                     </connectors>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <contextPath>${appRoot}/${jetty.context}</contextPath>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>maven-buildnumber-plugin</artifactId>
-                <version>0.9.4</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
                 </configuration>
             </plugin>
 
@@ -388,6 +371,31 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
             <version>${spring.security.version}</version>
+        </dependency>
+
+        <!--Batch-->
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-core</artifactId>
+            <version>${spring.batch.version}</version>
+        </dependency>
+
+        <!-- Tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-firefox-driver</artifactId>
+            <version>2.31.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-server</artifactId>
+            <version>2.31.0</version>
         </dependency>
 
     </dependencies>

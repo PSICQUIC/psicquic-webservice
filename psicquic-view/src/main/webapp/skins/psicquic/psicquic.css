@@ -1,31 +1,31 @@
 af|body {
-    background-color:#FFFFFF;
-    color:#000000;
-    font-family:helvetica,"trebuchet MS",arial,sans-serif;
-    font-size:9pt;
-    padding:0pt;
-    width:100%;
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: helvetica, "trebuchet MS", arial, sans-serif;
+    font-size: 9pt;
+    padding: 0pt;
+    width: 100%;
 }
 
 .AFDefaultFont:alias {
-    font-family:helvetica,"trebuchet MS",arial,sans-serif;
-    font-weight:normal;
-    font-size:9pt;
+    font-family: helvetica, "trebuchet MS", arial, sans-serif;
+    font-weight: normal;
+    font-size: 9pt;
 }
 
 .AFLinkForeground:alias {
-    color:#006666;
-    text-decoration:underline;
+    color: #006666;
+    text-decoration: underline;
 }
 
 .AFActiveLinkForeground:alias {
-    color:#E33E3E;
-    text-decoration:none;
+    color: #E33E3E;
+    text-decoration: none;
 }
 
 .AFVisitedLinkForeground:alias {
-    color:#006666;
-    text-decoration:underline;
+    color: #006666;
+    text-decoration: underline;
 }
 
 .AFDisabledLinkForeground:alias {
@@ -34,14 +34,13 @@ af|body {
 }
 
 a.OraLink:hover {
-    color:#E33E3E;
+    color: #E33E3E;
     text-decoration: none;
 }
 
 .OraLink:hover::SideMenu {
-    text-decoration:underline;
+    text-decoration: underline;
 }
-
 
 /** icons **/
 /***********/
@@ -65,7 +64,7 @@ a.OraLink:hover {
 /***********/
 
 a.OraLink img {
-    border:0;
+    border: 0;
 }
 
 /*********************************/
@@ -74,16 +73,14 @@ a.OraLink img {
 
 /** panelHeader **/
 /** ----------- **/
-af|panelHeader
-{
+af|panelHeader {
     padding: 4px 4px 4px 6px;
     background-color: #DDDDDD;
     border: 1px solid #999999;
     vertical-align: middle;
 }
 
-af|panelHeader::level-one
-{
+af|panelHeader::level-one {
     font-size: 11pt;
     color: #006666;
     padding: 4px;
@@ -94,30 +91,28 @@ af|panelHeader::level-one
 }
 
 af|panelHeader::level-two,
-af|panelTabbed::body af|panelHeader::level-one
-{
-    background:#FFFFFF none repeat scroll 0%;
-    border-color:-moz-use-text-color -moz-use-text-color #D9DADC;
-    border-style:none none solid;
-    border-width:0px 0px 1px;
-    color:#1F1F1F;
-    font-size:10pt;
-    font-weight:bold;
-    margin:25px 0px 5px;
-    padding:0pt;
+af|panelTabbed::body af|panelHeader::level-one {
+    background: #FFFFFF none repeat scroll 0%;
+    border-color: -moz-use-text-color -moz-use-text-color #D9DADC;
+    border-style: none none solid;
+    border-width: 0px 0px 1px;
+    color: #1F1F1F;
+    font-size: 10pt;
+    font-weight: bold;
+    margin: 25px 0px 5px;
+    padding: 0pt;
 }
 
 /** panelForLayout **/
 /** -------------- **/
 
 af|panelFormLayout::content-cell {
-    white-space:normal;
+    white-space: normal;
 }
 
 af|panelFormLayout::label-cell {
-    font-weight:bold;
+    font-weight: bold;
 }
-
 
 /** panelBox    **/
 /** ----------- **/
@@ -131,9 +126,9 @@ af|panelBox::light af|panelBox::body {
 
 af|panelBox::light af|panelBox::header,
 af|panelBox::light af|panelBox::body,
-af|panelBox::light af|panelBox::content{
+af|panelBox::light af|panelBox::content {
     font-size: 8pt;
-    position:relative;
+    position: relative;
 }
 
 af|panelBox::light af|panelBox::header {
@@ -167,9 +162,9 @@ af|panelBox::dark af|panelBox::top,
 af|panelBox::dark af|panelBox::bottom,
 af|panelBox::dark af|panelBox::start,
 af|panelBox::dark af|panelBox::end {
-    background:#EEF5F5 none repeat scroll 0%;
+    background: #EEF5F5 none repeat scroll 0%;
     border-color: #BFBFBF;
-    letter-spacing:0;
+    letter-spacing: 0;
 }
 
 af|panelBox::dark af|panelBox::top {
@@ -194,30 +189,30 @@ af|panelBox::dark af|panelBox::end {
 
 af|panelBox::dark af|panelBox::top-start,
 af|panelBox::dark af|panelBox::top-end:rtl {
-  background-image: url(images/rounded_TL.gif);
-  width:6px;
-  height:6px
+    background-image: url(images/rounded_TL.gif);
+    width: 6px;
+    height: 6px
 }
 
 af|panelBox::dark af|panelBox::top-end,
 af|panelBox::dark af|panelBox::top-start:rtl {
-  background-image: url(images/rounded_TR.gif);
-  width:6px;
-  height:6px
+    background-image: url(images/rounded_TR.gif);
+    width: 6px;
+    height: 6px
 }
 
 af|panelBox::dark af|panelBox::bottom-start,
 af|panelBox::dark af|panelBox::bottom-end:rtl {
-  background-image: url(images/rounded_BL.gif);
-  width:6px;
-  height:6px
+    background-image: url(images/rounded_BL.gif);
+    width: 6px;
+    height: 6px
 }
 
 af|panelBox::dark af|panelBox::bottom-end,
 af|panelBox::dark af|panelBox::bottom-start:rtl {
-  background-image: url(images/rounded_BR.gif);
-  width:6px;
-  height:6px
+    background-image: url(images/rounded_BR.gif);
+    width: 6px;
+    height: 6px
 }
 
 af|panelBox::dark af|panelBox::header {
@@ -231,8 +226,8 @@ af|panelBox::dark af|panelBox::header {
     text-align: left;
 }
 
-af|panelBox::header img{
-    vertical-align:baseline;
+af|panelBox::header img {
+    vertical-align: baseline;
 }
 
 af|panelBox::dark af|panelBox::body {
@@ -241,18 +236,18 @@ af|panelBox::dark af|panelBox::body {
 }
 
 af|panelBox::dark af|panelBox::content {
-    display:block;
+    display: block;
     padding: 2px;
 }
 
 /** transparent - dotted **/
 af|panelBox::transparent af|panelBox::header,
 af|panelBox::transparent af|panelBox::body,
-af|panelBox::transparent af|panelBox::content{
-    color:#000000;
-    font-family:"Courier New",Courier,mono;
-    font-size:8pt;
-    font-weight:normal;
+af|panelBox::transparent af|panelBox::content {
+    color: #000000;
+    font-family: "Courier New", Courier, mono;
+    font-size: 8pt;
+    font-weight: normal;
 }
 
 af|panelBox::transparent af|panelBox::body {
@@ -260,15 +255,13 @@ af|panelBox::transparent af|panelBox::body {
     padding: 6px;
 }
 
-
-
 /** panelSidebar   **/
 /** ----------- **/
 
 af|panelSideBar::body {
     background: white;
     vertical-align: top;
-    height:100%;
+    height: 100%;
     padding: 6px;
 }
 
@@ -276,7 +269,7 @@ af|panelSideBar::body {
 /************************/
 
 af|panelPage::copyright {
-   padding: 6px 6px 0 0;
+    padding: 6px 6px 0 0;
 }
 
 af|panelPage::about {
@@ -291,76 +284,74 @@ af|panelPage::about {
 
 p|OraContentFooterRule {
     background-color: #DEDEDE;
-    border:0;
-    height:1px;
+    border: 0;
+    height: 1px;
 }
-
 
 /** panelLabelAndMessage **/
 /**************************/
 
 af|panelLabelAndMessage::label {
-    vertical-align:top;
+    vertical-align: top;
 }
 
 /** panelTabbed **/
 /*****************/
 
 af|panelTabbed::tab-selected {
-    background:white url(http://www.ebi.ac.uk/inc/images/head_bot_blue3b.gif) repeat-x scroll right top;
-    border-color:#000000 -moz-use-text-color;
-    border-style:solid solid none;
-    border-width:1px 1px 0px;
-    font-size:13px;
+    background: white url(http://www.ebi.ac.uk/inc/images/head_bot_blue3b.gif) repeat-x scroll right top;
+    border-color: #000000 -moz-use-text-color;
+    border-style: solid solid none;
+    border-width: 1px 1px 0px;
+    font-size: 13px;
 }
 
 af|panelTabbed::tab-selected a span {
-    text-decoration:none;
+    text-decoration: none;
 }
 
 af|panelTabbed::tab {
-    background:#EDF6F5 url(http://www.ebi.ac.uk/inc/images/head_bot_blue3b.gif) repeat-x scroll right top;
-    border:1px solid #999999;
-    cursor:pointer;
-    font-size:12px;
-    height:30px;
-    text-decoration:none;
+    background: #EDF6F5 url(http://www.ebi.ac.uk/inc/images/head_bot_blue3b.gif) repeat-x scroll right top;
+    border: 1px solid #999999;
+    cursor: pointer;
+    font-size: 12px;
+    height: 30px;
+    text-decoration: none;
 }
 
 af|panelTabbed::cell-end {
-    border-bottom-color:#999999;
-    border-bottom-style:solid;
-    border-bottom-width:1px;
-    border-left-color:-moz-use-text-color;
-    border-left-style:none;
-    border-left-width:0px;
-    border-right-color:-moz-use-text-color;
-    border-right-style:none;
-    border-right-width:0px;
-    border-top-color:-moz-use-text-color;
-    border-top-style:none;
-    border-top-width:0px;
-    height:30px;
+    border-bottom-color: #999999;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-left-color: -moz-use-text-color;
+    border-left-style: none;
+    border-left-width: 0px;
+    border-right-color: -moz-use-text-color;
+    border-right-style: none;
+    border-right-width: 0px;
+    border-top-color: -moz-use-text-color;
+    border-top-style: none;
+    border-top-width: 0px;
+    height: 30px;
 }
 
 af|panelTabbed::separator {
-    border-bottom:1px solid #999999;
-    padding-left:3px;
+    border-bottom: 1px solid #999999;
+    padding-left: 3px;
 }
 
 af|panelTabbed::separator-before-selected,
-af|panelTabbed::separator-after-selected{
-    border-bottom:1px solid #999999;
-    padding-left:3px;
+af|panelTabbed::separator-after-selected {
+    border-bottom: 1px solid #999999;
+    padding-left: 3px;
 }
-
 
 /* panelLabelAndMessage */
 /************************/
 
 af|panelLabelAndMessage::help-facet {
     color: #96c688;
-    background-color:red;
+    background-color: red;
     font-size: 6pt;
 }
 
@@ -404,7 +395,7 @@ af|column::cell-text a.OraLink {
 }
 
 af|column::cell-text {
-    background-color:#EDF6F5;
+    background-color: #EDF6F5;
 }
 
 af|column::cell-text-band {
@@ -413,7 +404,7 @@ af|column::cell-text-band {
 
 af|column::cell-text,
 af|column::cell-text-band {
-    vertical-align:top;
+    vertical-align: top;
 }
 
 af|column::cell-text-band a.OraLink {
@@ -423,15 +414,15 @@ af|column::cell-text-band a.OraLink {
 /**for compound and target columns **/
 
 .cellTextCompound {
-   background-color:#f6faf4;
+    background-color: #f6faf4;
 }
 
 .cellTextTarget {
-  background-color: #eef5f5;
+    background-color: #eef5f5;
 }
 
 .cellTextInteraction {
-  background-color: #eeeeee;
+    background-color: #eeeeee;
 }
 
 .cellTextNegativeInteraction {
@@ -443,59 +434,59 @@ af|column::cell-text-band a.OraLink {
 
 af|breadCrumbs {
     color: #999999;
-    display:inline;
-    margin:0;
-    padding:0 0 0 2px;
+    display: inline;
+    margin: 0;
+    padding: 0 0 0 2px;
 }
 
 af|breadCrumbs::step {
     font-size: 8pt;
-    font-weight:normal;
+    font-weight: normal;
     color: #999999;
     text-decoration: none;
 }
+
 af|breadCrumbs::step:hover {
-    color:#E33E3E;
+    color: #E33E3E;
     text-decoration: underline;
 }
 
 af|breadCrumbs::selected-step {
     font-size: 8pt;
-    font-weight:bold;
+    font-weight: bold;
 }
 
 af|breadCrumbs::separator-icon {
     content: url(http://www.ebi.ac.uk/inc/images/bread_arrow2.gif);
 }
 
-
 /** navigationPane **/
 /********************/
 
 af|navigationPane::list-content {
-    font-family:helvetica,Arial,verdana,sans-serif;
-    font-size:9pt;
+    font-family: helvetica, Arial, verdana, sans-serif;
+    font-size: 9pt;
 }
 
 af|navigationPane::list-content a {
-    color:#006666;
+    color: #006666;
 }
 
 af|navigationPane::list-content a:hover {
-    color:#E33E3E;
+    color: #E33E3E;
     text-decoration: none;
 }
 
 af|panelSideBar::body    af|navigationPane::list-bullet {
     background-image: url(http://www.ebi.ac.uk/inc/images/leftmenu/level1_link.gif);
     background-position: 4px -2px;
-    background-repeat:no-repeat;
+    background-repeat: no-repeat;
 }
 
-af|panelSideBar::body   af|navigationPane::list-active-enabled af|navigationPane::list-bullet  {
+af|panelSideBar::body   af|navigationPane::list-active-enabled af|navigationPane::list-bullet {
     background-image: url(http://www.ebi.ac.uk/inc/images/leftmenu/level1_minus.gif);
     background-position: 4px -2px;
-    background-repeat:no-repeat;
+    background-repeat: no-repeat;
 }
 
 /** messages **/
@@ -507,9 +498,9 @@ af|messages::top,
 af|messages::bottom,
 af|messages::start,
 af|messages::end {
-    background:#EEF5F5 none repeat scroll 0%;
+    background: #EEF5F5 none repeat scroll 0%;
     border-color: #BFBFBF;
-    letter-spacing:0;
+    letter-spacing: 0;
 }
 
 af|messages::top {
@@ -534,30 +525,30 @@ af|messages::end {
 
 af|messages::top-start,
 af|messages::top-end:rtl {
-  background-image: url(images/rounded_TL.gif);
-  width:6px;
-  height:6px
+    background-image: url(images/rounded_TL.gif);
+    width: 6px;
+    height: 6px
 }
 
 af|messages::top-end,
 af|messages::top-start:rtl {
-  background-image: url(images/rounded_TR.gif);
-  width:6px;
-  height:6px
+    background-image: url(images/rounded_TR.gif);
+    width: 6px;
+    height: 6px
 }
 
 af|messages::bottom-start,
 af|messages::bottom-end:rtl {
-  background-image: url(images/rounded_BL.gif);
-  width:6px;
-  height:6px
+    background-image: url(images/rounded_BL.gif);
+    width: 6px;
+    height: 6px
 }
 
 af|messages::bottom-end,
 af|messages::bottom-start:rtl {
-  background-image: url(images/rounded_BR.gif);
-  width:6px;
-  height:6px
+    background-image: url(images/rounded_BR.gif);
+    width: 6px;
+    height: 6px
 }
 
 af|messages::header {
@@ -570,7 +561,7 @@ af|messages::header {
 }
 
 af|messages::body {
-    background:#EEF5F5 none repeat scroll 0%;
+    background: #EEF5F5 none repeat scroll 0%;
     color: #1F1F1F;
 }
 
@@ -583,10 +574,12 @@ af|messages::list-single {
 /*********************/
 
 af|statusIndicator::busy {
-    right: 0px; top: 0px;
+    right: 0px;
+    top: 0px;
     background-color: red;
     color: white;
-    margin: 5px; padding: 3px;
+    margin: 5px;
+    padding: 3px;
     z-index: 50;
 
     position: fixed;
@@ -596,15 +589,15 @@ af|statusIndicator::busy {
 /*************/
 
 af|inputText:disabled::content {
-    background-color:#dedede;
+    background-color: #dedede;
 }
 
 af|inputText:disabled::label {
-    color:#dedede;
+    color: #dedede;
 }
 
 af|inputText::label,
-af|inputText:disabled::label{
+af|inputText:disabled::label {
     vertical-align: top;
 }
 
@@ -614,34 +607,33 @@ af|commandButton {
     white-space: nowrap;
 }
 
-
 /* other */
 /*********/
 
 /*for autocomplete */
 .autocomplete-line {
     background-color: #eef5f5;
-    cursor:pointer;
+    cursor: pointer;
 }
 
-.autocomplete-selected-line{
+.autocomplete-selected-line {
     background-color: #bdd7d7;
-    cursor:pointer;
+    cursor: pointer;
 }
 
-.autocomplete-button, .autocomplete-button-action{
-    border:0px;
-    width:22px;
-    height:17px;
+.autocomplete-button, .autocomplete-button-action {
+    border: 0px;
+    width: 22px;
+    height: 17px;
     background-color: transparent;
-    background-image:url(/images/autocomplete-button.gif);
-    background-position:top center;
+    background-image: url(/images/autocomplete-button.gif);
+    background-position: top center;
     background-repeat: no-repeat;
-    cursor:pointer;
+    cursor: pointer;
 }
 
-.autocomplete-button-action{
-    background-image:url(/images/autocomplete-button-action.gif);
+.autocomplete-button-action {
+    background-image: url(/images/autocomplete-button-action.gif);
 }
 
 a.OraLinkDisabled {
@@ -656,3 +648,37 @@ a .resultLink-selected {
     font-weight: bold;
     background-color: yellow;
 }
+
+/*Styles the outer container of box around the shuttle*/
+/*af|selectManyShuttle::box-content{*/
+/*background-color: #006666;*/
+/*height: auto;*/
+/*overflow: visible;*/
+/*font-family:helvetica,"trebuchet MS",arial,sans-serif;*/
+/*font-weight:normal;*/
+/*font-size:9pt;*/
+/*}*/
+
+table td.OraShuttleHeader {
+    height: auto;
+    background-color: transparent;
+    color: #000000;
+    overflow: visible;
+    font-family: helvetica, "trebuchet MS", arial, sans-serif;
+    font-weight: bold;
+    font-size: 9pt;
+    margin: 0;
+    padding: 4px 0px 0px 4px;
+
+}
+
+af|panelPopup::container {
+    border-color: #bfbfbf;
+}
+
+af|panelPopup::content {
+    background: transparent url("http://www.ebi.ac.uk/inc/images/head_blue3b.gif") repeat-x scroll right top;
+    vertical-align: top;
+    padding: 5px;
+}
+

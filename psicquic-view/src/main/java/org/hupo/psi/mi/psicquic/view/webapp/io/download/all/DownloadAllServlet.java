@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psicquic.view.webapp.io.download;
+package org.hupo.psi.mi.psicquic.view.webapp.io.download.all;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

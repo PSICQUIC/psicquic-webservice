@@ -22,7 +22,7 @@ public abstract class DownloadUtils {
 	public abstract String writeHeaderInMitab(String format);
 
 	public String getDateTime() {
-		DateFormat df = new SimpleDateFormat("_ddMMyyyy_hhmm");
+		DateFormat df = new SimpleDateFormat("-ddMMyyyy_hhmm");
 		return df.format(new Date());
 	}
 

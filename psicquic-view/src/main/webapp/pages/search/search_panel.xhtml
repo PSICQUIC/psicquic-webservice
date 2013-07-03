@@ -30,20 +30,20 @@
                           columns="60" value="#{userQuery.searchQuery}"
                           rows="#{(fn:length(userQuery.searchQuery) / 60) + 1}"
                           onkeypress="return submitEnter('quickSearchBtn',event)"
-                          disabled="#{userQuery.showNewFieldPanel or searchBean.clusterSelected}"/>
+                          disabled="#{userQuery.showNewFieldPanel or clusteringBean.clusterSelected}"/>
             <tr:commandButton id="quickSearchBtn"
                               text="Search"
                               action="#{searchBean.doNewBinarySearch}"
-                              disabled="#{userQuery.showNewFieldPanel or searchBean.clusterSelected}"/>
+                              disabled="#{userQuery.showNewFieldPanel or clusteringBean.clusterSelected}"/>
             <tr:commandButton text="Reset All"
                               onclick="queryTxt = document.getElementById('queryTxt'); queryTxt.value = ''; queryTxt.focus()"
-                              disabled="#{userQuery.showNewFieldPanel or searchBean.clusterSelected}"
-                              action="#{searchBean.doNewBinarySearch}"/>
+                              disabled="#{userQuery.showNewFieldPanel or clusteringBean.clusterSelected}"
+                              action="#{searchBean.refresh}"/>
 
             <tr:commandLink id="addFieldBtn" text="Fields »"
                             inlineStyle="font-weight:bold"
                             actionListener="#{userQuery.doShowAddFieldPanel}"
-                            disabled="#{userQuery.showNewFieldPanel or searchBean.clusterSelected}"
+                            disabled="#{userQuery.showNewFieldPanel or clusteringBean.clusterSelected}"
                             partialSubmit="true"/>
 
         </tr:panelHorizontalLayout>

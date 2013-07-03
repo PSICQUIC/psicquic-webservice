@@ -3,9 +3,11 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:t="http://myfaces.apache.org/tomahawk"
                 xmlns:tr="http://myfaces.apache.org/trinidad"
                 xmlns:trh="http://myfaces.apache.org/trinidad/html"
                 xmlns:c="http://java.sun.com/jstl/core"
+                xmlns:psv="http://psicquic.mi.psi.hupo.org/view"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:ebi="http://ebi.ac.uk/faces/components"
                 xmlns:ebisf="http://www.ebi.ac.uk/faces/site">
@@ -15,7 +17,7 @@
 <tr:panelGroupLayout layout="vertical">
 
 <!-- To avoid expired sessions, poll every 15 mins -->
-<tr:poll interval="#{15*60*1000}"/>
+<tr:poll id="expiredSessions" interval="#{15*60*1000}"/>
 
 <tr:statusIndicator id="status">
     <f:facet name="busy">
@@ -28,112 +30,164 @@
     </f:facet>
 </tr:statusIndicator>
 
-<ui:include src="/pages/search/search_panel.xhtml"/>
-
 <tr:panelGroupLayout>
-    <tr:messages id="errorMsg"/>
+    <tr:messages id="globalErrorMsg"/>
 </tr:panelGroupLayout>
 
-<tr:panelGroupLayout rendered="#{not searchBean.clusterSelected}">
+<tr:panelGroupLayout rendered="#{not clusteringBean.clusterSelected}">
 
-<table style="width:100%; height: 250px">
-<!--<table>-->
-    <tr>
+<ui:include src="/pages/search/search_panel.xhtml"/>
+
+<table style="width:100%">
+    <tr style="width:100%">
+        <td style="vertical-align: top">
+            <tr:spacer height="16px"/>
+            Some clues to start:
+            <ul>
+                <li>Use the check boxes to include or exclude services from the search and cluster operations.
+                    <h:panelGroup>
+                        <tr:outputText
+                                value=" Select: "/>
+                        <tr:commandLink id="selectAllLink" text="All"
+                                        onclick="psicquic_selectAll(#{fn:length(servicesTable.services)})"
+                                />
+                        <tr:outputText value=", "/>
+                        <tr:commandLink id="selectNoneLink" text="None"
+                                        onclick="psicquic_selectNone(#{fn:length(servicesTable.services)})"/>
+                    </h:panelGroup>
+                </li>
+                <li>The numbers show the interactions retrieved in the last query.</li>
+                <li>Click on the links below to display the results for each selected service.</li>
+                <li>The cluster will be enabled with less than #{config.clusteringSizeLimit} interactions.</li>
+
+            </ul>
+        </td>
+        <td style="width: 16%;vertical-align: middle; text-align: left">
+            <tr:panelBox background="light" text="Status of the service">
+                <ui:include src="search/legend.xhtml"/>
+            </tr:panelBox>
+
+        </td>
+    </tr>
+</table>
+
+
+<table style="width:100%; height: 200px">
+    <!--<table>-->
+    <tr style="width:100%">
         <td style="vertical-align: top;">
             <!--Services-->
-            <tr:panelHorizontalLayout rendered="#{searchBean.totalResults == 0}">
 
+            <tr:panelHorizontalLayout rendered="#{searchBean.totalResults == 0}">
+                <!--TODO-->
                 <h:outputText style="color: red; font-weight: bold"
-                              value="No results were found for this query#{searchBean.selectedServicesCount lt fn:length(searchBean.activeServiceNames)? ' for the selected services' : ''}."
-                              rendered="#{searchBean.selectedServicesCount != 0}"/>
+                              value="No results were found for this query#{servicesTable.selectedServicesCount lt servicesTable.activeServicesCount ? ' for the selected services' : ''}."
+                              rendered="#{servicesTable.selectedServicesCount != 0}"/>
                 <h:outputText style="color: red; font-weight: bold"
                               value="Select at least one service from the list below!"
-                              rendered="#{searchBean.selectedServicesCount == 0}"/>
+                              rendered="#{servicesTable.selectedServicesCount == 0}"/>
             </tr:panelHorizontalLayout>
 
             <tr:spacer height="16px"/>
-            <tr:panelHorizontalLayout rendered="#{searchBean.totalResults gt 0}">
-                <f:facet name="separator">
-                    <tr:spacer width="10px"/>
-                </f:facet>
-                <tr:outputText
-                        value="Click on the links below to display the results for each selected service "/>
-            </tr:panelHorizontalLayout>
+            <tr:panelGroupLayout layout="vertical">
+
+                <tr:group>
+                    <tr:outputText id="resultsMsg" value="The query "/>
+                    <tr:outputText value="[#{userQuery.searchQuery}]" inlineStyle="font-weight: bold;"/>
+                    <tr:outputText value=" contains a total of "/>
+                    <tr:outputText id="totalResults" value="#{searchBean.totalResults}"
+                                   inlineStyle="font-weight: bold;">
+                        <tr:convertNumber pattern="#,###"/>
+                    </tr:outputText>
+                    <tr:outputText value=" binary interactions."/>
+                </tr:group>
+                <tr:spacer height="10px"/>
+            </tr:panelGroupLayout>
 
             <tr:spacer height="4px"/>
-
-            <h:panelGroup>
-                <tr:outputText
-                        value="Use the check boxes to include or excludes services from the search and cluster operations - Select: "/>
-                <tr:commandLink id="selectAllLink" text="All"
-                                onclick="psicquic_selectAll(#{fn:length(searchBean.allServiceNames)})"/>
-                <tr:outputText value=", "/>
-                <tr:commandLink id="selectNoneLink" text="None"
-                                onclick="psicquic_selectNone(#{fn:length(searchBean.allServiceNames)})"/>
-            </h:panelGroup>
-
-            <tr:spacer height="16px"/>
-
-            <tr:panelFormLayout id="servicesTable" rows="#{config.serviceRows}" maxColumns="3">
-                <c:forEach var="name" items="${searchBean.allServiceNames}" varStatus="status">
+            <tr:panelFormLayout id="servicesTable" rows="#{config.serviceRows}" maxColumns="4">
+                <c:forEach var="service" items="${servicesTable.services}" varStatus="status">
                     <tr:panelHorizontalLayout>
 
-                        <h:graphicImage id="serviceStatusOn_${status.index}"
-                                        alt="Status: ONLINE" title="Status: ONLINE"
-                                        url="/images/greenLight.png"
-                                        rendered="#{searchBean.servicesMap[name].active and not (searchBean.resultCountMap[name] lt '0')}"/>
+                        <tr:panelPopup id="servicePopUp_${status.index}" triggerType="hover" position="relative"
+                                       icon="/images/magnify.png">
+                            <tr:outputText value="Service content: "/>
+                            <tr:panelList listStyle="list-style-type:square">
+                                <c:forEach var="tag" items="${service.tags}" >
+                                    <h:outputText value="#{psv:cvTermToName(tag)}"/>
+                                </c:forEach>
+
+                            </tr:panelList>
+                        </tr:panelPopup>
+
                         <h:graphicImage id="serviceStatusOff_${status.index}"
                                         alt="Status: OFFLINE" title="Status: OFFLINE"
                                         url="/images/greyLight.png"
-                                        rendered="#{not searchBean.servicesMap[name].active}"/>
+                                        width="15px"
+                                        rendered="#{not service.active}"/>
+                        <h:graphicImage id="serviceStatusOn_${status.index}"
+                                        alt="Status: ONLINE" title="Status: ONLINE"
+                                        url="/images/greenLight.png"
+                                        width="15px"
+                                        rendered="#{service.active and not (service.hits lt 0)}"/>
                         <h:graphicImage id="serviceStatusWarn_${status.index}"
                                         alt="Status: WARNING"
                                         title="Status: WARNING - This service can not respond to the query"
                                         url="/images/orangeLight.png"
-                                        rendered="#{searchBean.servicesMap[name].active and (searchBean.resultCountMap[name] == '-1')}"/>
+                                        width="15px"
+                                        rendered="#{service.active and (service.hits == -1)}"/>
                         <h:graphicImage id="serviceStatusErr_${status.index}"
                                         alt="Status: ERROR"
                                         title="Status: ERROR - This service has an unexpected error"
                                         url="/images/redLight.png"
-                                        rendered="#{searchBean.servicesMap[name].active and (searchBean.resultCountMap[name] == '-2')}"/>
+                                        width="15px"
+                                        rendered="#{service.active and (service.hits == -2)}"/>
 
 
                         <h:selectBooleanCheckbox id="serviceSel_${status.index}"
-                                                 value="#{searchBean.serviceSelectionMap[name]}"
-                                                 disabled="#{not searchBean.servicesMap[name].active}"/>
+                                                 value="#{service.checked}"
+                                                 disabled="#{not service.active}"
+                                                 immediate="true"
+                                                 onclick="submit()"/>
 
-                        <h:commandLink id="serviceLink_${status.index}" value="#{name}"
-                                       styleClass="#{searchBean.selectedServiceName == name ? 'resultLink-selected' : ''}"
-                                       onclick="_gaq.push(['_trackEvent', 'Database', '#{name}', '#{searchBean.userQuery.searchQuery}']);"
-                                       disabled="#{not searchBean.servicesMap[name].active
-                                                           or searchBean.resultCountMap[name] == 0
-                                                           or searchBean.resultCountMap[name] == -2
-                                                           or not searchBean.serviceSelectionMap[name]}"
-                                       style="#{searchBean.selectedServiceName == name ? 'font-weight:bold; text-decoration: none' : ''}">
-                            <f:setPropertyActionListener value="#{name}"
-                                                         target="#{searchBean.selectedServiceName}"/>
-                            <ui:param name="service" value="#{searchBean.servicesMap[name]}"/>
+                        <h:commandLink id="serviceLink_${status.index}" value="#{service.name}"
+                                       styleClass="#{searchBean.selectedService == service ? 'resultLink-selected' : ''}"
+                                       onclick="_gaq.push(['_trackEvent', 'Database', '#{service.name}', '#{searchBean.userQuery.searchQuery}']);"
+                                       disabled="#{not service.active
+                                   or service.hits == 0
+                                   or service.hits == -1
+                                   or service.hits == -2
+                                   or not service.checked}"
+                                       style="#{searchBean.selectedService == service ? 'font-weight:bold; text-decoration: none; color: red' : ''}"
+                                action="#{servicesTable.loadTableResults}" >
+
+                            <f:setPropertyActionListener value="#{service}"
+                                                         target="#{servicesTable.selectedService}"/>
+
                         </h:commandLink>
                         <tr:spacer width="2px"/>
 
                         <h:outputLink id="serviceURL_${status.index}"
-                                      value="#{searchBean.servicesMap[name].organizationUrl}" target="_blank">
+                                      value="#{service.organizationUrl}" target="_blank">
                             <tr:image source="/images/external_link.gif"
                                       shortDesc="Organization URL"/>
                         </h:outputLink>
                         <tr:spacer width="2px"/>
+                        <!--separator-->
+                        <tr:outputText value="-" rendered="#{service.checked and service.active}"/>
+                        <tr:spacer width="2px"/>
+                        <tr:outputText id="resultCounts_${status.index}" value="#{service.hits}"
+                                       rendered="#{service.hits ge 0 and service.checked and service.active}"
+                                       inlineStyle="font-weight: bold;color: grey;">
+                            <tr:convertNumber pattern="#,###"/>
+                        </tr:outputText>
+                        <tr:outputText value="Timed out"
+                                       rendered="#{service.hits eq -1}"/>
+                        <tr:outputText value="Error"
+                                       rendered="#{service.hits eq -2}"/>
 
-                        <h:panelGroup id="resultsCounts" rendered="#{searchBean.resultCountMap[name] != null}">
-                            &#160;-&#160;
-                            <tr:outputText value="#{searchBean.resultCountMap[name]}" styleClass="resultCount"
-                                           rendered="#{searchBean.resultCountMap[name] ge '0'}">
-                                <tr:convertNumber pattern="#,###"/>
-                            </tr:outputText>
-                            <tr:outputText value="Timed out" styleClass="resultCount"
-                                           rendered="#{searchBean.resultCountMap[name] == '-1'}"/>
-                            <tr:outputText value="Error" styleClass="resultCount"
-                                           rendered="#{searchBean.resultCountMap[name] == '-2'}"/>
-                        </h:panelGroup>
+                        <tr:spacer width="5px"/>
+
                         <tr:spacer width="20px"/>
 
                     </tr:panelHorizontalLayout>
@@ -143,50 +197,65 @@
             <tr:spacer height="16px"/>
 
         </td>
-        <!--<td style="vertical-align: middle; text-align: center">-->
-        <!--&lt;!&ndash;Download All Button&ndash;&gt;-->
-        <!--<tr:commandButton id="downloadAllButtonMain"-->
-        <!--shortDesc="This button will is enable with less than 300.000 interactions"-->
-        <!--action="dialog:download.all"-->
-        <!--useWindow="true"-->
-        <!--windowWidth="600" windowHeight="500"-->
-        <!--partialSubmit="true"-->
-        <!--returnListener="#{downloadAllController.forward}"-->
-        <!--disabled="#{searchBean.totalResults lt 0 or searchBean.totalResults gt 300000 or searchBean.clusterSelected}"-->
-        <!--text="Download All"/>-->
-        <!--</td>-->
         <td style="vertical-align: middle; text-align: center">
-            <!--Cluster Button-->
-            <tr:panelFormLayout rows="2" maxColumns="1">
-                <tr:panelGroupLayout inlineStyle="height: 100%; width: 100% ;">
-                    <tr:commandButton id="clusterButton"
-                                      action="#{clusteringBean.start}"
-                                      rendered="#{searchBean.totalResults > 0}"
-                                      disabled="#{searchBean.totalResults > config.clusteringSizeLimit}"
-                                      text="Cluster this query"/>   <!-- partialSubmit="true" -->
 
-                    <tr:commandLink action="dialog:help.clustering" partialSubmit="true"
-                                    rendered="#{searchBean.totalResults > 0}"
-                                    windowWidth="600" windowHeight="500" immediate="true"
-                                    useWindow="true">
-                        <tr:image source="/images/question.png" inlineStyle="vertical-align:middle;"
-                                  shortDesc="#{clusteringBean.clusterButtonHelpMessage}"/>
-                    </tr:commandLink>
+            <!--Results selected-->
+            <tr:panelFormLayout rows="4" maxColumns="1">
+                <tr:group id="totalPanel">
+                    <tr:outputText value="Interactions selected "/>
+                    <tr:outputText id="totalResultsTable" value="#{servicesTable.selectedResults}">
+                        <tr:convertNumber pattern="#,###"/>
+                    </tr:outputText>
+                </tr:group>
+
+                <!--Cluster Button-->
+                <tr:panelGroupLayout layout="vertical" inlineStyle="text-align: center;">
+
+                    <tr:group>
+                        <tr:commandLink action="dialog:help.clustering" partialSubmit="true"
+                                        windowWidth="600" windowHeight="500" immediate="true"
+                                        useWindow="true">
+                            <tr:image source="/images/question.png" inlineStyle="vertical-align:text-bottom;"
+                                      shortDesc="#{clusteringBean.clusterButtonHelpMessage}"/>
+                        </tr:commandLink>
+                        <tr:commandButton id="clusterButton"
+                                          shortDesc="This button will be enabled with less than #{config.clusteringSizeLimit} interactions"
+                                          action="#{clusteringBean.start}"
+                                          disabled="#{servicesTable.selectedResults > config.clusteringSizeLimit or servicesTable.selectedResults le 0}"
+                                          text="Cluster this query">
+
+                        </tr:commandButton>
+                    </tr:group>
+
+                    <!--&lt;!&ndash;Download All Button&ndash;&gt;-->
+                    <!--<tr:commandButton id="downloadAllButtonMain"-->
+                                    <!--shortDesc="This button will be enabled with less than 3000000 interactions"-->
+                                    <!--action="dialog:download.all"-->
+                                    <!--useWindow="true"-->
+                                    <!--windowWidth="600" windowHeight="500"-->
+                                    <!--partialSubmit="true"-->
+                                    <!--returnListener="#{downloadAllController.forward}"-->
+                                    <!--disabled="#{servicesTable.selectedResults le 0 or servicesTable.selectedResults gt 3000000 or clusteringBean.clusterSelected}"-->
+                                    <!--text="Download All"/>-->
+
                 </tr:panelGroupLayout>
+
+                <tr:spacer height="16px"/>
+
                 <tr:panelGroupLayout>
                     <!-- Refresh the clustering status message every 5 secs when there are jobs to be displayed -->
                     <tr:panelGroupLayout partialTriggers="clusterButton">
-                    <tr:panelGroupLayout rendered="#{not searchBean.clusterSelected and userJobs.jobCount gt 0}">
-                        <tr:poll id="clusteringStatus" interval="5000"/>
-                    </tr:panelGroupLayout>
+                        <tr:panelGroupLayout rendered="#{not clusteringBean.clusterSelected and userClusteringJobs.jobCount gt 0}">
+                            <tr:poll id="clusteringStatus" interval="5000"/>
+                        </tr:panelGroupLayout>
                     </tr:panelGroupLayout>
 
                     <tr:panelBox id="jobListBox" text=" Status of your cluster queries" background="light"
                                  icon="/images/li.gif"
-                                 rendered="#{userJobs.jobCount gt 0 and not searchBean.clusterSelected}"
-                                 partialTriggers="clusteringStatus"> <!-- ,clusterButton -->
+                                 rendered="#{userClusteringJobs.jobCount gt 0 and not clusteringBean.clusterSelected}"
+                                 partialTriggers="clusteringStatus">
 
-                        <tr:table value="#{userJobs.refreshedJobs}" var="job">
+                        <tr:table value="#{userClusteringJobs.refreshedJobs}" var="job">
                             <tr:column>
                                 <tr:outputText value="#{job.miql}" inlineStyle="text-overflow: ellipsis"/>
                             </tr:column>
@@ -196,72 +265,98 @@
                             <tr:column inlineStyle="white-space: nowrap;">
                                 <tr:panelHorizontalLayout>
                                     <!-- View Job -->
-                                    <tr:commandLink action="#{clusteringBean.viewJob}" text="view"
+                                    <tr:commandLink id="viewClick" action="#{clusteringBean.viewJob}" text="view"
                                                     rendered="#{job.status == 'COMPLETED'}">
                                         <f:param name="jobId" value="#{job.jobId}"/>
                                     </tr:commandLink>
                                     <tr:outputText value="view" rendered="#{job.status != 'COMPLETED'}"/>
                                     <tr:outputText value="&#160;|&#160;"/>
                                     <!-- Remove Job -->
-                                    <tr:commandLink action="#{clusteringBean.removeJob}" text="remove">
-                                        <f:param name="jobId" value="#{job.jobId}"/>
+                                    <tr:commandLink id="removeClick" action="#{clusteringBean.removeJob}" text="remove">
+                                        <f:param name="jobId" value="#{job.jobId}" />
                                     </tr:commandLink>
                                 </tr:panelHorizontalLayout>
                             </tr:column>
                         </tr:table>
                     </tr:panelBox>
                 </tr:panelGroupLayout>
-            </tr:panelFormLayout>
-        </td>
-        <td style="text-align: right; vertical-align: top">
-            <!--Legend and Total-->
-            <table style="width:100%; height: 100%">
-                    <tr>
-                    <td align="right" style="vertical-align: top;">
-                        <h:panelGroup>
-                            <tr:outputText value="Total: "/>
-                            <tr:outputText value="#{searchBean.totalResults}"
-                                           inlineStyle="font-weight: bold;" >
-                                <tr:convertNumber pattern="#,###"/>
-                            </tr:outputText>
-                            <tr:outputText
-                                    value="#{searchBean.clusterSelected ? ' clustered' : ' '} binary interactions"/>
-                        </h:panelGroup>
-                    </td>
-                </tr>
 
-                <tr>
-                    <td align="right" style="vertical-align: bottom;">
-                        <tr:panelBox background="light" text="Status of the service">
-                            <ui:include src="search/legend.xhtml"/>
-                        </tr:panelBox>
-                    </td>
-                </tr>
-            </table>
+                <tr:panelGroupLayout>
+                    <!-- Refresh the clustering status message every 5 secs when there are jobs to be displayed -->
+                    <!--<tr:panelGroupLayout partialTriggers="downloadAllButtonMain">-->
+                        <!--<tr:panelGroupLayout>-->
+                            <!--<tr:poll id="downloadAllStatus" interval="5000"/>-->
+                        <!--</tr:panelGroupLayout>-->
+                    <!--</tr:panelGroupLayout>-->
+
+                    <!--<tr:panelBox id="downloadListBox" text=" Status of your download queries" background="light"-->
+                                 <!--icon="/images/li.gif"-->
+                                 <!--partialTriggers="downloadAllStatus">-->
+                        <!--<tr:outputText id="downloadText" value="#{downloadAllController.dir}" rendered="#{downloadAllController.absolutePath == null}"/>-->
+                        <!--<tr:commandLink id="downloadTextClick" action="#{downloadAllController.clickDownload}" text="#{downloadAllController.dir}"-->
+                                        <!--rendered="#{downloadAllController.absolutePath != null}">-->
+                        <!--</tr:commandLink>-->
+                      <!--</tr:panelBox>-->
+                </tr:panelGroupLayout>
+
+            </tr:panelFormLayout>
         </td>
     </tr>
 </table>
 
 </tr:panelGroupLayout>
 
-<tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0 and searchBean.clusterSelected}">
-    <table>
-        <tr>
-            <td align="middle"><tr:image source="/images/back_arrow.gif"/></td>
-            <td align="middle"><tr:commandLink action="#{searchBean.unselectClusterJob}"
-                                               text="Back to all services"/>
-            </td>
-        </tr>
-    </table>
+<tr:panelGroupLayout rendered="#{searchBean.totalResults gt 0 and clusteringBean.clusterSelected}">
+
+    <tr:separator/>
+    <tr:panelGroupLayout id="clusterTable">
+        <tr:outputText value="#{searchBean.selectedService.name}" inlineStyle="font-weight:bold; font-size:16px"/>
+        <tr:separator/>
+        <tr:panelGroupLayout layout="horizontal" id="clusterTable_${searchBean.totalResults}"
+                             partialTriggers="clusterTable">
+            <tr:group>
+                <tr:outputText id="clusterResultsMsg" value="The query "/>
+                <tr:outputText value="[#{userQuery.searchQuery}]" inlineStyle="font-weight: bold;"/>
+                <tr:outputText value=" contains a total of "/>
+                <tr:outputText id="clusterTotalResults" value="#{searchBean.totalResults}"
+                               inlineStyle="font-weight: bold;">
+                    <tr:convertNumber pattern="#,###"/>
+                </tr:outputText>
+                <tr:outputText
+                        value="#{clusteringBean.clusterSelected ? ' clustered' : ' '} binary interactions."/>
+            </tr:group>
+
+            <tr:group>
+                <table>
+                    <tr>
+                        <td style="vertical-align: middle"><tr:image source="/images/back_arrow.gif"/></td>
+                        <td style="vertical-align: middle"><tr:commandLink action="#{clusteringBean.unselectClusterJob}"
+                                                           text="Back to all services"/>
+                        </td>
+                    </tr>
+                </table>
+            </tr:group>
+
+        </tr:panelGroupLayout>
+        <tr:separator/>
+
+        <ui:include src="tabs/tabs.xhtml">
+            <ui:param name="service" value="${searchBean.selectedService}"/>
+        </ui:include>
+
+    </tr:panelGroupLayout>
+
 </tr:panelGroupLayout>
 
 
-<c:forEach var="name" items="${searchBean.allServiceNames}" varStatus="forStatus">
-    <tr:panelGroupLayout id="serviceTable_${forStatus.index}" rendered="#{searchBean.selectedServiceName == name}"
+<c:forEach var="service" items="${servicesTable.services}" varStatus="forStatus">
+    <tr:panelGroupLayout id="serviceTable_${forStatus.index}" rendered="#{searchBean.selectedService == service}"
                          partialTriggers="servicesTable">
-        <tr:outputText value="#{searchBean.selectedServiceName}" inlineStyle="font-weight:bold; font-size:16px"/>
+        <tr:outputText value="#{service.name}" inlineStyle="font-weight:bold; font-size:16px"/>
         <tr:separator/>
-        <ui:include src="tabs/tabs.xhtml"/>
+        <ui:include src="tabs/tabs.xhtml">
+            <ui:param name="service" value="${searchBean.selectedService}"/>
+        </ui:include>
     </tr:panelGroupLayout>
 </c:forEach>
 

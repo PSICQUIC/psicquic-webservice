@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psicquic.view.webapp.io.file;
+package org.hupo.psi.mi.psicquic.view.webapp.io.download.file;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -138,7 +138,7 @@ public class FileDownloadServlet extends HttpServlet {
 
 			if(header!=null){
 				out.write(header);
-				out.newLine();   // Write system dependent end of line.
+                out.flush();
 			}
 
 			//TODO Read by chunks instead of lines

@@ -1,4 +1,4 @@
-package org.hupo.psi.mi.psicquic.view.webapp.io.download;
+package org.hupo.psi.mi.psicquic.view.webapp.io.download.all;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -7,10 +7,13 @@ import org.apache.myfaces.trinidad.event.ReturnEvent;
 import org.hupo.psi.mi.psicquic.registry.ServiceType;
 import org.hupo.psi.mi.psicquic.view.webapp.application.PsicquicThreadConfig;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.BaseController;
+import org.hupo.psi.mi.psicquic.view.webapp.controller.QueryHits;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.config.PsicquicViewConfig;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.search.SearchController;
+import org.hupo.psi.mi.psicquic.view.webapp.controller.services.ServicesController;
 import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import javax.faces.application.FacesMessage;
@@ -30,6 +33,7 @@ import java.util.concurrent.*;
  */
 
 @Controller("downloadAllController")
+@Scope("session")
 public class DownloadAllController extends BaseController {
 
 	private List<SelectItem> selectAllItems;
@@ -38,9 +42,11 @@ public class DownloadAllController extends BaseController {
 
 	private static final Log log = LogFactory.getLog(DownloadAllController.class);
 
-
 	@Autowired
 	private SearchController searchController;
+
+    @Autowired
+    private ServicesController servicesController;
 
 	@Autowired
 	private PsicquicViewConfig config;
@@ -142,66 +148,43 @@ public class DownloadAllController extends BaseController {
 
 	private String getResultsPerService(String query, String format) {
 
-		PsicquicThreadConfig threadConfig = (PsicquicThreadConfig) searchController.getApplicationContext().getBean("psicquicThreadConfig");
+        PsicquicThreadConfig threadConfig = (PsicquicThreadConfig) searchController.getApplicationContext().getBean("psicquicThreadConfig");
 
-		ExecutorService executorService = threadConfig.getExecutorService();
+        ExecutorService executorService = threadConfig.getExecutorService();
 
-		final File tempDir = new File(config.getDownloadAllLocationFile(), Long.toString(System.nanoTime()));
-		Boolean result = tempDir.mkdir();
+        final File tempDir = new File(config.getDownloadAllLocationFile(), Long.toString(System.nanoTime()));
+        Boolean result = tempDir.mkdir();
 
-		if(!result){
-			return null;
+        if(!result){
+            return null;
+        }
+
+        if (runningTasks == null) {
+            runningTasks = new ArrayList<Future>();
+        } else {
+            runningTasks.clear();
+        }
+
+        List<QueryHits> services = servicesController.getServices();
+
+        final Map<String, File> resultFileMap = new HashMap<String, File>();
+
+
+        for (final QueryHits service : services) {
+            if (service.isActive() && service.isChecked() && service.getHits() > 0) {
+                final String finalQuery = query;
+                final String finalFormat = format;
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        File tempFile = downloadTempFile(service, finalQuery, service.getName(), finalFormat, tempDir);
+                        if (tempFile != null) {
+                            resultFileMap.put(service.getName(), tempFile);
+                        }
+                    }
+                };
+                runningTasks.add(executorService.submit(runnable));
+            }
 		}
-
-		if (runningTasks == null) {
-			runningTasks = new ArrayList<Future>();
-		} else {
-			runningTasks.clear();
-		}
-
-		List<ServiceType> services = searchController.getServices();
-		Map<String, Boolean> serviceSelectionMap = searchController.getServiceSelectionMap();
-
-
-		final Map<String, File> resultFileMap = new HashMap<String, File>();
-
-
-		for (final ServiceType service : services) {
-			if (service.isActive() && serviceSelectionMap.get(service.getName()) != null && serviceSelectionMap.get(service.getName())) {
-				final String finalQuery = query;
-				final String finalFormat = format;
-				Runnable runnable = new Runnable() {
-					public void run() {
-						File tempFile = downloadTempFile(service, finalQuery, service.getName(), finalFormat, tempDir);
-						if (tempFile != null) {
-							resultFileMap.put(service.getName(), tempFile);
-						}
-					}
-				};
-				runningTasks.add(executorService.submit(runnable));
-			}
-		}
-
-//		ExecutorService pool = Executors.newFixedThreadPool(29);
-//
-//		List<ServiceType> services = searchController.getServices();
-//		Map<String, Boolean> serviceSelectionMap = searchController.getServiceSelectionMap();
-//		final Map<String, File> resultFileMap = new HashMap<String, File>();
-//
-//
-//		for (final ServiceType service : services) {
-//			if (service.isActive() && serviceSelectionMap.get(service.getName()) != null && serviceSelectionMap.get(service.getName())) {
-//				final String finalQuery = query;
-//				final String finalFormat = format;
-//				Runnable runnable = new Runnable() {
-//					public void run() {
-//						File tempFile = downloadTempFile(service, finalQuery, service.getName(),finalFormat);
-//						resultFileMap.put(service.getName(), tempFile);
-//					}
-//				};
-//				runningTasks.add(pool.submit(runnable));
-//			}
-//		}
 		checkAndResumePsicquicTasks();
 
 		return tempDir.getAbsolutePath();

@@ -21,16 +21,12 @@
 
 <tr:panelHeader text="Cytoscape Graph">
 
-<trh:script source="/cytoscapeweb_v1.0.2/js/min/AC_OETags.min.js"/>
-<trh:script source="/cytoscapeweb_v1.0.2/js/min/json2.min.js"/>
-<trh:script source="/cytoscapeweb_v1.0.2/js/min/cytoscapeweb.min.js"/>
-
 <script type="text/javascript">
 
     // init and draw
     var options = {
-        swfPath:"#{facesContext.externalContext.requestContextPath}/cytoscapeweb_v1.0.2/swf/CytoscapeWeb",
-        flashInstallerPath:"#{facesContext.externalContext.requestContextPath}/cytoscapeweb_v1.0.2/swf/playerProductInstall"
+        swfPath:"#{facesContext.externalContext.requestContextPath}/cytoscapeweb_v1.0.4/swf/CytoscapeWeb",
+        flashInstallerPath:"#{facesContext.externalContext.requestContextPath}/cytoscapeweb_v1.0.4/swf/playerProductInstall"
     };
 
     var vis = new org.cytoscapeweb.Visualization("cytoscapeweb", options);
@@ -59,24 +55,6 @@
                         vis.select([rootNode]).select(neighborNodes);
                     }
             );
-
-            // TODO in the node right click, link out to the service database using that molecule id
-            // TODO edge > right click, link out to the service database using that interaction AC.
-
-            //            vis.addContextMenuItem("Link out to source web site", "nodes",
-            //                                  function (evt) {
-            //                                      // Get the right-clicked node:
-            //                                      var target = evt.target;
-            //
-            //                                      var identifier = target.data[ 'identifier' ];
-            //
-            //                                      // get url template
-            //                                      var url='http://www.google.com/q=${ac}}';
-            //
-            //                                      // open URL for that molecule
-            //                                      window.open(url.replace('${ac}}',identifier),'_blank',null);
-            //                                  }
-            //                    );
 
             vis.addContextMenuItem("Expand network around this molecule", "nodes",
                     function (evt) {

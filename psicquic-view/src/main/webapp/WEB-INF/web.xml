@@ -348,7 +348,7 @@
 
     <servlet>
         <servlet-name>binaryDownload</servlet-name>
-        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.io.file.FileDownloadServlet</servlet-class>
+        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.io.download.file.FileDownloadServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -368,7 +368,7 @@
 
     <servlet>
         <servlet-name>allDownload</servlet-name>
-        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.io.download.DownloadAllServlet</servlet-class>
+        <servlet-class>org.hupo.psi.mi.psicquic.view.webapp.io.download.all.DownloadAllServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

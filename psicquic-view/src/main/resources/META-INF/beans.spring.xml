@@ -33,8 +33,7 @@
         <property name="serviceRows" value="${services.rows}"/>
         <property name="colourSchema" value="${colour.schema}" />
         <property name="clusteringSizeLimit" value="${clustering.limit.count}"/>
-
-
+        <property name="downloadAllSizeLimit" value="${download.all.limit.count}" />
         <property name="downloadAllLocation" value="${download.all.storage.directory}" />
 
     </bean>

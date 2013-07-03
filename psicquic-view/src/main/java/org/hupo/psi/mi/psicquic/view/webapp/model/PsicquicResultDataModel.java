@@ -24,10 +24,11 @@ import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.tab.PsimiTabReader;
 import psidev.psi.mi.tab.model.BinaryInteraction;
-import org.hupo.psi.mi.psicquic.view.webapp.util.FlipInteractors;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.model.DataModelEvent;
+import javax.faces.model.DataModelListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -214,16 +215,16 @@ public class PsicquicResultDataModel extends SortableModel implements Serializab
 		if (rowIndex < -1) {
 			throw new IllegalArgumentException("illegal rowIndex " + rowIndex);
 		}
-//		int oldRowIndex = rowIndex;
+		int oldRowIndex = rowIndex;
 		this.rowIndex = rowIndex;
-//		if (result != null && oldRowIndex != this.rowIndex) {
-//			Object data = isRowAvailable() ? getRowData() : null;
-//			DataModelEvent event = new DataModelEvent(this, this.rowIndex, data);
-//			DataModelListener[] listeners = getDataModelListeners();
-//			for (int i = 0; i < listeners.length; i++) {
-//				listeners[i].rowSelected(event);
-//			}
-//		}
+		if (result != null && oldRowIndex != this.rowIndex) {
+			Object data = isRowAvailable() ? getRowData() : null;
+			DataModelEvent event = new DataModelEvent(this, this.rowIndex, data);
+			DataModelListener[] listeners = getDataModelListeners();
+			for (int i = 0; i < listeners.length; i++) {
+				listeners[i].rowSelected(event);
+			}
+		}
 	}
 
 	@Override

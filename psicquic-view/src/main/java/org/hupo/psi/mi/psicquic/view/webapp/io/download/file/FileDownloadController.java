@@ -1,12 +1,15 @@
-package org.hupo.psi.mi.psicquic.view.webapp.io.file;
+package org.hupo.psi.mi.psicquic.view.webapp.io.download.file;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.myfaces.orchestra.conversation.annotations.ConversationName;
 import org.apache.myfaces.trinidad.context.RequestContext;
 import org.apache.myfaces.trinidad.event.ReturnEvent;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.BaseController;
 import org.hupo.psi.mi.psicquic.view.webapp.controller.search.SearchController;
+import org.hupo.psi.mi.psicquic.view.webapp.controller.search.UserQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
 import javax.faces.context.FacesContext;
@@ -26,6 +29,8 @@ import java.util.ResourceBundle;
  */
 
 @Controller("fileDownload")
+@Scope("conversation.access")
+@ConversationName("general")
 public class FileDownloadController extends BaseController {
 
 	private static final Log log = LogFactory.getLog(FileDownloadController.class);
@@ -34,9 +39,14 @@ public class FileDownloadController extends BaseController {
 	private List<SelectItem> selectItems;
 	private List<SelectItem> selectClusteredItems;
 
+    private static final int XML_INTERACTIONS_LIMIT = 500;
 
-	@Autowired
-	private SearchController searchController;
+    @Autowired
+    private UserQuery userQuery;
+
+    @Autowired
+    private SearchController searchController;
+
 
 	private String selectedFormat;
 
@@ -50,72 +60,65 @@ public class FileDownloadController extends BaseController {
 	public FileDownloadController() {
 		this.selectItems = new ArrayList<SelectItem>();
 		this.selectClusteredItems = new ArrayList<SelectItem>();
-
-	}
+    }
 
 	void checkDownloads(){
-		if(searchController.isIncludeNegativeQuery()){
+
+		if(userQuery.isIncludeNegativeQuery()){
 			String message = "Your results may contain negative interactions.";
 			String detail = "They can only be exported in MITAB 2.6, MITAB 2.7 and XML 2.5.";
 			addInfoMessage(message, detail);
 		}
 
-		if(searchController.isBigQuery()){
-			String message = "Only up to "+ searchController.getXmlLimit() + " interactions can be downloaded in XML 2.5, BIOPAX and RFD formats.";
+		if(isBigQuery()){
+			String message = "Only up to "+ getXmlLimit() + " interactions can be downloaded in XML 2.5, BIOPAX and RFD formats.";
 			String detail = " Apologies for the inconvenience.";
 			addWarningMessage(message, detail);
 		}
 	}
 
-
 	private void createList() {
 
 		ResourceBundle rb = ResourceBundle.getBundle("org.hupo.psi.mi.psicquic.Messages");
 
-		List<String> formats = searchController.getFormatsMap().get(searchController.getSelectedServiceName());
+		List<String> formats = searchController.getSelectedService().getFormats();
 
 		if (formats != null && !formats.isEmpty()) {
 			this.selectItems.clear();
 			for (String format : formats) {
 				boolean disable = false;
-				if (searchController.isBigQuery() && formatsForSmallQueries.contains(format)) {
+				if (isBigQuery() && formatsForSmallQueries.contains(format)) {
 					disable = true;
 				}
-				if (searchController.isOnlyNegativeQuery() && !(formatsForNegativeQueries.contains(format))) {
+				if (userQuery.isOnlyNegativeQuery() && !(formatsForNegativeQueries.contains(format))) {
 					disable = true;
 				}
 				this.selectItems.add(new SelectItem(format, rb.getString(format).trim(), rb.getString(format).trim(), disable));
 			}
 		}
-
-		checkDownloads();
 	}
 
-	private String searchFirstEnable() {
-		if (selectItems != null && !selectItems.isEmpty()) {
-			for (SelectItem item : selectItems) {
-				if (!item.isDisabled()) {
-					return item.getValue().toString();
-				}
-			}
-		}
-		return null;
-	}
+    private void createClusteredList() {
+        ResourceBundle rb = ResourceBundle.getBundle("org.hupo.psi.mi.psicquic.Messages");
+        String format = "tab25";
+        this.selectClusteredItems.clear();
+        this.selectClusteredItems.add(new SelectItem(format, rb.getString(format).trim()));
+    }
 
-	private void createClusteredList() {
-		ResourceBundle rb = ResourceBundle.getBundle("org.hupo.psi.mi.psicquic.Messages");
-		String format = "tab25";
-
-		this.selectClusteredItems.add(new SelectItem(format, rb.getString(format).trim()));
-		setSelectedFormat(format);
-	}
 
 	public List<SelectItem> getSelectItems() {
-		createList();
-		setSelectedFormat("");
-
-		return selectItems;
+        createList();
+        setSelectedFormat(null);
+        checkDownloads();
+        return selectItems;
 	}
+
+    public List<SelectItem> getSelectClusteredItems() {
+        createClusteredList();
+        setSelectedFormat(null);
+
+        return selectClusteredItems;
+    }
 
 	public void setSelectItems(List<SelectItem> selectItems) {
 		this.selectItems = selectItems;
@@ -123,13 +126,6 @@ public class FileDownloadController extends BaseController {
 
 	public void setSelectClusteredItems(List<SelectItem> selectClusteredItems) {
 		this.selectClusteredItems = selectClusteredItems;
-	}
-
-	public List<SelectItem> getSelectClusteredItems() {
-		if (selectClusteredItems.isEmpty())
-			createClusteredList();
-
-		return selectClusteredItems;
 	}
 
 	public String getSelectedFormat() {
@@ -178,12 +174,10 @@ public class FileDownloadController extends BaseController {
 
 			FacesContext context = FacesContext.getCurrentInstance();
 			String baseURL = context.getExternalContext().getRequestContextPath();
-			String serviceURL = searchController.getServicesMap().get(searchController.getSelectedServiceName()).getRestUrl();
-			String query = searchController.getUserQuery().getSearchQuery();
+			String serviceURL = searchController.getSelectedService().getRestUrl();
+			String query = userQuery.getSearchQuery();
 
 			if (value.contentEquals("binary")) {
-
-
 
 				String url = baseURL + "/binaryDownload?" +
 						"&serviceURL=" + serviceURL +
@@ -232,7 +226,15 @@ public class FileDownloadController extends BaseController {
 	public void selectedFormatChanged(ValueChangeEvent valueChangeEvent) {
 		if (valueChangeEvent.getNewValue() instanceof String) {
 			selectedFormat = ((String) valueChangeEvent.getNewValue());
-
 		}
 	}
+
+    public boolean isBigQuery() {
+        return searchController.getSelectedService().getHits() > XML_INTERACTIONS_LIMIT;
+    }
+
+    public Integer getXmlLimit() {
+        return XML_INTERACTIONS_LIMIT;
+    }
+
 }

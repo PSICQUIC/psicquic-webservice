@@ -5,17 +5,16 @@
                 xmlns:c="http://java.sun.com/jstl/core"
         >
 
-     <tr:panelTabbed id="ptab" position="above">
-         <tr:showDetailItem id="interactionTabTwo" text="Table">
+     <tr:panelTabbed id="ptab" position="above" partialTriggers="interactionTabTwo graphTabOne servicesTable clusterTable" >
+         <tr:showDetailItem id="interactionTabTwo" text="Table" disclosed="true">
              <tr:panelGroupLayout>
                  <ui:include src="/pages/interactions/interactions_tab.xhtml">
-                     <ui:param name="service" value="#{searchBean.servicesMap[searchBean.selectedServiceName]}"/>
-                     <ui:param name="results" value="#{searchBean.resultDataModelMap[searchBean.selectedServiceName]}"/>
+                     <ui:param name="service" value="#{service}"/>
                  </ui:include>
              </tr:panelGroupLayout>
          </tr:showDetailItem>
 
-         <tr:showDetailItem id="graphTabOne" text="Graph" disabled="#{not searchBean.graphEnabled or searchBean.onlyNegativeQuery}"
+         <tr:showDetailItem id="graphTabOne" text="Graph" disabled="#{not searchBean.graphEnabled or userQuery.onlyNegativeQuery}"
                             shortDesc="You can only visualize network with up to #{searchBean.maxNetworkSize} interactions.">
              <tr:panelGroupLayout>
                  <ui:include src="/pages/graph/graph.xhtml"/>

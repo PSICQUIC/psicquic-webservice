@@ -101,7 +101,7 @@ public class ClusteringDownloadServlet extends HttpServlet {
 
 			if(header!=null){
 				stream.write(header.getBytes());
-				stream.flush();   // Write system dependent end of line.
+				stream.flush();
 			}
 
             do {

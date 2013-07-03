@@ -39,9 +39,11 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 	public static final String FILE_SEPARATOR = System.getProperty( "file.separator" );
 
 	public static final int DEFAULT_CLUSTERING_SIZE_LIMIT = 5000;
-	public static final String REGISTRY_URL = "http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/";
+    private static final int DEFAULT_DOWNLOAD_SIZE_LIMIT = 100000;
 
-	private String configFile;
+    public static final String REGISTRY_URL = "http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/";
+
+    private String configFile;
 	private String title;
 	private String logoUrl;
 	private String bannerBackgroundUrl;
@@ -55,8 +57,9 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 //	private Proxy proxy;
 	private String downloadAllLocation;
 	private String colourSchema;
+    private int downloadAllSizeLimit;
 
-	public PsicquicViewConfig() {
+    public PsicquicViewConfig() {
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -98,8 +101,8 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 
 		registryURL = loadProperty(properties, "registry.url", REGISTRY_URL);
 		downloadAllLocation = loadProperty(properties, "download.all.storage.location", buildDefaultDir());
-		clusteringSizeLimit = loadIntProperty(properties, "clustering.limit.count", DEFAULT_CLUSTERING_SIZE_LIMIT);
-
+        clusteringSizeLimit = loadIntProperty(properties, "clustering.limit.count", DEFAULT_CLUSTERING_SIZE_LIMIT);
+        downloadAllSizeLimit = loadIntProperty(properties,"download.all.limit.count", DEFAULT_DOWNLOAD_SIZE_LIMIT);
 
 		final String strRows = properties.getProperty("services.rows");
 		if (strRows != null) serviceRows = Integer.parseInt(strRows);
@@ -154,8 +157,9 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 		setProperty(properties, "services.rows", String.valueOf(serviceRows));
 		setProperty(properties, "colour.schema", colourSchema);
 		setProperty(properties, "download.all.storage.location", downloadAllLocation);
+        setProperty(properties, "download.all.limit.count", String.valueOf(downloadAllSizeLimit));
 
-		OutputStream outputStream = new FileOutputStream(configFile);
+        OutputStream outputStream = new FileOutputStream(configFile);
 		properties.store(outputStream, "Configuration updated: " + new Date());
 		outputStream.close();
 	}
@@ -256,6 +260,14 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 		this.clusteringSizeLimit = clusteringSizeLimit;
 	}
 
+    public void setDownloadAllSizeLimit(int downloadAllSizeLimit) {
+        this.downloadAllSizeLimit = downloadAllSizeLimit;
+    }
+
+    public int getDownloadAllSizeLimit() {
+        return downloadAllSizeLimit;
+    }
+
 	public String getRegistryURL() {
 		return registryURL;
 	}
@@ -311,4 +323,6 @@ public class PsicquicViewConfig extends BaseController implements InitializingBe
 	public void setColourSchema(String colourSchema) {
 		this.colourSchema = colourSchema;
 	}
+
+
 }

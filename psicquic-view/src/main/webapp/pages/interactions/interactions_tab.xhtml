@@ -20,7 +20,8 @@
 
 <div style="overflow:auto;height:500px;margin-top:10px">
 <!-- RESULTS TABLE -->
-<tr:table id="interactionResults" value="#{results}" var="binaryInteraction" varStatus="tableStatus"
+<tr:table id="interactionResults" value="#{service.results}" var="binaryInteraction" varStatus="tableStatus"
+          partialTriggers="columnsSelection"
           summary="Binary Interactions"
           emptyText="No interactions found matching the query."
           rows="#{userQuery.pageSize}" rowBandingInterval="1" first="0" immediate="true">
@@ -33,36 +34,48 @@
 
         <tr:panelGroupLayout layout="horizontal">
             <tr:panelButtonBar>
-                <tr:panelPopup id="columnsPopUp" text="Show/Hide Columns" height="400" width="250" position="hover">
-                    <tr:outputLabel value="Select:"/>
-                    <tr:commandLink id="selectMinimalColumns" text="Minimal"
-                                    actionListener="#{columnContext.selectedMinimalColumns}"
-                                    partialTriggers="columnsSelection"/>
-                    <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
-                    <tr:commandLink id="selectBasicColumns" text="Basic"
-                                    actionListener="#{columnContext.selectedBasicColumns}"
-                                    partialTriggers="columnsSelection"/>
-                    <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
-                    <tr:commandLink id="selectDeafaultColumns" text="Default"
-                                    actionListener="#{columnContext.selectedDefaultColumns}"
-                                    partialTriggers="columnsSelection"/>
-                    <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
-                    <tr:commandLink id="selectAllColumns" text="All"
-                                    actionListener="#{columnContext.selectedAllColumns}"
-                                    partialTriggers="columnsSelection"/>
-                    <hr/>
+                <tr:panelPopup id="columnsPopUp" text="Show/Hide Columns" triggerType="click" position="relative">
+                    <tr:panelGroupLayout layout="vertical">
+                        <tr:spacer height="10px"/>
+                        <h:panelGroup>
+                            <tr:outputLabel value="Select:"/>
+                            <tr:commandLink id="selectMinimalColumns" text="Minimal"
+                                            actionListener="#{columnContext.selectedMinimalColumns}"
+                                            partialTriggers="columnsSelection"/>
+                            <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
+                            <tr:commandLink id="selectBasicColumns" text="Basic"
+                                            actionListener="#{columnContext.selectedBasicColumns}"
+                                            partialTriggers="columnsSelection"/>
+                            <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
+                            <tr:commandLink id="selectDeafaultColumns" text="Default"
+                                            actionListener="#{columnContext.selectedDefaultColumns}"
+                                            partialTriggers="columnsSelection"/>
+                            <tr:outputFormatted value="&#160;&#160;&lt;b>|&lt;/b>&#160;&#160;"/>
+                            <tr:commandLink id="selectAllColumns" text="All"
+                                            actionListener="#{columnContext.selectedAllColumns}"
+                                            partialTriggers="columnsSelection"/>
+                        </h:panelGroup>
+                        <tr:spacer height="10px"/>
 
-                    <tr:selectManyCheckbox id="columnsSelection"
-                                           valueChangeListener="#{columnContext.selectedColumnsChanged}"
-                                           required="true"
-                                           onchange="submit()"
-                                           autoSubmit="true"
-                                           partialTriggers="interactionResults"
-                                           value="#{columnContext.selectedColumns}"
-                                           layout="pageDirection">
-                        <f:selectItems value="#{columnContext.columnsSelectItems}"/>
+                        <h:panelGroup>
+                            <tr:outputText value="Add the columns that you want to see and click "/>
+                            <tr:commandLink id="selectManyColumns" text="update"
+                                            actionListener="#{columnContext.selectedColumnsChanged}"
+                                            partialTriggers="columnsSelection"/>
+                            <tr:spacer height="10px"/>
 
-                    </tr:selectManyCheckbox>
+                                <tr:selectManyShuttle id="columnsSelection"
+                                                      leadingHeader="Non selected columns"
+                                                      trailingHeader="Selected columns"
+                                                      value="#{columnContext.selectedColumns}"
+                                        >
+                                    <f:selectItems value="#{columnContext.columnsSelectItems}"/>
+
+                                </tr:selectManyShuttle>
+                        </h:panelGroup>
+                        <hr/>
+
+                    </tr:panelGroupLayout>
                 </tr:panelPopup>
 
 

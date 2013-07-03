@@ -13,7 +13,7 @@
         <trh:body>
             <tr:form id="download">
                 <tr:panelHeader id="downloadPanel"
-                                text="#{searchBean.selectedServiceName} Download">
+                                text="#{searchBean.selectedService.name} Download">
                 </tr:panelHeader>
 
                 <tr:panelGroupLayout>
@@ -27,7 +27,7 @@
                 <tr:spacer height="20px"/>
                 <tr:selectOneChoice id="downloadSelectOneChoice"
                                     label="Download: "
-                                    rendered="#{not searchBean.clusterSelected}"
+                                    rendered="#{not clusteringBean.clusterSelected}"
                                     value="#{fileDownload.selectedFormat}"
                                     autoSubmit="true"
                                     required="true"
@@ -40,7 +40,7 @@
 
                 <tr:selectOneChoice id="downloadClusterSelectOneChoice"
                                     label="Download: "
-                                    rendered="#{searchBean.clusterSelected}"
+                                    rendered="#{clusteringBean.clusterSelected}"
                                     value="#{fileDownload.selectedFormat}"
                                     autoSubmit="true"
                                     required="true"
@@ -49,7 +49,6 @@
 
                         >
                     <f:selectItems id="downloadClusteredItems" value="#{fileDownload.selectClusteredItems}"/>
-                    <!--<tr:selectItem id="xml25" label="#{messages.xml25}" value="xml25"/>-->
                 </tr:selectOneChoice>
 
                 <tr:spacer height="20px"/>
@@ -57,13 +56,13 @@
 
                     <tr:commandButton id="binaryDownloadButton"
                                       text="Download"
-                                      rendered="#{not searchBean.clusterSelected}"
+                                      rendered="#{not clusteringBean.clusterSelected}"
                                       action="#{fileDownload.binaryDownload}"
                             >
                     </tr:commandButton>
                     <tr:commandButton id="clusteredDownloadButton"
                                       text="Download"
-                                      rendered="#{searchBean.clusterSelected}"
+                                      rendered="#{clusteringBean.clusterSelected}"
                                       action="#{fileDownload.clusteredDownload}"
                             >
                     </tr:commandButton>

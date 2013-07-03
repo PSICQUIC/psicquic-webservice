@@ -108,6 +108,25 @@ function psicquic_selectNone(serviceCount) {
     }
 }
 
+function psicquic_countAll(serviceCount) {
+
+    var totalCount = 0;
+
+    for (i=0; i<serviceCount; i++) {
+        var checkbox = document.getElementById('serviceSel_'+i);
+
+        //Check what happens if the element doesn't exist
+        if (!checkbox.disabled && checkbox.checked) {
+            var aux = document.getElementById('resultCounts_'+i);
+            totalCount = totalCount + parseInt(aux.innerHTML);
+        }
+
+    }
+
+    document.getElementById('selectedResults').innerHTML = totalCount.toString();
+}
+
+
 function highlightSpecies( vis ) {
     if( document.getElementById('species').style.fontWeight == 'normal' ) {
         document.getElementById('species').style.fontWeight = 'bold';

@@ -6,7 +6,6 @@ import org.hupo.psi.mi.psicquic.clustering.ClusteringContext;
 import org.hupo.psi.mi.psicquic.clustering.job.ClusteringJob;
 import org.hupo.psi.mi.psicquic.clustering.job.JobStatus;
 import org.hupo.psi.mi.psicquic.clustering.job.dao.DaoException;
-import org.hupo.psi.mi.psicquic.clustering.job.dao.JobDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -24,16 +23,16 @@ import java.util.List;
  */
 @Controller
 @Scope( "session" )
-public class UserJobs implements Serializable {
+public class UserClusteringJobs implements Serializable {
 
-    private static final Log log = LogFactory.getLog( UserJobs.class );
+    private static final Log log = LogFactory.getLog( UserClusteringJobs.class );
 
     private List<ClusteringJob> currentJobs;
 
     @Autowired
     private ClusteringContext clusteringContext;
 
-    public UserJobs() {
+    public UserClusteringJobs() {
         currentJobs = new ArrayList<ClusteringJob>( );
     }
 
