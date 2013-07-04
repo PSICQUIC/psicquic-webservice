@@ -72,6 +72,15 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <path>/${service.name}/view</path>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
                 <version>6.1.16</version>
@@ -197,14 +206,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- Apache Tomahawk -->
-        <dependency>
-            <groupId>org.apache.myfaces.tomahawk</groupId>
-            <artifactId>tomahawk12</artifactId>
-            <version>1.1.13</version>
-        </dependency>
-
-
         <!-- MyFaces orchestra -->
         <dependency>
             <groupId>org.apache.myfaces.orchestra</groupId>
@@ -219,23 +220,44 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-el</groupId>
-            <artifactId>commons-el</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
-            <version>2.1</version>
+            <version>2.2</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- This implementation of EL is the only that solves/works with the bug in primefaces describe
+        here http://forum.primefaces.org/viewtopic.php?f=3&t=16826. This can not be provided because
+        it can be overwritten with the EL implementation of the servlet container -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>el-impl</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <!-- MyFaces Orchestra -->
+        <dependency>
+            <groupId>org.apache.myfaces.orchestra</groupId>
+            <artifactId>myfaces-orchestra-core20</artifactId>
+            <version>1.5</version>
         </dependency>
 
         <!-- SLF4J -->
@@ -378,24 +400,6 @@
             <groupId>org.springframework.batch</groupId>
             <artifactId>spring-batch-core</artifactId>
             <version>${spring.batch.version}</version>
-        </dependency>
-
-        <!-- Tests -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-firefox-driver</artifactId>
-            <version>2.31.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-server</artifactId>
-            <version>2.31.0</version>
         </dependency>
 
     </dependencies>
