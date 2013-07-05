@@ -1,4 +1,4 @@
-<xsl:stylesheet version="1.0"
+ <xsl:stylesheet version="1.0"
    xmlns:mif="http://psi.hupo.org/mi/mif"
    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" >
 
@@ -26,7 +26,8 @@
   <!-- ===================================================================== -->
 
   <xsl:template name="complex-record">
-
+    <xsl:param name="release-date"/>
+    <xsl:param name="update-date"/>
     <xsl:param name="src" />
     <xsl:param name="fep" />
     <xsl:param name="evd" />
@@ -135,11 +136,16 @@
       </xsl:apply-templates>
 
       <!-- interaction_id -->
-
+ <!--
       <xsl:apply-templates mode="xref" 
            select="$int/mif:xref/*[@refType='identity']" >
         <xsl:with-param name="fid">interaction_id</xsl:with-param>
       </xsl:apply-templates>            
+ -->
+     
+      <xsl:apply-templates mode="int-id" select="$int">
+        <xsl:with-param name="fid">interaction_id</xsl:with-param>
+      </xsl:apply-templates>
            
       <!-- xref -->
 
@@ -151,6 +157,17 @@
       <!-- source -->
 
       <xsl:apply-templates mode="source" select="$src"/>
+
+      <!-- udate -->
+
+      <xsl:call-template name="date">
+        <xsl:with-param name="fid">udate</xsl:with-param>
+        <xsl:with-param name="date">
+          <xsl:value-of select="$update-date"/>
+        </xsl:with-param>
+      </xsl:call-template>
+
+
 
       <!-- confidence list-->
 
@@ -170,6 +187,8 @@
   <!-- ===================================================================== -->
  
   <xsl:template name="record">
+    <xsl:param name="release-date"/>
+    <xsl:param name="update-date"/>
     <xsl:param name="fep" />
     <xsl:param name="src" />
     <xsl:param name="evd" />
@@ -320,11 +339,16 @@
           </xsl:apply-templates>
 
           <!-- interaction_id -->
-
+<!--
           <xsl:apply-templates mode="xref" 
              select="$int/mif:xref/*[@refType='identity']" >
               <xsl:with-param name="fid">interaction_id</xsl:with-param>
           </xsl:apply-templates>            
+-->
+
+          <xsl:apply-templates mode="int-id" select="$int">
+            <xsl:with-param name="fid">interaction_id</xsl:with-param>
+          </xsl:apply-templates>
            
           <!-- xref -->
 
@@ -336,6 +360,16 @@
           <!-- source -->
 
           <xsl:apply-templates mode="source" select="$src"/>
+
+          <!-- udate -->
+         
+          <xsl:call-template name="date">
+           <xsl:with-param name="fid">udate</xsl:with-param>
+           <xsl:with-param name="date">
+             <xsl:value-of select="$update-date"/>
+           </xsl:with-param>
+          </xsl:call-template>
+
 
           <!-- confidence list-->
 
@@ -638,6 +672,80 @@
  
   </xsl:template>
   
+ <!-- INTERACTION_ID -->
+
+  <xsl:template match="*" mode="int-id">
+    <xsl:param name="fid"/>
+
+    <xsl:if test="string-length(./@imexId) &gt; 0">
+      <xsl:element name="field">
+        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+        <xsl:text>imex</xsl:text>
+      </xsl:element>
+
+      <xsl:element name="field">
+        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+        <xsl:value-of select="./@imexId"/>
+      </xsl:element>
+      <xsl:element name="field">
+        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+        <xsl:value-of select="concat('imex:',./@imexId)"/>
+      </xsl:element>
+
+      <xsl:element name="field">
+        <xsl:attribute name="name">
+          <xsl:value-of select="concat($fid,'_s')"/>
+        </xsl:attribute>
+        <xsl:value-of select="concat('imex:',./@imexId)"/>
+      </xsl:element>        
+    </xsl:if>
+
+    <xsl:for-each select="./mif:xref/*[@refType='identity']" >
+  
+      <xsl:element name="field">
+        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+        <xsl:value-of select=".//@db"/>
+      </xsl:element>
+      <xsl:element name="field">
+        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+        <xsl:value-of select=".//@id"/>
+      </xsl:element>
+      <xsl:element name="field">
+        <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+        <xsl:value-of select="concat(.//@db,':',.//@id)"/>
+      </xsl:element>
+
+      <xsl:element name="field">
+        <xsl:attribute name="name">
+          <xsl:value-of select="concat($fid,'_s')"/>
+        </xsl:attribute>
+        <xsl:value-of select="concat(.//@db,':',.//@id)"/>
+      </xsl:element>
+    </xsl:for-each>
+
+    <xsl:element name="field">
+      <xsl:attribute name="name">
+        <xsl:value-of select="concat($fid,'_o')"/>
+      </xsl:attribute>
+
+      <xsl:if test="string-length(./@imexId) &gt; 0">
+       <xsl:value-of select="concat('imex:&quot;',./@imexId,'&quot;(identity)')"/>
+       <xsl:if test="string-length(./@imexId) &gt; 0 and 
+                     count(./mif:xref/*[@refType='identity']) &gt; 0"> 
+        <xsl:text>|</xsl:text>
+       </xsl:if>
+      </xsl:if>
+      <xsl:for-each select="./mif:xref/*[@refType='identity']" >
+        <xsl:value-of select="concat(./@db, ':&quot;', ./@id, '&quot;(', 
+                                     ./@refType, ')' )"/>
+        <xsl:if test="not(position()=last())">
+           <xsl:text>|</xsl:text>
+         </xsl:if>
+      </xsl:for-each>
+    </xsl:element>
+
+  </xsl:template>
+
  <!-- PUBID -->
 
   <xsl:template match="*" mode="pubid">
@@ -787,6 +895,21 @@
     </xsl:element>
   </xsl:template>
 
+
+  <!-- DATE -->
+
+  <xsl:template  name="date">
+   <xsl:param name="fid"/>
+   <xsl:param name="date"/>
+   <xsl:if test='string-length($date) > 0'>
+    <xsl:element name="field">
+     <xsl:attribute name="name"><xsl:value-of select="$fid"/></xsl:attribute>
+     <xsl:value-of select='translate($date,"-","")'/>  
+    </xsl:element>
+   </xsl:if>
+
+  </xsl:template>
+
  <!-- XREF --> 
 
   <xsl:template match="*" mode="xref">
@@ -871,9 +994,18 @@
         <xsl:value-of select="concat($fid,'_o')"/>
       </xsl:attribute>
       <xsl:for-each select="*">
-        <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
-                                     ./mif:xref/mif:primaryRef/@id,'&quot;(',
-                                     ./mif:names/mif:shortLabel/text(),')')" />
+        <xsl:choose>
+         <xsl:when test="string-length(./mif:names/mif:shortLabel/text()) &gt; 0">
+          <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
+                                       ./mif:xref/mif:primaryRef/@id,'&quot;(',
+                                       ./mif:names/mif:shortLabel/text(),')')" />
+         </xsl:when>
+         <xsl:otherwise>
+          <xsl:value-of select="concat(./mif:xref/mif:primaryRef/@db,':&quot;',
+                                       ./mif:xref/mif:primaryRef/@id,'&quot;(',
+                                       ./mif:names/mif:fullName/text(),')')" />
+         </xsl:otherwise> 
+        </xsl:choose>
         <xsl:if test="not(position()=last())">
            <xsl:text>|</xsl:text>
          </xsl:if>

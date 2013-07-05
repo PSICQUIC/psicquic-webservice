@@ -28,6 +28,8 @@
   <!-- ===================================================================== -->
 
   <xsl:template name="complex-record">
+    <xsl:param name="release-date"/>
+    <xsl:param name="update-date"/>
     <xsl:param name="src" />
     <xsl:param name="fep" />
     <xsl:param name="evd" />
@@ -60,6 +62,8 @@
               </xsl:if>
  
              <xsl:call-template name="binary-view">
+               <xsl:with-param name="release-date" select="$release-date"/>
+               <xsl:with-param name="update-date" select="$update-date"/>
                <xsl:with-param name="src" select="$src" />
                <xsl:with-param name="fep" select="$fep" />
                <xsl:with-param name="evd" select="$evd" />
@@ -79,6 +83,8 @@
 <!-- ======================================================================= -->
 
   <xsl:template name="record">
+    <xsl:param name="release-date"/>
+    <xsl:param name="update-date"/>
     <xsl:param name="src" />
     <xsl:param name="fep" />
     <xsl:param name="evd" />
@@ -119,6 +125,8 @@
              <xsl:attribute name="name">view</xsl:attribute>
               
            <xsl:call-template name="binary-view">
+             <xsl:with-param name="release-date" select="$release-date"/>
+             <xsl:with-param name="update-date" select="$update-date"/>
              <xsl:with-param name="src" select="$src" />
              <xsl:with-param name="fep" select="$fep" />
              <xsl:with-param name="evd" select="$evd" />
@@ -141,6 +149,8 @@
 <!-- ======================================================================= -->
 
   <xsl:template name="binary-view">
+    <xsl:param name="release-date"/>
+    <xsl:param name="update-date"/>
     <xsl:param name="src" />
     <xsl:param name="fep" />
     <xsl:param name="evd" />
@@ -386,16 +396,16 @@
           <xsl:with-param name="clist" select="."/>
         </xsl:call-template>
 
-        <xsl:call-template name="na-col">
+        <xsl:call-template name="date-col">
           <xsl:with-param name="debug" select='$debug'/>
           <xsl:with-param name="tag">::crDate</xsl:with-param>
-          <xsl:with-param name="clist" select="."/>
+          <xsl:with-param name="date" select="$release-date"/>
         </xsl:call-template>
 
-        <xsl:call-template name="na-col">
+        <xsl:call-template name="date-col">
           <xsl:with-param name="debug" select='$debug'/>
           <xsl:with-param name="tag">::upDate</xsl:with-param>
-          <xsl:with-param name="clist" select="."/>
+          <xsl:with-param name="date" select="$update-date"/>
         </xsl:call-template>
 
         <xsl:call-template name="na-col">
@@ -742,6 +752,25 @@
      <xsl:value-of select="$tag"/>
     </xsl:if>
     <xsl:text>&#x9;</xsl:text>
+ </xsl:template>
+
+ <xsl:template name="date-col">
+   <xsl:param name="tag"/>
+   <xsl:param name="debug"/>
+   <xsl:param name="date"/>
+
+   <xsl:choose>
+    <xsl:when test='string-length($date) > 0'>
+     <xsl:value-of select="$date"/>
+    </xsl:when>
+    <xsl:otherwise>
+     <xsl:value-of select="$natext"/>
+    </xsl:otherwise>
+   </xsl:choose>
+   <xsl:if test="$debug = 'true'">
+     <xsl:value-of select="$tag"/>
+   </xsl:if>
+   <xsl:text>&#x9;</xsl:text>
  </xsl:template>
 
  <xsl:template name="xref-col">

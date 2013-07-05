@@ -25,6 +25,7 @@
  <xsl:param name="file"/>
  <xsl:param name="expand"/>
  <xsl:param name="complex"/>
+ <xsl:param name="update-date"/>  
 <!--  <xsl:param name="debug">false</xsl:param> -->
 
  <xsl:template match="/mif:entrySet">
@@ -40,6 +41,8 @@
  <xsl:template match="*" mode="entry">
    <xsl:apply-templates mode="interaction"
         select="mif:interactionList/mif:interaction">
+      <xsl:with-param name="release-date" select="./mif:source/@releaseDate"/>
+      <xsl:with-param name="update-date" select="$update-date"/>
       <xsl:with-param name="ep" select="position()"/>
       <xsl:with-param name="src" select="mif:source"/>
    </xsl:apply-templates>
@@ -47,6 +50,8 @@
 
  <xsl:template match="*" mode="interaction">
    <xsl:param name="ep"/>
+   <xsl:param name="release-date"/>
+   <xsl:param name="update-date"/>
    <xsl:param name="src"/>
    <xsl:variable name="iid" select="@id"/> 
    <xsl:variable name="int"  select="."/>
@@ -71,10 +76,12 @@
      </xsl:if>
      
      <xsl:call-template name="evidence">
+       <xsl:with-param name="release-date" select="$release-date"/>  
+       <xsl:with-param name="update-date" select="$update-date"/>  
        <xsl:with-param name="src" select='$src'/>
        <xsl:with-param name="fep" select='$fepi'/>
        <xsl:with-param name="evd" select='.'/>
-       <xsl:with-param name="int" select='$int'/>  
+       <xsl:with-param name="int" select='$int'/>
      </xsl:call-template>
 
    </xsl:for-each>
@@ -90,6 +97,8 @@
      </xsl:if>
 
      <xsl:call-template name="evidence-ref">
+       <xsl:with-param name="release-date" select="$release-date"/>
+       <xsl:with-param name="update-date" select="$update-date"/>
        <xsl:with-param name="src"  select='$src'/>
        <xsl:with-param name="fep"  select='$fepi'/>
        <xsl:with-param name="evrl" select="."/>
@@ -101,6 +110,8 @@
  </xsl:template>
 
   <xsl:template name="expand">
+   <xsl:param name="release-date"/>
+   <xsl:param name="update-date"/>
    <xsl:param name="src"/> 
    <xsl:param name="fep" />
    <xsl:param name="evd" />
@@ -137,6 +148,8 @@
 
     <xsl:if test="count($bait) = 1 and count($prey) &gt; 0 ">
       <xsl:call-template name="record">
+         <xsl:with-param name="release-date" select="$release-date"/>  
+         <xsl:with-param name="update-date" select="$update-date"/>  
          <xsl:with-param name="src" select='$src'/>
          <xsl:with-param name="fep" select="$fep" />
          <xsl:with-param name="evd" select="$evd" />
@@ -150,6 +163,8 @@
   </xsl:template>
 
   <xsl:template name="evidence-ref">
+    <xsl:param name="release-date"/>
+    <xsl:param name="update-date"/>
     <xsl:param name="src"/>
     <xsl:param name="fep" />
     <xsl:param name="evrl" />
@@ -158,6 +173,8 @@
     <xsl:for-each select='$evrl/text()'>
       <xsl:variable name="rid" select="."/>
       <xsl:call-template name="evidence">
+        <xsl:with-param name="release-date" select="$release-date"/>  
+        <xsl:with-param name="update-date" select="$update-date"/>  
         <xsl:with-param name="src" select='$src'/>
         <xsl:with-param name="fep" select='$fep'/>
         <xsl:with-param name="evd" 
@@ -168,6 +185,8 @@
   </xsl:template>
 
   <xsl:template name="evidence" >
+    <xsl:param name="release-date"/>
+    <xsl:param name="update-date"/>
     <xsl:param name="src"/>
     <xsl:param name="fep" />
     <xsl:param name="evd" />
@@ -188,6 +207,8 @@
            select="$int/mif:participantList/mif:participant[last()]"/>
 
       <xsl:call-template name="record">
+        <xsl:with-param name="release-date" select="$release-date"/>
+        <xsl:with-param name="update-date" select="$update-date"/>
         <xsl:with-param name="src" select='$src'/>
         <xsl:with-param name="fep" select="$fep" />
         <xsl:with-param name="evd" select="$evd" />
@@ -201,6 +222,8 @@
    <xsl:if test="$expand ='true'">
      <xsl:if test="count($int/mif:participantList/mif:participant) &gt; 2">
       <xsl:call-template name="expand">
+        <xsl:with-param name="release-date" select="$release-date"/>
+        <xsl:with-param name="update-date" select="$update-date"/>
         <xsl:with-param name="src" select='$src'/>
         <xsl:with-param name="fep" select='$fep'/>  
         <xsl:with-param name="evd" select='$evd'/>
@@ -226,6 +249,8 @@
       <xsl:if test="count($bait) = 1 and count($prey) &gt; 0">   
 
         <xsl:call-template name="complex-record">
+          <xsl:with-param name="release-date" select="$release-date"/>
+          <xsl:with-param name="update-date" select="$update-date"/>
           <xsl:with-param name="src" select='$src'/>
           <xsl:with-param name="fep" select="$fep" />
           <xsl:with-param name="evd" select="$evd" />

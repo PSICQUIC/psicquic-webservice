@@ -451,6 +451,7 @@ public class SolrRecordIndex implements RecordIndex{
             baseSolr = new ConcurrentUpdateSolrServer( baseUrl, 
                                                        queueSize, 
                                                        solrconTCount );	    
+            //baseSolr.setConnectionTimeout(6000);
         } else {
             log.info( "SolrRecordIndex: baseSolr already initialized: " 
                       + baseSolr );
@@ -462,9 +463,13 @@ public class SolrRecordIndex implements RecordIndex{
             
             for( Iterator<String> is = shardUrl.iterator(); is.hasNext(); ){
                 
-                shSolr.add( new ConcurrentUpdateSolrServer( is.next(), 
-                                                            queueSize, 
-                                                            solrconTCount ) );                  
+                ConcurrentUpdateSolrServer cuss =
+                    new ConcurrentUpdateSolrServer( is.next(), 
+                                                    queueSize, 
+                                                    solrconTCount );
+
+                //cuss.setConnectionTimeout(6000);
+                shSolr.add( cuss );
 	    }
         } else {
             if( shardUrl.size() > 0 ){
