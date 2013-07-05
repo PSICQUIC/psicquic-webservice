@@ -44,23 +44,6 @@
         </navigation-case>
     </navigation-rule>
 
-    <!-- help dialogs -->
-    <navigation-rule>
-        <from-view-id>*</from-view-id>
-        <navigation-case>
-            <from-outcome>dialog:help.clustering</from-outcome>
-            <to-view-id>/pages/interactions/help_clustering.xhtml</to-view-id>
-        </navigation-case>
-    </navigation-rule>
-
-    <navigation-rule>
-        <from-view-id>*</from-view-id>
-        <navigation-case>
-            <from-outcome>dialog:help.search</from-outcome>
-            <to-view-id>/pages/search/help_search.xhtml</to-view-id>
-        </navigation-case>
-    </navigation-rule>
-
     <!-- download dialog -->
     <navigation-rule>
         <from-view-id>*</from-view-id>

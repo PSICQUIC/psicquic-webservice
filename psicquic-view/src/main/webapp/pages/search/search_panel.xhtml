@@ -16,14 +16,12 @@
             <!--document.getElementById('queryTxt').focus();-->
             <!--});-->
             <!--</trh:script>-->
+            <tr:panelPopup id="helpPopUp" triggerType="click" position="centered" modal="true" text="Help"
+                           width="800" height="500" title="Help"
+                           icon="/images/question.png">
+                    <ui:include src="help_search.xhtml"  />
+            </tr:panelPopup>
 
-            <tr:commandLink text="Help" action="dialog:help.search"
-                            windowWidth="600" windowHeight="500"
-                            useWindow="true"
-                    >
-                <tr:image source="/images/question.png" inlineStyle="vertical-align:middle;padding-left: 3px"
-                          shortDesc="Search Help"/>
-            </tr:commandLink>
 
             <tr:outputText value="Query:" inlineStyle="font-weight: bold;font-size: small;"/>
             <tr:inputText id="queryTxt"

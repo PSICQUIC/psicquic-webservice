@@ -212,19 +212,23 @@
                 <tr:panelGroupLayout layout="vertical" inlineStyle="text-align: center;">
 
                     <tr:group>
-                        <tr:commandLink action="dialog:help.clustering" partialSubmit="true"
-                                        windowWidth="600" windowHeight="500" immediate="true"
-                                        useWindow="true">
-                            <tr:image source="/images/question.png" inlineStyle="vertical-align:text-bottom;"
-                                      shortDesc="#{clusteringBean.clusterButtonHelpMessage}"/>
-                        </tr:commandLink>
-                        <tr:commandButton id="clusterButton"
-                                          shortDesc="This button will be enabled with less than #{config.clusteringSizeLimit} interactions"
-                                          action="#{clusteringBean.start}"
-                                          disabled="#{servicesTable.selectedResults > config.clusteringSizeLimit or servicesTable.selectedResults le 0}"
-                                          text="Cluster this query">
+                         <tr:panelGroupLayout layout="horizontal">
+                             <tr:panelPopup id="helpClusterPopUp" triggerType="click" position="centered" modal="true"
+                                            width="800" height="500" title="Cluster Help"
+                                            inlineStyle="vertical-align:text-bottom;"
+                                            icon="/images/question.png" shortDesc="#{clusteringBean.clusterButtonHelpMessage}">
+                                 <ui:include src="interactions/help_clustering.xhtml"  />
+                             </tr:panelPopup>
 
-                        </tr:commandButton>
+                             <tr:commandButton id="clusterButton"
+                                               shortDesc="This button will be enabled with less than #{config.clusteringSizeLimit} interactions"
+                                               action="#{clusteringBean.start}"
+                                               disabled="#{servicesTable.selectedResults > config.clusteringSizeLimit or servicesTable.selectedResults le 0}"
+                                               text="Cluster this query">
+
+                             </tr:commandButton>
+                         </tr:panelGroupLayout>
+
                     </tr:group>
 
                     <!--&lt;!&ndash;Download All Button&ndash;&gt;-->

@@ -705,3 +705,11 @@ af|panelPopup::content {
     padding: 5px;
 }
 
+#helpPopUp_popupContainer af|panelPopup::content {
+    background: white;
+}
+
+#helpClusterPopUp_popupContainer af|panelPopup::content {
+    background: white;
+}
+
