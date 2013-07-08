@@ -195,30 +195,30 @@ af|panelBox::dark af|panelBox::end {
 
 af|panelBox::dark af|panelBox::top-start,
 af|panelBox::dark af|panelBox::top-end:rtl {
-  background-image: url(/skins/ebi/images/rounded_TL.gif);
-  width:6px;
-  height:6px
+    background-image: url(/skins/ebi/images/rounded_TL.gif);
+    width:6px;
+    height:6px
 }
 
 af|panelBox::dark af|panelBox::top-end,
 af|panelBox::dark af|panelBox::top-start:rtl {
-  background-image: url(/skins/ebi/images/rounded_TR.gif);
-  width:6px;
-  height:6px
+    background-image: url(/skins/ebi/images/rounded_TR.gif);
+    width:6px;
+    height:6px
 }
 
 af|panelBox::dark af|panelBox::bottom-start,
 af|panelBox::dark af|panelBox::bottom-end:rtl {
-  background-image: url(/skins/ebi/images/rounded_BL.gif);
-  width:6px;
-  height:6px
+    background-image: url(/skins/ebi/images/rounded_BL.gif);
+    width:6px;
+    height:6px
 }
 
 af|panelBox::dark af|panelBox::bottom-end,
 af|panelBox::dark af|panelBox::bottom-start:rtl {
-  background-image: url(/skins/ebi/images/rounded_BR.gif);
-  width:6px;
-  height:6px
+    background-image: url(/skins/ebi/images/rounded_BR.gif);
+    width:6px;
+    height:6px
 }
 
 af|panelBox::dark af|panelBox::header {
@@ -277,7 +277,7 @@ af|panelSideBar::body {
 /************************/
 
 af|panelPage::copyright {
-   padding: 6px 6px 0 0;
+    padding: 6px 6px 0 0;
 }
 
 af|panelPage::about {
@@ -448,15 +448,15 @@ af|table::column-footer{
 /**for compound and target columns **/
 
 .cellTextCompound {
-   background-color:#f6faf4;
+    background-color:#f6faf4;
 }
 
 .cellTextTarget {
-  background-color: #eef5f5;
+    background-color: #eef5f5;
 }
 
 .cellTextInteraction {
-  background-color: #eeeeee;
+    background-color: #eeeeee;
 }
 
 .cellTextNegativeInteraction {
@@ -559,30 +559,30 @@ af|messages::end {
 
 af|messages::top-start,
 af|messages::top-end:rtl {
-  background-image: url(/skins/ebi/images/rounded_TL.gif);
-  width:6px;
-  height:6px
+    background-image: url(/skins/ebi/images/rounded_TL.gif);
+    width:6px;
+    height:6px
 }
 
 af|messages::top-end,
 af|messages::top-start:rtl {
-  background-image: url(/skins/ebi/images/rounded_TR.gif);
-  width:6px;
-  height:6px
+    background-image: url(/skins/ebi/images/rounded_TR.gif);
+    width:6px;
+    height:6px
 }
 
 af|messages::bottom-start,
 af|messages::bottom-end:rtl {
-  background-image: url(/skins/ebi/images/rounded_BL.gif);
-  width:6px;
-  height:6px
+    background-image: url(/skins/ebi/images/rounded_BL.gif);
+    width:6px;
+    height:6px
 }
 
 af|messages::bottom-end,
 af|messages::bottom-start:rtl {
-  background-image: url(/skins/ebi/images/rounded_BR.gif);
-  width:6px;
-  height:6px
+    background-image: url(/skins/ebi/images/rounded_BR.gif);
+    width:6px;
+    height:6px
 }
 
 af|messages::header {
@@ -711,5 +711,10 @@ af|panelPopup::content {
 
 #helpClusterPopUp_popupContainer af|panelPopup::content {
     background: white;
+}
+
+#globalErrorMsg h1 {
+    border: 0px;
+    margin: 0px;
 }
 

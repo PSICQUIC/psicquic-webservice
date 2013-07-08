@@ -689,3 +689,8 @@ af|panelPopup::content {
 #helpClusterPopUp_popupContainer af|panelPopup::content {
     background: white;
 }
+
+#globalErrorMsg h1 {
+    border: 0px;
+    margin: 0px;
+}
