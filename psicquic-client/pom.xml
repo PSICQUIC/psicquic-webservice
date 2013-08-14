@@ -5,7 +5,7 @@
     <artifactId>psicquic-client</artifactId>
     <packaging>bundle</packaging>
 
-    <version>1.5.3</version>
+    <version>1.5.4-SNAPSHOT</version>
 
     <name>PSI :: Universal PSICQUIC Client</name>
 
@@ -218,13 +218,13 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
-            <version>1.8.4</version>
+            <version>1.8.5-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-solr</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.3-SNAPSHOT</version>
         </dependency>
 
         <!-- spring -->
