@@ -11,7 +11,7 @@
     <name>PSI :: PSICQUIC Clustering</name>
 
     <scm>
-        <connection>scm:svn:http://psicquic.googlecode.com/svn/trunk/psicquic-clustering</connection>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-clustering</connection>
         <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-clustering</developerConnection>
         <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-clustering</url>
     </scm>
