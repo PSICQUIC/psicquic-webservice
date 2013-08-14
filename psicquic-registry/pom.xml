@@ -5,7 +5,7 @@
     <artifactId>psicquic-registry</artifactId>
     <packaging>war</packaging>
 
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
 
     <name>PSI :: PSICQUIC Registry Service</name>
 
@@ -273,7 +273,7 @@
         <dependency>
             <groupId>org.hupo.psi.mi.psicquic</groupId>
             <artifactId>psicquic-client</artifactId>
-            <version>1.5.3-SNAPSHOT</version>
+            <version>1.5.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
