@@ -10,7 +10,7 @@
     <name>PSI :: PSICQUIC Simple Client</name>
 
     <scm>
-        <connection>scm:svn:http://psicquic.googlecode.com/svn/trunk/psicquic-simple-client</connection>
+        <connection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-simple-client</connection>
         <developerConnection>scm:svn:https://psicquic.googlecode.com/svn/trunk/psicquic-simple-client</developerConnection>
         <url>http://code.google.com/p/psicquic/source/browse/#svn/trunk/psicquic-simple-client</url>
     </scm>
