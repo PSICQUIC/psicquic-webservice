@@ -939,12 +939,22 @@ public class SolrRecordIndex implements RecordIndex{
            
             try{  // NOTE: Some ugly casting; arrgh... ;o)
 
-                if( val instanceof String ){
-
-                    String[] va = new String[1]; 
-                    va[0] = (String) val;
-                    mmap.put( key, va );
-                } else {
+                if( val instanceof String || val instanceof Integer ){
+                    
+                    if( val instanceof String ){
+                        String[] va = new String[1]; 
+                        va[0] = (String) val;
+                        mmap.put( key, va );
+                    } 
+                    
+                    if( val instanceof Integer ){
+                        String[] va = new String[1]; 
+                        va[0] = Integer.toString((Integer) val );
+                        mmap.put( key, va );
+                    } 
+                    
+                } else{
+                    
                     String[] vl = 
                         (String[]) ((List) val).toArray( new String[0] );
                     mmap.put( key, vl );
