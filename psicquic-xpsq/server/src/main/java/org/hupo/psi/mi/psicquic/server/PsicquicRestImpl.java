@@ -142,7 +142,11 @@ public class PsicquicRestImpl implements PsicquicRest{
         log.debug( "meta=" + qrs.getMeta() );
         
         String mitab = psqServer.getHeader( format );
-        mitab += psqServer.toString( qrs, true, true );                
+        if( format != null && format.equalsIgnoreCase("count")){
+            mitab += psqServer.getMaxCount( qrs );           
+        } else {
+            mitab += psqServer.toString( qrs, true, true );
+        }    
         mitab += psqServer.getFooter( format );
         
         if( mitab!= null && mitab.length() > 32 ){
@@ -153,7 +157,7 @@ public class PsicquicRestImpl implements PsicquicRest{
 
         // Meta info 
         //----------
-        /*
+        
         if( qrs.getMeta() != null ){
 
             if( qrs.getMeta().get( "groups") != null ){
@@ -191,7 +195,7 @@ public class PsicquicRestImpl implements PsicquicRest{
             }
         
         }
-        */
+        
         try{
 
             return prepareResponse( psqServer, mitab, format,

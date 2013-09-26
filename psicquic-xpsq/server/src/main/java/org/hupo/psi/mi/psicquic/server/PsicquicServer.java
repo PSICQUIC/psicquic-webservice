@@ -134,6 +134,17 @@ public class PsicquicServer {
 
     //--------------------------------------------------------------------------
 
+    public String getMaxCount( ResultSet rset ){
+        
+        String rstr = "";
+
+        rstr = Long.toString( rset.getMaxResult() );
+        
+        return rstr;
+    }
+
+    //--------------------------------------------------------------------------
+
     public String toString( ResultSet rset, boolean records, boolean meta ){
         
         String rstr = "";

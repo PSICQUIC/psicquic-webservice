@@ -12,10 +12,10 @@
         "rec-id":"recId",
         "param-default":{
            "defType":"edismax",
+           "qf":"identifier pubid pubauth species detmethod type interaction_id xref pxref",
            "start":"0",
            "rows":"10",
-           "wr":"xml",
-           "df":["identifier","taxidA","taxidB"]
+           "wr":"xml"
         }
      },
      "transform":{
@@ -58,6 +58,13 @@
         "db-home":"bdb-xpsq-store",
         "rec-id":"recId",
         "view":{
+           "count":{
+             "config":{ 
+                 "header":"",
+                 "footer":"\n",
+                 "media-type":"text/plain"
+             }
+           },
            "tab25":{
                "config":{
                  "db-name":"psi-mi-tab25",
@@ -97,6 +104,13 @@
         "db-home":"derby-xpsq-store",
         "rec-id":"recId",
         "view":{
+           "count":{
+               "config":{ 
+                 "header":"",
+                 "footer":"\n",
+                 "media-type":"text/plain"
+               }
+           },
            "tab25":{
                "config":{
                  "header":"#tab25\n",
@@ -130,6 +144,13 @@
      "hibernate":{
         "rec-id":"recId",
         "view":{
+           "count":{
+               "config":{
+                 "header":"",
+                 "footer":"\n",
+                 "media-type":"text/plain"
+               }
+           },
            "tab25":{
                "config":{
                  "header":"#tab25\n",
@@ -164,6 +185,13 @@
         "solr-index":"solr",
         "rec-id":"recId",
         "view":{
+           "count":{
+               "config":{
+                 "header":"",
+                 "footer":"\n",
+                 "media-type":"text/plain"
+               }
+           },
            "tab25":{
                "config":{
                  "col":["idA_o","idB_o","altidA_o","altidB_o",
@@ -395,6 +423,7 @@
            "last-protein-update":"01-Jan-12"
         },
         "supported-return-type":[
+           "count",
            "tab25",
            "tab26",
            "tab27",

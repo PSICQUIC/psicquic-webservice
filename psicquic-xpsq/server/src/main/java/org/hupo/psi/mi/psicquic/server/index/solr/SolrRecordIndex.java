@@ -306,6 +306,10 @@ public class SolrRecordIndex implements RecordIndex{
             //------
             
             params.set( "q", query );
+
+            params.set( "df", "identifier" );
+
+
             
             // Paging
             //-------

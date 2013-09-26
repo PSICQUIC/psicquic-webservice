@@ -350,10 +350,15 @@ public class DerbyRecordStore extends RdbRecordStore{
                                           new Long(rc.length()).intValue() );
                 rt = rs.getString(3);
             } 
-            if(record != null ){
+            if(record != null && record.length() > 32){
                 log.debug( "DerbyRecordDao(getRecord): recId=" + rid 
                            + " rt=" + rt 
                            + "  record=" + record.substring(0, 32) );
+            } else {
+
+                log.debug( "DerbyRecordDao(getRecord): recId=" + rid
+                           + " rt=" + rt
+                           + "  record=" + record );
             }
             rs.close();
             pst.close();
