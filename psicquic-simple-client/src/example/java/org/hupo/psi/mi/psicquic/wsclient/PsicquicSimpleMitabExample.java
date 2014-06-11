@@ -15,11 +15,14 @@
  */
 package org.hupo.psi.mi.psicquic.wsclient;
 
-import psidev.psi.mi.tab.PsimiTabReader;
-import psidev.psi.mi.tab.model.BinaryInteraction;
+import org.hupo.psi.mi.psicquic.wsclient.PsicquicSimpleClient;
+import psidev.psi.mi.jami.binary.BinaryInteraction;
+import psidev.psi.mi.jami.tab.io.parser.BinaryLineParser;
+import psidev.psi.mi.jami.tab.io.parser.ParseException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -35,17 +38,23 @@ public class PsicquicSimpleMitabExample {
         
         PsicquicSimpleClient client = new PsicquicSimpleClient("http://www.ebi.ac.uk/Tools/webservices/psicquic/intact/webservices/current/search/");
 
-        PsimiTabReader mitabReader = new PsimiTabReader(false);
-
         try {
             InputStream result = client.getByQuery("brca2");
 
-            Collection<BinaryInteraction> binaryInteractions = mitabReader.read(result);
+            BinaryLineParser parser = new BinaryLineParser(result);
+
+            Collection<BinaryInteraction> binaryInteractions = new ArrayList<BinaryInteraction>();
+
+            while(!parser.hasFinished()){
+                binaryInteractions.add(parser.MitabLine());
+            }
 
             System.out.println("Interactions found: "+binaryInteractions.size());
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ParseException e){
+            e .printStackTrace();
         }
     }
 
