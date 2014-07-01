@@ -167,21 +167,27 @@ public class IndexBasedPsicquicService implements PsicquicService {
             throw new PsicquicServiceException("Problem creating SearchEngine using directory: "+config.getIndexDirectory(), e);
         }
 
-        SearchResult searchResult = searchEngine.search(query, requestInfo.getFirstResult(), blockSize);
+        try{
+            SearchResult searchResult = searchEngine.search(query, requestInfo.getFirstResult(), blockSize);
 
-        // preparing the response
-        QueryResponse queryResponse = new QueryResponse();
-        ResultInfo resultInfo = new ResultInfo();
-        resultInfo.setBlockSize(blockSize);
-        resultInfo.setFirstResult(requestInfo.getFirstResult());
-        resultInfo.setTotalResults(searchResult.getTotalCount());
+            // preparing the response
+            QueryResponse queryResponse = new QueryResponse();
+            ResultInfo resultInfo = new ResultInfo();
+            resultInfo.setBlockSize(blockSize);
+            resultInfo.setFirstResult(requestInfo.getFirstResult());
+            resultInfo.setTotalResults(searchResult.getTotalCount());
 
-        queryResponse.setResultInfo(resultInfo);
+            queryResponse.setResultInfo(resultInfo);
 
-        ResultSet resultSet = createResultSet(query, searchResult, requestInfo);
-        queryResponse.setResultSet(resultSet);
+            ResultSet resultSet = createResultSet(query, searchResult, requestInfo);
+            queryResponse.setResultSet(resultSet);
 
-        searchEngine.close();
+            searchEngine.close();
+        }
+        catch (Throwable e){
+            searchEngine.close();
+            throw PsicquicServiceException("Cannot query PSICQUIC index ", e);
+        }
 
         return queryResponse;
     }
