@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -96,76 +97,82 @@ public class PsicquicRegistryStatusChecker {
 					f.cancel(true);
 				}
 			} catch (TimeoutException e) {
-				log.error("Service task stopped because of time out " + threadTimeOut + " seconds.", e);
+				log.error("Service task stopped because of time out " + threadTimeOut + " seconds.");
 
 				if (!f.isCancelled()) {
 					f.cancel(true);
 				}
-			}
+			}catch (Throwable e) {
+                log.error("Service task stopped.",e);
+
+                if (!f.isCancelled()) {
+                    f.cancel(true);
+                }
+            }
 		}
 
 		runningTasks.clear();
 	}
 
 	private void checkStatus(ServiceType serviceStatus) {
+        HttpURLConnection urlConnection=null;
+        InputStream contentStream = null;
+        InputStream countStream = null;
 		try {
 
 			final URL versionUrl = new URL(serviceStatus.getRestUrl() + "version");
 			final URL countURL = new URL(serviceStatus.getRestUrl() + "query/*?format=count");
 
-			final HttpURLConnection urlConnection = (HttpURLConnection) versionUrl.openConnection();
+			urlConnection = (HttpURLConnection) versionUrl.openConnection();
             urlConnection.setConnectTimeout(10000);
             urlConnection.setReadTimeout(10000);
 
-            try{
-                urlConnection.connect();
+            urlConnection.connect();
 
-                int code = urlConnection.getResponseCode();
+            int code = urlConnection.getResponseCode();
 
-                if (HttpURLConnection.HTTP_OK == code) {
+            if (HttpURLConnection.HTTP_OK == code) {
 
-                    serviceStatus.setActive(true);
+                serviceStatus.setActive(true);
 
-                    final String version;
-                    final String strCount;
+                final String version;
+                final String strCount;
 
-                    InputStream contentStream = null;
-                    InputStream countStream = null;
+                //TODO Add a double check to know if the service is active
+                // or not add a catch block for the exceptions
 
-                    try {
+                contentStream = (InputStream) urlConnection.getContent();
+                version = IOUtils.toString(contentStream);
+                serviceStatus.setVersion(version);
 
-                        //TODO Add a double check to know if the service is active
-                        // or not add a catch block for the exceptions
-
-                        contentStream = (InputStream) urlConnection.getContent();
-                        version = IOUtils.toString(contentStream);
-                        serviceStatus.setVersion(version);
-
-                        countStream = countURL.openStream();
-                        strCount = IOUtils.toString(countStream);
-                        serviceStatus.setCount(Long.valueOf(strCount));
-
-                    } finally {
-                        if(contentStream!=null){
-                            contentStream.close();
-                        }
-                        if(countStream!=null){
-                            countStream.close();
-                        }
-                    }
-                } else {
-                    serviceStatus.setActive(false);
-                }
-            }
-            finally{
-                urlConnection.disconnect();
+                countStream = countURL.openStream();
+                strCount = IOUtils.toString(countStream);
+                serviceStatus.setCount(Long.valueOf(strCount));
+            } else {
+                serviceStatus.setActive(false);
             }
 
 		} catch (Throwable e) {
 			serviceStatus.setActive(false);
 		}
 
-
+        if(contentStream!=null){
+            try {
+                contentStream.close();
+            } catch (IOException e) {
+                log.error("Cannot close psicquic content stream", e);
+            }
+        }
+        if(countStream!=null){
+            try {
+                countStream.close();
+            } catch (IOException e) {
+                log.error("Cannot close psicquic count stream", e);
+            }
+        }
+        if (urlConnection != null){
+            urlConnection.disconnect();
+        }
 	}
 
 	public Date getLastRefreshed() {
