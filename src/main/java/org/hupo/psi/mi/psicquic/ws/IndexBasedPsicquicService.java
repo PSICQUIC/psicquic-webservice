@@ -155,12 +155,15 @@ public class IndexBasedPsicquicService implements PsicquicService {
 
         logger.debug("Searching: {} ({}/{})", new Object[] {query, requestInfo.getFirstResult(), blockSize});
 
-        SearchEngine searchEngine;
+        SearchEngine searchEngine=null;
         
         try {
             searchEngine = new BinaryInteractionSearchEngine(config.getIndexDirectory());
         } catch (IOException e) {
             e.printStackTrace();
+            if (searchEngine != null){
+                searchEngine.close();
+            }
             throw new PsicquicServiceException("Problem creating SearchEngine using directory: "+config.getIndexDirectory(), e);
         }
 
@@ -177,6 +180,8 @@ public class IndexBasedPsicquicService implements PsicquicService {
 
         ResultSet resultSet = createResultSet(query, searchResult, requestInfo);
         queryResponse.setResultSet(resultSet);
+
+        searchEngine.close();
 
         return queryResponse;
     }
