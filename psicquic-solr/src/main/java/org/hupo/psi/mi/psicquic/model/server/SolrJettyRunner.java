@@ -135,7 +135,7 @@ public class SolrJettyRunner {
         cm.setDefaultMaxPerRoute(24);
         RequestConfig.Builder requestBuilder = RequestConfig.custom();
         requestBuilder = requestBuilder.setConnectTimeout(5000);
-        requestBuilder = requestBuilder.setConnectionRequestTimeout(5000);
+        requestBuilder = requestBuilder.setSocketTimeout(5000);
 
         HttpClientBuilder builder = HttpClientBuilder.create();
         builder.setDefaultRequestConfig(requestBuilder.build());
