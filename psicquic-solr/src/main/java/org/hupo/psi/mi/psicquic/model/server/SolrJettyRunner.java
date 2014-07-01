@@ -1,12 +1,9 @@
 package org.hupo.psi.mi.psicquic.model.server;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -129,27 +126,22 @@ public class SolrJettyRunner {
     public HttpSolrServer getSolrServer() {
         solrServer = new HttpSolrServer(getSolrUrl(), createHttpClient());
 
-        solrServer.setConnectionTimeout(5000);
-        solrServer.setSoTimeout(5000);
-        solrServer.setAllowCompression(true);
-
         return solrServer;
     }
 
     protected HttpClient createHttpClient() {
-        SchemeRegistry schemeRegistry = new SchemeRegistry();
-        schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory
-                .getSocketFactory()));
-        schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory
-                .getSocketFactory()));
-
-        PoolingClientConnectionManager cm = new PoolingClientConnectionManager(schemeRegistry);
+        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         cm.setMaxTotal(128);
         cm.setDefaultMaxPerRoute(24);
+        RequestConfig.Builder requestBuilder = RequestConfig.custom();
+        requestBuilder = requestBuilder.setConnectTimeout(5000);
+        requestBuilder = requestBuilder.setConnectionRequestTimeout(5000);
 
-        HttpClient httpClient = new DefaultHttpClient(cm);
+        HttpClientBuilder builder = HttpClientBuilder.create();
+        builder.setDefaultRequestConfig(requestBuilder.build());
+        builder.setConnectionManager(cm);
 
-        return httpClient;
+        return builder.build();
     }
 
     public int getPort() {
