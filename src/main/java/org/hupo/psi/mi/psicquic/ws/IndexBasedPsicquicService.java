@@ -186,7 +186,7 @@ public class IndexBasedPsicquicService implements PsicquicService {
         }
         catch (Throwable e){
             searchEngine.close();
-            throw PsicquicServiceException("Cannot query PSICQUIC index ", e);
+            throw new PsicquicServiceException("Cannot query PSICQUIC index ", e);
         }
 
         return queryResponse;
