@@ -183,13 +183,13 @@ public class IndexBasedPsicquicService implements PsicquicService {
             queryResponse.setResultSet(resultSet);
 
             searchEngine.close();
+
+            return queryResponse;
         }
         catch (Throwable e){
             searchEngine.close();
             throw new PsicquicServiceException("Cannot query PSICQUIC index ", e);
         }
-
-        return queryResponse;
     }
 
     public String getVersion() {
