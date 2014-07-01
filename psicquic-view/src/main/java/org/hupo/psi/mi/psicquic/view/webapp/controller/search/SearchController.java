@@ -155,7 +155,7 @@ public class SearchController extends BaseController {
     public void refreshApp(ActionEvent evt) {
         PsicquicRegistryClient registryClient = new DefaultPsicquicRegistryClient(config.getRegistryURL());
         try {
-            if (allServices == null) {
+            if (allServices == null || allServices.isEmpty()) {
 
                 if (config.getRegistryTagsAsString() != null) {
                     allServices = registryClient.listServices("STATUS", true, config.getRegistryTagsAsString());
@@ -177,6 +177,12 @@ public class SearchController extends BaseController {
         } catch (PsicquicRegistryClientException e) {
             log.error("Problem retrieving the services from the Registry", e);
             addErrorMessage("Problem retrieving the services from the Registry", "Please try again later");
+
+            allServices = new ArrayList<ServiceType>();
+            services = new ArrayList<ServiceType>(allServices);
+            includedServices = new String[]{};
+            excludedServices = new String[]{};
+
         }
     }
 

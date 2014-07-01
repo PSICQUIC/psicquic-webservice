@@ -37,13 +37,13 @@ import java.util.concurrent.*;
 @ConversationName("general")
 public class ServicesController extends BaseController implements java.io.Serializable {
 
-	private static final long serialVersionUID = 6955236745608138415L;
-	private static final Log log = LogFactory.getLog(ServicesController.class);
-	private static final int UNEXPECTED_ERROR = -2;
-	private static final int TIME_OUT_EXCEPTION = -1;
+    private static final long serialVersionUID = 6955236745608138415L;
+    private static final Log log = LogFactory.getLog(ServicesController.class);
+    private static final int UNEXPECTED_ERROR = -2;
+    private static final int TIME_OUT_EXCEPTION = -1;
 
-	@Autowired
-	private transient ApplicationContext applicationContext;
+    @Autowired
+    private transient ApplicationContext applicationContext;
 
     @Autowired
     private UserQuery userQuery;
@@ -53,7 +53,7 @@ public class ServicesController extends BaseController implements java.io.Serial
     private int activeServiceCount = 0;
 
     private int selectedResults = 0;
-	private int totalResults = 0;
+    private int totalResults = 0;
 
     private List<Future<?>> runningTasks;
     private QueryHits selectedService;
@@ -62,46 +62,46 @@ public class ServicesController extends BaseController implements java.io.Serial
 
     public ServicesController() {
 
-	}
+    }
 
-	public void initialize(List<ServiceType> serviceTypeArrayList) {
+    public void initialize(List<ServiceType> serviceTypeArrayList) {
 
-		services = new ArrayList<QueryHits>();
-		activeServiceCount = 0;
+        services = new ArrayList<QueryHits>();
+        activeServiceCount = 0;
 
-		for (int i = 0; i < serviceTypeArrayList.size(); i++) {
-			QueryHits service = new QueryHits(serviceTypeArrayList.get(i), 0, serviceTypeArrayList.get(i).isActive());
+        for (int i = 0; i < serviceTypeArrayList.size(); i++) {
+            QueryHits service = new QueryHits(serviceTypeArrayList.get(i), 0, serviceTypeArrayList.get(i).isActive());
 
-			if (service.isActive()) {
+            if (service.isActive()) {
 
-				PsicquicSimpleClient psicquicSimpleClient;
-				psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
-				psicquicSimpleClient.setReadTimeout(5000);
+                PsicquicSimpleClient psicquicSimpleClient;
+                psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
+                psicquicSimpleClient.setReadTimeout(5000);
 
-				activeServiceCount++;
+                activeServiceCount++;
 
-				try {
-					List<String> formats = psicquicSimpleClient.getFormats();
-					service.setFormats(formats);
-				} catch (IOException e) {
-					//TODO Add a different color for this services and provide a message
-					log.error(service.getName() + ": The formats can not be retrieved." + e.getMessage());
-					service.setActive(false);
-					service.setChecked(false);
-					activeServiceCount--;
-				}
-			}
-			services.add(i, service);
+                try {
+                    List<String> formats = psicquicSimpleClient.getFormats();
+                    service.setFormats(formats);
+                } catch (IOException e) {
+                    //TODO Add a different color for this services and provide a message
+                    log.error(service.getName() + ": The formats can not be retrieved." + e.getMessage());
+                    service.setActive(false);
+                    service.setChecked(false);
+                    activeServiceCount--;
+                }
+            }
+            services.add(i, service);
 
-		}
-		Collections.sort(services, new ServiceByNameComparator());
-	}
+        }
+        Collections.sort(services, new ServiceByNameComparator());
+    }
 
-	public void reset() {
-		for (QueryHits service : services) {
-			service.setHits(0);
-		}
-	}
+    public void reset() {
+        for (QueryHits service : services) {
+            service.setHits(0);
+        }
+    }
 
     public void doPsicquicBinarySearch(String searchQuery) {
 
@@ -139,38 +139,38 @@ public class ServicesController extends BaseController implements java.io.Serial
     }
 
 
-	public void searchAndCreateResultModels() {
+    public void searchAndCreateResultModels() {
 
-		final String filteredSearchQuery = userQuery.getFilteredSearchQuery();
+        final String filteredSearchQuery = userQuery.getFilteredSearchQuery();
 
-		// count the results
-		PsicquicThreadConfig threadConfig = (PsicquicThreadConfig) applicationContext.getBean("psicquicThreadConfig");
+        // count the results
+        PsicquicThreadConfig threadConfig = (PsicquicThreadConfig) applicationContext.getBean("psicquicThreadConfig");
 
-		ExecutorService executorService = threadConfig.getExecutorService();
+        ExecutorService executorService = threadConfig.getExecutorService();
 
-		if (runningTasks == null) {
-			runningTasks = new ArrayList<Future<?>>();
-		} else {
-			runningTasks.clear();
-		}
+        if (runningTasks == null) {
+            runningTasks = new ArrayList<Future<?>>();
+        } else {
+            runningTasks.clear();
+        }
 
-		for (final QueryHits service : services) {
-			if (service.isActive() && service.isChecked()) {
-				Runnable runnable = new Runnable() {
-					public void run() {
-						int count = countInPsicquicService(service, filteredSearchQuery);
-						service.setHits(count);
-						if (count < 0) {
-							service.setChecked(false);
-						}
-					}
-				};
-				runningTasks.add(executorService.submit(runnable));
-			}
-		}
+        for (final QueryHits service : services) {
+            if (service.isActive() && service.isChecked()) {
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        int count = countInPsicquicService(service, filteredSearchQuery);
+                        service.setHits(count);
+                        if (count < 0) {
+                            service.setChecked(false);
+                        }
+                    }
+                };
+                runningTasks.add(executorService.submit(runnable));
+            }
+        }
 
-		checkAndResumePsicquicTasks();
-	}
+        checkAndResumePsicquicTasks();
+    }
 
     public void loadTableResults() {
         QueryHits service = getSelectedService();
@@ -219,8 +219,8 @@ public class ServicesController extends BaseController implements java.io.Serial
         final String queryUrl;
 
 
-            boolean endWithSlash = restUrl.endsWith("/");
-            queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
+        boolean endWithSlash = restUrl.endsWith("/");
+        queryUrl = restUrl + (endWithSlash ? "" : "/") + "query/" + query;
 
 
         if (log.isDebugEnabled()) log.debug("Reading data from: " + queryUrl);
@@ -229,123 +229,133 @@ public class ServicesController extends BaseController implements java.io.Serial
         mitabUrl = queryUrl;
     }
 
-	private int countInPsicquicService(ServiceType service, String query) {
+    private int countInPsicquicService(ServiceType service, String query) {
 
-		int psicquicCount = 0;
+        int psicquicCount = 0;
 
-		PsicquicSimpleClient psicquicSimpleClient;
+        PsicquicSimpleClient psicquicSimpleClient;
 
-		psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
-		psicquicSimpleClient.setReadTimeout(5000);
+        psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
+        psicquicSimpleClient.setReadTimeout(5000);
 
 
-		try {
-			psicquicCount = Long.valueOf(psicquicSimpleClient.countByQuery(query)).intValue();
-		} catch (IOException e) {
-			if (e instanceof SocketTimeoutException) {
-				psicquicCount = TIME_OUT_EXCEPTION;
-			} else {
-				psicquicCount = UNEXPECTED_ERROR;
-			}
-			//TODO Check if it is a 2.7 query and explain
-			log.warn("Error while building results based on the query: '"
-					+ query + "'" + " SERVICE (" + service.getName() + ") RESPONSE: " + e.getMessage());
+        try {
+            psicquicCount = Long.valueOf(psicquicSimpleClient.countByQuery(query)).intValue();
+        } catch (IOException e) {
+            if (e instanceof SocketTimeoutException) {
+                psicquicCount = TIME_OUT_EXCEPTION;
+            } else {
+                psicquicCount = UNEXPECTED_ERROR;
+            }
+            //TODO Check if it is a 2.7 query and explain
+            log.warn("Error while building results based on the query: '"
+                    + query + "'" + " SERVICE (" + service.getName() + ") RESPONSE: " + e.getMessage());
 
-		}
+        }catch (Throwable e){
+            psicquicCount = UNEXPECTED_ERROR;
+            //TODO Check if it is a 2.7 query and explain
+            log.warn("Error while building results based on the query: '"
+                    + query + "'" + " SERVICE (" + service.getName() + ") RESPONSE: " + e.getMessage());
+        }
 
-		return psicquicCount;
+        return psicquicCount;
 
-	}
+    }
 
-	private void checkAndResumePsicquicTasks() {
+    private void checkAndResumePsicquicTasks() {
 
-		for (Future f : runningTasks) {
+        for (Future f : runningTasks) {
             int threadTimeOut = 5;
             try {
-				f.get(threadTimeOut, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				log.error("The psicquic task was interrupted, we cancel the task.", e);
-				if (!f.isCancelled()) {
-					f.cancel(true);
-				}
-			} catch (ExecutionException e) {
-				log.error("The psicquic task could not be executed, we cancel the task.", e);
-				if (!f.isCancelled()) {
-					f.cancel(true);
-				}
-			} catch (TimeoutException e) {
-				log.error("Service task stopped because of time out " + threadTimeOut + "seconds.", e);
+                f.get(threadTimeOut, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                log.error("The psicquic task was interrupted, we cancel the task.", e);
+                if (!f.isCancelled()) {
+                    f.cancel(true);
+                }
+            } catch (ExecutionException e) {
+                log.error("The psicquic task could not be executed, we cancel the task.", e);
+                if (!f.isCancelled()) {
+                    f.cancel(true);
+                }
+            } catch (TimeoutException e) {
+                log.error("Service task stopped because of time out " + threadTimeOut + "seconds.");
 
-				if (!f.isCancelled()) {
-					f.cancel(true);
-				}
-			}
-		}
+                if (!f.isCancelled()) {
+                    f.cancel(true);
+                }
+            }catch (Throwable e) {
+                log.error("The psicquic task could not be executed, we cancel the task.", e);
+                if (!f.isCancelled()) {
+                    f.cancel(true);
+                }
+            }
+        }
 
-		runningTasks.clear();
-	}
+        runningTasks.clear();
+    }
 
-	public List<QueryHits> getServices() {
-		return services;
-	}
+    public List<QueryHits> getServices() {
+        return services;
+    }
 
-	public void setServices(ArrayList<QueryHits> services) {
-		this.services = services;
-	}
+    public void setServices(ArrayList<QueryHits> services) {
+        this.services = services;
+    }
 
-	public int getSelectedServicesCount() {
-		int count = 0;
+    public int getSelectedServicesCount() {
+        int count = 0;
 
-		for (QueryHits service : services) {
-			if (service.isChecked()) count++;
-		}
-		return count;
-	}
+        for (QueryHits service : services) {
+            if (service.isChecked()) count++;
+        }
+        return count;
+    }
 
-	//TODO think in to move it to a postconstructor initialization
-	public int getSelectedResults() {
-		selectedResults = 0;
+    //TODO think in to move it to a postconstructor initialization
+    public int getSelectedResults() {
+        selectedResults = 0;
 
-		for (QueryHits service : services) {
-			if (service != null) {
-				if (service.isChecked() && service.getHits() >= 0) {
-					selectedResults += service.getHits();
-				}
-			}
-		}
-		return selectedResults;
-	}
+        for (QueryHits service : services) {
+            if (service != null) {
+                if (service.isChecked() && service.getHits() >= 0) {
+                    selectedResults += service.getHits();
+                }
+            }
+        }
+        return selectedResults;
+    }
 
-	public void setSelectedResults(int selectedResults) {
-		this.selectedResults = selectedResults;
-	}
+    public void setSelectedResults(int selectedResults) {
+        this.selectedResults = selectedResults;
+    }
 
-	public int getTotalResults() {
+    public int getTotalResults() {
 
-		totalResults = 0;
+        totalResults = 0;
 
-		for (QueryHits service : services) {
-			if (service != null) {
-				if (service.isActive() && service.getHits() >= 0) {
-					totalResults += service.getHits();
-				}
-			}
-		}
+        for (QueryHits service : services) {
+            if (service != null) {
+                if (service.isActive() && service.getHits() >= 0) {
+                    totalResults += service.getHits();
+                }
+            }
+        }
 
-		return totalResults;
-	}
+        return totalResults;
+    }
 
-	public void setTotalResults(int totalResults) {
-		this.totalResults = totalResults;
-	}
+    public void setTotalResults(int totalResults) {
+        this.totalResults = totalResults;
+    }
 
-	public int getActiveServicesCount() {
-		return activeServiceCount;
-	}
+    public int getActiveServicesCount() {
+        return activeServiceCount;
+    }
 
-	public void setActiveServicesCount(int activeServiceCount) {
-		this.activeServiceCount = activeServiceCount;
-	}
+    public void setActiveServicesCount(int activeServiceCount) {
+        this.activeServiceCount = activeServiceCount;
+    }
 
     public void setSelectedService(QueryHits selectedService) {
         this.selectedService = selectedService;
