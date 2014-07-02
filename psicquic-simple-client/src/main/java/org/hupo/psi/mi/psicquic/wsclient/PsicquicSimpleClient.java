@@ -231,4 +231,12 @@ public class PsicquicSimpleClient {
 	public void setReadTimeout(int readTimeout) {
 		this.readTimeout = readTimeout;
 	}
+
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
 }
