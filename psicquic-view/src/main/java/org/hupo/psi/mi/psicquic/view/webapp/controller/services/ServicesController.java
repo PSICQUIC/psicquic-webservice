@@ -236,8 +236,6 @@ public class ServicesController extends BaseController implements java.io.Serial
         PsicquicSimpleClient psicquicSimpleClient;
 
         psicquicSimpleClient = new PsicquicSimpleClient(service.getRestUrl());
-        psicquicSimpleClient.setReadTimeout(5000);
-
 
         try {
             psicquicCount = Long.valueOf(psicquicSimpleClient.countByQuery(query)).intValue();
@@ -265,29 +263,22 @@ public class ServicesController extends BaseController implements java.io.Serial
     private void checkAndResumePsicquicTasks() {
 
         for (Future f : runningTasks) {
-            int threadTimeOut = 5;
             try {
-                f.get(threadTimeOut, TimeUnit.SECONDS);
+                f.get();
             } catch (InterruptedException e) {
                 log.error("The psicquic task was interrupted, we cancel the task.", e);
                 if (!f.isCancelled()) {
-                    f.cancel(true);
+                    f.cancel(false);
                 }
             } catch (ExecutionException e) {
                 log.error("The psicquic task could not be executed, we cancel the task.", e);
                 if (!f.isCancelled()) {
-                    f.cancel(true);
+                    f.cancel(false);
                 }
-            } catch (TimeoutException e) {
-                log.error("Service task stopped because of time out " + threadTimeOut + "seconds.");
-
-                if (!f.isCancelled()) {
-                    f.cancel(true);
-                }
-            }catch (Throwable e) {
+            } catch (Throwable e) {
                 log.error("The psicquic task could not be executed, we cancel the task.", e);
                 if (!f.isCancelled()) {
-                    f.cancel(true);
+                    f.cancel(false);
                 }
             }
         }
