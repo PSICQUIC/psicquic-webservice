@@ -109,6 +109,7 @@ public class PsicquicRegistryStatusChecker {
 
     private void checkStatus(ServiceType serviceStatus) {
         HttpURLConnection urlConnection=null;
+        HttpURLConnection urlConnection2=null;
         InputStream contentStream = null;
         InputStream countStream = null;
         try {
@@ -122,9 +123,16 @@ public class PsicquicRegistryStatusChecker {
 
             urlConnection.connect();
 
-            int code = urlConnection.getResponseCode();
+            urlConnection2 = (HttpURLConnection) countURL.openConnection();
+            urlConnection2.setConnectTimeout(threadTimeOut);
+            urlConnection2.setReadTimeout(threadTimeOut);
 
-            if (HttpURLConnection.HTTP_OK == code) {
+            urlConnection2.connect();
+
+            int code = urlConnection.getResponseCode();
+            int code2 = urlConnection2.getResponseCode();
+
+            if (HttpURLConnection.HTTP_OK == code && HttpURLConnection.HTTP_OK == code2) {
 
                 serviceStatus.setActive(true);
 
@@ -138,7 +146,7 @@ public class PsicquicRegistryStatusChecker {
                 version = IOUtils.toString(contentStream);
                 serviceStatus.setVersion(version);
 
-                countStream = countURL.openStream();
+                countStream = (InputStream) urlConnection2.getContent();
                 strCount = IOUtils.toString(countStream);
                 serviceStatus.setCount(Long.valueOf(strCount));
             } else {
@@ -165,6 +173,9 @@ public class PsicquicRegistryStatusChecker {
         }
         if (urlConnection != null){
             urlConnection.disconnect();
+        }
+        if (urlConnection2 != null){
+            urlConnection2.disconnect();
         }
     }
 
