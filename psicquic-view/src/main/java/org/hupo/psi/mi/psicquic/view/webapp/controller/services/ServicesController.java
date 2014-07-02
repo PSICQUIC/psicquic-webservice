@@ -263,8 +263,9 @@ public class ServicesController extends BaseController implements java.io.Serial
     private void checkAndResumePsicquicTasks() {
 
         for (Future f : runningTasks) {
+            int threadTimeOut = 5;
             try {
-                f.get();
+                f.get(threadTimeOut, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 log.error("The psicquic task was interrupted, we cancel the task.", e);
                 if (!f.isCancelled()) {
@@ -275,7 +276,13 @@ public class ServicesController extends BaseController implements java.io.Serial
                 if (!f.isCancelled()) {
                     f.cancel(false);
                 }
-            } catch (Throwable e) {
+            }catch (TimeoutException e) {
+                log.error("Service task stopped because of time out " + threadTimeOut + "seconds.");
+
+                if (!f.isCancelled()) {
+                    f.cancel(false);
+                }
+            }catch (Throwable e) {
                 log.error("The psicquic task could not be executed, we cancel the task.", e);
                 if (!f.isCancelled()) {
                     f.cancel(false);
