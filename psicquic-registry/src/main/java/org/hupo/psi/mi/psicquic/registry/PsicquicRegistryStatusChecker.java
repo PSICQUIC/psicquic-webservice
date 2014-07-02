@@ -127,12 +127,11 @@ public class PsicquicRegistryStatusChecker {
             urlConnection.setConnectTimeout(threadTimeOut);
             urlConnection.setReadTimeout(threadTimeOut);
 
-            urlConnection.connect();
-
             urlConnection2 = (HttpURLConnection) countURL.openConnection();
             urlConnection2.setConnectTimeout(threadTimeOut);
             urlConnection2.setReadTimeout(threadTimeOut);
 
+            urlConnection.connect();
             urlConnection2.connect();
 
             int code = urlConnection.getResponseCode();
