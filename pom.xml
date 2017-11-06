@@ -27,6 +27,9 @@
         <psicquic.properties />
 
         <psicquic.filter />
+        <calimocho.version>2.5.1</calimocho.version>
+        <!--Latest version. Frozen project-->
+        <psimi.version>1.8.5</psimi.version>
     </properties>
 
     <build>
@@ -176,12 +179,12 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab</artifactId>
-            <version>1.8.4.2</version>
+            <version>${psimi.version}</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.8.4.1</version>
+            <version>${psimi.version}</version>
             <!-- avoids warning with tomcat 7 because is provided-->
             <exclusions>
                 <exclusion>
@@ -193,18 +196,18 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psi25-xml-rdf</artifactId>
-            <version>1.8.4</version>
+            <version>${psimi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-tab</artifactId>
-            <version>2.5.1</version>
+            <version>${calimocho.version}</version>
         </dependency>
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>calimocho-xgmml</artifactId>
-            <version>2.5.1</version>
+            <version>${calimocho.version}</version>
         </dependency>
 
         <!-- Logging -->
