@@ -7,7 +7,7 @@
 
     <version>1.2.8-SNAPSHOT</version>
 
-    <name>PSI :: PSICQUIC WS Reference Implementation</name>
+    <name>PSI :: PSICQUIC WS Reference Implementation based on Lucene</name>
 
     <scm>
         <connection>scm:git:https://github.com/PSICQUIC/psicquic-webservice</connection>
