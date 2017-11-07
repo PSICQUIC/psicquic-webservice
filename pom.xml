@@ -27,7 +27,7 @@
         <psicquic.properties />
 
         <psicquic.filter />
-        <calimocho.version>2.5.1</calimocho.version>
+        <calimocho.version>2.5.2</calimocho.version>
         <!--Latest version. Frozen project-->
         <psimi.version>1.8.5</psimi.version>
     </properties>
