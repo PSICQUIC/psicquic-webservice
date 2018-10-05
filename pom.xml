@@ -5,7 +5,7 @@
     <artifactId>psicquic-ws</artifactId>
     <packaging>war</packaging>
 
-    <version>1.2.9-SNAPSHOT</version>
+    <version>1.2.9</version>
 
     <name>PSI :: PSICQUIC WS Reference Implementation based on Lucene</name>
 
