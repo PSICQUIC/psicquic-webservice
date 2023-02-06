@@ -170,11 +170,11 @@ public class IndexBasedPsicquicRestServiceTest {
         Assert.assertEquals(12, mitabOut.toString().split("\n").length);
     }
 
-    @Test //TODO affected by biopax-rdf converter in psicquic-solr and this test when a new version for biopax supporting https is released (6-Nov 2017 JIRA GENISSUES-178)
+    @Test
     public void testGetByQuery_biopax() throws Exception {
         ResponseImpl response = (ResponseImpl) service.getByQuery("FANCD1", "biopax", "0", "5", "n");
 
         final String output = ((GenericEntity<String>) response.getEntity()).getEntity();
-        Assert.assertEquals(5, StringUtils.countMatches(output, "<j.0:MolecularInteraction "));
+        Assert.assertEquals(5, StringUtils.countMatches(output, "<bp:MolecularInteraction "));
     }
 }
