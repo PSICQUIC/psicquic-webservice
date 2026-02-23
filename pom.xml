@@ -37,7 +37,7 @@
     </properties>
 
     <build>
-        <finalName>${service.name}-${project.artifactId}-${project.version}</finalName>
+        <finalName>${service.name}-${project.artifactId}</finalName>
 
         <resources>
             <resource>
