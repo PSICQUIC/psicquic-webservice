@@ -45,7 +45,7 @@ spec:
       containers:
         - name: psicquic-webservice
           # Pull the image which contains psicquic-webservice webservice and the built assets from EBI's dockerhub
-          image: <CONTAINER_IMAGE>
+          image: <IMAGE_TAG>
           ports:
             # We are using psicquic-webservice webservice config which serves on port 8080
             - containerPort: 8080
@@ -59,15 +59,32 @@ spec:
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 20
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - "if [ ! -d /usr/local/tomcat/conf/tomcat-users.xml ] ; then cp /tmp/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml ; fi ; \
+                     if [ ! -d /usr/local/tomcat/webapps/manager/META-INF/context.xml ] ; then cp /tmp/manager-context.xml /usr/local/tomcat/webapps/manager/META-INF/context.xml ; fi ;"
           volumeMounts:
             - name: nfs-rw-volume
               mountPath: /nfs/public/rw/intact
+            - name: tomcat-config
+              mountPath: /tmp/tomcat-users.xml
+              subPath: tomcat-users.xml
+            - name: tomcat-config
+              mountPath: /tmp/manager-context.xml
+              subPath: manager-context.xml
       volumes:
         - name: nfs-rw-volume
           nfs:
             # URL for the NFS server
-            server: hh-isi-srv-vlan1496.ebi.ac.uk
-            path: /ifs/public/rw/intact
+            server: <NFS_SERVER>
+            path: <NFS_PATH>
+        - name: tomcat-config
+          configMap:
+            name: tomcat-config
       imagePullSecrets:
         # Provided by GitLab, this allows K8s to connect to dockerhub.ebi.ac.uk
         - name: gitlab-registry

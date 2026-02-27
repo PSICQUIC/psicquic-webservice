@@ -21,10 +21,6 @@ ADD /war_files/reactome-fi-psicquic-ws.war "/usr/local/tomcat/webapps/psicquic#r
 RUN cp -r webapps.dist/ROOT webapps/
 RUN cp -r webapps.dist/manager webapps/
 
-# COPY custom conf files (server.xml, tomcat-users.xml, etc.)
-ADD /config/tomcat-users.xml "/usr/local/tomcat/conf/tomcat-users.xml"
-ADD /config/manager-context.xml "/usr/local/tomcat/webapps/manager/META-INF/context.xml"
-
 RUN chown -R $USER:$USER /usr/local/tomcat
 
 CMD ["catalina.sh", "run"]
