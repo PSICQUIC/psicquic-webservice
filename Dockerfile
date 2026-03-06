@@ -15,9 +15,9 @@ RUN addgroup --gid "$GID" "$USER" \
   --uid "$UID" \
   "$USER"
 
-ADD /war_files/chembl-psicquic-ws.war "/usr/local/tomcat/webapps/psicquic#chembl.war"
-ADD /war_files/reactome-psicquic-ws.war "/usr/local/tomcat/webapps/psicquic#reactome.war"
-ADD /war_files/reactome-fi-psicquic-ws.war "/usr/local/tomcat/webapps/psicquic#reactome-fi.war"
+ADD /war_files/chembl-psicquic-ws.war "/usr/local/tomcat/webapps/Tools#webservices#psicquic#chembl.war"
+ADD /war_files/reactome-psicquic-ws.war "/usr/local/tomcat/webapps/Tools#webservices#psicquic#reactome.war"
+ADD /war_files/reactome-fi-psicquic-ws.war "/usr/local/tomcat/webapps/Tools#webservices#psicquic#reactome-fi.war"
 RUN cp -r webapps.dist/ROOT webapps/
 RUN cp -r webapps.dist/manager webapps/
 
