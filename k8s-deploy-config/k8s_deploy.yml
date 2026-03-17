@@ -8,15 +8,13 @@ spec:
   ports:
     - port: 31238
       protocol: TCP
-      # The port which will be externally exposed. Must be in the range [30000, 32767].
-      nodePort: 31238
       # The port on your Deployment which it will expose
       targetPort: 8080
   selector:
     # Selects the disease-portal-client Deployment to attach the Service to
     app: psicquic-webservice
     # Tell K8s this wants to expose an external port
-  type: NodePort
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,8 +36,8 @@ spec:
         app: psicquic-webservice
     spec:
       securityContext:
-        runAsUser: 2799
-        runAsGroup: 1137
+        runAsUser: 7610
+        runAsGroup: 1489
       terminationGracePeriodSeconds: 10
       restartPolicy: Always
       containers:
@@ -69,7 +67,7 @@ spec:
                      if [ ! -d /usr/local/tomcat/webapps/manager/META-INF/context.xml ] ; then cp /tmp/manager-context.xml /usr/local/tomcat/webapps/manager/META-INF/context.xml ; fi ;"
           volumeMounts:
             - name: nfs-rw-volume
-              mountPath: /nfs/public/rw/intact
+              mountPath: /nfs/public/rw/intact/psicquic-indices
             - name: tomcat-config
               mountPath: /tmp/tomcat-users.xml
               subPath: tomcat-users.xml
@@ -88,3 +86,22 @@ spec:
       imagePullSecrets:
         # Provided by GitLab, this allows K8s to connect to dockerhub.ebi.ac.uk
         - name: gitlab-registry
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: psicquic-webservice-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /Tools/webservices/psicquic/(chembl|reactome|reactome-fi)
+        pathType: Prefix
+        backend:
+          service:
+            name: psicquic-webservice-service
+            port:
+              number: 31238
+

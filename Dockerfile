@@ -1,10 +1,10 @@
 FROM tomcat:9-jdk11
 
 ENV USER=docker
-### psi_ia user
-ENV UID=2799
-### pst_pub group
-ENV GID=1137
+### mi user
+ENV UID=7610
+### molint group
+ENV GID=1489
 RUN addgroup --gid "$GID" "$USER" \
   && adduser \
   --disabled-password \
