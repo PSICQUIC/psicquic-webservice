@@ -44,6 +44,7 @@ spec:
         - name: psicquic-webservice
           # Pull the image which contains psicquic-webservice webservice and the built assets from EBI's dockerhub
           image: <IMAGE_TAG>
+          imagePullPolicy: IfNotPresent
           ports:
             # We are using psicquic-webservice webservice config which serves on port 8080
             - containerPort: 8080
