@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <profiles>
+        <profile>
+            <id>chembl</id>
+            <properties>
+                <service.name>chembl</service.name>
+                <psicquic.index>/nfs/public/rw/intact/psicquic-indices/chembl-index</psicquic.index>
+            </properties>
+        </profile>
+        <profile>
+            <id>reactome</id>
+            <properties>
+                <service.name>reactome</service.name>
+                <psicquic.index>/nfs/public/rw/intact/psicquic-indices/reactome-index</psicquic.index>
+            </properties>
+        </profile>
+        <profile>
+            <id>reactome-fi</id>
+            <properties>
+                <service.name>reactome-fi</service.name>
+                <psicquic.index>/nfs/public/rw/intact/psicquic-indices/reactome-fi-index</psicquic.index>
+            </properties>
+        </profile>
+    </profiles>
+</settings>
