@@ -47,6 +47,12 @@ spec:
           ports:
             # We are using psicquic-webservice webservice config which serves on port 8080
             - containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 2500Mi
+            limits:
+              memory: 3Gi
           readinessProbe:
             tcpSocket:
               port: 8080
@@ -104,4 +110,3 @@ spec:
             name: psicquic-webservice-service
             port:
               number: 31238
-
